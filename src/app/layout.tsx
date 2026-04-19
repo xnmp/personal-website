@@ -1,33 +1,43 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cardo, Crimson_Pro, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const cardo = Cardo({
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
+  variable: "--font-cardo",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const crimson = Crimson_Pro({
   subsets: ["latin"],
+  variable: "--font-crimson",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono-sans",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Chong",
-  description: "Personal site of Chong.",
+  metadataBase: new URL("https://chong.md"),
+  title: "Chong — a notebook of small things",
+  description:
+    "A running record of the tools, games, and small studies I keep returning to.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${cardo.variable} ${crimson.variable} ${mono.variable}`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }
