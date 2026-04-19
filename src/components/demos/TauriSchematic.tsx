@@ -1,6 +1,6 @@
 export function TauriSchematic() {
   return (
-    <>
+    <div className="plate-art-panes">
       <div className="pane">
         <div className="path">~ / projects</div>
         <div className="row">◀ ..</div>
@@ -29,6 +29,6 @@ export function TauriSchematic() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
