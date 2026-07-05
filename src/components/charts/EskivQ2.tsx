@@ -1,7 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import * as echarts from "echarts";
-import { Chart, notebookPalette, notebookTextStyle } from "./Chart";
+import { Chart, useNotebookPalette, notebookTextStyle } from "./Chart";
 import q2 from "@/data/eskiv/q2.json";
 
 type Bucket = {
@@ -13,19 +13,20 @@ type Bucket = {
 };
 
 export function EskivQ2() {
+  const p = useNotebookPalette();
   const option = useMemo<echarts.EChartsOption>(() => {
     const buckets = q2.buckets as Bucket[];
     const w = buckets[0].w;
     const h = buckets[0].h;
 
     const baseOption: echarts.EChartsOption = {
-      textStyle: notebookTextStyle,
+      textStyle: notebookTextStyle(p),
       backgroundColor: "transparent",
       tooltip: {
-        backgroundColor: notebookPalette.paper,
-        borderColor: notebookPalette.ink,
+        backgroundColor: p.paper,
+        borderColor: p.ink,
         borderWidth: 1,
-        textStyle: { ...notebookTextStyle, fontSize: 13 },
+        textStyle: { ...notebookTextStyle(p), fontSize: 13 },
         formatter: (params: unknown) => {
           const p = params as { data: [number, number, number]; marker: string };
           return `${p.marker} density: ${p.data[2].toFixed(1)}`;
@@ -52,10 +53,10 @@ export function EskivQ2() {
         show: false,
         inRange: {
           color: [
-            notebookPalette.paper,
+            p.paper,
             "#f5e3b0",
-            notebookPalette.amber,
-            notebookPalette.rust,
+            p.amber,
+            p.rust,
             "#2d1b0e",
           ],
         },
@@ -72,27 +73,27 @@ export function EskivQ2() {
         playInterval: 1400,
         loop: true,
         symbol: "none",
-        lineStyle: { color: notebookPalette.inkSoft, opacity: 0.3 },
+        lineStyle: { color: p.inkSoft, opacity: 0.3 },
         label: {
-          color: notebookPalette.inkSoft,
+          color: p.inkSoft,
           fontSize: 11,
           fontFamily: "var(--font-mono), monospace",
         },
-        itemStyle: { color: notebookPalette.inkSoft, opacity: 0.4 },
+        itemStyle: { color: p.inkSoft, opacity: 0.4 },
         checkpointStyle: {
-          color: notebookPalette.cyan,
-          borderColor: notebookPalette.cyan,
+          color: p.cyan,
+          borderColor: p.cyan,
           symbol: "circle",
           symbolSize: 12,
         },
         progress: {
-          lineStyle: { color: notebookPalette.cyan, width: 2 },
-          itemStyle: { color: notebookPalette.cyan, opacity: 0.9 },
-          label: { color: notebookPalette.cyan },
+          lineStyle: { color: p.cyan, width: 2 },
+          itemStyle: { color: p.cyan, opacity: 0.9 },
+          label: { color: p.cyan },
         },
         controlStyle: {
-          color: notebookPalette.ink,
-          borderColor: notebookPalette.ink,
+          color: p.ink,
+          borderColor: p.ink,
         },
         bottom: 8,
         left: 40,
@@ -105,14 +106,14 @@ export function EskivQ2() {
           left: "center",
           top: 8,
           textStyle: {
-            ...notebookTextStyle,
+            ...notebookTextStyle(p),
             fontSize: 14,
             fontWeight: 500,
           },
           subtextStyle: {
-            ...notebookTextStyle,
+            ...notebookTextStyle(p),
             fontSize: 11,
-            color: notebookPalette.inkSoft,
+            color: p.inkSoft,
             fontFamily: "var(--font-mono), monospace",
           },
         },
@@ -125,12 +126,12 @@ export function EskivQ2() {
             animationDuration: 800,
             animationEasing: "cubicOut",
             itemStyle: { borderWidth: 0 },
-            emphasis: { itemStyle: { borderColor: notebookPalette.ink, borderWidth: 1 } },
+            emphasis: { itemStyle: { borderColor: p.ink, borderWidth: 1 } },
           },
         ],
       })),
     };
-  }, []);
+  }, [p]);
 
   return <Chart option={option} height={560} ariaLabel="Player position density by score" />;
 }

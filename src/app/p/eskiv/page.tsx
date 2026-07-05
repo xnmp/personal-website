@@ -27,7 +27,7 @@ export default function EskivPage() {
         brand="Chong"
         meta={
           <>
-            Entry II &nbsp;·&nbsp; Eskiv &nbsp;·&nbsp; filed under{" "}
+            Entry V &nbsp;·&nbsp; Eskiv &nbsp;·&nbsp; filed under{" "}
             <span className="filed">games · AI</span>
           </>
         }
@@ -39,7 +39,7 @@ export default function EskivPage() {
 
       <section className="detail-hero">
         <div>
-          <div className="kicker">№ 02 · Entry II</div>
+          <div className="kicker">№ 05 · Entry V</div>
           <h1>A brute-force AI that plays a dodger.</h1>
           <p>
             Eskiv is a 2016 game: you move a square, dodge balls, grab a new
@@ -253,7 +253,7 @@ export default function EskivPage() {
         </div>
       </section>
 
-      <Folio number="2" />
+      <Folio number="5" />
     </>
   );
 }

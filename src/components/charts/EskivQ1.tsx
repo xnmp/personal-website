@@ -1,12 +1,13 @@
 "use client";
 import { useMemo } from "react";
 import * as echarts from "echarts";
-import { Chart, notebookPalette, notebookTextStyle } from "./Chart";
+import { Chart, useNotebookPalette, notebookTextStyle } from "./Chart";
 import q1 from "@/data/eskiv/q1.json";
 
 type Row = { bucket: number; count: number; mean: number; p25: number; p75: number };
 
 export function EskivQ1() {
+  const p = useNotebookPalette();
   const option = useMemo<echarts.EChartsOption>(() => {
     const rows = q1.rows as Row[];
     const xs = rows.map((r) => r.bucket);
@@ -16,7 +17,7 @@ export function EskivQ1() {
     const counts = rows.map((r) => r.count);
 
     return {
-      textStyle: notebookTextStyle,
+      textStyle: notebookTextStyle(p),
       backgroundColor: "transparent",
       animationDuration: 1200,
       animationEasing: "cubicOut",
@@ -28,15 +29,15 @@ export function EskivQ1() {
           { name: "samples", icon: "rect" },
         ],
         bottom: 4,
-        textStyle: { ...notebookTextStyle, fontSize: 12 },
+        textStyle: { ...notebookTextStyle(p), fontSize: 12 },
         itemGap: 22,
       },
       tooltip: {
         trigger: "axis",
-        backgroundColor: notebookPalette.paper,
-        borderColor: notebookPalette.ink,
+        backgroundColor: p.paper,
+        borderColor: p.ink,
         borderWidth: 1,
-        textStyle: { ...notebookTextStyle, fontSize: 13 },
+        textStyle: { ...notebookTextStyle(p), fontSize: 13 },
         formatter: (params: unknown) => {
           const arr = params as Array<{
             axisValue: number;
@@ -60,10 +61,10 @@ export function EskivQ1() {
         name: "number of balls at pickup",
         nameLocation: "middle",
         nameGap: 32,
-        nameTextStyle: notebookTextStyle,
-        axisLine: { lineStyle: { color: notebookPalette.inkSoft } },
-        axisTick: { lineStyle: { color: notebookPalette.inkSoft } },
-        axisLabel: { color: notebookPalette.inkSoft },
+        nameTextStyle: notebookTextStyle(p),
+        axisLine: { lineStyle: { color: p.inkSoft } },
+        axisTick: { lineStyle: { color: p.inkSoft } },
+        axisLabel: { color: p.inkSoft },
       },
       yAxis: [
         {
@@ -73,21 +74,21 @@ export function EskivQ1() {
           name: "path ratio (1 = straight)",
           nameLocation: "middle",
           nameGap: 44,
-          nameTextStyle: notebookTextStyle,
+          nameTextStyle: notebookTextStyle(p),
           axisLine: { show: false },
-          axisLabel: { color: notebookPalette.inkSoft },
-          splitLine: { lineStyle: { color: notebookPalette.ink, opacity: 0.08 } },
+          axisLabel: { color: p.inkSoft },
+          splitLine: { lineStyle: { color: p.ink, opacity: 0.08 } },
         },
         {
           type: "value",
           name: "samples",
           nameLocation: "middle",
           nameGap: 44,
-          nameTextStyle: notebookTextStyle,
+          nameTextStyle: notebookTextStyle(p),
           position: "right",
           axisLine: { show: false },
           axisLabel: {
-            color: notebookPalette.inkSoft,
+            color: p.inkSoft,
             formatter: (v: number) =>
               v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v),
           },
@@ -102,7 +103,7 @@ export function EskivQ1() {
           data: counts,
           barWidth: "70%",
           itemStyle: {
-            color: notebookPalette.olive,
+            color: p.olive,
             opacity: 0.18,
           },
           animationDelay: (i: number) => i * 40,
@@ -125,7 +126,7 @@ export function EskivQ1() {
           stack: "band",
           symbol: "none",
           lineStyle: { opacity: 0 },
-          areaStyle: { color: notebookPalette.cyan, opacity: 0.22 },
+          areaStyle: { color: p.cyan, opacity: 0.22 },
           animationDelay: (i: number) => 300 + i * 30,
         },
         {
@@ -135,21 +136,21 @@ export function EskivQ1() {
           smooth: 0.25,
           symbol: "circle",
           symbolSize: 8,
-          itemStyle: { color: notebookPalette.cyan },
-          lineStyle: { color: notebookPalette.cyan, width: 2.4 },
+          itemStyle: { color: p.cyan },
+          lineStyle: { color: p.cyan, width: 2.4 },
           emphasis: { scale: 1.6 },
           animationDelay: (i: number) => 600 + i * 60,
           markLine: {
             silent: true,
             symbol: "none",
-            lineStyle: { type: "dashed", color: notebookPalette.inkSoft, opacity: 0.5 },
+            lineStyle: { type: "dashed", color: p.inkSoft, opacity: 0.5 },
             data: [{ yAxis: 1 }],
             label: { show: false },
           },
         },
       ],
     };
-  }, []);
+  }, [p]);
 
   return <Chart option={option} height={380} ariaLabel="Path ratio vs number of balls" />;
 }
