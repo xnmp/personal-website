@@ -1,0 +1,1 @@
+tableau-frog — you don't pick charts, you pick variables. A keyboard-first, AI-native data explorer.
