@@ -1,0 +1,829 @@
+/* ============================================================
+   tableau-frog showcase — scoped dark theme.
+   Everything is nested under .tf-root so it never leaks into the
+   notebook (paper) theme the rest of the site uses.
+   Palette ported from the app's domain/color.ts.
+   ============================================================ */
+
+.tf-root {
+  --page: #0d0d0d;
+  --surface: #1a1a19;
+  --panel: #141413;
+  --ink: #ffffff;
+  --ink-2: #c3c2b7;
+  --ink-3: #898781;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --blue: #3987e5;
+  --aqua: #199e70;
+  --yellow: #c98500;
+  --violet: #9085e9;
+  --red: #e66767;
+  --magenta: #d55181;
+  --orange: #d95926;
+
+  --mono: var(--tf-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --display: var(--tf-display), "Space Grotesk", system-ui, sans-serif;
+  --serif: var(--tf-serif), Georgia, serif;
+
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--page);
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* faint precision grid, like a plotting surface */
+.tf-root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 40%, transparent 100%);
+}
+
+.tf-root * {
+  box-sizing: border-box;
+}
+
+/* neutralise the notebook theme's global <code> pill (cyan, nowrap, border) */
+.tf-root :not(pre) > code {
+  font-family: var(--mono);
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--grid);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 0.88em;
+  color: var(--aqua);
+}
+.tf-code pre,
+.tf-code pre code {
+  white-space: pre;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font-size: 13px;
+}
+.tf-code pre {
+  padding: 20px 22px;
+}
+
+.tf-root a {
+  color: var(--blue);
+  text-decoration: none;
+}
+.tf-root a:hover {
+  color: var(--red);
+}
+
+.tf-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ---------- top bar / nav ---------- */
+.tf-nav {
+  position: relative;
+  z-index: 2;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+.tf-brand {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.tf-brand .frog {
+  color: var(--aqua);
+}
+.tf-nav-right {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  color: var(--ink-3);
+}
+.tf-nav-right a {
+  color: var(--ink-3);
+}
+.tf-nav-right a:hover {
+  color: var(--ink);
+}
+
+/* ---------- hero ---------- */
+.tf-hero {
+  padding: 40px 0 24px;
+}
+.tf-kicker {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--aqua);
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tf-kicker::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--grid), transparent);
+  max-width: 220px;
+}
+.tf-h1 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(38px, 6.4vw, 76px);
+  line-height: 0.98;
+  letter-spacing: -0.028em;
+  color: var(--ink);
+  margin: 0 0 26px;
+  max-width: 16ch;
+}
+.tf-h1 .em {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--blue);
+  letter-spacing: -0.01em;
+}
+.tf-lede {
+  font-size: clamp(16px, 1.8vw, 19px);
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 60ch;
+  margin: 0 0 28px;
+}
+.tf-lede b {
+  color: var(--ink);
+  font-weight: 500;
+}
+.tf-hero-cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.tf-btn {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border: 1px solid var(--grid);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+.tf-btn:hover {
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+.tf-btn.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #08131f;
+  font-weight: 700;
+}
+.tf-btn.primary:hover {
+  background: #4d97ee;
+  color: #08131f;
+}
+.tf-kbd {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 2px 7px;
+  border: 1px solid var(--grid);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+/* ---------- section scaffolding ---------- */
+.tf-section {
+  padding: 66px 0;
+  position: relative;
+}
+.tf-section-head {
+  margin-bottom: 30px;
+}
+.tf-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tf-eyebrow .idx {
+  color: var(--red);
+}
+.tf-h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(26px, 3.6vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 12px;
+  max-width: 22ch;
+}
+.tf-h2 .em {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--blue);
+}
+.tf-sub {
+  font-size: 16px;
+  color: var(--ink-2);
+  max-width: 62ch;
+  margin: 0;
+}
+.tf-rule {
+  height: 1px;
+  background: var(--grid);
+  border: 0;
+  margin: 0;
+}
+
+/* ---------- panel chrome (mirrors the app's panels) ---------- */
+.tf-panel {
+  background: var(--panel);
+  border: 1px solid var(--grid);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.tf-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--grid);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.tf-panel-title {
+  color: var(--ink);
+  font-weight: 500;
+}
+.tf-badge {
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border: 1px solid var(--grid);
+  border-radius: 3px;
+  color: var(--ink-3);
+}
+.tf-badge.source {
+  color: var(--blue);
+  border-color: rgba(57, 135, 229, 0.4);
+}
+.tf-badge.responder {
+  color: var(--red);
+  border-color: rgba(230, 103, 103, 0.4);
+}
+
+/* axis-slot chips like the app's x/y/z selectors */
+.tf-slots {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px 4px;
+  flex-wrap: wrap;
+}
+.tf-slot {
+  font-size: 10.5px;
+  padding: 3px 8px;
+  border: 1px solid var(--grid);
+  border-radius: 3px;
+  color: var(--ink-3);
+  background: var(--surface);
+}
+.tf-slot b {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+/* ---------- live lens demo ---------- */
+.tf-demo {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+.tf-demo-side {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 14px;
+}
+.tf-chartbox {
+  width: 100%;
+}
+.tf-caption {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border: 1px solid var(--grid);
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-height: 46px;
+}
+.tf-caption .n {
+  color: var(--ink);
+  font-weight: 700;
+}
+.tf-caption .up {
+  color: var(--red);
+  font-weight: 700;
+}
+.tf-caption .down {
+  color: var(--blue);
+  font-weight: 700;
+}
+.tf-caption .dim {
+  color: var(--ink-3);
+}
+.tf-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.02em;
+}
+.tf-legend .bar {
+  width: 130px;
+  height: 8px;
+  border-radius: 2px;
+  background: linear-gradient(to right, #3987e5, #383835, #e66767);
+}
+.tf-demo-hint {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- feature ledger (not emoji cards) ---------- */
+.tf-ledger {
+  border-top: 1px solid var(--grid);
+}
+.tf-ledger-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 32px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--grid);
+}
+.tf-ledger-row h4 {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--ink);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tf-ledger-row h4 .key {
+  align-self: flex-start;
+}
+.tf-ledger-row p {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-2);
+  max-width: 66ch;
+}
+.tf-ledger-row p b {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ---------- window chrome for screenshots ---------- */
+.tf-window {
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--panel);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.8);
+}
+.tf-window-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--grid);
+  background: var(--surface);
+}
+.tf-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--axis);
+}
+.tf-window-title {
+  margin-left: 8px;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.02em;
+}
+.tf-window-shot {
+  position: relative;
+  display: block;
+  line-height: 0;
+  background: #0b0b0a;
+}
+.tf-window-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* investigate story sequence */
+.tf-seq {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.tf-seq-step {
+  grid-column: span 12;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 18px;
+}
+.tf-seq-num {
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--axis);
+  line-height: 1;
+}
+.tf-seq-num.active {
+  color: var(--red);
+}
+.tf-seq-body h3 {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 2px 0 6px;
+}
+.tf-seq-body p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--ink-2);
+  max-width: 60ch;
+}
+.tf-callouts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.tf-callout {
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid var(--grid);
+  border-left: 2px solid var(--blue);
+  border-radius: 3px;
+  color: var(--ink-2);
+  background: var(--surface);
+}
+.tf-callout.red {
+  border-left-color: var(--red);
+}
+.tf-callout.aqua {
+  border-left-color: var(--aqua);
+}
+
+/* pull quote */
+.tf-quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(24px, 3.6vw, 38px);
+  line-height: 1.24;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  max-width: 22ch;
+}
+.tf-quote span {
+  color: var(--ink-3);
+}
+
+/* ---------- hack it (code) ---------- */
+.tf-code {
+  background: var(--panel);
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.tf-code pre {
+  margin: 0;
+  padding: 20px 22px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink-2);
+  tab-size: 2;
+}
+.tf-code .cm {
+  color: var(--ink-3);
+  font-style: italic;
+}
+.tf-code .kw {
+  color: var(--violet);
+}
+.tf-code .fn {
+  color: var(--blue);
+}
+.tf-code .str {
+  color: var(--aqua);
+}
+.tf-code .num {
+  color: var(--yellow);
+}
+.tf-code .pn {
+  color: var(--ink);
+}
+.tf-code .op {
+  color: var(--magenta);
+}
+
+.tf-grammar {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1px;
+  background: var(--grid);
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.tf-grammar div {
+  background: var(--panel);
+  padding: 14px 16px;
+}
+.tf-grammar code {
+  color: var(--yellow);
+  font-size: 13px;
+}
+.tf-grammar span {
+  display: block;
+  color: var(--ink-3);
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* ---------- stats strip ---------- */
+.tf-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--grid);
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.tf-stat {
+  background: var(--panel);
+  padding: 26px 22px;
+}
+.tf-stat .v {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(28px, 3.4vw, 40px);
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.tf-stat .v em {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--blue);
+  font-weight: 400;
+}
+.tf-stat .l {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--ink-3);
+  line-height: 1.4;
+}
+
+/* ---------- quickstart ---------- */
+.tf-quickstart {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: center;
+}
+/* keep long code lines from forcing a grid track wide (min-content overflow) */
+.tf-quickstart > * {
+  min-width: 0;
+}
+.tf-code {
+  min-width: 0;
+}
+
+/* ---------- footer ---------- */
+.tf-footer {
+  border-top: 1px solid var(--grid);
+  padding: 40px 0 60px;
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+/* ---------- keyboard hint chip ---------- */
+.tf-hintchip {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 40;
+  font-size: 11px;
+  padding: 7px 12px;
+  border: 1px solid var(--grid);
+  border-radius: 20px;
+  background: rgba(20, 20, 19, 0.9);
+  backdrop-filter: blur(6px);
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tf-hintchip:hover {
+  color: var(--ink);
+  border-color: var(--blue);
+  cursor: pointer;
+}
+
+/* ---------- overlays (shortcuts + palette) ---------- */
+.tf-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(3px);
+}
+.tf-modal {
+  width: min(560px, 92vw);
+  background: var(--panel);
+  border: 1px solid var(--axis);
+  border-radius: 10px;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+}
+.tf-modal-head {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--grid);
+  font-size: 12px;
+  color: var(--ink-3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tf-palette-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--grid);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 15px;
+  outline: none;
+}
+.tf-palette-list {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+}
+.tf-palette-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.tf-palette-item .cmd {
+  color: var(--blue);
+}
+.tf-palette-item.active {
+  background: var(--surface);
+  color: var(--ink);
+}
+.tf-palette-item .hint {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.tf-shortcuts {
+  padding: 8px 8px 14px;
+}
+.tf-shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--ink-2);
+  border-bottom: 1px solid rgba(44, 44, 42, 0.5);
+}
+.tf-shortcut:last-child {
+  border-bottom: 0;
+}
+.tf-shortcut .keys {
+  display: flex;
+  gap: 5px;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 880px) {
+  .tf-demo {
+    grid-template-columns: 1fr;
+  }
+  .tf-demo-side {
+    grid-template-rows: none;
+    grid-template-columns: 1fr 1fr;
+  }
+  .tf-ledger-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .tf-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .tf-quickstart {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .tf-wrap,
+  .tf-nav {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .tf-demo-side {
+    grid-template-columns: 1fr;
+  }
+  .tf-stats {
+    grid-template-columns: 1fr;
+  }
+  .tf-hintchip {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-root * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
