@@ -34,6 +34,8 @@ export default function ZsyPage() {
 
       <nav className="back-link">
         <Link href="/">← the notebook</Link>
+        &nbsp;&nbsp;·&nbsp;&nbsp;
+        <Link href="/p/zheng-shang-you/play">play against the strategist →</Link>
       </nav>
 
       <section className="detail-hero">

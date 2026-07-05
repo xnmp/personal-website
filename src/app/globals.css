@@ -1029,6 +1029,251 @@ code {
   border-top: 1px solid var(--rule);
 }
 
+/* ---------- zsy table (playable figure) ---------- */
+
+.zsy-table {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: clamp(12px, 2vw, 22px);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+}
+
+.zsy-opponents {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.zsy-opp {
+  border: 1px solid var(--rule);
+  border-left: 3px solid transparent;
+  padding: 8px 12px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.zsy-opp.active {
+  border-left-color: var(--rust);
+  color: var(--ink);
+}
+
+.zsy-opp.done {
+  opacity: 0.55;
+}
+
+.zsy-opp .n {
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.zsy-opp .medal {
+  color: var(--amber);
+  font-size: 13px;
+}
+
+.zsy-trick {
+  min-height: 132px;
+  border: 1px dashed var(--rule);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+}
+
+.zsy-trick-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.zsy-trick-label b {
+  color: var(--rust);
+  font-weight: 500;
+}
+
+.zsy-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-left: 26px;
+}
+
+.zsy-card {
+  width: 58px;
+  height: 82px;
+  margin-left: -26px;
+  background: var(--paper);
+  border: 1px solid var(--ink-soft);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px -4px var(--shadow);
+  position: relative;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+}
+
+.zsy-card .corner {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  font-size: 15px;
+  line-height: 1.05;
+  white-space: pre-line;
+}
+
+.zsy-card .pip {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 19px;
+}
+
+.zsy-card.red {
+  color: var(--rust);
+}
+
+.zsy-card.black {
+  color: var(--ink);
+}
+
+.zsy-card.joker {
+  color: var(--amber);
+}
+
+button.zsy-card {
+  cursor: pointer;
+  padding: 0;
+}
+
+button.zsy-card:hover {
+  transform: translateY(-6px);
+}
+
+button.zsy-card[aria-pressed="true"] {
+  transform: translateY(-14px);
+  border-color: var(--cyan);
+  box-shadow: 0 8px 18px -8px var(--shadow);
+}
+
+.zsy-hand {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.zsy-hand .zsy-cards {
+  justify-content: flex-start;
+  row-gap: 10px;
+}
+
+.zsy-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.zsy-btn {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, opacity 0.15s;
+}
+
+.zsy-btn.primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.zsy-btn:hover:not(:disabled) {
+  border-color: var(--rust);
+  color: var(--rust);
+}
+
+.zsy-btn.primary:hover:not(:disabled) {
+  background: var(--rust);
+  color: var(--paper);
+}
+
+.zsy-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.zsy-status {
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink-soft);
+  min-height: 1.5em;
+}
+
+.zsy-status b {
+  color: var(--rust);
+  font-weight: 600;
+  font-style: normal;
+}
+
+.zsy-fin {
+  text-align: center;
+  padding: 10px 0 2px;
+}
+
+.zsy-fin h4 {
+  font-family: var(--font-cardo), Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.zsy-fin ol {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.zsy-fin li {
+  margin: 3px 0;
+}
+
+@media (max-width: 640px) {
+  .zsy-opponents {
+    grid-template-columns: 1fr;
+  }
+
+  .zsy-card {
+    width: 48px;
+    height: 70px;
+    margin-left: -22px;
+  }
+
+  .zsy-cards {
+    padding-left: 22px;
+  }
+}
+
 /* ---------- print ---------- */
 
 @media print {
