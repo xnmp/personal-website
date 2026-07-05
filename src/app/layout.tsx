@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 // Runs before paint so the stored rice applies without a flash.
-const themeInit = `(function(){try{var r=localStorage.getItem("nb-rice");var ok=["paper","horizon","cosmic-dusk","rapture"];if(ok.indexOf(r)===-1){r=window.matchMedia("(prefers-color-scheme: dark)").matches?"horizon":"paper"}document.documentElement.dataset.rice=r}catch(e){}})()`;
+const themeInit = `(function(){try{var r=localStorage.getItem("nb-rice");var ok=["paper","horizon","cosmic-dusk","rapture"];if(ok.indexOf(r)===-1){r=window.matchMedia("(prefers-color-scheme: dark)").matches?"cosmic-dusk":"paper"}document.documentElement.dataset.rice=r}catch(e){}})()`;
 
 export default function RootLayout({
   children,
