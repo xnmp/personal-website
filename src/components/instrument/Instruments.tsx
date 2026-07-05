@@ -21,9 +21,9 @@ export function Instruments() {
         type="button"
         className="instr-btn"
         onClick={toggleTheme}
-        aria-label="Toggle light and dark theme"
+        aria-label="Cycle through my terminal themes"
       >
-        <span className="k">t</span>lamp
+        <span className="k">t</span>theme
       </button>
     </span>
   );

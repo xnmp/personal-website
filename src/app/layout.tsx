@@ -30,8 +30,8 @@ export const metadata: Metadata = {
     "A running record of the tools, games, and small studies I keep returning to.",
 };
 
-// Runs before paint so the stored theme applies without a flash.
-const themeInit = `(function(){try{var t=localStorage.getItem("nb-theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t}catch(e){}})()`;
+// Runs before paint so the stored rice applies without a flash.
+const themeInit = `(function(){try{var r=localStorage.getItem("nb-rice");var ok=["paper","horizon","cosmic-dusk","rapture"];if(ok.indexOf(r)===-1){r=window.matchMedia("(prefers-color-scheme: dark)").matches?"horizon":"paper"}document.documentElement.dataset.rice=r}catch(e){}})()`;
 
 export default function RootLayout({
   children,

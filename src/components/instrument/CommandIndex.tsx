@@ -11,12 +11,16 @@ export function openIndex() {
   window.dispatchEvent(new Event(OPEN_EVENT));
 }
 
+/** The rices, in cycle order — generated into rice.css from the dotfiles. */
+export const RICES = ["paper", "horizon", "cosmic-dusk", "rapture"] as const;
+
 export function toggleTheme() {
   const root = document.documentElement;
-  const next = root.dataset.theme === "dark" ? "light" : "dark";
-  root.dataset.theme = next;
+  const current = root.dataset.rice ?? "paper";
+  const next = RICES[(RICES.indexOf(current as (typeof RICES)[number]) + 1) % RICES.length];
+  root.dataset.rice = next;
   try {
-    localStorage.setItem("nb-theme", next);
+    localStorage.setItem("nb-rice", next);
   } catch {
     /* private mode */
   }
@@ -163,7 +167,7 @@ export function CommandIndex() {
           <span><span className="k">↑↓</span> move</span>
           <span><span className="k">↵</span> open</span>
           <span><span className="k">esc</span> close</span>
-          <span><span className="k">t</span> lamp</span>
+          <span><span className="k">t</span> theme</span>
         </div>
       </div>
     </div>

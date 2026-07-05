@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./rice.css";
 
 @theme inline {
   --color-paper: var(--paper);
@@ -15,37 +16,9 @@
   --font-body: var(--font-crimson);
 }
 
+/* Color tokens live in rice.css, generated from the author's dotfiles. */
 :root {
-  --paper: #fdf6e3;
-  --paper-warm: #f6efd8;
-  --ink: #073642;
-  --ink-soft: #586e75;
-  --olive: #859900;
-  --amber: #b58900;
-  --rust: #cb4b16;
-  --cyan: #2aa198;
-  --rule: #d8c98a;
-  --code-bg: rgba(7, 54, 66, 0.05);
-  --code-border: rgba(7, 54, 66, 0.08);
-  --shadow: rgba(7, 54, 66, 0.25);
-  --overlay: rgba(253, 246, 227, 0.6);
   --gutter: clamp(20px, 5.5vw, 80px);
-}
-
-:root[data-theme="dark"] {
-  --paper: #002b36;
-  --paper-warm: #06313d;
-  --ink: #ded5bd;
-  --ink-soft: #93a1a1;
-  --olive: #97ab13;
-  --amber: #c9a10e;
-  --rust: #e0662f;
-  --cyan: #3cb8ac;
-  --rule: #1b4a57;
-  --code-bg: rgba(147, 161, 161, 0.09);
-  --code-border: rgba(147, 161, 161, 0.16);
-  --shadow: rgba(0, 0, 0, 0.5);
-  --overlay: rgba(0, 43, 54, 0.65);
 }
 
 * {
@@ -67,6 +40,21 @@ img,
 svg,
 video {
   max-width: 100%;
+}
+
+/* Hyprland rounding=3 → the whole site's corner radius */
+.plate,
+.plate-art,
+.tag,
+.openq,
+.instr-btn,
+.zsy-btn,
+.zsy-opp,
+.zsy-trick,
+.ci-panel,
+.features,
+.code-duet {
+  border-radius: var(--radius);
 }
 
 html,
@@ -115,24 +103,6 @@ code {
   white-space: nowrap;
 }
 
-.page-bg {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-  opacity: 0.55;
-  mix-blend-mode: multiply;
-}
-
-:root[data-theme="dark"] .page-bg {
-  opacity: 0.07;
-  mix-blend-mode: screen;
-  filter: saturate(0.5);
-}
-
 /* ---------- running head ---------- */
 
 .running-head {
@@ -144,7 +114,9 @@ code {
   align-items: baseline;
   gap: 12px 24px;
   flex-wrap: wrap;
-  border-bottom: 1px solid var(--rule);
+  /* the Hyprland active-border gradient, worn as the site's one signature */
+  border-bottom: var(--border-w) solid transparent;
+  border-image: var(--active-grad) 1;
 }
 
 .brand {
@@ -1117,7 +1089,7 @@ code {
   margin-left: -26px;
   background: var(--paper);
   border: 1px solid var(--ink-soft);
-  border-radius: 6px;
+  border-radius: calc(var(--radius) * 2);
   box-shadow: 0 2px 8px -4px var(--shadow);
   position: relative;
   font-family: var(--font-mono), ui-monospace, monospace;

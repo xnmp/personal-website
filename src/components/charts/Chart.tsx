@@ -53,18 +53,19 @@ export interface NotebookPalette {
   magenta: string;
 }
 
+// SSR/pre-mount fallback: the "paper" rice from rice.css.
 const lightPalette: NotebookPalette = {
-  ink: "#073642",
-  inkSoft: "#586e75",
-  paper: "#fdf6e3",
-  paperWarm: "#f6efd8",
-  rule: "#d8c98a",
-  rust: "#cb4b16",
-  amber: "#b58900",
-  cyan: "#2aa198",
-  olive: "#859900",
-  blue: "#268bd2",
-  magenta: "#d33682",
+  ink: "#16161c",
+  inkSoft: "#5c5f70",
+  paper: "#fcfbf9",
+  paperWarm: "#f4f2ee",
+  rule: "#e0ddd6",
+  rust: "#cd4b69",
+  amber: "#9b715c",
+  cyan: "#1e92a9",
+  olive: "#1c9068",
+  blue: "#26BBD9",
+  magenta: "#EE64AE",
 };
 
 function readPalette(): NotebookPalette {

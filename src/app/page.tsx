@@ -49,14 +49,17 @@ export default function Home() {
           </p>
           <div className="byline">
             <a href="https://github.com/xnmp">github/xnmp</a> &nbsp;·&nbsp;{" "}
-            <a href="mailto:chonw@proton.me">chonw@proton.me</a>
+            <a href="mailto:chonw@proton.me">chonw@proton.me</a> &nbsp;·&nbsp;{" "}
+            <a href="https://github.com/xnmp/dotfiles">
+              themed by my dotfiles
+            </a>
           </div>
         </div>
         <MarginNote label="Marginalia">
-          Each entry is a project or an open question. Plates are sketched from
-          life; citations live in the footer. Press <code>/</code> for the
-          index, <code>t</code> for the desk lamp. Take what&rsquo;s useful;
-          argue with the rest.
+          Each entry is a project or an open question. Press <code>/</code>{" "}
+          for the index. Press <code>t</code> to cycle my actual terminal
+          themes — the colors here are the colors I work in. Take what&rsquo;s
+          useful; argue with the rest.
         </MarginNote>
       </section>
 
