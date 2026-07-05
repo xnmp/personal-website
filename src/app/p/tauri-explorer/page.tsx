@@ -35,6 +35,8 @@ export default function TauriExplorerPage() {
 
       <nav className="back-link">
         <Link href="/">← the notebook</Link>
+        &nbsp;&nbsp;·&nbsp;&nbsp;
+        <a href="https://tauri-explorer.vercel.app/">the live showcase →</a>
       </nav>
 
       <section className="detail-hero">
