@@ -108,7 +108,7 @@ export function notebookTextStyle(
   palette: NotebookPalette
 ): echarts.EChartsOption["textStyle"] {
   return {
-    fontFamily: "var(--font-crimson), Georgia, serif",
+    fontFamily: "var(--font-ui), Georgia, serif",
     fontSize: 13,
     color: palette.ink,
   };

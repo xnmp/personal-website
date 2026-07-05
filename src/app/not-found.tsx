@@ -6,7 +6,7 @@ export default function NotFound() {
     <>
       <PageBackground src="/bg/watercolor-1.jpg" />
       <RunningHead
-        brand="Chong"
+        brand="chong"
         meta={<>filed under <span className="filed">nothing</span></>}
       />
       <main className="blank-leaf">

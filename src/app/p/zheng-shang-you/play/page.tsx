@@ -18,7 +18,7 @@ export default function ZsyPlayPage() {
     <>
       <PageBackground src="/bg/watercolor-3.jpg" />
       <RunningHead
-        brand="Chong"
+        brand="chong"
         meta={
           <>
             Entry III &nbsp;·&nbsp; appendix &nbsp;·&nbsp; filed under{" "}

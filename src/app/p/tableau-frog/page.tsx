@@ -24,7 +24,7 @@ export default function TableauFrogPage() {
     <>
       <PageBackground src="/bg/watercolor-2.jpg" />
       <RunningHead
-        brand="Chong"
+        brand="chong"
         meta={
           <>
             Entry IV &nbsp;·&nbsp; Tableau Frog &nbsp;·&nbsp; filed under{" "}

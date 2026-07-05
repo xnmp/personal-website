@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
-import { Cardo, Crimson_Pro, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { CommandIndex } from "@/components/instrument/CommandIndex";
 import "./globals.css";
 
-const cardo = Cardo({
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
+// Both fonts come from the dotfiles: Inter is the wezterm window-frame font,
+// JetBrains Mono is the terminal face. Same provenance as the colors.
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-cardo",
-  display: "swap",
-});
-
-const crimson = Crimson_Pro({
-  subsets: ["latin"],
-  variable: "--font-crimson",
+  variable: "--font-ui",
   display: "swap",
 });
 
@@ -25,9 +19,9 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://chong.md"),
-  title: "Chong — a notebook of small things",
+  title: "chong — tools, games, small studies",
   description:
-    "A running record of the tools, games, and small studies I keep returning to.",
+    "A session over the things I keep building: a file manager, a query compiler, card-game AIs, and the harnesses that build them.",
 };
 
 // Runs before paint so the stored rice applies without a flash.
@@ -40,7 +34,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${cardo.variable} ${crimson.variable} ${mono.variable}`}
+      className={`${inter.variable} ${mono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />

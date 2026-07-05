@@ -24,7 +24,7 @@ export default function TauriExplorerPage() {
     <>
       <PageBackground src="/bg/watercolor-2.jpg" />
       <RunningHead
-        brand="Chong"
+        brand="chong"
         meta={
           <>
             Entry I &nbsp;·&nbsp; Tauri Explorer &nbsp;·&nbsp; filed under{" "}

@@ -3,13 +3,15 @@ export interface Project {
   number: string; // "№ 01"
   roman: string; // "Entry I"
   title: string;
-  heading: string; // the italic-serif one-liner
+  heading: string; // the one-liner
   href: string; // detail page
   repo?: string;
   tags: string[];
   /** one-line description used by the command index */
   index: string;
   status: "producing" | "complete" | "forthcoming";
+  /** short real numbers for the pane footer, e.g. "1,632 commits" */
+  stats: string[];
 }
 
 export const projects: Project[] = [
@@ -24,6 +26,7 @@ export const projects: Project[] = [
     tags: ["rust", "tauri v2", "svelte 5", "open source"],
     index: "Keyboard-first file manager · 1,632 commits · unit/e2e/perf CI",
     status: "producing",
+    stats: ["1,632 commits", "88 test suites", "10k sort 9.95ms"],
   },
   {
     slug: "lambdaquery",
@@ -36,6 +39,7 @@ export const projects: Project[] = [
     tags: ["python", "compiler", "sql", "semantics"],
     index: "A query compiler — dependent joins, correlated aggregates",
     status: "producing",
+    stats: ["150 tests", "2 bugs caught", "4.7k loc"],
   },
   {
     slug: "zheng-shang-you",
@@ -48,6 +52,7 @@ export const projects: Project[] = [
     tags: ["pytorch", "reinforcement learning", "behaviour cloning"],
     index: "RL + imitation for a 4-player climbing card game",
     status: "producing",
+    stats: ["wr 0.471", "3 generations", "0.15ms/game"],
   },
   {
     slug: "tableau-frog",
@@ -60,6 +65,7 @@ export const projects: Project[] = [
     tags: ["svelte 5", "statistics", "echarts", "ai-native"],
     index: "Variables-first data explorer · contrast lens with FDR correction",
     status: "producing",
+    stats: ["1M rows <100ms", "z-test + FDR", "59 suites"],
   },
   {
     slug: "eskiv",
@@ -72,6 +78,7 @@ export const projects: Project[] = [
     tags: ["python", "pygame", "brute-force", "10,000 games"],
     index: "2016 game, 2026 analysis — how it walks, stands, and dies",
     status: "complete",
+    stats: ["10,000 games", "n_hit = 0", "16.4M steps"],
   },
   {
     slug: "bwai",
@@ -84,6 +91,7 @@ export const projects: Project[] = [
     tags: ["starcraft", "openbw", "behaviour cloning", "c++/pybind11"],
     index: "An agent for the game I once played competitively · 40k fps bridge",
     status: "producing",
+    stats: ["40,000 fps", "92.7% labeled", "stage 2 of 6"],
   },
 ];
 

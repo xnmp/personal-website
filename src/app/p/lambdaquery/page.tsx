@@ -21,7 +21,7 @@ export default function LambdaQueryPage() {
     <>
       <PageBackground src="/bg/watercolor-2.jpg" />
       <RunningHead
-        brand="Chong"
+        brand="chong"
         meta={
           <>
             Entry II &nbsp;·&nbsp; LambdaQuery &nbsp;·&nbsp; filed under{" "}

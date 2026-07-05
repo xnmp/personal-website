@@ -22,7 +22,7 @@ export default function BwaiPage() {
     <>
       <PageBackground src="/bg/watercolor-1.jpg" />
       <RunningHead
-        brand="Chong"
+        brand="chong"
         meta={
           <>
             Entry VI &nbsp;·&nbsp; Brood War &nbsp;·&nbsp; filed under{" "}

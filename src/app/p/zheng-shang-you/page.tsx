@@ -23,7 +23,7 @@ export default function ZsyPage() {
     <>
       <PageBackground src="/bg/watercolor-3.jpg" />
       <RunningHead
-        brand="Chong"
+        brand="chong"
         meta={
           <>
             Entry III &nbsp;·&nbsp; Zheng Shang You &nbsp;·&nbsp; filed under{" "}

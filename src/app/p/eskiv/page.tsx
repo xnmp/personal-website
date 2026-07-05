@@ -24,7 +24,7 @@ export default function EskivPage() {
     <>
       <PageBackground src="/bg/watercolor-3.jpg" />
       <RunningHead
-        brand="Chong"
+        brand="chong"
         meta={
           <>
             Entry V &nbsp;·&nbsp; Eskiv &nbsp;·&nbsp; filed under{" "}
