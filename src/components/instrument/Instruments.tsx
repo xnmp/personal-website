@@ -1,30 +1,37 @@
 "use client";
 
-import { openIndex, toggleTheme } from "./CommandIndex";
+import { useSyncExternalStore } from "react";
+import { Key } from "@/components/rack/Key";
+import { openIndex, riceLabel, toggleTheme, THEME_EVENT } from "./CommandIndex";
+
+function subscribe(cb: () => void) {
+  window.addEventListener(THEME_EVENT, cb);
+  return () => window.removeEventListener(THEME_EVENT, cb);
+}
+const readRice = () => document.documentElement.dataset.rice ?? "paper";
 
 /**
- * The quiet control cluster in the running head: index + desk lamp.
- * Mouse affordance for what the keyboard already does (`/`, `t`).
+ * The masthead's control cluster: index and theme. Mouse affordances for what
+ * the keyboard already does (`/`, `t`). The theme key prints the current
+ * theme's name where there's a keyboard legend beside it, and "theme" on touch
+ * screens (where the legend is hidden and the name alone wouldn't say what the
+ * key does). Its accessible name carries both, so voice control can say
+ * either. Changes are announced from `toggleTheme`.
  */
 export function Instruments() {
+  const rice = useSyncExternalStore(subscribe, readRice, () => "");
   return (
     <span className="instruments">
-      <button
-        type="button"
-        className="instr-btn"
-        onClick={openIndex}
-        aria-label="Open the index of entries"
-      >
-        <span className="k">/</span>index
-      </button>
-      <button
-        type="button"
-        className="instr-btn"
-        onClick={toggleTheme}
-        aria-label="Cycle through my terminal themes"
-      >
-        <span className="k">t</span>theme
-      </button>
+      <Key legend="/" onClick={openIndex} ariaLabel="Open the index of projects">
+        index
+      </Key>
+      <Key legend="t" onClick={toggleTheme} ariaLabel={rice ? `Theme: ${riceLabel(rice)}. Switch theme` : "Switch theme"}>
+        <span className="rice-name fine-only" suppressHydrationWarning>
+          {rice ? riceLabel(rice) : "rice"}
+        </span>
+        <span className="coarse-only">theme</span>
+      </Key>
+      <span className="sr-only" role="status" data-theme-status />
     </span>
   );
 }

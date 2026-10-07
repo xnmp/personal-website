@@ -1,0 +1,6 @@
+Not generated: a frame of the run itself, reduced to the shared 1-bit grid.
+1. YouTube's own thumbnail of the video (XvFl7R0Q5kE, hqdefault.jpg, 480x360)
+   -> art/raw/eskiv/yt-hqdefault.jpg
+2. Crop the game window, invert (dots lit on a dark field):
+   sharp(...).extract({left:84, top:90, width:220, height:184}).greyscale().negate()
+3. node scripts/threshold-mask.mjs <that.png> public/screens/eskiv-run.png 105 6

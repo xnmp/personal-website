@@ -1,0 +1,1 @@
+Edit this image. Pixel-registered edit: the panel's outline, size, position, aspect ratio, chamfers and screw positions must stay exactly where they are. Change only the lighting: the top and left chamfer bevels show a slightly brighter, crisper edge highlight and the upper-left of the face is a touch brighter. Same pure magenta background. No text, nothing else changes.

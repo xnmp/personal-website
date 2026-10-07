@@ -6,11 +6,23 @@ type Props = {
   option: echarts.EChartsOption;
   height?: number;
   ariaLabel?: string;
+  /** For a chart with a timeline: play it only while the chart is on screen,
+   * and never under reduced motion (the option itself must not autoPlay). */
+  playWhileVisible?: boolean;
 };
 
-export function Chart({ option, height = 360, ariaLabel }: Props) {
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+export function Chart({ option, height = 360, ariaLabel, playWhileVisible = false }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const instance = useRef<echarts.ECharts | null>(null);
+  const visible = useRef(false);
+
+  /** start or stop a timeline to match visibility and the motion setting */
+  const syncPlay = (chart: echarts.ECharts) => {
+    if (!playWhileVisible) return;
+    chart.dispatchAction({ type: "timelinePlayChange", playState: visible.current && !reducedMotion() });
+  };
 
   useEffect(() => {
     if (!container.current) return;
@@ -18,15 +30,31 @@ export function Chart({ option, height = 360, ariaLabel }: Props) {
     instance.current = chart;
     const onResize = () => chart.resize();
     window.addEventListener("resize", onResize);
+    const io = playWhileVisible
+      ? new IntersectionObserver(
+          ([entry]) => {
+            visible.current = entry.isIntersecting;
+            syncPlay(chart);
+          },
+          { threshold: 0.4 }
+        )
+      : null;
+    io?.observe(container.current);
     return () => {
       window.removeEventListener("resize", onResize);
+      io?.disconnect();
       chart.dispose();
       instance.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one chart instance per mount
   }, []);
 
   useEffect(() => {
-    instance.current?.setOption(option, { notMerge: true });
+    const chart = instance.current;
+    if (!chart) return;
+    chart.setOption(option, { notMerge: true });
+    syncPlay(chart); // a new option (theme change) resets the timeline's play state
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- syncPlay reads refs only
   }, [option]);
 
   return (

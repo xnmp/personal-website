@@ -1,0 +1,1 @@
+Edit this image. Keep the exact same keycap: identical geometry, size, position, skirt widths, corner radius, lighting direction and the same pure magenta #FF00FF background. Change only the plastic colour to matte dark graphite PBT (#34353a); skirt top/left still lighter, bottom/right darker. No text, nothing else changes.

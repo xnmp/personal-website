@@ -16,19 +16,20 @@ export function EskivQ1() {
     const bandHeight = rows.map((r) => r.p75 - r.p25);
     const counts = rows.map((r) => r.count);
 
-    return {
+    const baseOption: echarts.EChartsOption = {
       textStyle: notebookTextStyle(p),
       backgroundColor: "transparent",
       animationDuration: 1200,
       animationEasing: "cubicOut",
-      grid: { left: 64, right: 64, top: 36, bottom: 52 },
+      // legend above the plot: below it, it collided with the x-axis name
+      grid: { left: 64, right: 64, top: 52, bottom: 52 },
       legend: {
         data: [
           { name: "IQR (p25–p75)", icon: "rect" },
           { name: "mean path ratio", icon: "circle" },
           { name: "samples", icon: "rect" },
         ],
-        bottom: 4,
+        top: 4,
         textStyle: { ...notebookTextStyle(p), fontSize: 12 },
         itemGap: 22,
       },
@@ -64,7 +65,7 @@ export function EskivQ1() {
         nameTextStyle: notebookTextStyle(p),
         axisLine: { lineStyle: { color: p.inkSoft } },
         axisTick: { lineStyle: { color: p.inkSoft } },
-        axisLabel: { color: p.inkSoft },
+        axisLabel: { color: p.inkSoft, hideOverlap: true },
       },
       yAxis: [
         {
@@ -117,7 +118,6 @@ export function EskivQ1() {
           symbol: "none",
           lineStyle: { opacity: 0 },
           silent: true,
-          showInLegend: false,
         },
         {
           name: "IQR (p25–p75)",
@@ -127,6 +127,8 @@ export function EskivQ1() {
           symbol: "none",
           lineStyle: { opacity: 0 },
           areaStyle: { color: p.cyan, opacity: 0.22 },
+          // the legend swatch takes the series colour, not the area's
+          itemStyle: { color: p.cyan, opacity: 0.4 },
           animationDelay: (i: number) => 300 + i * 30,
         },
         {
@@ -146,6 +148,22 @@ export function EskivQ1() {
             lineStyle: { type: "dashed", color: p.inkSoft, opacity: 0.5 },
             data: [{ yAxis: 1 }],
             label: { show: false },
+          },
+        },
+      ],
+    };
+
+    return {
+      baseOption,
+      media: [
+        {
+          query: { maxWidth: 520 },
+          option: {
+            // legend wraps to two rows: keep it clear of the top tick/gridline
+            grid: { left: 52, right: 48, top: 84, bottom: 52 },
+            legend: { top: 4, itemGap: 12, textStyle: { fontSize: 11 } },
+            xAxis: { nameGap: 30, axisLabel: { interval: 2 } },
+            yAxis: [{ nameGap: 34 }, { nameGap: 34 }],
           },
         },
       ],

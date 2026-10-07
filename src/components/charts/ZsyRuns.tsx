@@ -16,7 +16,7 @@ export function ZsyRuns() {
       new Set(runs.flatMap((r) => r.rows.map((row) => row.i)))
     ).sort((a, b) => a - b);
 
-    return {
+    const baseOption: echarts.EChartsOption = {
       textStyle: notebookTextStyle(p),
       backgroundColor: "transparent",
       animationDuration: 1000,
@@ -25,9 +25,15 @@ export function ZsyRuns() {
       legend: {
         data: runs.map((r) => r.name),
         top: 8,
-        textStyle: { ...notebookTextStyle(p), fontSize: 10, fontFamily: "var(--font-mono), monospace" },
-        itemGap: 16,
-        itemWidth: 14,
+        textStyle: {
+          ...notebookTextStyle(p),
+          fontSize: 10,
+          fontFamily: "var(--font-mono), monospace",
+          padding: [0, 0, 0, 6],
+        },
+        itemGap: 24,
+        icon: "roundRect",
+        itemWidth: 12,
         itemHeight: 8,
       },
       tooltip: {
@@ -58,7 +64,7 @@ export function ZsyRuns() {
         nameTextStyle: notebookTextStyle(p),
         axisLine: { lineStyle: { color: p.inkSoft } },
         axisTick: { lineStyle: { color: p.inkSoft } },
-        axisLabel: { color: p.inkSoft },
+        axisLabel: { color: p.inkSoft, hideOverlap: true },
       },
       yAxis: {
         type: "value",
@@ -69,6 +75,7 @@ export function ZsyRuns() {
         axisLine: { show: false },
         axisLabel: {
           color: p.inkSoft,
+          hideOverlap: true,
           formatter: (v: number) => `${Math.round(v * 100)}%`,
         },
         splitLine: { lineStyle: { color: p.ink, opacity: 0.08 } },
@@ -97,12 +104,34 @@ export function ZsyRuns() {
                     fontFamily: "var(--font-mono), monospace",
                     fontSize: 11,
                     formatter: "seat parity",
+                    position: "insideEndBottom",
                   },
                   data: [{ yAxis: 0.25 }],
                 }
               : undefined,
         };
       }),
+    };
+
+    return {
+      baseOption,
+      media: [
+        {
+          query: { maxWidth: 520 },
+          option: {
+            // legend wraps to ~2 rows on a phone: reserve room above the plot
+            grid: { left: 48, right: 12, top: 104, bottom: 44 },
+            legend: {
+              top: 4,
+              itemGap: 26,
+              formatter: (n: string) => n.replace("strategic_", "strat_"),
+              textStyle: { fontSize: 10 },
+            },
+            xAxis: { nameGap: 28, axisLabel: { interval: 3 } },
+            yAxis: { nameGap: 36 },
+          },
+        },
+      ],
     };
   }, [p]);
 

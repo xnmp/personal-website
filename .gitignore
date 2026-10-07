@@ -42,3 +42,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw image generations (regenerable from art/prompts; shipped assets live in public/)
+/art/raw/
+/art/concepts/*.png
+# playwright
+/test-results/
+/playwright-report/

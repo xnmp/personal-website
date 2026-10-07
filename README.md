@@ -1,6 +1,6 @@
 # chong.md
 
-A lab-notebook-style passions site. Each project is one index card and one detail page. Built with Next.js 16 + React 19, hosted on Vercel.
+A rack of the things I build. Each project is a module (an authored faceplate with a lit screen) and one detail page. Built with Next.js 16 + React 19, hosted on Vercel. Art direction: [`art/BRIEF.md`](art/BRIEF.md).
 
 Live: [chong.md](https://chong.md) (pending DNS) · fallback: [personal-website-eight-tan-11.vercel.app](https://personal-website-eight-tan-11.vercel.app)
 
@@ -11,30 +11,15 @@ bun install
 bun run dev      # http://localhost:3000
 bun run build    # production build
 bun run lint
+bun run test     # unit (bun:test)
+bun run e2e      # playwright, reuses the dev server
+bun run og       # re-capture the social cards (dev server must be running)
+bun run kit:check  # every kit state registers with its normal state
 ```
 
 ## Structure
 
-```
-src/
-  app/
-    page.tsx                  # notebook index
-    p/<slug>/page.tsx         # project detail pages
-    layout.tsx                # fonts, metadata
-    globals.css               # all styling
-    icon.png / apple-icon.png # auto-wired favicons
-    opengraph-image.png       # auto-wired OG
-  components/
-    notebook/                 # shared presentational primitives
-    demos/                    # per-project diagrams/demos
-public/bg/                    # watercolor backgrounds
-scripts/resize.mjs            # sharp-based image resizer
-docs/
-  architecture.md             # component layers, styling, palette, adding entries
-  deploy-chong-md.md          # domain + Vercel setup walkthrough
-```
-
-See [`docs/architecture.md`](docs/architecture.md) for the component system, styling strategy, and how to add a new entry.
+See [`docs/architecture.md`](docs/architecture.md) for routes, the two colour-token families, the raster kit and the image pipeline.
 
 ## Deploy
 
@@ -67,7 +52,7 @@ Vercel keeps every build. Dashboard → Deployments → pick a previous green on
 
 ## Image generation
 
-Background art is generated offline via the Gemini image API (model `gemini-3-pro-image-preview`) and committed to the repo. See [`docs/architecture.md`](docs/architecture.md) for the pipeline. Raw outputs go to `/tmp/gen-images/`, resized with `scripts/resize.mjs`, shipped into `public/bg/` or `src/app/`.
+All art is generated offline (Gemini `gemini-3-pro-image-preview`), keyed, dithered and committed under `public/`. Prompts for every shipped asset are in `art/prompts/`. The pipeline is in [`docs/architecture.md`](docs/architecture.md#image-pipeline).
 
 ## License
 

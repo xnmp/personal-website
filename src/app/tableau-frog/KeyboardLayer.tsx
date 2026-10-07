@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { scrollBehavior } from "@/lib/motion";
 
 interface Cmd {
   id: string;
@@ -11,7 +12,7 @@ interface Cmd {
 
 const scrollTo = (id: string) => {
   const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
 };
 
 const SHORTCUTS: Array<{ keys: string[]; label: string }> = [

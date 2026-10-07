@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Screen } from "@/components/rack/Screen";
 
 type Props = {
   figure: string;
@@ -6,12 +7,15 @@ type Props = {
   children: ReactNode;
 };
 
+/** A figure: a printed label above a screen; the content is lit by the rice. */
 export function Plate({ figure, caption, children }: Props) {
   return (
-    <figure className="plate">
+    <div className="plate">
       <span className="plate-figure-label">{figure}</span>
-      <div className="plate-art">{children}</div>
-      {caption ? <figcaption className="plate-caption">{caption}</figcaption> : null}
-    </figure>
+      <Screen label={figure}>
+        <div className="plate-art">{children}</div>
+      </Screen>
+      {caption ? <span className="plate-caption">{caption}</span> : null}
+    </div>
   );
 }

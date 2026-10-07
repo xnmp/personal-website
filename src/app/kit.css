@@ -1,0 +1,580 @@
+/* ==========================================================================
+   THE BENCH: authored raster kit (see art/BRIEF.md)
+   The chassis is a physical object. It has two finishes: anodised graphite
+   for the dark rices and powder-coat for "paper". The rice colours belong to
+   the screens only. Every surface below is a generated bitmap composited with
+   9-slice border-image, so corners and screws never stretch.
+   ========================================================================== */
+
+:root {
+  /* slice insets, measured on the source bitmaps in public/kit */
+  --slice-plate: 96;
+  --slice-bezel: 110;
+  --slice-key: 38;
+
+  --plate-w: 38px; /* rendered corner size of a faceplate */
+  --bezel-w: 30px;
+  --key-w: 15px;
+  --rail-w: 56px;
+  --rack-gap: 10px; /* the seam between two modules */
+  /* a plate's corner screw sits 0.54 of its corner size in from the edge
+     (measured on plate-*-normal); rack-level plates overhang the rails by
+     this much, so those screws land on the rail's hole line */
+  --screw-in: calc(var(--plate-w) * 0.54);
+  --overhang: max(0px, calc(var(--rail-w) / 2 - var(--screw-in)));
+
+  --signal: #f0502a;
+
+  /* chassis: anodised graphite (default and dark rices) */
+  --print: #dcd8d0;
+  --print-soft: #a5a199;
+  --print-faint: #a29e96; /* >= 4.5:1 on the darkest plate */
+  --engrave-lo: rgba(0, 0, 0, 0.6);
+  --engrave-hi: rgba(255, 255, 255, 0.07);
+  --bench: #08090b;
+  --k-bench: url(/kit/bench-dark.webp);
+  --k-rail: url(/kit/rail-dark.webp);
+  --k-back: url(/kit/backpanel-dark.webp);
+  --back-shade: rgba(0, 0, 0, 0.62);
+  --k-plate: url(/kit/plate-dark-normal.webp);
+  --k-plate-hover: url(/kit/plate-dark-hover.webp);
+  --k-plate-pressed: url(/kit/plate-dark-pressed.webp);
+  --k-plate-focus: url(/kit/plate-dark-focus.webp);
+  --k-bezel: url(/kit/bezel-dark.webp);
+  --k-key: url(/kit/key-dark-normal.webp);
+  --k-key-hover: url(/kit/key-dark-hover.webp);
+  --k-key-pressed: url(/kit/key-dark-pressed.webp);
+  --k-key-focus: url(/kit/key-dark-focus.webp);
+  /* each 9-slice's centre material (mean of the art's middle), laid under it */
+  --plate-under: #353534;
+  --bezel-under: #2c3035;
+  --key-ink: #e4e1da;
+  --key-ink-soft: #9c9890;
+}
+
+:root[data-rice="paper"] {
+  --print: #22211e;
+  --print-soft: #57534c;
+  --print-faint: #635f57; /* >= 4.5:1 on the powder-coat */
+  --engrave-lo: rgba(70, 60, 45, 0.28);
+  --engrave-hi: rgba(255, 255, 255, 0.75);
+  --bench: #cfcac1;
+  --k-bench: url(/kit/bench-light.webp);
+  --k-rail: url(/kit/rail-light.webp);
+  --k-back: url(/kit/backpanel-light.webp);
+  --back-shade: rgba(60, 50, 35, 0.32);
+  --k-plate: url(/kit/plate-light-normal.webp);
+  --k-plate-hover: url(/kit/plate-light-hover.webp);
+  --k-plate-pressed: url(/kit/plate-light-pressed.webp);
+  --k-plate-focus: url(/kit/plate-light-focus.webp);
+  --k-bezel: url(/kit/bezel-light.webp);
+  --k-key: url(/kit/key-light-normal.webp);
+  --k-key-hover: url(/kit/key-light-hover.webp);
+  --k-key-pressed: url(/kit/key-light-pressed.webp);
+  --k-key-focus: url(/kit/key-light-focus.webp);
+  --plate-under: #dfd6cb;
+  --bezel-under: #cac3bb;
+  --key-ink: #2a2925;
+  --key-ink-soft: #77736b;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --plate-w: 28px;
+    --bezel-w: 22px;
+    --rail-w: 22px;
+    --rack-gap: 8px;
+  }
+}
+
+/* ---------- bench + rack ---------- */
+
+body:has(.rack) {
+  background: var(--bench);
+  color: var(--print);
+}
+
+/* The backdrop is fixed on its own layer: `background-attachment: fixed` is
+   ignored on iOS and repaints on every scroll elsewhere. */
+.bench {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  /* The art is a prop-free woven mat (scripts/bench-mat.mjs), even in light
+     and tone, so it simply covers the viewport at any aspect. */
+  background: var(--bench) var(--k-bench) center / cover no-repeat;
+}
+
+/* Behind the modules is the rack's own back panel (perforated sheet, built by
+   scripts/build-backpanel.mjs at 2x), recessed: the rails shade it where it
+   meets them, so the seams between modules read as depth, not as the bench. */
+.rack {
+  position: relative;
+  max-width: calc(1180px + 2 * var(--rail-w));
+  margin: 0 auto;
+  padding: 18px var(--rail-w) 64px;
+  min-height: 100vh;
+  background:
+    linear-gradient(
+      90deg,
+      var(--back-shade) var(--rail-w),
+      transparent calc(var(--rail-w) + 48px),
+      transparent calc(100% - var(--rail-w) - 48px),
+      var(--back-shade) calc(100% - var(--rail-w))
+    ),
+    var(--k-back) center top / 112px 96px repeat;
+}
+
+.rack::before,
+.rack::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--rail-w);
+  background: var(--k-rail) center top / var(--rail-w) auto repeat-y;
+  pointer-events: none;
+}
+
+.rack::before {
+  left: 0;
+}
+
+.rack::after {
+  right: 0;
+}
+
+/* Plates mount on the rails: each rack-level plate overhangs the rails so its
+   corner screws sit on the hole line, and the rail shows in the seams between
+   plates, as on a real rack. */
+.rack-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rack-gap);
+  margin: 0 calc(var(--overhang) - var(--rail-w));
+  position: relative;
+  z-index: 1; /* above both rails: ::after would otherwise paint over the right edge */
+}
+
+/* ---------- faceplate (9-slice) ---------- */
+
+/* Any element can wear a faceplate. The three state layers are stacked on
+   pseudo-elements so that a state change swaps authored art (with a short
+   crossfade) and never scales, recrops or filters. */
+.faceplate {
+  position: relative;
+  isolation: isolate;
+  padding: calc(var(--plate-w) + 6px) calc(var(--plate-w) + 14px);
+}
+
+.faceplate::before,
+.faceplate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: var(--plate-w) solid transparent;
+  border-image: var(--k-plate) var(--slice-plate) fill / var(--plate-w) stretch;
+  pointer-events: none;
+}
+
+/* At fractional device pixel ratios (125%/150% Windows scaling, 2.75x
+   phones) the browser snaps the nine slices separately, leaving hairline
+   gaps along the slice lines. Each 9-slice gets its own centre material
+   underneath, inset clear of the chamfered corners, so a gap shows the same
+   material instead of whatever is behind the plate. */
+.faceplate::before {
+  --under-in: calc(var(--plate-w) * 0.3);
+  background: linear-gradient(var(--plate-under), var(--plate-under)) center / calc(100% - 2 * var(--under-in))
+    calc(100% - 2 * var(--under-in)) no-repeat border-box;
+}
+
+.faceplate::after {
+  border-image-source: var(--k-plate-hover);
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.faceplate.is-live:hover::after {
+  opacity: 1;
+}
+
+/* Focus is authored state art: a vermilion line printed inside the bevel,
+   following the chamfers. A plate whose rack stop is a child link (the
+   flagship) shows it too. */
+.faceplate.is-live:focus-visible::after,
+.faceplate:has([data-rack-stop]:focus-visible)::after {
+  border-image-source: var(--k-plate-focus);
+  opacity: 1;
+}
+
+.faceplate.is-live:active::after {
+  border-image-source: var(--k-plate-pressed);
+  opacity: 1;
+  transition-duration: 70ms;
+}
+
+.faceplate.is-live:focus-visible,
+.faceplate [data-rack-stop]:focus-visible {
+  outline: none;
+}
+
+/* ---------- silkscreen + engraving ---------- */
+
+.silk {
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 10.5px;
+  line-height: 1.3;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--print-soft);
+}
+
+.silk b,
+.silk strong {
+  color: var(--print);
+  font-weight: 700;
+}
+
+/* Silkscreen is for labels of a word or three. Anything read as a sentence
+   (instructions, captions) is printed as a note: the body face, sentence
+   case, at caption size. A note may lead with a silkscreened label. */
+.note {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--print-soft);
+}
+
+.note b {
+  color: var(--print);
+  font-weight: 650;
+}
+
+.note .silk {
+  margin-right: 2px;
+}
+
+.engraved {
+  height: 2px;
+  border: 0;
+  margin: 0;
+  background: linear-gradient(var(--engrave-lo) 0 1px, var(--engrave-hi) 1px 2px);
+}
+
+/* ---------- screen (bezel 9-slice over a rice-coloured face) ---------- */
+
+.screen {
+  position: relative;
+  margin: 0;
+  padding: calc(var(--bezel-w) * 0.82);
+  /* the bezel's material under its 9-slice ring (see .faceplate::before) */
+  background: linear-gradient(var(--bezel-under), var(--bezel-under)) center / calc(100% - 10px) calc(100% - 10px)
+    no-repeat;
+}
+
+.screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: var(--bezel-w) solid transparent;
+  border-image: var(--k-bezel) var(--slice-bezel) / var(--bezel-w) stretch;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.screen-face {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  animation: screen-on 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.screen-face.has-art {
+  aspect-ratio: 3 / 2;
+}
+
+/* the 1-bit art is a mask, so the active rice decides its colour */
+.screen-art {
+  position: absolute;
+  inset: 0;
+  background: var(--tone, var(--cyan));
+  -webkit-mask: var(--art) center / cover no-repeat;
+  mask: var(--art) center / cover no-repeat;
+}
+
+/* Glare is a physical reflection, so it keeps its size whatever the screen
+   size and sits up-left toward the light. Each screen offsets it a little
+   (--glare-x/y) so a row of screens doesn't repeat one streak. It is only
+   drawn over decorative art and dark glass, never over content people read. */
+.screen-glass {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: url(/kit/glass.webp) var(--glare-x, -60px) var(--glare-y, -40px) / 420px auto no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.5;
+}
+
+:root[data-rice="paper"] .screen-glass {
+  display: none; /* an additive glare reads as nothing on a near-white face */
+}
+
+/* neighbouring screens catch the light at slightly different angles */
+.shelf > :nth-child(3n + 2) .screen-glass { --glare-x: -110px; --glare-y: -24px; }
+.shelf > :nth-child(3n) .screen-glass { --glare-x: -30px; --glare-y: -70px; }
+.shelf > :nth-child(4n + 1) .screen-glass { --glare-y: -10px; }
+
+[data-tone="rust"] { --tone: var(--rust); }
+[data-tone="amber"] { --tone: var(--amber); }
+[data-tone="olive"] { --tone: var(--olive); }
+[data-tone="cyan"] { --tone: var(--cyan); }
+
+@keyframes screen-on {
+  0% {
+    clip-path: inset(49.5% 0 49.5% 0);
+    opacity: 0.4;
+  }
+  45% {
+    clip-path: inset(49.5% 0 49.5% 0);
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+/* ---------- keycaps (9-slice, three authored states) ---------- */
+
+.key {
+  --kn: var(--k-key);
+  --kh: var(--k-key-hover);
+  --kp: var(--k-key-pressed);
+  --kf: var(--k-key-focus);
+  --ki: var(--key-ink);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 0 18px 2px;
+  border: 0;
+  color: var(--ki);
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 112%;
+  font-weight: 650;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key[data-tone="signal"] {
+  --kn: url(/kit/key-signal-normal.webp);
+  --kh: url(/kit/key-signal-hover.webp);
+  --kp: url(/kit/key-signal-pressed.webp);
+  --kf: url(/kit/key-signal-focus.webp);
+  --ki: #fff6f0;
+}
+
+/* A call to action never runs out of its column: when its label is wider
+   than the column it wraps onto a second line inside the cap (the 9-slice
+   grows with it). In a wrapping row it moves to its own line first. */
+.key[data-size="lg"] {
+  min-height: 54px;
+  max-width: 100%;
+  padding: 0 28px 3px;
+  font-size: 13.5px;
+  white-space: normal;
+  text-align: center;
+  --key-w: 20px;
+}
+
+@media (max-width: 400px) {
+  .key[data-size="lg"] {
+    padding-inline: 22px;
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+  }
+}
+
+.key::before,
+.key::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: var(--key-w) solid transparent;
+  border-image: var(--kn) var(--slice-key) fill / var(--key-w) stretch;
+}
+
+/* A cap's underlay is its own art stretched whole (no slices, so no seams),
+   painted as the cap's own background under the 9-slice. The cap art is
+   424x100 sliced at 38, and caps render at about 2.6 slice widths tall, so
+   the stretched copy's vertical profile (face, lip, shadow) lines up with the
+   9-slice along every slice line: a gap shows the same lip or face. The
+   radius (the art's 12px corner plus a margin, in slice units) keeps the
+   copy's corners inside the cap's however much it is stretched sideways. */
+.key {
+  background: var(--kn) center / 100% 100% no-repeat;
+  border-radius: calc(var(--key-w) * 0.4);
+}
+
+.key::after {
+  border-image-source: var(--kh);
+  opacity: 0;
+  transition: opacity 140ms ease-out;
+}
+
+/* printed caps (kbd) are legends, not controls: they never light on hover */
+a.key:hover::after,
+button.key:hover:not(:disabled)::after {
+  opacity: 1;
+}
+
+.key:focus-visible::after {
+  border-image-source: var(--kf);
+  opacity: 1;
+}
+
+.key:active:not(:disabled)::after,
+.key[data-down="true"]::after {
+  border-image-source: var(--kp);
+  opacity: 1;
+  transition-duration: 0ms;
+}
+
+.key > * {
+  transition: transform 140ms ease-out;
+}
+
+.key:active:not(:disabled) > *,
+.key[data-down="true"] > * {
+  transform: translateY(1px);
+  transition-duration: 70ms;
+}
+
+.key:focus-visible {
+  outline: none;
+}
+
+/* A key that can't be pressed now: unlit. A signal cap goes back to the
+   plain cap (the vermilion means "press me"), its legend prints faint, and
+   it neither lights on hover nor sinks. */
+.key:disabled {
+  --kn: var(--k-key);
+  --ki: var(--key-ink);
+  cursor: not-allowed;
+}
+
+.key:disabled > * {
+  opacity: 0.42;
+}
+
+/* Windows high contrast drops background art, so focus falls back to a ring */
+@media (forced-colors: active) {
+  .key:focus-visible,
+  .faceplate.is-live:focus-visible,
+  .faceplate [data-rack-stop]:focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 3px;
+  }
+}
+
+.key-legend {
+  font-stretch: 100%;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.72;
+}
+
+/* single-character keycap used for shortcut legends (Ctrl, P, /); legends
+   are printed in the chassis face like every other cap */
+.key.cap {
+  min-width: 46px;
+  justify-content: center;
+  padding: 0 12px 2px;
+  font-stretch: 100%;
+  font-weight: 650;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  cursor: default;
+}
+
+/* ---------- LEDs ---------- */
+
+.led {
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  flex: none;
+  background: url(/kit/led-off.webp) center / contain no-repeat;
+  vertical-align: middle;
+  margin-inline: 3px 7px; /* room for the halo beside a label */
+}
+
+.led::after {
+  content: "";
+  position: absolute;
+  inset: -13px;
+  background: var(--glow) center / contain no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+  pointer-events: none;
+}
+
+.led[data-color="green"] { --glow: url(/kit/led-green.jpg); }
+.led[data-color="amber"] { --glow: url(/kit/led-amber.jpg); }
+.led[data-color="signal"] { --glow: url(/kit/led-signal.jpg); }
+
+/* On the light chassis an additive glow vanishes, so the halo is laid over
+   normally from straight-alpha sprites (scripts/glow-alpha.mjs). */
+:root[data-rice="paper"] .led::after { mix-blend-mode: normal; }
+:root[data-rice="paper"] .led[data-color="green"] { --glow: url(/kit/led-green-a.webp); }
+:root[data-rice="paper"] .led[data-color="amber"] { --glow: url(/kit/led-amber-a.webp); }
+:root[data-rice="paper"] .led[data-color="signal"] { --glow: url(/kit/led-signal-a.webp); }
+
+.led[data-on="true"]::after {
+  opacity: 1;
+}
+
+/* pointing at a live module brings its lamp up a notch: the halo widens */
+.faceplate.is-live:hover .led[data-on="true"]::after,
+.faceplate.is-live:focus-visible .led[data-on="true"]::after {
+  inset: -18px;
+}
+
+.led[data-blink="true"]::after {
+  animation: led-blink 1.6s steps(1, end) infinite;
+}
+
+/* A short off-beat, so the lamp reads as lit at a glance. It toggles
+   visibility rather than opacity: an opacity animation promotes the glow to
+   its own compositor layer, which can drop its screen blend. */
+@keyframes led-blink {
+  0%, 84% { visibility: visible; }
+  85%, 100% { visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-face {
+    animation: none;
+  }
+  .led[data-blink="true"]::after {
+    animation: none;
+    opacity: 1;
+  }
+}

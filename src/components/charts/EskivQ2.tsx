@@ -69,7 +69,7 @@ export function EskivQ2() {
       timeline: {
         axisType: "category",
         data: buckets.map((b) => b.label),
-        autoPlay: true,
+        autoPlay: false, // the Chart plays it while on screen (playWhileVisible)
         playInterval: 1400,
         loop: true,
         symbol: "none",
@@ -78,6 +78,9 @@ export function EskivQ2() {
           color: p.inkSoft,
           fontSize: 11,
           fontFamily: "var(--font-mono), monospace",
+          // each tick names where its bucket starts; the title gives the full range,
+          // so neighbouring labels never run together ("100-149150-199")
+          formatter: (s: string | number) => String(s).split(/[-–]/)[0],
         },
         itemStyle: { color: p.inkSoft, opacity: 0.4 },
         checkpointStyle: {
@@ -133,5 +136,5 @@ export function EskivQ2() {
     };
   }, [p]);
 
-  return <Chart option={option} height={560} ariaLabel="Player position density by score" />;
+  return <Chart option={option} height={560} ariaLabel="Player position density by score" playWhileVisible />;
 }

@@ -1,11 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { projects } from "@/data/projects";
+import { isEditable, modalOpen } from "@/lib/page-keys";
+import { rank } from "@/lib/search";
+import { Key } from "@/components/rack/Key";
+import { Screen } from "@/components/rack/Screen";
 
 const OPEN_EVENT = "nb-open-index";
-const THEME_EVENT = "nb-themechange";
+export const THEME_EVENT = "nb-themechange";
 
 export function openIndex() {
   window.dispatchEvent(new Event(OPEN_EVENT));
@@ -13,6 +17,9 @@ export function openIndex() {
 
 /** The rices, in cycle order — generated into rice.css from the dotfiles. */
 export const RICES = ["paper", "horizon", "cosmic-dusk", "rapture"] as const;
+
+/** A rice's name as people read it: "cosmic-dusk" is "cosmic dusk". */
+export const riceLabel = (rice: string) => rice.replace(/-/g, " ");
 
 export function toggleTheme() {
   const root = document.documentElement;
@@ -25,80 +32,82 @@ export function toggleTheme() {
     /* private mode */
   }
   window.dispatchEvent(new Event(THEME_EVENT));
-}
-
-function isEditable(el: EventTarget | null): boolean {
-  if (!(el instanceof HTMLElement)) return false;
-  return (
-    el.isContentEditable ||
-    el.tagName === "INPUT" ||
-    el.tagName === "TEXTAREA" ||
-    el.tagName === "SELECT"
-  );
+  // a polite announcement; the region is empty until the first change, so
+  // nothing is read out on load
+  const status = document.querySelector("[data-theme-status]");
+  if (status) status.textContent = `Theme: ${riceLabel(next)}`;
 }
 
 /**
- * The notebook's index: a command-palette-style overlay listing every entry.
- * Open with `/` or Ctrl/Cmd+K. `t` turns the desk lamp (theme) on and off.
+ * The index: a command-palette-style list of every project, on a native modal
+ * <dialog> (focus stays inside it and the page behind is inert; Esc closes it
+ * and focus goes back to wherever it was). Open with `/` or Ctrl/Cmd+K; `t`
+ * outside a text field cycles the theme.
  */
 export function CommandIndex() {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [cursor, setCursor] = useState(0);
+  const dialog = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  /** where focus was when the index opened; closing hands it back */
+  const returnTo = useRef<HTMLElement | null>(null);
 
-  const matches = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return projects;
-    return projects.filter((p) =>
-      [p.title, p.index, p.number, ...p.tags].join(" ").toLowerCase().includes(q)
-    );
-  }, [query]);
-
-  const close = useCallback(() => {
-    setOpen(false);
-    setQuery("");
-    setCursor(0);
+  const show = useCallback(() => {
+    const d = dialog.current;
+    if (!d || d.open) return;
+    if (document.activeElement instanceof HTMLElement && document.activeElement !== document.body) {
+      returnTo.current = document.activeElement;
+    }
+    d.showModal();
+    inputRef.current?.focus();
   }, []);
 
+  const close = useCallback(() => dialog.current?.close(), []);
+
+  /** the dialog's own close event: Esc, the Close key, a backdrop click or a navigation */
+  const onClosed = () => {
+    setQuery("");
+    setCursor(0);
+    if (returnTo.current?.isConnected) returnTo.current.focus();
+    returnTo.current = null;
+  };
+
+  const matches = useMemo(() => rank(projects, query), [query]);
+  const listId = useId();
+  const optionId = (slug: string) => `${listId}-${slug}`;
+  const active = matches[cursor];
+
+  // page-wide shortcuts: a subscription to the window's keys, not state sync
   useEffect(() => {
     const onGlobalKey = (e: KeyboardEvent) => {
+      // another modal (the screenshot viewer) has the page: its keys, not ours
+      if (modalOpen(dialog.current)) return;
       if ((e.key === "k" || e.key === "K") && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
-        setOpen((v) => !v);
+        if (dialog.current?.open) close();
+        else show();
         return;
       }
       if (isEditable(e.target) || e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === "/") {
         e.preventDefault();
-        setOpen(true);
+        show();
       } else if (e.key === "t") {
         toggleTheme();
-      } else if (e.key === "Escape") {
-        close();
       }
     };
-    const onOpenEvent = () => setOpen(true);
+    const onOpenEvent = () => show();
     window.addEventListener("keydown", onGlobalKey);
     window.addEventListener(OPEN_EVENT, onOpenEvent);
     return () => {
       window.removeEventListener("keydown", onGlobalKey);
       window.removeEventListener(OPEN_EVENT, onOpenEvent);
     };
-  }, [close]);
-
-  useEffect(() => {
-    if (open) inputRef.current?.focus();
-  }, [open]);
-
-  useEffect(() => {
-    setCursor(0);
-  }, [query]);
-
-  if (!open) return null;
+  }, [close, show]);
 
   const go = (href: string) => {
+    returnTo.current = null; // the next page takes focus, not the opener
     close();
     router.push(href);
   };
@@ -113,44 +122,51 @@ export function CommandIndex() {
     } else if (e.key === "Enter" && matches[cursor]) {
       e.preventDefault();
       go(matches[cursor].href);
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      close();
     }
   };
 
   return (
-    <div
+    <dialog
+      ref={dialog}
       className="ci-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Index of entries"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) close();
-      }}
+      aria-label="Index of projects"
+      onClose={onClosed}
+      // the dialog box fills the viewport; a click on it (not the panel) is a click outside
+      onClick={(e) => e.target === e.currentTarget && close()}
     >
       <div className="ci-panel" onKeyDown={onKey}>
+        <Screen>
         <div className="ci-head">
-          <span>Index of entries</span>
+          <span>Index</span>
           <span>{matches.length} / {projects.length}</span>
         </div>
+        {/* combobox pattern: focus stays in the input, and the option the
+            arrows select is announced through aria-activedescendant */}
         <input
           ref={inputRef}
           className="ci-input"
+          role="combobox"
+          aria-expanded="true"
+          aria-controls={listId}
+          aria-autocomplete="list"
+          aria-activedescendant={active ? optionId(active.slug) : undefined}
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search the notebook…"
-          aria-label="Search entries"
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setCursor(0);
+          }}
+          placeholder="search projects, tags…"
+          aria-label="Search projects"
         />
-        <ul className="ci-list" role="listbox">
-          {matches.length === 0 && (
-            <li className="ci-empty">
-              Nothing filed under that. Try a tag — rust, compiler, starcraft…
-            </li>
-          )}
+        {/* a listbox may only hold options, so the empty state sits beside it */}
+        <p className="ci-empty" role="status">
+          {matches.length === 0 ? "Nothing filed under that. Try a tag — rust, compiler, starcraft…" : ""}
+        </p>
+        <ul className="ci-list" role="listbox" id={listId} aria-label="Projects">
           {matches.map((p, i) => (
             <li
               key={p.slug}
+              id={optionId(p.slug)}
               className="ci-item"
               role="option"
               aria-selected={i === cursor}
@@ -164,12 +180,16 @@ export function CommandIndex() {
           ))}
         </ul>
         <div className="ci-foot">
-          <span><span className="k">↑↓</span> move</span>
-          <span><span className="k">↵</span> open</span>
-          <span><span className="k">esc</span> close</span>
-          <span><span className="k">t</span> theme</span>
+          <span className="fine-only"><span className="k">↑↓</span> move</span>
+          <span className="fine-only"><span className="k">↵</span> open</span>
+          <span className="fine-only"><span className="k">esc</span> close</span>
+          <span className="coarse-only">Tap a project to open it</span>
+          <Key onClick={close} className="coarse-only ci-close">
+            Close
+          </Key>
         </div>
+        </Screen>
       </div>
-    </div>
+    </dialog>
   );
 }

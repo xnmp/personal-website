@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "./rice.css";
+@import "./kit.css";
+@import "./zsy.css";
 
 @theme inline {
   --color-paper: var(--paper);
@@ -11,29 +13,29 @@
   --color-rust: var(--rust);
   --color-cyan: var(--cyan);
   --color-rule: var(--rule);
-
-  --font-ui-token: var(--font-ui);
-  --font-body: var(--font-ui);
-  --font-serif: var(--font-ui);
 }
 
-/* Color tokens live in rice.css, generated from the author's dotfiles. */
+/* Two token families:
+   - rice.css (--paper, --ink, --cyan …) is the SCREEN palette, from the dotfiles.
+   - kit.css (--print, --print-soft, --signal …) is the CHASSIS: ink printed on
+     the faceplates. Text on a plate uses --print*; text in a screen uses the rice. */
 :root {
-  --gutter: clamp(20px, 5.5vw, 80px);
+  --font-ui: var(--font-print);
+  --measure: 72ch;
 }
 
 * {
   box-sizing: border-box;
 }
 
-/* grid/flex children may shrink below content width — long code lines
+/* grid/flex children may shrink below content width; long code lines
    scroll inside their panel instead of widening the page */
-.entry > *,
 .section > *,
 .detail-hero > *,
 .hero > *,
 .code-duet > *,
-.plate > * {
+.shelf > *,
+.flagship > * {
   min-width: 0;
 }
 
@@ -43,45 +45,52 @@ video {
   max-width: 100%;
 }
 
-/* Hyprland rounding=3 → the whole site's corner radius */
-.plate,
-.plate-art,
-.tag,
-.openq,
-.instr-btn,
-.zsy-btn,
-.zsy-opp,
-.zsy-trick,
-.ci-panel,
-.features,
-.code-duet {
-  border-radius: var(--radius);
-}
-
 html,
 body {
   margin: 0;
   padding: 0;
 }
 
+/* no one-word last lines in running text (Chromium; elsewhere it is ignored) */
+p {
+  text-wrap: pretty;
+}
+
+/* standalone routes (outside the rack) get the screen palette as their page */
 body {
-  font-family: var(--font-ui), system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-print), system-ui, sans-serif;
   font-size: 16.5px;
   line-height: 1.6;
-  color: var(--ink);
-  background: var(--paper);
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  /* unhinted advances: hinted Archivo at small sizes on HiDPI Chromium/Linux
+     opens gaps around "t" ("Shif t+F") */
+  text-rendering: geometricPrecision;
+  font-kerning: normal;
   position: relative;
   min-height: 100vh;
   overflow-x: clip;
-  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 :focus-visible {
-  outline: 2px solid var(--cyan);
+  outline: 2px solid var(--signal);
   outline-offset: 3px;
-  border-radius: 2px;
+}
+
+/* Text links on the chassis: focus prints a signal underline under the words,
+   like the plate's focus line, instead of a browser ring. */
+a:not(.key):not([data-rack-stop]):not(.shot-link):not(.skip-link):focus-visible {
+  outline: none;
+  color: var(--print);
+  text-decoration: underline 2px var(--signal);
+  text-underline-offset: 5px;
+}
+
+@media (forced-colors: active) {
+  a:not(.key):focus-visible {
+    outline: 2px solid CanvasText;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -93,565 +102,756 @@ body {
   }
 }
 
-code {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.86em;
-  padding: 1px 6px;
-  background: var(--code-bg);
-  border: 1px solid var(--code-border);
-  border-radius: 3px;
-  color: var(--cyan);
-  white-space: nowrap;
+a {
+  color: inherit;
 }
 
-/* ---------- running head ---------- */
+/* inline code is a tiny lit LCD set into the plate */
+code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.84em;
+  padding: 1px 6px 2px;
+  background: var(--paper);
+  color: var(--cyan);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.55),
+    0 1px 0 var(--engrave-hi);
+  white-space: nowrap;
+  margin: 0 0.12em;
+}
+
+pre code {
+  margin: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  white-space: inherit;
+}
+
+/* long paths may wrap, each line keeping its own chip; short chords never split */
+.section p code,
+.section li code,
+.plate-caption code,
+.feat code,
+.openq code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+
+.screen-face code {
+  box-shadow: none;
+  background: var(--code-bg);
+}
+
+/* Printed links: ink with a signal underline, the one mechanical accent. */
+.section a:not(.key),
+.detail-hero a:not(.key),
+.hero a:not(.key),
+.colophon a:not(.key),
+.openq a:not(.key),
+.blank-leaf a:not(.key),
+.statusline a:not(.key) {
+  color: var(--print);
+  text-decoration: underline;
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  transition: color 120ms ease-out;
+}
+
+.section a:not(.key):hover,
+.detail-hero a:not(.key):hover,
+.hero a:not(.key):hover,
+.colophon a:not(.key):hover,
+.openq a:not(.key):hover,
+.blank-leaf a:not(.key):hover,
+.statusline a:not(.key):hover {
+  color: var(--signal);
+}
+
+/* ---------- plates on page-level blocks ----------
+   The shared primitives (sections, heroes, colophons …) are each a faceplate.
+   Same 9-slice as .faceplate, so pages written before the rack inherit it. */
+
+.running-head,
+.hero,
+.detail-hero,
+.section,
+.colophon,
+.folio,
+.blank-leaf,
+.statusline {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero::before,
+.detail-hero::before,
+.section::before,
+.colophon::before,
+.folio::before,
+.blank-leaf::before,
+.statusline::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: var(--plate-w) solid transparent;
+  border-image: var(--k-plate) var(--slice-plate) fill / var(--plate-w) stretch;
+  /* the plate's material under its slices; see .faceplate::before in kit.css */
+  --under-in: calc(var(--plate-w) * 0.3);
+  background: linear-gradient(var(--plate-under), var(--plate-under)) center / calc(100% - 2 * var(--under-in))
+    calc(100% - 2 * var(--under-in)) no-repeat border-box;
+  pointer-events: none;
+}
+
+/* ---------- masthead ---------- */
 
 .running-head {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: clamp(24px, 4.5vw, 56px) var(--gutter) 22px;
+  min-height: calc(var(--plate-w) * 2 + 14px);
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px 24px;
+  align-items: center;
+  gap: 14px 22px;
   flex-wrap: wrap;
-  /* the Hyprland active-border gradient, worn as the site's one signature */
-  border-bottom: var(--border-w) solid transparent;
-  border-image: var(--active-grad) 1;
+  padding: calc(var(--plate-w) * 0.62) calc(var(--plate-w) + 12px);
 }
 
 .brand {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 15px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 800;
+  font-size: 19px;
   letter-spacing: 0.02em;
+  text-transform: lowercase;
 }
 
 .brand a {
-  color: inherit;
+  color: var(--print);
   text-decoration: none;
 }
 
-.head-right {
-  display: flex;
-  align-items: baseline;
-  gap: 18px;
+.meta {
+  flex: 1;
   min-width: 0;
 }
 
-.meta {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  color: var(--ink-soft);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
 .meta .filed {
-  color: var(--rust);
+  color: var(--print);
 }
-
-/* quiet instrument cluster: theme toggle + index hint */
 
 .instruments {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  margin-left: auto;
 }
 
-.instr-btn {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  background: transparent;
-  border: 1px solid var(--rule);
-  padding: 3px 8px;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+.rice-name {
+  display: inline-block;
+  min-width: 9ch;
+  text-align: left;
 }
 
-.instr-btn:hover {
-  color: var(--rust);
-  border-color: var(--rust);
-}
-
-.instr-btn .k {
-  border: 1px solid var(--rule);
-  background: var(--paper-warm);
-  padding: 0 4px;
-  border-radius: 2px;
-  margin-right: 5px;
-}
-
-@media (max-width: 640px) {
+@media (max-width: 720px) {
   .meta {
     display: none;
   }
 }
 
-/* ---------- hero ---------- */
+/* On a phone the brand and both keys share one row, with the page links
+   under them, so the masthead takes as little of the first screen as it can. */
+@media (max-width: 600px) {
+  .running-head {
+    gap: 6px 12px;
+  }
+
+  .instruments {
+    gap: 6px;
+  }
+}
+
+/* ---------- home hero ---------- */
 
 .hero {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: clamp(32px, 5vw, 64px) var(--gutter) 28px;
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: clamp(28px, 4vw, 56px);
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: end;
+  padding: calc(var(--plate-w) + 30px) calc(var(--plate-w) + 22px) calc(var(--plate-w) + 18px);
 }
 
 .title {
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-weight: 750;
-  font-size: clamp(34px, 5.5vw, 60px);
-  line-height: 1.04;
-  letter-spacing: -0.03em;
-  margin: 0 0 24px;
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-weight: 760;
+  font-size: clamp(36px, 5.6vw, 68px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  margin: 18px 0 22px;
   text-wrap: balance;
+  color: var(--print);
 }
 
-.title em {
-  font-style: normal;
-  font-weight: 750;
-  color: var(--cyan);
+.title .soft {
+  color: var(--print-soft);
 }
 
 .lede {
-  font-size: clamp(18px, 2.2vw, 22px);
-  line-height: 1.5;
-  margin: 0 0 24px;
+  font-size: clamp(17px, 1.8vw, 19.5px);
+  line-height: 1.55;
+  margin: 0;
   max-width: 54ch;
+  color: var(--print-soft);
 }
 
 .lede b {
+  color: var(--print);
   font-weight: 600;
-  color: var(--rust);
 }
 
-.byline {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 12px;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-}
-
-.byline a {
-  color: var(--cyan);
-  text-decoration: none;
-  border-bottom: 1px dotted var(--cyan);
-  padding-bottom: 1px;
-}
-
-.byline a:hover {
-  color: var(--rust);
-  border-bottom-color: var(--rust);
+.hero-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  /* in one column the readout would stretch the full plate, leaving its
+     labels a screen's width from their values */
+  max-width: 420px;
 }
 
 .margin-note {
-  border-left: 2px dashed var(--rule);
-  padding: 4px 0 0 20px;
-  font-size: 15px;
-  color: var(--ink-soft);
-  font-style: italic;
-  line-height: 1.5;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--print-soft);
 }
 
-.margin-note h4 {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-weight: 500;
-  font-size: 10px;
-  letter-spacing: 0.18em;
+.margin-note h2 {
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--olive);
-  margin: 0 0 10px;
-  font-style: normal;
+  color: var(--print-faint);
+  margin: 0 0 8px;
 }
 
 @media (max-width: 900px) {
   .hero {
     grid-template-columns: 1fr;
+    align-items: start;
   }
 }
 
-/* ---------- divider ---------- */
+/* ---------- divider: a 1U blanking panel silkscreened with the shelf's name ---------- */
 
 .divider {
-  max-width: 1180px;
-  margin: 44px auto 0;
-  padding: 0 var(--gutter);
+  min-height: calc(var(--plate-w) * 2 + 14px);
   display: flex;
   align-items: center;
-  gap: 18px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  border-top: 1px solid var(--rule);
-}
-
-/* ---------- entry ---------- */
-
-.entry {
-  max-width: 1180px;
-  margin: 28px auto 0;
-  padding: 0 var(--gutter);
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: clamp(28px, 4vw, 56px);
-  align-items: start;
-}
-
-.entry-label {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--olive);
-}
-
-.entry-label .num {
-  color: var(--rust);
-}
-
-.entry h2 {
-  font-family: var(--font-ui), system-ui, sans-serif;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: calc(var(--plate-w) * 0.62) calc(var(--plate-w) + 14px);
+  word-spacing: 0.1em;
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 125%;
   font-weight: 700;
-  font-size: clamp(30px, 4vw, 40px);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--print);
+}
+
+.shelf-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--print-soft);
+}
+
+/* ---------- shelves of modules (home) ---------- */
+
+.shelf-label {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.shelf-label .shelf-note {
+  color: var(--print-soft);
+  font-weight: 500;
+  font-stretch: 100%;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-size: 12px;
+}
+
+/* Six-column rack. Modules are 2U wide; when a shelf's last row would hold
+   only two, they widen to 3U each so the rack never has an empty bay. */
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--rack-gap);
+}
+
+.shelf > * {
+  grid-column: span 2;
+}
+
+.shelf > :nth-last-child(2):nth-child(3n + 1),
+.shelf > :last-child:nth-child(3n + 2) {
+  grid-column: span 3;
+}
+
+.shelf > :last-child:nth-child(3n + 1) {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1020px) {
+  .shelf > *,
+  .shelf > :nth-last-child(2):nth-child(3n + 1),
+  .shelf > :last-child:nth-child(3n + 2) {
+    grid-column: span 3;
+  }
+  .shelf > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 680px) {
+  .shelf > *,
+  .shelf > :nth-last-child(2):nth-child(3n + 1),
+  .shelf > :last-child:nth-child(3n + 2),
+  .shelf > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+.module {
+  container-type: inline-size;
+  display: block;
+  padding: calc(var(--plate-w) * 0.75) calc(var(--plate-w) * 0.75 + 4px) calc(var(--plate-w) * 0.8);
+  text-decoration: none;
+  color: var(--print);
+}
+
+.module-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+.module-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 6px;
+}
+
+.module-num {
+  color: var(--print);
+  font-weight: 800;
+}
+
+.module-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px; /* clear of the lamp's halo */
+}
+
+.module-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 6px;
+}
+
+.module-title {
+  font-stretch: 112%;
+  font-weight: 750;
+  font-size: 22px;
+  letter-spacing: -0.01em;
   line-height: 1.1;
-  letter-spacing: -0.015em;
-  margin: 10px 0 16px;
+}
+
+.module-heading {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--print-soft);
+  text-wrap: pretty;
+}
+
+.module .engraved {
+  margin: auto 6px 0;
+  flex: none;
+}
+
+.module-body {
+  margin-bottom: 4px;
+}
+
+/* a widened module lays its screen beside the copy */
+@container (min-width: 440px) {
+  .module-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto auto;
+    column-gap: 24px;
+    row-gap: 12px;
+  }
+  .module-inner > .module-top {
+    grid-column: 1 / -1;
+  }
+  .module-inner > .screen {
+    grid-column: 1;
+    grid-row: 2 / 5;
+  }
+  .module-inner > .module-body {
+    grid-column: 2;
+    align-self: start;
+  }
+  .module-inner > .module-body .module-title {
+    font-size: 26px;
+  }
+  .module-inner > .engraved,
+  .module-inner > .module-stats {
+    grid-column: 2;
+  }
+}
+
+.module-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding: 0 6px;
+  font-size: 11px;
+}
+
+
+/* ---------- flagship module (home) ---------- */
+
+.flagship {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+  gap: clamp(20px, 3.5vw, 48px);
+  align-items: center;
+  padding: calc(var(--plate-w) + 18px) calc(var(--plate-w) + 18px);
+  text-decoration: none;
+  color: var(--print);
+}
+
+.flagship-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flagship h2 {
+  font-stretch: 100%;
+  font-weight: 780;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  margin: 0;
   text-wrap: balance;
 }
 
-.entry p {
-  margin: 0 0 12px;
+.flagship p {
+  margin: 0;
+  color: var(--print-soft);
   font-size: 17px;
-  line-height: 1.55;
-  color: var(--ink);
-  max-width: 34ch;
+  max-width: 46ch;
 }
 
-@media (max-width: 900px) {
-  .entry {
+.flagship .keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+@media (max-width: 860px) {
+  .flagship {
     grid-template-columns: 1fr;
   }
-
-  .entry p {
-    max-width: 60ch;
+  .flagship .screen {
+    order: -1;
   }
 }
+
+/* ---------- tags: printed part numbers ---------- */
 
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px 14px;
   margin-top: 18px;
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--print-soft);
 }
 
-.tag {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  padding: 3px 9px;
-  border: 1px solid var(--rule);
-  color: var(--ink-soft);
-  background: var(--paper-warm);
-  letter-spacing: 0.05em;
+.tag::before {
+  content: "■ ";
+  color: var(--print-faint);
 }
+
+/* ---------- open question: an amber lamp and a printed label ---------- */
 
 .openq {
-  margin-top: 28px;
-  padding: 14px 18px;
-  background: rgba(181, 137, 0, 0.08);
-  border-left: 3px solid var(--amber);
-  font-style: italic;
-  font-size: 15px;
-  color: var(--ink);
+  margin-top: 22px;
+  padding: 14px 0 2px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--print);
+  background: linear-gradient(var(--engrave-lo) 0 1px, var(--engrave-hi) 1px 2px) top / 100% 2px no-repeat;
 }
 
 .openq strong {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  color: var(--amber);
-  text-transform: uppercase;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 6px;
+  font-stretch: 125%;
+  font-weight: 650;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--print);
 }
 
-/* ---------- plate ---------- */
+/* ---------- figure plate: a screen with a printed label ---------- */
 
 .plate {
-  background: var(--paper-warm);
-  border: 1px solid var(--rule);
-  padding: clamp(16px, 2.5vw, 28px);
-  position: relative;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .plate-figure-label {
-  position: absolute;
-  top: -10px;
-  left: 24px;
-  background: var(--paper);
-  padding: 0 10px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  color: var(--rust);
-  max-width: calc(100% - 34px);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.plate-art {
-  border: 1px solid var(--rule);
-  background: var(--paper);
-  overflow: hidden;
-}
-
-.plate-art-panes {
-  aspect-ratio: 2.2 / 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  background-color: var(--rule);
-}
-
-.pane {
-  background: var(--paper);
-  padding: 16px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 12px;
-  color: var(--ink-soft);
-  position: relative;
-}
-
-.pane .path {
-  font-size: 10px;
-  color: var(--amber);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.pane .row {
-  padding: 2px 6px;
-}
-
-.pane .row.sel {
-  background: rgba(42, 161, 152, 0.18);
-  color: var(--ink);
-}
-
-.pane .row .ic {
-  color: var(--amber);
-  margin-right: 8px;
-}
-
-.palette {
-  position: absolute;
-  top: 48%;
-  left: 26%;
-  right: 6%;
-  background: var(--paper);
-  border: 1.5px solid var(--ink);
-  padding: 10px 12px;
+  text-wrap: balance;
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 600;
   font-size: 11px;
-  box-shadow: 0 10px 30px -10px var(--shadow);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--print-soft);
+  padding-left: 4px;
 }
 
-.palette .q {
-  color: var(--ink);
-  font-weight: 500;
+.plate .screen-face {
+  padding: clamp(10px, 1.6vw, 18px);
 }
 
-.palette .hint {
-  color: var(--ink-soft);
-  margin-top: 4px;
-  font-size: 10px;
-  letter-spacing: 0.06em;
+/* a screenshot fills the glass edge to edge, on a dark field */
+.plate .screen-face:has(> .plate-art > img:only-child) {
+  padding: 0;
+  background: #07080a;
 }
 
-.palette .hint .k {
-  background: var(--paper-warm);
-  border: 1px solid var(--rule);
-  padding: 1px 5px;
-  margin-right: 4px;
-  border-radius: 2px;
-  font-family: inherit;
+/* glass edge: occlusion from the bezel, so bright captures sit below it */
+.plate .screen-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+    inset 8px 10px 22px -10px rgba(0, 0, 0, 0.7),
+    inset 0 0 60px rgba(0, 0, 0, 0.18);
+}
+
+.plate-art pre {
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Code that runs past the glass says so: a shade at whichever edge has more
+   to scroll to. The face-coloured covers scroll with the text and hide the
+   shade once that edge is reached (background-attachment: local). */
+.plate-art pre,
+.code-panel pre {
+  background:
+    linear-gradient(to right, var(--paper) 40%, transparent) left / 28px 100% no-repeat local,
+    linear-gradient(to left, var(--paper) 40%, transparent) right / 28px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, color-mix(in srgb, var(--ink) 38%, transparent), transparent) left / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, color-mix(in srgb, var(--ink) 38%, transparent), transparent) right / 12px 100% no-repeat scroll;
+}
+
+/* A code duet inside a figure already sits behind the figure's glass. */
+.plate-art > .code-duet {
+  padding: 0;
+}
+
+.plate-art > .code-duet::after {
+  display: none;
+}
+
+/* On phones the glass gives the code nearly all of the plate. */
+@media (max-width: 600px) {
+  .plate .screen {
+    --bezel-w: 14px;
+  }
+
+  .plate .screen-face {
+    padding: 8px;
+  }
+
+  .plate-art pre,
+  .code-panel pre {
+    font-size: 12px;
+  }
+
+  .plate-art .code-panel {
+    padding: 10px 8px;
+  }
 }
 
 .plate-caption {
-  margin-top: 16px;
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-style: italic;
-  font-size: 15px;
-  color: var(--ink-soft);
+  overflow-wrap: anywhere; /* captions cite long repo paths */
+  font-size: 14px;
+  color: var(--print-soft);
+  padding-left: 4px;
 }
 
-/* ---------- features ---------- */
+/* ---------- features: engraved grid on the plate ---------- */
 
 .features {
-  margin-top: 36px;
+  margin-top: 30px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 1px;
-  background: var(--rule);
-  border: 1px solid var(--rule);
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 22px 28px;
 }
 
 .feat {
-  padding: 20px 18px;
-  background: var(--paper);
+  padding-top: 14px;
+  background: linear-gradient(var(--engrave-lo) 0 1px, var(--engrave-hi) 1px 2px) top / 100% 2px no-repeat;
 }
 
-.feat h5 {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  color: var(--cyan);
+.feat h3 {
+  font-stretch: 125%;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--print);
   text-transform: uppercase;
   margin: 0 0 8px;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .feat p {
   margin: 0;
   font-size: 15px;
-  line-height: 1.45;
-  max-width: none;
+  line-height: 1.5;
+  color: var(--print-soft);
 }
 
-/* ---------- entry link ---------- */
+/* ---------- masthead links (detail pages) ---------- */
 
-.entry-link {
+@media (max-width: 1100px) {
+  .running-head .meta {
+    display: none;
+  }
+}
+
+/* after the instruments in the DOM too, so Tab follows what you see */
+.head-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+}
+
+.head-nav a {
+  color: var(--print);
   text-decoration: none;
-  color: inherit;
-  display: block;
+  transition: color 120ms ease-out;
 }
 
-.entry-link h2 {
-  transition: color 0.2s;
-}
-
-.entry-link:hover h2 {
-  color: var(--rust);
-}
-
-.entry-link .plate {
-  transition: box-shadow 0.25s, transform 0.25s;
-}
-
-.entry-link:hover .plate {
-  box-shadow: 0 14px 32px -16px var(--shadow);
-  transform: translateY(-2px);
-}
-
-.read-more {
-  margin-top: 18px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--cyan);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  text-decoration: none;
-  border-bottom: 1px dotted var(--cyan);
-  padding-bottom: 1px;
-}
-
-.read-more:hover {
-  color: var(--rust);
-  border-bottom-color: var(--rust);
-}
-
-/* ---------- back link ---------- */
-
-.back-link {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 12px var(--gutter) 0;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.back-link a {
-  color: var(--ink-soft);
-  text-decoration: none;
-  border-bottom: 1px dotted var(--ink-soft);
-}
-
-.back-link a:hover {
-  color: var(--rust);
-  border-bottom-color: var(--rust);
+.head-nav a:hover {
+  color: var(--signal);
 }
 
 /* ---------- detail page ---------- */
 
 .detail-hero {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 48px var(--gutter) 16px;
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: clamp(28px, 4vw, 56px);
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+  padding: calc(var(--plate-w) + 32px) calc(var(--plate-w) + 22px) calc(var(--plate-w) + 22px);
 }
 
-.detail-hero .kicker {
-  font-family: var(--font-mono), ui-monospace, monospace;
+.kicker {
+  text-wrap: balance;
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 650;
   font-size: 11px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--rust);
-  margin-bottom: 20px;
+  color: var(--print-soft);
+  margin-bottom: 18px;
+}
+
+.detail-hero h1,
+.hero h1,
+.flagship h2,
+.launch-hero h1 {
+  word-spacing: 0.08em;
+}
+
+/* long words in display sizes on a phone: hyphenate, never overflow */
+.detail-hero h1,
+.section h2 {
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 .detail-hero h1 {
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-weight: 700;
-  font-size: clamp(38px, 6vw, 66px);
-  line-height: 1.05;
-  letter-spacing: -0.015em;
+  font-weight: 770;
+  font-size: clamp(36px, 5.6vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
   margin: 0 0 20px;
   max-width: 18ch;
   text-wrap: balance;
+  color: var(--print);
 }
 
 .detail-hero p {
-  font-size: 20px;
-  line-height: 1.5;
-  color: var(--ink);
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--print-soft);
   margin: 0;
-  max-width: 42ch;
+  max-width: 48ch;
+}
+
+.detail-hero p + p {
+  margin-top: 14px;
 }
 
 .section {
-  max-width: 1180px;
-  margin: 28px auto 0;
-  padding: 0 var(--gutter);
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: clamp(28px, 4vw, 56px);
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 56px);
   align-items: start;
+  padding: calc(var(--plate-w) + 18px) calc(var(--plate-w) + 22px) calc(var(--plate-w) + 14px);
 }
 
 @media (max-width: 900px) {
@@ -661,94 +861,126 @@ code {
   }
 }
 
-.section h3 {
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 28px;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+.section h2 {
+  font-weight: 740;
+  font-size: 26px;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
   margin: 0 0 10px;
+  color: var(--print);
+  text-wrap: balance;
 }
 
-.section .section-kicker {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.18em;
+.section-kicker {
+  text-wrap: balance;
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 650;
+  font-size: 11px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--olive);
-  margin-bottom: 8px;
+  color: var(--print-faint);
+  margin-bottom: 10px;
+}
+
+/* figures inside running copy need air on both sides of their caption */
+.section .plate {
+  margin: 6px 0 26px;
+}
+
+.section .plate:last-child {
+  margin-bottom: 0;
 }
 
 .section p {
   margin: 0 0 14px;
-  max-width: 58ch;
-  font-size: 18px;
-  line-height: 1.6;
+  max-width: var(--measure);
+  font-size: 17.5px;
+  line-height: 1.62;
+  color: var(--print);
 }
 
+.section .aside-note {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--print-soft);
+  margin-top: 8px;
+}
+
+.section ol,
+.section ul {
+  padding-left: 22px;
+  margin: 0;
+  color: var(--print-soft);
+  max-width: var(--measure);
+}
+
+.section ol li,
+.section ul li {
+  margin: 10px 0;
+  line-height: 1.55;
+}
+
+.section ol li strong,
+.section ul li strong {
+  color: var(--print);
+}
+
+.section ul li::marker {
+  color: var(--signal);
+}
+
+/* ---------- colophon: the spec plate ---------- */
+
 .colophon {
-  max-width: 1180px;
-  margin: 56px auto 0;
-  padding: 28px var(--gutter);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 28px;
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
+  gap: 24px;
+  padding: calc(var(--plate-w) + 12px) calc(var(--plate-w) + 22px);
 }
 
 .colophon div {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: var(--print-faint);
 }
 
 .colophon div strong {
+  overflow-wrap: anywhere;
   display: block;
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 17px;
+  font-stretch: 100%;
+  font-weight: 500;
+  font-size: 16.5px;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--ink);
+  color: var(--print);
   margin-top: 6px;
 }
 
-.colophon div a {
-  color: var(--cyan);
-  text-decoration: none;
-  border-bottom: 1px dotted var(--cyan);
-}
+/* ---------- screens built from older markup ---------- */
 
-/* ---------- video frame ---------- */
-
-.video-frame {
+.code-duet {
   position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #000;
-  border: 1px solid var(--code-border);
-  overflow: hidden;
+  padding: calc(var(--bezel-w) * 0.82);
+  background: linear-gradient(var(--bezel-under), var(--bezel-under)) center / calc(100% - 10px) calc(100% - 10px)
+    no-repeat;
 }
 
-.video-frame iframe {
+.code-duet::after {
+  content: "";
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
+  border: var(--bezel-w) solid transparent;
+  border-image: var(--k-bezel) var(--slice-bezel) / var(--bezel-w) stretch;
+  pointer-events: none;
 }
-
-/* ---------- code plates (input → output panels) ---------- */
 
 .code-duet {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  background: var(--rule);
-  border: 1px solid var(--rule);
 }
 
 @media (max-width: 900px) {
@@ -759,14 +991,19 @@ code {
 
 .code-panel {
   background: var(--paper);
+  color: var(--ink);
   padding: 16px 18px;
   min-width: 0;
 }
 
-.code-panel h6 {
+.code-panel + .code-panel {
+  box-shadow: inset 1px 0 0 var(--rule);
+}
+
+.code-panel h3 {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--olive);
   margin: 0 0 10px;
@@ -784,54 +1021,54 @@ code {
 
 .code-panel pre code {
   background: none;
-  border: 0;
+  box-shadow: none;
   padding: 0;
   white-space: pre;
   color: inherit;
   font-size: inherit;
 }
 
-/* ---------- index overlay (command palette) ---------- */
+/* ---------- index overlay: a screen pulled forward ---------- */
 
+/* a modal <dialog> spanning the viewport, so a click beside the panel lands
+   on the dialog itself and closes it */
 .ci-overlay {
   position: fixed;
   inset: 0;
-  z-index: 60;
-  background: var(--overlay);
-  backdrop-filter: blur(3px);
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  background: none;
+  color: var(--print);
+  padding: clamp(40px, 13vh, 130px) 14px 14px;
+}
+
+.ci-overlay[open] {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: clamp(48px, 14vh, 140px) 20px 20px;
-  animation: ci-fade 0.16s ease;
+  animation: ci-fade 140ms ease-out;
+}
+
+.ci-overlay::backdrop {
+  background: rgba(4, 5, 7, 0.84);
 }
 
 @keyframes ci-fade {
   from {
     opacity: 0;
   }
-  to {
-    opacity: 1;
-  }
 }
 
 .ci-panel {
-  width: min(620px, 100%);
-  background: var(--paper);
-  border: 1.5px solid var(--ink);
-  box-shadow: 0 24px 60px -20px var(--shadow);
-  animation: ci-rise 0.18s ease;
+  width: min(660px, 100%);
 }
 
-@keyframes ci-rise {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+.ci-panel .screen-face {
+  animation-duration: 260ms;
 }
 
 .ci-head {
@@ -840,9 +1077,8 @@ code {
   align-items: center;
   padding: 12px 16px;
   border-bottom: 1px solid var(--rule);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.2em;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--rust);
 }
@@ -853,9 +1089,10 @@ code {
   border-bottom: 1px solid var(--rule);
   background: var(--paper-warm);
   padding: 12px 16px;
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-size: 18px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 17px;
   color: var(--ink);
+  caret-color: var(--rust);
 }
 
 .ci-input:focus {
@@ -864,44 +1101,40 @@ code {
 
 .ci-input::placeholder {
   color: var(--ink-soft);
-  font-style: italic;
 }
 
 .ci-list {
   list-style: none;
   margin: 0;
   padding: 6px 0;
-  max-height: min(50vh, 420px);
+  max-height: min(52vh, 440px);
   overflow-y: auto;
 }
 
 .ci-item {
-  padding: 10px 16px;
+  padding: 9px 16px;
   display: grid;
-  grid-template-columns: 52px 1fr;
-  gap: 4px 14px;
+  grid-template-columns: 34px 1fr;
+  gap: 2px 12px;
   cursor: pointer;
   border-left: 3px solid transparent;
 }
 
-.ci-item .ci-num {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: var(--rust);
-  padding-top: 4px;
+.ci-num {
+  font-size: 11px;
+  color: var(--ink-soft);
+  padding-top: 3px;
 }
 
-.ci-item .ci-title {
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-size: 19px;
+.ci-title {
+  font-size: 15px;
+  font-weight: 600;
   color: var(--ink);
 }
 
-.ci-item .ci-desc {
+.ci-desc {
   grid-column: 2;
-  font-size: 13.5px;
-  font-style: italic;
+  font-size: 12px;
   color: var(--ink-soft);
 }
 
@@ -910,473 +1143,1330 @@ code {
   border-left-color: var(--rust);
 }
 
+.ci-item[aria-selected="true"] .ci-title {
+  color: var(--rust);
+}
+
 .ci-empty {
-  padding: 22px 16px;
-  font-style: italic;
+  margin: 0;
+  padding: 20px 16px;
   color: var(--ink-soft);
-  font-size: 15px;
+  font-size: 13px;
+}
+
+.ci-empty:empty {
+  display: none;
 }
 
 .ci-foot {
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 6px 16px;
   padding: 10px 16px;
   border-top: 1px solid var(--rule);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-soft);
 }
 
+.ci-foot .ci-close {
+  margin-left: auto;
+}
+
 .ci-foot .k {
-  border: 1px solid var(--rule);
-  background: var(--paper-warm);
-  padding: 0 5px;
-  border-radius: 2px;
-  margin-right: 5px;
-}
-
-/* ---------- prose within detail sections ---------- */
-
-.section ol,
-.section ul {
-  padding-left: 22px;
-  margin: 0;
-  color: var(--ink-soft);
-}
-
-.section ol li,
-.section ul li {
-  margin: 10px 0;
-  line-height: 1.55;
-}
-
-.section ol li strong,
-.section ul li strong {
   color: var(--ink);
+  margin-right: 5px;
 }
 
 /* ---------- not found ---------- */
 
 .blank-leaf {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 12vh var(--gutter) 16vh;
+  padding: calc(var(--plate-w) + 60px) calc(var(--plate-w) + 22px);
   text-align: center;
 }
 
-.blank-leaf .kicker {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--rust);
-  margin-bottom: 18px;
-}
-
 .blank-leaf h1 {
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-weight: 700;
-  font-size: clamp(36px, 6vw, 56px);
+  font-weight: 760;
+  font-size: clamp(34px, 5.5vw, 54px);
+  letter-spacing: -0.03em;
   margin: 0 0 14px;
 }
 
 .blank-leaf p {
-  font-style: italic;
-  color: var(--ink-soft);
+  color: var(--print-soft);
   max-width: 46ch;
   margin: 0 auto 26px;
 }
 
-/* ---------- footer ---------- */
+/* ---------- footers ---------- */
 
-.folio {
-  max-width: 1180px;
-  margin: 60px auto 0;
-  padding: 24px var(--gutter) 50px;
-  text-align: center;
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-style: italic;
-  font-weight: 400;
-  color: var(--ink-soft);
-  border-top: 1px solid var(--rule);
-}
-
-/* ---------- pane grid (tiling session home) ---------- */
-
-.pane-grid {
-  max-width: 1180px;
-  margin: 8px auto 0;
-  padding: 0 var(--gutter);
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  /* Hyprland gaps_in=5 gaps_out=10 */
-  gap: 10px;
-}
-
-.pane {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 18px 20px 16px;
-  background: var(--paper-warm);
-  border: var(--border-w) solid var(--rule);
-  border-radius: var(--radius);
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.15s ease;
-  position: relative;
-}
-
-/* the focused pane wears the Hyprland active-border gradient */
-.pane:hover,
-.pane:focus-visible,
-.pane[data-focused="true"] {
-  border-color: transparent;
-  background:
-    linear-gradient(var(--paper-warm), var(--paper-warm)) padding-box,
-    var(--active-grad) border-box;
-  outline: none;
-  transform: translateY(-2px);
-}
-
-.pane-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 10px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  color: var(--ink-soft);
-}
-
-.pane-head .pane-name {
-  color: var(--cyan);
-  font-weight: 600;
-}
-
-.pane h2 {
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-size: 21px;
-  font-weight: 650;
-  letter-spacing: -0.015em;
-  line-height: 1.2;
-  margin: 0;
-  text-wrap: balance;
-}
-
-.pane p {
-  margin: 0;
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: var(--ink-soft);
-}
-
-.pane-stats {
-  margin-top: auto;
-  padding-top: 10px;
-  border-top: 1px solid var(--rule);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--ink-soft);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 14px;
-}
-
-.pane-stats .stat b {
-  color: var(--amber);
-  font-weight: 600;
-}
-
-/* ---------- statusline footer ---------- */
-
+.folio,
 .statusline {
-  max-width: 1180px;
-  margin: 48px auto 0;
-  padding: 12px var(--gutter) 40px;
-  border-top: var(--border-w) solid transparent;
-  border-image: var(--active-grad) 1;
+  min-height: calc(var(--plate-w) * 2 + 14px);
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 22px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11.5px;
-  letter-spacing: 0.05em;
-  color: var(--ink-soft);
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px 22px;
+  padding: calc(var(--plate-w) * 0.6) calc(var(--plate-w) + 14px);
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--print-faint);
 }
 
-.statusline a {
-  color: var(--cyan);
-  text-decoration: none;
-}
-
-.statusline a:hover {
-  color: var(--rust);
+.statusline a:not(.key) {
+  text-decoration-thickness: 1px;
 }
 
 .statusline .sl-k {
-  color: var(--olive);
-}
-
-/* ---------- zsy table (playable figure) ---------- */
-
-.zsy-table {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: clamp(12px, 2vw, 22px);
-  background: var(--paper);
-  border: 1px solid var(--rule);
-}
-
-.zsy-opponents {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.zsy-opp {
-  border: 1px solid var(--rule);
-  border-left: 3px solid transparent;
-  padding: 8px 12px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-.zsy-opp.active {
-  border-left-color: var(--rust);
-  color: var(--ink);
-}
-
-.zsy-opp.done {
-  opacity: 0.55;
-}
-
-.zsy-opp .n {
-  font-size: 15px;
-  color: var(--ink);
-}
-
-.zsy-opp .medal {
-  color: var(--amber);
-  font-size: 13px;
-}
-
-.zsy-trick {
-  min-height: 132px;
-  border: 1px dashed var(--rule);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 14px;
-}
-
-.zsy-trick-label {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.zsy-trick-label b {
-  color: var(--rust);
-  font-weight: 500;
-}
-
-.zsy-cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding-left: 26px;
-}
-
-.zsy-card {
-  width: 58px;
-  height: 82px;
-  margin-left: -26px;
-  background: var(--paper);
-  border: 1px solid var(--ink-soft);
-  border-radius: calc(var(--radius) * 2);
-  box-shadow: 0 2px 8px -4px var(--shadow);
-  position: relative;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  flex-shrink: 0;
-}
-
-.zsy-card .corner {
-  position: absolute;
-  top: 5px;
-  left: 7px;
-  font-size: 15px;
-  line-height: 1.05;
-  white-space: pre-line;
-}
-
-.zsy-card .pip {
-  position: absolute;
-  bottom: 6px;
-  right: 8px;
-  font-size: 19px;
-}
-
-.zsy-card.red {
-  color: var(--rust);
-}
-
-.zsy-card.black {
-  color: var(--ink);
-}
-
-.zsy-card.joker {
-  color: var(--amber);
-}
-
-button.zsy-card {
-  cursor: pointer;
-  padding: 0;
-}
-
-button.zsy-card:hover {
-  transform: translateY(-6px);
-}
-
-button.zsy-card[aria-pressed="true"] {
-  transform: translateY(-14px);
-  border-color: var(--cyan);
-  box-shadow: 0 8px 18px -8px var(--shadow);
-}
-
-.zsy-hand {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.zsy-hand .zsy-cards {
-  justify-content: flex-start;
-  row-gap: 10px;
-}
-
-.zsy-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.zsy-btn {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 9px 18px;
-  border: 1px solid var(--ink);
-  background: var(--paper);
-  color: var(--ink);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s, opacity 0.15s;
-}
-
-.zsy-btn.primary {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.zsy-btn:hover:not(:disabled) {
-  border-color: var(--rust);
-  color: var(--rust);
-}
-
-.zsy-btn.primary:hover:not(:disabled) {
-  background: var(--rust);
-  color: var(--paper);
-}
-
-.zsy-btn:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.zsy-status {
-  font-style: italic;
-  font-size: 15px;
-  color: var(--ink-soft);
-  min-height: 1.5em;
-}
-
-.zsy-status b {
-  color: var(--rust);
-  font-weight: 600;
-  font-style: normal;
-}
-
-.zsy-fin {
-  text-align: center;
-  padding: 10px 0 2px;
-}
-
-.zsy-fin h4 {
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-size: 26px;
-  font-weight: 700;
-  margin: 0 0 6px;
-}
-
-.zsy-fin ol {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 14px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
-}
-
-.zsy-fin li {
-  margin: 3px 0;
-}
-
-@media (max-width: 640px) {
-  .zsy-opponents {
-    grid-template-columns: 1fr;
-  }
-
-  .zsy-card {
-    width: 48px;
-    height: 70px;
-    margin-left: -22px;
-  }
-
-  .zsy-cards {
-    padding-left: 22px;
-  }
+  color: var(--print-soft);
 }
 
 /* ---------- print ---------- */
 
 @media print {
-  .page-bg,
   .instruments,
-  .ci-overlay {
+  .ci-overlay,
+  .rack::before,
+  .rack::after,
+  .bench {
     display: none !important;
   }
 
   body {
     background: #fff;
   }
+}
+
+/* ---------- home: readout + drive note ---------- */
+
+.readout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 18px;
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 12.5px;
+}
+
+.readout dt {
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  padding-top: 1px;
+}
+
+.readout dd {
+  margin: 0;
+  color: var(--olive);
+  text-align: right;
+}
+
+.operate {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px 14px;
+  align-items: center;
+  margin: 0;
+}
+
+.operate dt {
+  display: flex;
+  gap: 4px;
+}
+
+.operate dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--print-soft);
+}
+
+.drive .key.cap {
+  min-height: 30px;
+  min-width: 34px;
+  padding: 0 9px 2px;
+  font-size: 12px;
+  --key-w: 11px;
+  vertical-align: middle;
+}
+
+.shelf-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rack-gap);
+}
+
+.flagship .soft {
+  color: var(--print-soft);
+}
+
+.flagship-screen {
+  display: block;
+  border-radius: 2px;
+}
+
+.flagship .module-top,
+.flagship .module-stats {
+  padding: 0;
+}
+
+/* ==========================================================================
+   Tauri Explorer launch page
+   ========================================================================== */
+
+.launch-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--print);
+}
+
+/* hero: the promise on the left, the product doing it on the right */
+.launch-hero {
+  display: grid;
+  /* the shot gets the wider column so the palette shows at about 1:1 */
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(24px, 4vw, 52px);
+  align-items: center;
+  padding: calc(var(--plate-w) + 22px) calc(var(--plate-w) + 22px) calc(var(--plate-w) + 16px);
+}
+
+.launch-hero h1 {
+  margin: 0 0 20px;
+  max-width: 11ch;
+  font-weight: 780;
+  font-size: clamp(36px, 5vw, 68px);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  color: var(--print);
+}
+
+/* the category, right under the promise, at every width */
+.launch-hero .launch-sub {
+  margin: 0 0 12px;
+  color: var(--print);
+  font-size: 19px;
+  font-weight: 560;
+}
+
+.launch-hero p {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--print-soft);
+}
+
+.launch-keys,
+.alpha-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+/* stacked in the narrow column, the keys share one width, so the column
+   reads as one bank of keys rather than a ragged edge */
+@media (min-width: 901px) {
+  .alpha-keys .key[data-size="lg"] {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+
+/* a <picture> only picks the source; the <img> sizes against the screen face */
+.launch-shot picture,
+.shot picture {
+  display: contents;
+}
+
+.launch-hero .launch-keys-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 14px 0 0;
+  max-width: none;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--print-soft);
+}
+
+/* the facts a tester checks first, engraved under the call to action */
+.launch-proof {
+  row-gap: 6px;
+  margin: 18px 0 0;
+  padding: 12px 0 0;
+  list-style: none;
+  background: linear-gradient(var(--engrave-lo) 0 1px, var(--engrave-hi) 1px 2px) top / 100% 2px no-repeat;
+}
+
+.launch-proof li {
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* on the narrowest screens the longest fact wraps inside itself */
+@media (max-width: 400px) {
+  .launch-proof li {
+    white-space: normal;
+  }
+}
+
+/* A run of items separated by dots that never hang at a line's end: each
+   item's dot hangs in the gap before it, so the dot of an item that starts a
+   line falls outside the box and is clipped. Items may still wrap inside
+   themselves. */
+.seplist {
+  --sep: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--sep);
+  overflow: hidden;
+}
+
+.seplist > * {
+  position: relative;
+}
+
+.seplist > *::before {
+  content: "·";
+  content: "·" / ""; /* a separator, not read aloud */
+  position: absolute;
+  right: 100%;
+  width: var(--sep);
+  text-align: center;
+  color: var(--print-soft);
+}
+
+.launch-keys-note a {
+  color: var(--print);
+}
+
+.launch-shot {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.launch-shot .screen-face {
+  aspect-ratio: 3 / 2;
+  background: #07080a;
+}
+
+.launch-shot-cap {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  padding: 0 4px;
+}
+
+@media (max-width: 900px) {
+  .launch-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  /* one column: the promise, then the action, then the product, all on the
+     first screen of a phone; the explanation follows */
+  .launch-copy {
+    display: contents;
+  }
+
+  .launch-kicker { order: 1; }
+  .launch-hero h1 { order: 2; }
+  .launch-keys { order: 3; margin-top: 4px; }
+  .launch-keys-note { order: 4; }
+  .launch-proof { order: 4; }
+  .launch-shot { order: 5; margin: 26px 0; }
+  .launch-sub { order: 2; }
+  .launch-hero .launch-lede { order: 6; }
+}
+
+/* A phone's first screen holds the promise, both calls to action with the
+   line that says the invite is an email, the facts a tester checks first
+   (trimmed to one line) and a strip of the product, in that order; the
+   explanation follows. */
+@media (max-width: 600px) {
+  .launch-hero {
+    padding: calc(var(--plate-w) + 8px) calc(var(--plate-w) + 10px) calc(var(--plate-w) + 12px);
+  }
+  .launch-hero h1 { margin-bottom: 14px; }
+  .launch-hero .launch-sub { margin-bottom: 0; font-size: 17px; }
+  .launch-keys { order: 3; margin-top: 16px; gap: 8px; }
+  /* both calls to action on one row, down to 360px */
+  .launch-keys .key[data-size="lg"] { padding-inline: 15px; font-size: 12.5px; letter-spacing: 0.06em; }
+  .launch-hero .launch-keys-note { order: 4; margin-top: 10px; gap: 4px 10px; flex-wrap: nowrap; font-size: 12.5px; }
+  /* one row: the address and its copy key; the terms are further down the page */
+  .launch-keys-note .keys-note-terms { display: none; }
+  .launch-proof { order: 5; margin-top: 8px; padding-top: 10px; }
+  .launch-proof { letter-spacing: 0.07em; }
+  .launch-proof li:nth-child(n + 4),
+  .launch-proof .proof-more { display: none; }
+  .launch-proof { --sep: 18px; }
+  .launch-shot { order: 6; margin: 10px 0 0; }
+  .launch-shot .screen-face { aspect-ratio: 12 / 5; }
+  .launch-shot-cap { display: none; }
+  .launch-hero .launch-lede { order: 7; margin-top: 22px; }
+}
+
+@media (max-width: 400px) {
+  .launch-hero h1 { margin-bottom: 10px; }
+  .launch-keys { margin-top: 12px; }
+  .launch-hero .launch-keys-note { flex-wrap: wrap; } /* too narrow for the address and its key on one row */
+}
+
+.chord {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+
+.chord-part {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chord-plus {
+  color: var(--print-soft);
+  font-size: 13px;
+  padding: 0 2px;
+}
+
+.cap-glyph {
+  font-family: system-ui, sans-serif;
+  font-size: 1.3em;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.reflexes .key.cap,
+.drive .key.cap,
+.folio .key.cap,
+.launch-shot-cap .key.cap {
+  min-height: 32px;
+  min-width: 36px;
+  font-size: 12px;
+  padding: 0 9px 2px;
+  --key-w: 12px;
+}
+
+/* Pointer-specific copy: keyboard hints only where a keyboard is likely,
+   touch alternatives only where it isn't. Exact complements. */
+/* !important: these are visibility utilities, and a component's own display
+   rule (an inline-flex link, a flex key) must never bring hidden copy back. */
+@media (hover: none) and (pointer: coarse) {
+  .fine-only,
+  .key-legend {
+    display: none !important; /* a keycap's shortcut legend means nothing without a keyboard */
+  }
+}
+
+@media not all and (hover: none) and (pointer: coarse) {
+  .coarse-only {
+    display: none !important;
+  }
+}
+
+/* Text links that stand alone get a finger-sized hit box on touch screens
+   (WCAG 2.2 target size, 24 px minimum). */
+@media (pointer: coarse) {
+  .head-nav a,
+  .launch-live-foot a,
+  .launch-keys-note a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+  }
+
+  .head-nav {
+    row-gap: 0; /* the links' own boxes space the rows */
+  }
+
+  .head-nav a {
+    min-height: 24px; /* the head stays short enough to keep a hero's call to action on the first screen */
+  }
+
+  .shot .plate-caption a.shot-full {
+    margin-top: 0;
+    padding-block: 6px; /* a 24px-tall target */
+  }
+}
+
+/* live demo: a screen on standby until powered */
+
+.launch-live {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: calc(var(--plate-w) + 8px) calc(var(--plate-w) + 10px) calc(var(--plate-w) + 2px);
+  scroll-margin-top: 20px;
+}
+
+.launch-live-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px 14px;
+  flex-wrap: wrap;
+  padding: 0 6px;
+}
+
+.launch-live-foot a {
+  color: var(--print);
+  text-decoration: none;
+}
+
+.launch-live-foot a:hover,
+.live-give:hover {
+  color: var(--signal);
+}
+
+/* A text control, printed like the foot's link beside it, with the same
+   focus underline as a chassis link. */
+.live-give {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--print);
+  cursor: pointer;
+}
+
+.live-give:focus-visible {
+  outline: none;
+  text-decoration: underline 2px var(--signal);
+  text-underline-offset: 5px;
+}
+
+@media (forced-colors: active) {
+  .live-give:focus-visible {
+    outline: 2px solid CanvasText;
+  }
+}
+
+.live-screen .screen-face {
+  background: #07080a;
+}
+
+/* While the embedded app has the keyboard, its plate wears the focus line, so
+   it is plain why the page's own keys have stopped answering. */
+.launch-live[data-keys]::after {
+  border-image-source: var(--k-plate-focus);
+  opacity: 1;
+}
+
+.launch-live-foot .led {
+  vertical-align: -1px;
+}
+
+.live-demo:focus {
+  outline: none; /* a parking spot for focus while the app boots, not a stop */
+}
+
+/* the app renders at 1440x900 and is scaled to the screen (see LiveDemo) */
+.live-demo {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  width: 100%;
+  overflow: hidden;
+}
+
+.live-frame {
+  display: block;
+  width: 1440px;
+  height: 900px;
+  border: 0;
+  transform: scale(var(--live-scale, 1));
+  transform-origin: 0 0;
+}
+
+/* off: dark glass, a standby lamp and the power key on an empty field */
+.live-off {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: #07080a;
+}
+
+/* a powered-down frame of the real app, so the product shows before it boots */
+.live-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+
+.live-off .screen-glass {
+  opacity: 0.8;
+  --glare-x: -20px;
+  --glare-y: -30px;
+}
+
+/* bottom-left, clear of the glare that the upper-left light throws. The
+   lamp sits on its own dark strip that blanks the poster's status bar, so the
+   label never prints over the app's own text. */
+.live-standby {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 16px 18px 14px;
+  background: linear-gradient(to bottom, transparent, #07080a 10px);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #a19d95;
+}
+
+.live-off .key {
+  position: relative;
+  z-index: 3;
+}
+
+/* reflexes */
+
+.reflexes {
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+
+.reflexes li {
+  display: grid;
+  grid-template-columns: minmax(0, 210px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  margin: 0 !important;
+  padding: 12px 0;
+  color: var(--print);
+  font-size: 16px;
+  background: linear-gradient(var(--engrave-lo) 0 1px, var(--engrave-hi) 1px 2px) bottom / 100% 2px no-repeat;
+}
+
+.reflexes li:last-child {
+  background: none;
+}
+
+@media (max-width: 560px) {
+  .reflexes li {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* screenshots: feature crops at native size, the full window behind a link */
+
+.shots-plate {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px 26px;
+  padding: calc(var(--plate-w) + 14px) calc(var(--plate-w) + 16px);
+}
+
+@media (max-width: 760px) {
+  .shots-plate {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* A shot left alone on the last row is a full-width strip (its crop is
+   cut wide for it). (of-type: the lightbox <dialog> is the plate's last
+   child.) */
+.shot:last-of-type:nth-of-type(odd) {
+  grid-column: 1 / -1;
+}
+
+.shot {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shot-link {
+  display: block;
+  text-decoration: none;
+}
+
+.shot-link:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+.shot .screen-face {
+  aspect-ratio: var(--shot-ar, 3 / 2);
+  background: #f4f4f4;
+}
+
+/* phones get the 3:2 phone crops (the <picture>'s phone source) */
+@media (max-width: 600px) {
+  .shot .screen-face {
+    aspect-ratio: 3 / 2;
+  }
+}
+
+.shot-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+
+/* gauges: small LCD readouts */
+
+.gauges {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 6px;
+}
+
+/* two readouts a row on phones: one a row turns eight short numbers into a
+   screenful of empty glass */
+@media (max-width: 600px) {
+  .gauges {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.gauge {
+  --bezel-w: 18px;
+}
+
+.gauge .screen-face {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 14px 12px;
+  min-height: 96px;
+}
+
+.gauge-n {
+  font-size: 28px;
+  line-height: 1;
+  color: var(--tone);
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 600px) {
+  .gauge-n {
+    font-size: 22px; /* "595 ms" fits a half-width readout */
+  }
+}
+
+.gauge-l {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  text-wrap: balance;
+}
+
+/* alpha + install */
+
+.section p.alpha-alt {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+/* a caveat on the OS build, on its own line under the keys */
+.download-note {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+}
+
+.download-note a {
+  color: var(--print);
+}
+
+.alpha .section-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* room for the lamp's halo, as on the hero's eyebrow */
+  color: var(--signal);
+}
+
+.alpha {
+  scroll-margin-top: 20px;
+}
+
+/* the alpha's keys (the invite and this OS's download) each fit on one line */
+@media (min-width: 901px) {
+  .alpha.section {
+    grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  }
+}
+
+.install {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr); /* a long command scrolls in its glass, never widens the page */
+  gap: 22px;
+}
+
+.install-keys,
+.install-nix {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.install-nix > .silk {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: var(--print-soft);
+}
+
+.cmd {
+  flex: 1 1 320px;
+  min-width: 0; /* lets the glass scroll a long command instead of widening the row */
+  --bezel-w: 20px;
+}
+
+.cmd .screen-face {
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+
+/* When the command is wider than the glass, the edge with more command
+   beyond it fades, like the lightbox. A command that fits has no scroll
+   timeline, so it keeps the unfaded base. */
+@supports (animation-timeline: scroll()) {
+  .cmd .screen-face {
+    --pan-l: 0px;
+    --pan-r: 0px;
+    mask-image: linear-gradient(to right, rgb(0 0 0 / 0.3), #000 var(--pan-l), #000 calc(100% - var(--pan-r)), rgb(0 0 0 / 0.3));
+    animation: pan-x linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
+
+/* a command is one token stream: it never breaks mid-word; on a narrow
+   screen the glass scrolls sideways instead */
+.cmd-text {
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--olive);
+  font-size: 15px;
+  padding: 0;
+  white-space: pre;
+}
+
+.cmd-text::before {
+  content: "$ ";
+  color: var(--ink-soft);
+}
+
+@media (max-width: 420px) {
+  .cmd-text {
+    font-size: 13px;
+  }
+}
+
+.blank-keys {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.blank-screen {
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.blank-screen .screen-face {
+  display: grid;
+  place-items: center;
+  min-height: 120px;
+}
+
+.blank-code {
+  color: var(--rust);
+  font-size: 20px;
+  letter-spacing: 0.3em;
+}
+
+/* ---------- social cards (captured to PNG; see scripts/render-og.mjs) ---------- */
+
+.og-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  padding: 22px 64px;
+  background: var(--bench) var(--k-bench) center / cover no-repeat;
+}
+
+.og-stage::before,
+.og-stage::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 56px;
+  background: var(--k-rail) center top / 56px auto repeat-y;
+}
+
+.og-stage::before {
+  left: 4px;
+}
+
+.og-stage::after {
+  right: 4px;
+}
+
+.og-plate {
+  --plate-w: 44px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 34px;
+  align-items: center;
+  padding: 50px 56px !important;
+}
+
+.og-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.og-title {
+  margin: 0;
+  word-spacing: 0.08em;
+  font-weight: 780;
+  font-size: 60px;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  color: var(--print);
+}
+
+.og-title .soft {
+  color: var(--print-soft);
+}
+
+.og-home .og-title {
+  font-size: 46px;
+}
+
+.og-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--print);
+  font-size: 13px;
+}
+
+.og-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  --bezel-w: 20px;
+}
+
+.og-caps {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.og-caps .key.cap {
+  min-height: 86px;
+  min-width: 92px;
+  font-size: 26px;
+  --key-w: 26px;
+}
+
+.og-caps .key.cap:first-child {
+  min-width: 150px;
+}
+
+.og-shot .screen-face img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top left;
+}
+
+.og-stage .screen-face {
+  animation: none;
+}
+
+@media (max-width: 560px) {
+  .live-off .key {
+    padding: 0 18px 2px;
+    font-size: 12px;
+  }
+  .module-top {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+}
+
+.plate-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* portraits keep their frame whole: contained on the dark field, never cropped */
+.plate-art img.plate-portrait {
+  width: auto;
+  max-width: min(100%, 360px);
+  max-height: 520px;
+  object-fit: contain;
+}
+
+.og-tauri {
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: 26px;
+}
+
+.og-tauri .og-kicker {
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.og-tauri .og-shot .screen-face img {
+  aspect-ratio: 4 / 3;
+  object-position: 62% 18%;
+}
+
+/* read by screen readers, not drawn */
+/* The first Tab on any rack page offers a way past the masthead. */
+.skip-link {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  z-index: 70;
+  translate: -50% -200%;
+  padding: 8px 14px;
+  border-radius: 4px;
+  background: var(--print);
+  color: var(--bench);
+  font-size: 14px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.skip-link:focus-visible {
+  translate: -50% 0;
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+/* The page's <main>, between the masthead (banner) and the folio
+   (contentinfo): it stacks its plates like the rack itself. It is also
+   where the skip link lands. */
+.rack-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rack-gap);
+}
+
+/* focused only as the skip link's landing point */
+main[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* the caption's own link to the full window, set under it as a label */
+.shot-full {
+  display: block;
+  width: fit-content;
+  margin-top: 6px;
+  color: var(--print);
+  text-decoration: none;
+}
+
+.shot-full:hover {
+  color: var(--signal);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- flagship screen: the quick-open palette as live LCD text ---------- */
+
+.pal-screen .screen-face {
+  aspect-ratio: 3 / 2;
+  container-type: inline-size;
+}
+
+.pal {
+  position: absolute;
+  inset: 0;
+  padding: 7cqw 0 0 5cqw;
+  color: var(--tone);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 4.9cqw;
+  line-height: 1;
+  /* phosphor: the lit text bleeds a little into the glass */
+  text-shadow: 0 0 0.35em color-mix(in srgb, var(--tone) 45%, transparent);
+}
+
+.pal-input {
+  display: flex;
+  align-items: center;
+  gap: 0.12em;
+  height: 1em;
+}
+
+.pal-caret {
+  width: 0.55em;
+  height: 1.1em;
+  background: var(--tone);
+  animation: pal-blink 1.1s steps(1) infinite;
+}
+
+@keyframes pal-blink {
+  50% {
+    visibility: hidden;
+  }
+}
+
+.pal-rows {
+  list-style: none;
+  margin: 6.5cqw 0 0 -2cqw;
+  padding: 0;
+}
+
+.pal-rows li {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  height: 10.4cqw;
+  padding-left: 2cqw;
+  border-radius: 1.4cqw 0 0 1.4cqw;
+}
+
+.pal-rows li[data-selected] {
+  background: var(--tone);
+  color: var(--paper);
+  text-shadow: none;
+}
+
+.pal-icon {
+  flex: none;
+  width: 0.62em;
+  height: 0.82em;
+  border: 0.12em solid currentColor;
+  border-radius: 0 0.22em 0 0;
+}
+
+.pal-name u {
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.18em;
+}
+
+.pal-rows li[data-selected] .pal-name u {
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pal-caret {
+    animation: none;
+  }
+}
+
+/* ---------- lightbox: a screenshot's full window, on a modal screen ---------- */
+
+.lightbox {
+  width: min(1240px, calc(100vw - 28px));
+  max-width: none;
+  max-height: calc(100dvh - 28px);
+  margin: auto; /* the global reset removes the dialog's own centring */
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--print);
+  overflow: visible;
+}
+
+/* the page behind a modal doesn't scroll under it */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+.lightbox::backdrop {
+  background: rgba(4, 5, 7, 0.84); /* the index overlay's scrim */
+}
+
+.lightbox[open] {
+  animation: ci-fade 140ms ease-out;
+}
+
+/* the screen is mounted on its own plate, like every other screen */
+.lightbox-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: calc(var(--plate-w) + 6px) calc(var(--plate-w) + 10px) calc(var(--plate-w) + 2px);
+}
+
+.lightbox .screen-face {
+  background: #07080a;
+}
+
+.lightbox-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: calc(100dvh - 230px);
+  object-fit: contain;
+}
+
+.lightbox-pan {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .lightbox-pan {
+    display: block; /* its own line, under the caption */
+  }
+}
+
+.lightbox-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+  flex-wrap: wrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox[open] {
+    animation: none;
+  }
+}
+
+/* On a phone the whole window would shrink to unreadable: show it at about
+   its real size instead, and let the glass pan. */
+@media (max-width: 760px) {
+  /* The plate fills the screen's height and the glass takes whatever the
+     caption and Close key leave, so the whole plate (bottom edge, screws and
+     all) is always on screen. */
+  .lightbox {
+    height: calc(100dvh - 28px);
+  }
+
+  .lightbox-inner {
+    box-sizing: border-box;
+    height: 100%;
+    padding: calc(var(--plate-w) + 2px) calc(var(--plate-w) + 2px) calc(var(--plate-w) - 4px);
+  }
+
+  .lightbox-inner > .screen {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lightbox-foot {
+    flex: none;
+  }
+
+  /* The glass shades whichever edges have more window beyond them, so it
+     reads as a view into something larger. Where scroll-driven animations are
+     missing, all four edges stay shaded. */
+  .lightbox .screen-face {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    --pan-l: 28px;
+    --pan-r: 28px;
+    --pan-t: 28px;
+    --pan-b: 28px;
+    mask-image:
+      linear-gradient(to right, rgb(0 0 0 / 0.3), #000 var(--pan-l), #000 calc(100% - var(--pan-r)), rgb(0 0 0 / 0.3)),
+      linear-gradient(to bottom, rgb(0 0 0 / 0.3), #000 var(--pan-t), #000 calc(100% - var(--pan-b)), rgb(0 0 0 / 0.3));
+    mask-composite: intersect;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .lightbox .screen-face {
+      animation: pan-x linear both, pan-y linear both;
+      animation-timeline: scroll(self inline), scroll(self block);
+    }
+  }
+
+  .lightbox-img {
+    width: 1280px; /* the captures are 1280 CSS px windows: 1:1 */
+    max-width: none;
+    max-height: none;
+  }
+}
+
+@property --pan-l { syntax: "<length>"; inherits: false; initial-value: 28px; }
+@property --pan-r { syntax: "<length>"; inherits: false; initial-value: 28px; }
+@property --pan-t { syntax: "<length>"; inherits: false; initial-value: 28px; }
+@property --pan-b { syntax: "<length>"; inherits: false; initial-value: 28px; }
+
+@keyframes pan-x {
+  0% { --pan-l: 0px; --pan-r: 28px; }
+  6% { --pan-l: 28px; }
+  94% { --pan-r: 28px; }
+  100% { --pan-l: 28px; --pan-r: 0px; }
+}
+
+@keyframes pan-y {
+  0% { --pan-t: 0px; --pan-b: 28px; }
+  6% { --pan-t: 28px; }
+  94% { --pan-b: 28px; }
+  100% { --pan-t: 28px; --pan-b: 0px; }
+}
+
+/* ---------- a video poster that links out to YouTube, inside a figure's glass ---------- */
+
+.video-screen {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  background: #07080a;
+  --tone: var(--cyan);
+}
+
+.video-screen .key {
+  position: relative;
+  z-index: 3;
+}
+
+/* the art carries the frame; a figure plate with a video needs no padding */
+.plate .screen-face:has(> .plate-art > .video-screen) {
+  padding: 0;
 }

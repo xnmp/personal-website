@@ -1,0 +1,1 @@
+Tauri Explorer, alpha testers wanted. 'Ctrl+P for your filesystem.' is printed on a dark machined faceplate, with Ctrl and P keycaps beside a recessed screen showing the file manager.

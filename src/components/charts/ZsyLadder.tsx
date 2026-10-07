@@ -15,7 +15,7 @@ export function ZsyLadder() {
     const values = steps.map((s) => s.wr);
     const lastIndex = steps.length - 1;
 
-    return {
+    const baseOption: echarts.EChartsOption = {
       textStyle: notebookTextStyle(p),
       backgroundColor: "transparent",
       animationDuration: 1200,
@@ -47,6 +47,7 @@ export function ZsyLadder() {
         axisLine: { show: false },
         axisLabel: {
           color: p.inkSoft,
+          hideOverlap: true,
           formatter: (v: number) => `${Math.round(v * 100)}%`,
         },
         splitLine: { lineStyle: { color: p.ink, opacity: 0.08 } },
@@ -56,7 +57,7 @@ export function ZsyLadder() {
         data: labels,
         axisLine: { lineStyle: { color: p.inkSoft } },
         axisTick: { show: false },
-        axisLabel: { color: p.inkSoft },
+        axisLabel: { color: p.inkSoft, hideOverlap: true },
       },
       series: [
         {
@@ -90,6 +91,34 @@ export function ZsyLadder() {
               formatter: "seat parity (¼)",
             },
             data: [{ xAxis: 0.25 }],
+          },
+        },
+      ],
+    };
+
+    // Phones: short category labels and a thin label column so the bars get the width.
+    const short = ["BC start", "RTG fix", "Win bonus", "PTIE critic", "Seat-rel.", "+ Search"];
+    return {
+      baseOption,
+      media: [
+        {
+          query: { maxWidth: 520 },
+          option: {
+            grid: { left: 80, right: 40, top: 28, bottom: 44 },
+            xAxis: { interval: 0.25, nameGap: 26 },
+            yAxis: {
+              data: labels.map((l, i) => short[i] ?? l),
+              axisLabel: { fontSize: 11 },
+            },
+            series: [
+              {
+                // values sit inside the bar end so the parity line never crosses them (insideLeft keeps clear of 25%)
+                label: { position: "insideLeft", color: p.paper },
+                markLine: {
+                  label: { position: "end", distance: 4, formatter: "parity ¼", fontSize: 10 },
+                },
+              },
+            ],
           },
         },
       ],

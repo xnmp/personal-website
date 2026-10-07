@@ -9,7 +9,7 @@ type FeatureProps = { label: string; children: ReactNode };
 export function Feature({ label, children }: FeatureProps) {
   return (
     <div className="feat">
-      <h5>{label}</h5>
+      <h3>{label}</h3>
       <p>{children}</p>
     </div>
   );

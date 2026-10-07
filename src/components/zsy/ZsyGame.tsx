@@ -15,6 +15,7 @@ import {
   rankings,
   sortCards,
 } from "@/lib/zsy";
+import { Key } from "@/components/rack/Key";
 
 const SEAT_NAMES = ["You", "West", "North", "East"] as const;
 const HUMAN = 0;
@@ -29,12 +30,14 @@ function cardId(c: Card): string {
 
 function comboPhrase(combo: Combo): string {
   const n = combo.cards.length;
+  // singular label: "joker" pluralises with the rest ("a pair of jokers")
   const rank =
     combo.primaryRank !== null && combo.primaryRank < 13
       ? RANK_LABEL[combo.primaryRank]
-      : "jokers";
+      : "joker";
   switch (combo.type) {
     case "single":
+      if (rank === "joker") return combo.cards[0]?.suit === "BJ" ? "the big joker" : "the small joker";
       return `a ${rank}`;
     case "pair":
       return `a pair of ${rank}s`;
@@ -189,30 +192,34 @@ export function ZsyGame() {
         {[1, 2, 3].map((p) => (
           <div
             key={p}
-            className={`zsy-opp${state.currentPlayer === p && !over ? " active" : ""}${
+            className={`zsy-opp zsy-pane${state.currentPlayer === p && !over ? " active" : ""}${
               state.finished.includes(p) ? " done" : ""
             }`}
           >
-            <span>{SEAT_NAMES[p]}</span>
-            <span>
-              {state.finished.includes(p) ? (
-                <span className="medal">out · {medal(p)}</span>
-              ) : (
-                <span className="n">{state.hands[p].length}</span>
-              )}
-            </span>
+            <span className="zsy-pane-title">{SEAT_NAMES[p]}</span>
+            {state.finished.includes(p) ? (
+              <span className="medal">out · {medal(p)}</span>
+            ) : (
+              <span className="n">
+                {state.hands[p].length}
+                <span className="unit"> cards</span>
+              </span>
+            )}
           </div>
         ))}
       </div>
 
-      <div className="zsy-trick" aria-live="polite">
+      <div className="zsy-trick zsy-pane" aria-live="polite">
+        <span className="zsy-pane-title" aria-hidden>
+          table
+        </span>
         {over && finalOrder ? (
           <div className="zsy-fin">
-            <h4>
+            <h3>
               {finalOrder[0] === HUMAN
                 ? "You went up first."
                 : `${SEAT_NAMES[finalOrder[0]]} goes up first.`}
-            </h4>
+            </h3>
             <ol>
               {finalOrder.map((p, i) => (
                 <li key={p}>
@@ -220,14 +227,14 @@ export function ZsyGame() {
                 </li>
               ))}
             </ol>
-            <button type="button" className="zsy-btn primary" onClick={restart}>
-              deal again
-            </button>
+            <Key tone="signal" onClick={restart}>
+              Deal again
+            </Key>
           </div>
         ) : state.lastCombo ? (
           <>
             <div className="zsy-trick-label">
-              on the table — beat it or pass
+              beat it or pass
             </div>
             <div className="zsy-cards">
               {sortCards(state.lastCombo.cards).map((c) => (
@@ -243,7 +250,10 @@ export function ZsyGame() {
         )}
       </div>
 
-      <div className="zsy-hand">
+      <div className={`zsy-hand zsy-pane${state.currentPlayer === HUMAN && !over ? " active" : ""}`}>
+        <span className="zsy-pane-title" aria-hidden>
+          you · {hand.length}
+        </span>
         <div className="zsy-cards" role="group" aria-label="Your hand">
           {hand.map((c) => (
             <button
@@ -278,17 +288,12 @@ export function ZsyGame() {
         </div>
 
         <div className="zsy-actions">
-          <button
-            type="button"
-            className="zsy-btn primary"
-            onClick={play}
-            disabled={!canPlay}
-          >
-            play{selectedCombo && canPlay ? ` ${comboPhrase(selectedCombo)}` : ""}
-          </button>
-          <button type="button" className="zsy-btn" onClick={pass} disabled={!canPass}>
-            pass
-          </button>
+          <Key tone="signal" onClick={play} disabled={!canPlay}>
+            Play{selectedCombo && canPlay ? ` ${comboPhrase(selectedCombo)}` : ""}
+          </Key>
+          <Key onClick={pass} disabled={!canPass}>
+            Pass
+          </Key>
           <span className="zsy-status">
             {selectedCards.length > 0 && !selectedCombo
               ? "That isn't a combination."

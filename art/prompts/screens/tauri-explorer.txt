@@ -1,0 +1,16 @@
+Not generated: a real capture of the app, reduced to the shared 1-bit dot grid.
+(The earlier generated illustration, a dual-pane file manager with a floating
+palette, is kept in art/raw/screen-tauri-explorer-v1.png.)
+
+1. Capture: tauri-explorer.vercel.app at 1440x900, deviceScaleFactor 2,
+   colorScheme dark; dismiss the hint; Ctrl+P, type "read".
+   -> art/raw/tauri-shots/app-dark-quickopen@2x.png
+2. node scripts/prep-ui-capture.mjs art/raw/tauri-shots/app-dark-quickopen@2x.png prep.png 842 200 600 400
+3. node scripts/dither-mask.mjs prep.png public/screens/tauri-explorer.png 360 240 3 4 1
+
+Gallery crops and lightbox sources (public/tauri/crop-*.webp, live-*@2x.webp)
+Not generated: cut from the real captures in art/raw/tauri-shots/*.png
+(2560x1600, a 1280x800 window at 2x) at native resolution, never upscaled.
+   node scripts/shot-crops.mjs
+The regions are recorded in that script. The earlier, upscaled crops are kept
+in art/raw/tauri-crops-v2/.

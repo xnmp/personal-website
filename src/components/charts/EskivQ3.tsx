@@ -19,12 +19,12 @@ export function EskivQ3() {
       stddev: number;
     };
 
-    return {
+    const baseOption: echarts.EChartsOption = {
       textStyle: notebookTextStyle(p),
       backgroundColor: "transparent",
       animationDuration: 1200,
       animationEasing: "cubicOut",
-      grid: { left: 64, right: 32, top: 28, bottom: 56 },
+      grid: { left: 64, right: 32, top: 36, bottom: 56 },
       tooltip: {
         trigger: "axis",
         backgroundColor: p.paper,
@@ -49,6 +49,7 @@ export function EskivQ3() {
         axisLabel: {
           color: p.inkSoft,
           interval: Math.ceil(bins.length / 10),
+          hideOverlap: true,
         },
       },
       yAxis: {
@@ -80,19 +81,36 @@ export function EskivQ3() {
               fontFamily: "var(--font-mono), monospace",
               fontSize: 11,
               position: "insideEndTop",
+              formatter: "{b}",
             },
             lineStyle: { color: p.ink, opacity: 0.7, width: 1.2 },
             data: [
               {
                 name: `mean = ${s.mean.toFixed(1)}`,
                 xAxis: nearestBin(bins, s.mean),
+                label: { position: "end", align: "right", offset: [-4, 0] },
               },
               {
                 name: `median = ${Math.round(s.median)}`,
                 xAxis: nearestBin(bins, s.median),
                 lineStyle: { type: "dashed" },
+                label: { position: "end", align: "left", offset: [4, 0] },
               },
             ],
+          },
+        },
+      ],
+    };
+
+    return {
+      baseOption,
+      media: [
+        {
+          query: { maxWidth: 520 },
+          option: {
+            grid: { left: 48, right: 12, top: 32, bottom: 52 },
+            xAxis: { nameGap: 28, axisLabel: { interval: Math.ceil(bins.length / 5), hideOverlap: true } },
+            yAxis: { nameGap: 34 },
           },
         },
       ],

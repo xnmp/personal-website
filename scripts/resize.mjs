@@ -1,5 +1,4 @@
 import sharp from 'sharp';
-import { readFileSync, writeFileSync } from 'fs';
 const [,, input, output, width, height, fit='cover'] = process.argv;
 const img = sharp(input);
 if (height) {

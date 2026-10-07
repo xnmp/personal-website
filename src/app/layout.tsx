@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Archivo, JetBrains_Mono } from "next/font/google";
 import { CommandIndex } from "@/components/instrument/CommandIndex";
 import "./globals.css";
 
-// Both fonts come from the dotfiles: Inter is the wezterm window-frame font,
-// JetBrains Mono is the terminal face. Same provenance as the colors.
-const inter = Inter({
+// Archivo is the silkscreen printed on the faceplates: wide for labels and
+// normal width for reading, so the `wdth` axis is included.
+const print = Archivo({
   subsets: ["latin"],
-  variable: "--font-ui",
+  axes: ["wdth"],
+  // a real italic: the synthetic slant swallowed the space after <em>
+  style: ["normal", "italic"],
+  variable: "--font-print",
   display: "swap",
 });
 
+// JetBrains Mono is the terminal face from the dotfiles. It only appears inside screens.
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
@@ -19,9 +23,9 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://chong.md"),
-  title: "chong — tools, games, small studies",
+  title: "chong: tools, games, and the agents that play them",
   description:
-    "A session over the things I keep building: a file manager, a query compiler, card-game AIs, and the harnesses that build them.",
+    "A rack of things I build: a keyboard-first file manager in alpha, a markdown editor, a mood diary, a Hyprland status bar, and agents for Brood War, Magic and a family card game.",
 };
 
 // Runs before paint so the stored rice applies without a flash.
@@ -34,7 +38,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${mono.variable}`}
+      className={`${print.variable} ${mono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />

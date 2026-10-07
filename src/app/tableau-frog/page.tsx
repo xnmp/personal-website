@@ -50,12 +50,12 @@ export default function TableauFrogPage() {
         <Reveal>
           <div className="tf-kicker">keyboard-first · ai-native · variables-first</div>
           <h1 className="tf-h1">
-            You don&rsquo;t pick charts.
+            You don’t pick charts.
             <br />
             You pick <span className="em">variables.</span>
           </h1>
           <p className="tf-lede">
-            <b>tableau-frog</b>{" "}is a data explorer for people who&rsquo;d rather type than click. Assign
+            <b>tableau-frog</b>{" "}is a data explorer for people who’d rather type than click. Assign
             columns to <span style={{ color: "var(--ink)" }}>x / y / z</span> slots and the chart is
             inferred. Brush any panel and one global <span style={{ color: "var(--ink)" }}>lens</span>{" "}
             recolours every other panel by statistical contrast — over-represented in red, under in blue,
@@ -75,7 +75,7 @@ export default function TableauFrogPage() {
       <section className="tf-wrap tf-section" id="demo">
         <div className="tf-section-head">
           <div className="tf-eyebrow"><span className="idx">01</span> the lens, live</div>
-          <h2 className="tf-h2">This isn&rsquo;t a video. <span className="em">Drag a box.</span></h2>
+          <h2 className="tf-h2">This isn’t a video. <span className="em">Drag a box.</span></h2>
           <p className="tf-sub">
             2,000 synthetic signups with a cohort hiding in them. The scatter is the source panel — brush a
             region and the responder panels recolour by real log-ratio prevalence, each group two-proportion
@@ -102,7 +102,7 @@ export default function TableauFrogPage() {
                 The source panel keeps population colours with an accent ring; every responder colours its
                 groups by prevalence log-ratio, clamped to ±ln 4 so a 2× lift reads half-saturated. Switch a
                 panel to <code style={{ color: "var(--yellow)" }}>significant</code> mode and groups whose
-                enrichment isn&rsquo;t statistically real fade to neutral gray. Shift-brush composes; the chip
+                enrichment isn’t statistically real fade to neutral gray. Shift-brush composes; the chip
                 pops the newest clause; <span className="tf-kbd">Esc</span> clears.
               </p>
             </div>
@@ -170,7 +170,7 @@ export default function TableauFrogPage() {
                 height={875}
               />
               <div className="tf-callouts">
-                <span className="tf-callout red">&ldquo;Pro-plan users drive the enriched cohort&rdquo; · HIGH</span>
+                <span className="tf-callout red">“Pro-plan users drive the enriched cohort” · HIGH</span>
                 <span className="tf-callout">test → panel x:plan · y:age</span>
                 <span className="tf-callout aqua">test → lens: plan = pro</span>
               </div>
@@ -183,7 +183,7 @@ export default function TableauFrogPage() {
               <h3>Apply the tests → confirm or reject</h3>
               <p>
                 Each test spawns real panels tagged <code style={{ color: "var(--yellow)" }}>H1 test</code>,
-                edits the lens, or trains a model — applied in dependency order. The card&rsquo;s border
+                edits the lens, or trains a model — applied in dependency order. The card’s border
                 colours with your verdict; the trail is saved per dataset.
               </p>
               <Window
@@ -217,7 +217,7 @@ export default function TableauFrogPage() {
               <p className="tf-sub" style={{ marginTop: 16 }}>
                 The assistant summarises your dataset to <i>shape only</i> — types, ranges, capped category
                 counts, row count; <b>never a row of data leaves</b> — then returns a validated plan of
-                panels, a composed lens, and derived columns. &ldquo;Explain selection&rdquo; answers from the
+                panels, a composed lens, and derived columns. “Explain selection” answers from the
                 actual contrast summaries, not a hallucinated story.
               </p>
               <div className="tf-callouts" style={{ marginTop: 18 }}>
