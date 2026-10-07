@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature } from "@/components/notebook";
-import { Screen, Cap } from "@/components/rack";
+import { Screen, Cap, Key } from "@/components/rack";
 
 export const metadata: Metadata = {
   title: "AutomatedSpike: Magic decks nobody has built yet",
@@ -39,7 +38,7 @@ export default function AutomatedSpikePage() {
         }
         nav={
           <>
-            <Link href="/">← the rack</Link>
+            <Key href="/">← all projects</Key>
           </>
         }
       />
@@ -314,7 +313,7 @@ export default function AutomatedSpikePage() {
       </main>
       <footer className="folio">
         <span className="fine-only">
-          Press <Cap>/</Cap> for the other modules
+          Press <Cap>/</Cap> for the other projects
         </span>
         <span>09 / 11</span>
       </footer>

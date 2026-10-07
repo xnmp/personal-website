@@ -18,13 +18,12 @@ export function ModuleCard({ p }: { p: Project }) {
       aria-labelledby={`${p.slug}-title`}
       aria-describedby={`${p.slug}-heading`}
     >
+      {/* the sheet hangs on a pin in its status's colour */}
+      <Led status={p.status} className="sheet-pin" />
       <div className="module-inner">
         <span className="module-top silk">
           <span className="module-num">{p.number}</span>
-          <span className="module-status">
-            <Led status={p.status} />
-            {statusLabel[p.status]}
-          </span>
+          <span className="module-status">{statusLabel[p.status]}</span>
         </span>
         <Screen art={p.art} tone={p.tone} />
         <div className="module-body">

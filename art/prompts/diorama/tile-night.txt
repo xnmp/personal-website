@@ -1,0 +1,3 @@
+Recreate the attached reference (ref.png, a button tile cut from cream mounting board) as the same tile cut from deep slate-indigo painted mounting board (face about #36405a): identical outline, size, corner radius and position in the frame, the board thickness band along the bottom edge in a darker slate, lit softly from the upper left, matte paper texture. No label, no text, no shadow. Wide 16:9 image.
+
+Background: use a fully transparent background (as in the reference). No text anywhere.

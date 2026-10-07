@@ -1,5 +1,0 @@
-Game UI asset, product-render quality. A seamless, tileable square texture: the recessed rear panel at the back of a 19-inch equipment rack, seen perfectly orthographic straight-on, filling the whole frame edge to edge (no border, no frame, no vignette).
-Material: black powder-coated steel sheet (#141518), fine even orange-peel texture, matching the bead-blasted black anodised aluminium of the reference faceplate.
-A perfectly regular grid of small round ventilation perforations punched through the sheet: staggered (60-degree) pattern, holes about 1.6% of the frame width across, centres about 3.2% apart, so the grid repeats an exact whole number of times across the frame in both directions. Through each hole: near-black void. Each hole's punched edge catches a faint highlight on its lower-right lip from a key light at upper-left and is shadowed on its upper-left lip.
-The panel sits deep inside the rack in shade: low overall brightness, even illumination across the whole frame with no gradient, no hot spot, no falloff, so it tiles invisibly.
-No text, no labels, no logos, no screws, no seams, no rails, no equipment.

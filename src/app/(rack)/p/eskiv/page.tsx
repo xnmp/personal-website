@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   RunningHead,
   Tags,
@@ -7,7 +6,7 @@ import {
   Plate,
   Folio,
 } from "@/components/notebook";
-import { Screen } from "@/components/rack";
+import { Screen, Key } from "@/components/rack";
 import { EskivQ1 } from "@/components/charts/EskivQ1";
 import { EskivQ2 } from "@/components/charts/EskivQ2";
 import { EskivQ3 } from "@/components/charts/EskivQ3";
@@ -31,7 +30,7 @@ export default function EskivPage() {
         }
         nav={
           <>
-            <Link href="/">← the rack</Link>
+            <Key href="/">← all projects</Key>
           </>
         }
       />

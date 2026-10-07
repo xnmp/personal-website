@@ -1,0 +1,3 @@
+Recreate the attached reference (ref.png: a strip of sage-green paper label tape with torn ends, on a transparent background) as the same tape seen at night by moonlight: a deep, muted moss-sage (about #4f5b4c), a shade cooler, with a faint cool blue-grey sheen along its top edge where the moonlight catches it. It must read as the same paper as the reference, only darker, so light cream type printed on it would be easy to read.
+
+Keep the identical shape, outline, torn ends, fibres, size and framing of the reference, and keep every transparent area transparent (use a transparent background). Keep the matte paper texture. No shadow. Same 16:9 frame. No text.

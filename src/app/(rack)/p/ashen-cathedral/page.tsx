@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature } from "@/components/notebook";
-import { Screen, Cap } from "@/components/rack";
+import { Screen, Cap, Key } from "@/components/rack";
 
 export const metadata: Metadata = {
   title: "Ashen Cathedral: a dungeon crawler built from scripts",
@@ -26,7 +25,7 @@ export default function AshenCathedralPage() {
         }
         nav={
           <>
-            <Link href="/">← the rack</Link>
+            <Key href="/">← all projects</Key>
           </>
         }
       />
@@ -272,7 +271,7 @@ export default function AshenCathedralPage() {
       </main>
       <footer className="folio">
         <span className="fine-only">
-          Press <Cap>/</Cap> for the other modules
+          Press <Cap>/</Cap> for the other projects
         </span>
         <span>07 / 11</span>
       </footer>

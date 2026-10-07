@@ -1,0 +1,5 @@
+From the attached reference (ref.png: a grove of layered cut-paper pines at the right edge of a 16:9 diorama frame, on a transparent background), reproduce only the front row of two shorter pines standing in front of the back row's lower half, exactly as they appear: the same shapes, sizes, positions, stacked branch tiers, snow, colours, paper texture and soft upper-left lighting, each trunk running down to the bottom edge of the frame.
+
+Leave out the back row of taller trees completely: wherever a back-row tree showed between or above the front-row trees, the frame must be fully transparent.
+
+Same 16:9 framing as the reference. Everything else fully transparent (use a transparent background). No text.

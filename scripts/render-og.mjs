@@ -14,7 +14,9 @@ const cards = {
 };
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 2, colorScheme: "dark" });
+const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 2, reducedMotion: "reduce" });
+// the cards wear the light rice: the alpenglow diorama is the site's signature
+await page.addInitScript(() => localStorage.setItem("nb-rice", "paper"));
 for (const [card, outs] of Object.entries(cards)) {
   await page.goto(`${base}/og/${card}`, { waitUntil: "networkidle" });
   await page.addStyleTag({ content: "nextjs-portal { display: none !important; } .led[data-blink=true]::after { animation: none !important; }" }); // dev badge; the blinking lamp frozen lit

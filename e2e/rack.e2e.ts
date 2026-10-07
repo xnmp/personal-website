@@ -132,6 +132,40 @@ test("no word is glued to the end of an inline element", async ({ request }) => 
   }
 });
 
+// JSX drops a line break next to an element, so prose broken across lines
+// around an element loses its space (`…</span>` then `so a file` renders
+// `,so a file`; `crates` then `<span>(` renders `crates(`). Checked in the
+// rendered prose, with code standing in as a word.
+test("prose keeps its spaces around inline elements", async ({ page }) => {
+  const routes = ["/", ...projects.map((p) => p.href)];
+  for (const route of routes) {
+    await page.goto(route);
+    const glued = await page.evaluate(() => {
+      const body = document.body.cloneNode(true) as HTMLElement;
+      body.querySelectorAll("script, style, svg, pre, code, kbd").forEach((e) => e.replaceWith("X"));
+      return [...body.querySelectorAll("p, li, dd, figcaption, h1, h2, h3")]
+        .flatMap((e) => (e.textContent ?? "").match(/[a-z]\(|[,;](?=[A-Za-z])/g) ?? []);
+    });
+    expect(glued, route).toEqual([]);
+  }
+});
+
+test("on a narrow phone the masthead keeps the brand and both keys on one row", async ({ page }) => {
+  for (const width of [320, 360]) {
+    await page.setViewportSize({ width, height: 700 });
+    for (const route of ["/", "/p/tauri-explorer"]) {
+      await page.goto(route);
+      const brand = await page.locator(".running-head .brand").boundingBox();
+      for (const key of await page.locator(".running-head .instruments .key").all()) {
+        const k = (await key.boundingBox())!;
+        // the key's box spans the brand's middle: the same row
+        expect(k.y, `${route} at ${width}`).toBeLessThan(brand!.y + brand!.height / 2);
+        expect(k.y + k.height, `${route} at ${width}`).toBeGreaterThan(brand!.y + brand!.height / 2);
+      }
+    }
+  }
+});
+
 test("nothing scrolls sideways at 320px", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   for (const route of ["/", "/p/tauri-explorer", "/p/eskiv", "/p/zheng-shang-you"]) {

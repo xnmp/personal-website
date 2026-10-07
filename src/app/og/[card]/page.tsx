@@ -27,7 +27,7 @@ function HomeCard() {
         <h1 className="og-title">
           Tools I use every day, <span className="soft">and agents for the games I grew up on.</span>
         </h1>
-        <span className="silk">11 modules &nbsp;·&nbsp; chong.md</span>
+        <span className="silk">11 projects &nbsp;·&nbsp; chong.md</span>
       </div>
       <div className="og-tiles">
         {tiles.map((p) => (
@@ -45,7 +45,9 @@ function TauriCard() {
         <span className="silk og-kicker">
           <Led color="signal" /> Tauri Explorer &nbsp;·&nbsp; alpha testers wanted
         </span>
-        <h1 className="og-title">Ctrl+P for your filesystem.</h1>
+        <h1 className="og-title">
+          Ctrl<span className="chord-plus">+</span>P for your filesystem.
+        </h1>
         <span className="og-caps">
           <Cap>Ctrl</Cap>
           <span className="chord-plus">+</span>

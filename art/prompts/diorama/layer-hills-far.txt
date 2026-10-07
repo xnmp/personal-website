@@ -1,0 +1,3 @@
+Reproduce only the middle distance of the attached reference (ref.png, a cut-paper diorama landscape): the rolling sage and green hills behind and around the river, the small pines standing on those hills, and the pale blue river, with their exact shapes and positions. Continue the hill paper downward to the bottom edge of the frame so there are no holes. Exclude the distant mountains, the sky, the nearest foreground hills at the bottom corners, and the tall pine trees at the far left and far right edges.
+
+Everything else in the frame must be fully transparent (use a transparent background). Keep the exact cut-paper style, paper texture, colours and soft upper-left lighting of the reference. Same 16:9 framing as the reference. No text.

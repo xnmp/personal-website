@@ -1,0 +1,3 @@
+Reproduce only the cluster of tall cut-paper pine trees at the far right edge of the attached reference (ref.png, a cut-paper diorama landscape), with their exact shapes, sizes and positions, including the trunks down to the bottom edge of the frame. Exclude everything else: sky, sun, clouds, mountains, hills, river and the pines on the left.
+
+Everything else in the frame must be fully transparent (use a transparent background). Keep the exact cut-paper style, paper texture, colours and soft upper-left lighting of the reference. Same 16:9 framing as the reference. No text.

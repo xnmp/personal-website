@@ -4,3 +4,5 @@ export { Key, Cap } from "./Key";
 export { ModuleCard } from "./ModuleCard";
 export { RackKeys } from "./RackKeys";
 export { Rack } from "./Rack";
+export { Scene } from "./Scene";
+export { Prop } from "./Prop";

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import {
   RunningHead,
@@ -10,7 +9,7 @@ import {
   Feature,
   Folio,
 } from "@/components/notebook";
-import { Screen } from "@/components/rack";
+import { Cap, Screen, Key } from "@/components/rack";
 
 export const metadata = {
   title: "Tableau Frog: point at a difference, learn if it's real",
@@ -30,8 +29,8 @@ export default function TableauFrogPage() {
         }
         nav={
           <>
-            <Link href="/">← the rack</Link>
-            <Link href="/tableau-frog">the interactive showcase →</Link>
+            <Key href="/">← all projects</Key>
+            <Key href="/tableau-frog">the showcase →</Key>
           </>
         }
       />
@@ -108,7 +107,7 @@ export default function TableauFrogPage() {
               />
             </Plate>
             <p style={{ marginTop: 20 }}>
-              <code>Ctrl+I</code> on a selection generates hypotheses. Each one is
+              <Cap inline>Ctrl+I</Cap> on a selection generates hypotheses. Each one is
               phrased so the data can prove it wrong, has a one-click
               projection that tests it, and gets its verdict recorded per dataset. The
               privacy line is enforced by the architecture rather than by policy: only shape metadata

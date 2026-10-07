@@ -1,0 +1,3 @@
+Recreate the attached reference (ref.png, the foreground-hill layer of a cut-paper diorama) in the palette of palette.jpg: dark blue-green paper hills dusted with pale cool snow, catching a faint warm rose light along their upper rims. Take the colours, and only the colours, from palette.jpg, a photograph of alpine mountains at dusk: calm and cool, with a warm alpenglow.
+
+Keep the identical shapes, outlines, positions and framing of every element from ref.png, and keep every transparent area transparent (use a transparent background). Keep the cut-paper construction and the visible paper texture. Same 16:9 frame. No text.

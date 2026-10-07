@@ -23,7 +23,7 @@ export function RunningHead({ brand, meta, nav }: Props) {
       </div>
       <div className="meta silk">{meta}</div>
       <Instruments />
-      {nav ? <nav className="head-nav silk">{nav}</nav> : null}
+      {nav ? <nav className="head-nav" aria-label="Pages">{nav}</nav> : null}
     </header>
   );
 }

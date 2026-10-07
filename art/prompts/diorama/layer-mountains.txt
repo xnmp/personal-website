@@ -1,0 +1,3 @@
+Reproduce only the distant mountain range of the attached reference (ref.png, a cut-paper diorama landscape): the blue-grey and slate cut-paper mountains on the horizon, with their exact shapes, sizes and positions in the frame. Continue their paper downward to the bottom edge of the frame in the same mountain paper, so no gap would show below them when nearer layers move.
+
+Everything else in the frame must be fully transparent (use a transparent background). Keep the exact cut-paper style, paper texture, colours and soft upper-left lighting of the reference. Same 16:9 framing as the reference. No text.

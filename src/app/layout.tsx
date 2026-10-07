@@ -1,20 +1,29 @@
 import type { Metadata } from "next";
-import { Archivo, JetBrains_Mono } from "next/font/google";
+import { Archivo, JetBrains_Mono, Newsreader } from "next/font/google";
 import { CommandIndex } from "@/components/instrument/CommandIndex";
 import "./globals.css";
 
-// Archivo is the silkscreen printed on the faceplates: wide for labels and
-// normal width for reading, so the `wdth` axis is included.
+// Three type roles (art/BRIEF.md). Newsreader sets the headlines on the paper.
+// The optical-size axis lets display sizes tighten.
+const display = Newsreader({
+  subsets: ["latin"],
+  axes: ["opsz"],
+  style: ["normal", "italic"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+// Archivo is the body and UI face on the paper.
 const print = Archivo({
   subsets: ["latin"],
-  axes: ["wdth"],
   // a real italic: the synthetic slant swallowed the space after <em>
   style: ["normal", "italic"],
   variable: "--font-print",
   display: "swap",
 });
 
-// JetBrains Mono is the terminal face from the dotfiles. It only appears inside screens.
+// JetBrains Mono is the terminal face from the dotfiles: screens, key legends
+// and the labels typed on paper tape.
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
@@ -25,11 +34,14 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://chong.md"),
   title: "chong: tools, games, and the agents that play them",
   description:
-    "A rack of things I build: a keyboard-first file manager in alpha, a markdown editor, a mood diary, a Hyprland status bar, and agents for Brood War, Magic and a family card game.",
+    "Things I build: a keyboard-first file manager in alpha, a markdown editor, a mood diary, a Hyprland status bar, and agents for Brood War, Magic and a family card game.",
 };
 
-// Runs before paint so the stored rice applies without a flash.
-const themeInit = `(function(){try{var r=localStorage.getItem("nb-rice");var ok=["paper","horizon","cosmic-dusk","rapture"];if(ok.indexOf(r)===-1){r=window.matchMedia("(prefers-color-scheme: dark)").matches?"cosmic-dusk":"paper"}document.documentElement.dataset.rice=r}catch(e){}})()`;
+// Runs before paint so the stored rice applies without a flash, and so the
+// scene knows before its first frame whether the 3D diorama will draw it
+// (components/rack/Scene.tsx): only with motion allowed, WebGL 2, and not on
+// a low-memory or data-saving device. `nb-scene=flat` in localStorage opts out.
+const themeInit = `(function(){var d=document.documentElement;try{var r=localStorage.getItem("nb-rice");var ok=["paper","horizon","cosmic-dusk","rapture"];if(ok.indexOf(r)===-1){r=window.matchMedia("(prefers-color-scheme: dark)").matches?"cosmic-dusk":"paper"}d.dataset.rice=r}catch(e){}try{var n=navigator,m=n.deviceMemory,c=n.connection;if(window.matchMedia("(prefers-reduced-motion: no-preference)").matches&&window.WebGL2RenderingContext&&!(m&&m<4)&&!(c&&c.saveData)&&localStorage.getItem("nb-scene")!=="flat"){d.dataset.sceneMode="3d"}}catch(e){}})()`;
 
 export default function RootLayout({
   children,
@@ -38,7 +50,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${print.variable} ${mono.variable}`}
+      className={`${display.variable} ${print.variable} ${mono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />

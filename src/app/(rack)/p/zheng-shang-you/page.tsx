@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   RunningHead,
   Tags,
@@ -29,8 +28,8 @@ export default function ZsyPage() {
         }
         nav={
           <>
-            <Link href="/">← the rack</Link>
-            <Link href="/p/zheng-shang-you/play">play against the strategist →</Link>
+            <Key href="/">← all projects</Key>
+            <Key href="/p/zheng-shang-you/play">play it →</Key>
           </>
         }
       />

@@ -1,0 +1,3 @@
+Recreate the attached reference (ref.png: layered cut-paper pines at the edge of a 16:9 diorama frame, on a transparent background) at night, in the colours of palette.jpg (the same pines at night): near-black blue-green card, the stacked branch tiers a shade lighter than the silhouette sheet behind them, cool moonlit edges along the upper-left sides of the branches, and the snow on the tips a dim cool blue-grey, with no warm light anywhere.
+
+Keep the identical shapes, outlines, positions, stacked tiers and framing of every element from ref.png, and keep every transparent area transparent (use a transparent background). Keep the cut-paper construction and the visible paper texture. Same 16:9 frame. No text.

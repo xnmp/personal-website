@@ -1,0 +1,5 @@
+Redraw the attached reference (ref.png: layered cut-paper pine trees at the edge of a 16:9 diorama frame, on a transparent background) in the exact material of palette.jpg, which shows the mountains and hills of the same diorama: thin, matte, flat-cut card with crisp cut edges and a fine paper-fibre texture, lit softly from the upper left.
+
+Keep every tree's stacked construction (a back silhouette sheet with separate tiers of branches laid over it), but make each tier a flat sheet of card: its depth must come only from the thin soft shadow each tier casts on the sheet beneath, never from carved, embossed, puffy, felt-like or clay-like surface relief, and with no glossy or specular highlights. Snow on the branch tips is flat cut paper too.
+
+Keep the identical shapes, outlines, positions, sizes, colours and framing of every tree from ref.png, and keep every transparent area transparent (use a transparent background). Same 16:9 frame. No text.

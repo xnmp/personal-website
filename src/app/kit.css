@@ -1,166 +1,448 @@
 /* ==========================================================================
-   THE BENCH: authored raster kit (see art/BRIEF.md)
-   The chassis is a physical object. It has two finishes: anodised graphite
-   for the dark rices and powder-coat for "paper". The rice colours belong to
-   the screens only. Every surface below is a generated bitmap composited with
-   9-slice border-image, so corners and screws never stretch.
+   PAPER DIORAMA: authored raster kit (see art/BRIEF.md)
+   The site is a cut-paper shadow box. Sheets of torn watercolour paper are
+   pinned over a layered paper landscape. Screens are mounted in card window
+   mats, controls are tiles cut from mounting board, and status is the colour
+   of a pushpin. Every surface is a generated bitmap
+   (scripts/build-paper-kit.mjs) composited with 9-slice border-image. Each
+   bitmap carries its own cast shadow in a transparent margin, which
+   border-image-outset hangs outside the box, so the paper edge is the box
+   edge. There are two finishes: alpenglow (a mountain dusk) for the "paper"
+   rice, and night for the dark rices. The rice colours belong to the screens
+   only.
+
+   The class names are the site's structural roles and outlive any one skin:
+   .faceplate is a surface (a sheet), .key a control (a tile), .screen a
+   mounted screen (a mat), .led a status marker (a pin).
    ========================================================================== */
 
 :root {
-  /* slice insets, measured on the source bitmaps in public/kit */
-  --slice-plate: 96;
-  --slice-bezel: 110;
-  --slice-key: 38;
+  /* Source geometry in bitmap px (shadow pad + paper corner), from
+     scripts/build-paper-kit.mjs. A 9-slice renders at --*-k CSS px per
+     bitmap px. */
+  --slice-plate: 152; /* sheet: 96 pad + 56 paper */
+  --plate-k: 0.5;
+  --plate-w: calc(56px * var(--plate-k)); /* rendered paper corner */
+  --slice-key: 60; /* tile: 20 pad + 40 board */
+  --key-k: 0.4;
+  --key-w: calc(40px * var(--key-k));
+  /* the mat's window sits off-centre in its board, so its slices differ by
+     side: 40 pad + board to the window's bevel, measured per finish (set
+     with --k-bezel below) */
+  /* the mat's torn edge and bevel need about this scale to read as cut
+     board; the small screens on project cards take a narrower mat */
+  --mat-k: 0.26;
+  --bezel-w: calc(141px * var(--mat-k)); /* widest mat border, for layout math */
 
-  --plate-w: 38px; /* rendered corner size of a faceplate */
-  --bezel-w: 30px;
-  --key-w: 15px;
-  --rail-w: 56px;
-  --rack-gap: 10px; /* the seam between two modules */
-  /* a plate's corner screw sits 0.54 of its corner size in from the edge
-     (measured on plate-*-normal); rack-level plates overhang the rails by
-     this much, so those screws land on the rail's hole line */
-  --screw-in: calc(var(--plate-w) * 0.54);
-  --overhang: max(0px, calc(var(--rail-w) / 2 - var(--screw-in)));
+  --rack-gap: 40px; /* the scene shows between sheets */
 
-  --signal: #f0502a;
-
-  /* chassis: anodised graphite (default and dark rices) */
-  --print: #dcd8d0;
-  --print-soft: #a5a199;
-  --print-faint: #a29e96; /* >= 4.5:1 on the darkest plate */
-  --engrave-lo: rgba(0, 0, 0, 0.6);
-  --engrave-hi: rgba(255, 255, 255, 0.07);
-  --bench: #08090b;
-  --k-bench: url(/kit/bench-dark.webp);
-  --k-rail: url(/kit/rail-dark.webp);
-  --k-back: url(/kit/backpanel-dark.webp);
-  --back-shade: rgba(0, 0, 0, 0.62);
-  --k-plate: url(/kit/plate-dark-normal.webp);
-  --k-plate-hover: url(/kit/plate-dark-hover.webp);
-  --k-plate-pressed: url(/kit/plate-dark-pressed.webp);
-  --k-plate-focus: url(/kit/plate-dark-focus.webp);
-  --k-bezel: url(/kit/bezel-dark.webp);
-  --k-key: url(/kit/key-dark-normal.webp);
-  --k-key-hover: url(/kit/key-dark-hover.webp);
-  --k-key-pressed: url(/kit/key-dark-pressed.webp);
-  --k-key-focus: url(/kit/key-dark-focus.webp);
-  /* each 9-slice's centre material (mean of the art's middle), laid under it */
-  --plate-under: #353534;
-  --bezel-under: #2c3035;
-  --key-ink: #e4e1da;
-  --key-ink-soft: #9c9890;
+  /* night: the default, worn by every dark rice */
+  --signal: #e58f62; /* terracotta: the accent tile, the active pin, focus */
+  --signal-ink: #f0a27c; /* terracotta as text on the sheet (>= 4.5:1) */
+  --print: #ece3d1; /* cream ink on slate-indigo paper */
+  --print-soft: #c3bba9;
+  --print-faint: #b8b09e; /* >= 4.5:1 on the night sheet */
+  --engrave-lo: rgba(236, 227, 209, 0.2);
+  --engrave-hi: transparent;
+  --scene-ground: #1d2440;
+  --k-scene-flat: url(/kit/paper/scene-night.webp); /* flat, for the social cards */
+  --k-sky: url(/kit/paper/scene/night/sky.webp);
+  --k-sun: url(/kit/paper/scene/night/sun.webp); /* the moon (see .scene-sun) */
+  --sun-cx: 157;
+  --sun-cy: 105;
+  --sun-r: 52;
+  --k-mountains: url(/kit/paper/scene/night/mountains.webp);
+  --k-hills-far: url(/kit/paper/scene/night/hills-far.webp);
+  --k-hills-near: url(/kit/paper/scene/night/hills-near.webp);
+  --k-pines-left-back: url(/kit/paper/scene/night/pines-left-back.webp);
+  --k-pines-right-back: url(/kit/paper/scene/night/pines-right-back.webp);
+  --k-pines-left: url(/kit/paper/scene/night/pines-left.webp);
+  --k-pines-right: url(/kit/paper/scene/night/pines-right.webp);
+  --k-plate: url(/kit/paper/sheet-night-normal.webp);
+  --k-plate-hover: url(/kit/paper/sheet-night-hover.webp);
+  --k-plate-pressed: url(/kit/paper/sheet-night-pressed.webp);
+  --k-plate-focus: url(/kit/paper/sheet-night-focus.webp);
+  --k-plate-flat: url(/kit/paper/sheet-night-flat.webp);
+  --k-bezel: url(/kit/paper/mat-night.webp);
+  --mat-t: 159;
+  --mat-r: 177;
+  --mat-b: 160;
+  --mat-l: 181;
+  --k-key: url(/kit/paper/tile-night-normal.webp);
+  --k-key-hover: url(/kit/paper/tile-night-hover.webp);
+  --k-key-pressed: url(/kit/paper/tile-night-pressed.webp);
+  --k-key-focus: url(/kit/paper/tile-night-focus.webp);
+  --k-tape: url(/kit/paper/tape-sage-night.webp); /* the same tape by moonlight */
+  --tape-ink: #ece3d1;
+  /* the 3D scene's air: no cloud at night, fireflies in the valley */
+  --k-drift-cloud: none;
+  --motes: #ffc86a;
+  --motes-kind: fireflies;
+  /* each 9-slice's centre material (sampled from the art), laid under it */
+  --plate-under: #394154;
+  --bezel-under: #212937;
+  --key-under: #40475e;
+  --key-ink: #ece3d1;
+  --key-ink-soft: #c3bba9;
 }
 
+/* alpenglow: slate-lilac sky warming to peach, rose light on the snow */
 :root[data-rice="paper"] {
-  --print: #22211e;
-  --print-soft: #57534c;
-  --print-faint: #635f57; /* >= 4.5:1 on the powder-coat */
-  --engrave-lo: rgba(70, 60, 45, 0.28);
-  --engrave-hi: rgba(255, 255, 255, 0.75);
-  --bench: #cfcac1;
-  --k-bench: url(/kit/bench-light.webp);
-  --k-rail: url(/kit/rail-light.webp);
-  --k-back: url(/kit/backpanel-light.webp);
-  --back-shade: rgba(60, 50, 35, 0.32);
-  --k-plate: url(/kit/plate-light-normal.webp);
-  --k-plate-hover: url(/kit/plate-light-hover.webp);
-  --k-plate-pressed: url(/kit/plate-light-pressed.webp);
-  --k-plate-focus: url(/kit/plate-light-focus.webp);
-  --k-bezel: url(/kit/bezel-light.webp);
-  --k-key: url(/kit/key-light-normal.webp);
-  --k-key-hover: url(/kit/key-light-hover.webp);
-  --k-key-pressed: url(/kit/key-light-pressed.webp);
-  --k-key-focus: url(/kit/key-light-focus.webp);
-  --plate-under: #dfd6cb;
-  --bezel-under: #cac3bb;
-  --key-ink: #2a2925;
-  --key-ink-soft: #77736b;
+  --k-tape: url(/kit/paper/tape-sage.webp);
+  --tape-ink: #23211d;
+  --signal: #c4663f;
+  --signal-ink: #96441f;
+  --print: #23211d;
+  --print-soft: #4f4a42;
+  --print-faint: #5e584e; /* >= 4.5:1 on the alpenglow sheet */
+  --engrave-lo: rgba(35, 33, 29, 0.2);
+  --scene-ground: #9fa3b8;
+  --k-scene-flat: url(/kit/paper/scene-alpenglow.webp);
+  --k-sky: url(/kit/paper/scene/alpenglow/sky.webp);
+  --k-sun: url(/kit/paper/scene/alpenglow/sun.webp);
+  --sun-cx: 169;
+  --sun-cy: 96;
+  --sun-r: 55;
+  --k-mountains: url(/kit/paper/scene/alpenglow/mountains.webp);
+  --k-hills-far: url(/kit/paper/scene/alpenglow/hills-far.webp);
+  --k-hills-near: url(/kit/paper/scene/alpenglow/hills-near.webp);
+  --k-pines-left-back: url(/kit/paper/scene/alpenglow/pines-left-back.webp);
+  --k-pines-right-back: url(/kit/paper/scene/alpenglow/pines-right-back.webp);
+  --k-pines-left: url(/kit/paper/scene/alpenglow/pines-left.webp);
+  --k-pines-right: url(/kit/paper/scene/alpenglow/pines-right.webp);
+  --k-plate: url(/kit/paper/sheet-alpenglow-normal.webp);
+  --k-plate-hover: url(/kit/paper/sheet-alpenglow-hover.webp);
+  --k-plate-pressed: url(/kit/paper/sheet-alpenglow-pressed.webp);
+  --k-plate-focus: url(/kit/paper/sheet-alpenglow-focus.webp);
+  --k-plate-flat: url(/kit/paper/sheet-alpenglow-flat.webp);
+  --k-bezel: url(/kit/paper/mat-day.webp);
+  --mat-t: 153;
+  --mat-r: 179;
+  --mat-b: 169;
+  --mat-l: 177;
+  --k-key: url(/kit/paper/tile-alpenglow-normal.webp);
+  --k-key-hover: url(/kit/paper/tile-alpenglow-hover.webp);
+  --k-key-pressed: url(/kit/paper/tile-alpenglow-pressed.webp);
+  --k-key-focus: url(/kit/paper/tile-alpenglow-focus.webp);
+  /* a peach-lit cloud drifts across; motes of dust catch the low sun */
+  --k-drift-cloud: url(/kit/paper/cloud-b-alpenglow.webp);
+  --motes: #ffd6b8;
+  --motes-kind: dust;
+  --plate-under: #e7dacd;
+  --bezel-under: #b2a9b2;
+  --key-under: #e9daca;
+  --key-ink: #23211d;
+  --key-ink-soft: #5e584e;
 }
 
 @media (max-width: 720px) {
   :root {
-    --plate-w: 28px;
-    --bezel-w: 22px;
-    --rail-w: 22px;
-    --rack-gap: 8px;
+    --plate-k: 0.4;
+    --mat-k: 0.2;
+    --rack-gap: 28px;
   }
 }
 
-/* ---------- bench + rack ---------- */
+/* ---------- the scene + the column of sheets ---------- */
 
 body:has(.rack) {
-  background: var(--bench);
+  background: var(--scene-ground);
   color: var(--print);
 }
 
-/* The backdrop is fixed on its own layer: `background-attachment: fixed` is
-   ignored on iOS and repaints on every scroll elsewhere. */
-.bench {
+/* The scene is fixed on its own layer: `background-attachment: fixed` is
+   ignored on iOS and repaints on every scroll elsewhere. Its layers are
+   full-frame bitmaps with identical framing, all fitted the same way, so
+   they register. The scene is composed with a calm centre (sky, distant
+   hills) and all its incident at the edges and the foot, so it is anchored
+   to the bottom: on a tall viewport the extra room is sky. */
+.scene {
   position: fixed;
   inset: 0;
   z-index: -2;
-  /* The art is a prop-free woven mat (scripts/bench-mat.mjs), even in light
-     and tone, so it simply covers the viewport at any aspect. */
-  background: var(--bench) var(--k-bench) center / cover no-repeat;
+  background: var(--scene-ground);
+  overflow: hidden;
 }
 
-/* Behind the modules is the rack's own back panel (perforated sheet, built by
-   scripts/build-backpanel.mjs at 2x), recessed: the rails shade it where it
-   meets them, so the seams between modules read as depth, not as the bench. */
-.rack {
-  position: relative;
-  max-width: calc(1180px + 2 * var(--rail-w));
-  margin: 0 auto;
-  padding: 18px var(--rail-w) 64px;
-  min-height: 100vh;
-  background:
-    linear-gradient(
-      90deg,
-      var(--back-shade) var(--rail-w),
-      transparent calc(var(--rail-w) + 48px),
-      transparent calc(100% - var(--rail-w) - 48px),
-      var(--back-shade) calc(100% - var(--rail-w))
-    ),
-    var(--k-back) center top / 112px 96px repeat;
+.scene-layer {
+  position: absolute;
+  inset: 0;
+  background: var(--layer) center bottom / cover no-repeat;
 }
 
-.rack::before,
-.rack::after {
+[data-layer="sky"] { --layer: var(--k-sky); }
+
+/* The sun (or moon) hangs upper left, where the brief puts the light. It is
+   cut out of the sky art (scripts/lift-sun.mjs) so it can be placed on its
+   own: the sky has to be cropped to cover the frame, and at narrow widths
+   that crop would take the sun off the edge or behind the masthead. Its disc
+   is --sun-d across, centred on (--sun-x, --sun-y): in the margin beside the
+   column on a wide screen; narrower, in the corner above the masthead that
+   the column keeps clear for it (.rack below). The 3D scene places its sun
+   from the same tokens (scene3d/framing.ts sunRect). --sun-sw/sh are the
+   sprite's size and --sun-cx/cy/r its disc, in sprite px, per finish. */
+@property --sun-x { syntax: "<length>"; inherits: true; initial-value: 58px; }
+@property --sun-y { syntax: "<length>"; inherits: true; initial-value: 100px; }
+@property --sun-d { syntax: "<length>"; inherits: true; initial-value: 92px; }
+
+:root {
+  --sun-d: clamp(80px, 6.4vw, 120px);
+  --sun-x: clamp(48px, (100vw - 1180px) * 0.225, 160px);
+  --sun-y: 100px;
+  --sun-sw: 274;
+  --sun-sh: 236;
+}
+
+/* Narrower, the disc sits in the corner above the masthead (.rack's top
+   padding leaves room for it), inset from both edges by more than its
+   cloud reaches (about two radii left of the disc), and clear of the
+   masthead below it. */
+@media (max-width: 1399px) {
+  :root {
+    --sun-d: 48px;
+    --sun-x: 64px;
+    --sun-y: 36px;
+  }
+}
+
+@media (max-width: 720px) {
+  :root {
+    --sun-d: 30px;
+    --sun-x: 44px;
+    --sun-y: 18px;
+  }
+}
+
+.scene-sun {
+  --sun-px: calc(var(--sun-d) / (2 * var(--sun-r))); /* screen px per sprite px */
+  position: absolute;
+  left: calc(var(--sun-x) - var(--sun-px) * var(--sun-cx));
+  top: calc(var(--sun-y) - var(--sun-px) * var(--sun-cy));
+  width: calc(var(--sun-px) * var(--sun-sw));
+  height: calc(var(--sun-px) * var(--sun-sh));
+  background: var(--k-sun) center / 100% 100% no-repeat;
+}
+
+[data-layer="mountains"] { --layer: var(--k-mountains); }
+[data-layer="hills-far"] { --layer: var(--k-hills-far); }
+[data-layer="hills-near"] { --layer: var(--k-hills-near); }
+[data-layer="pines-left-back"] { --layer: var(--k-pines-left-back); }
+[data-layer="pines-right-back"] { --layer: var(--k-pines-right-back); }
+[data-layer="pines-left"] { --layer: var(--k-pines-left); }
+[data-layer="pines-right"] { --layer: var(--k-pines-right); }
+
+/* One loose cloud drifts across the sky, in front of the painted ones, lit
+   peach by the low sun. Not at night: pale paper reads as a hole in the
+   night sky. */
+.scene::after {
   content: "";
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: var(--rail-w);
-  background: var(--k-rail) center top / var(--rail-w) auto repeat-y;
-  pointer-events: none;
-}
-
-.rack::before {
+  top: 18vh; /* below the masthead strip, so it never reads as a tab hanging off it */
   left: 0;
+  width: clamp(180px, 18vw, 300px);
+  aspect-ratio: 768 / 325;
+  background: var(--k-drift-cloud) center / contain no-repeat;
+  translate: -110% 0;
+  animation: cloud-drift 150s linear -40s infinite;
+  display: none;
 }
 
-.rack::after {
-  right: 0;
+/* not on a phone: there the sheets fill the width, and a cloud would only
+   show as a sliver in the gap under the masthead */
+@media (min-width: 721px) {
+  :root[data-rice="paper"] .scene::after {
+    display: block;
+  }
 }
 
-/* Plates mount on the rails: each rack-level plate overhangs the rails so its
-   corner screws sit on the hole line, and the rail shows in the seams between
-   plates, as on a real rack. */
+@keyframes cloud-drift {
+  to {
+    translate: 100vw 0;
+  }
+}
+
+/* ---------- the 3D diorama (components/rack/scene3d) ----------
+   Where the head script chose it (data-scene-mode="3d"), a canvas draws the
+   same layers in depth and light over the CSS sky. The CSS layers in front
+   of the sky stand down; if the 3D scene fails or starts too slowly, the
+   mode is dropped and they rise as usual. */
+.scene-gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity 360ms ease-out;
+}
+
+:root:not([data-scene-mode="3d"]) .scene-gl {
+  display: none;
+}
+
+:root[data-scene-gl="on"] .scene-gl {
+  opacity: 1;
+}
+
+:root[data-scene-mode="3d"] .scene-layer:not([data-layer="sky"]) {
+  visibility: hidden;
+  animation: none;
+}
+
+:root[data-scene-mode="3d"] .scene::after {
+  display: none;
+}
+
+/* ---------- motion: the pop-up book ----------
+   On the first load the layers rise into place back to front. Each rises
+   from below the frame's bottom edge (the scene clips it) and settles with
+   a slight overshoot, as a pop-up page does when it opens. The sky only
+   fades up. Then the sheets come down onto the scene. While you scroll, the
+   near layers sink faster than the far ones, as if you were rising above the
+   valley. Reduced motion gets the finished scene, still. */
+@media (prefers-reduced-motion: no-preference) {
+  .scene-layer {
+    animation: layer-rise 1150ms cubic-bezier(0.22, 1.18, 0.36, 1) var(--rise-delay) both;
+  }
+
+  [data-layer="sky"],
+  .scene-sun { animation: layer-fade 700ms ease-out both; }
+  [data-layer="mountains"] { --rise-from: 0 7%; --rise-delay: 120ms; --sink: 2vh; }
+  [data-layer="hills-far"] { --rise-from: 0 14%; --rise-delay: 270ms; --sink: 5vh; }
+  [data-layer="hills-near"] { --rise-from: 0 22%; --rise-delay: 420ms; --sink: 9vh; }
+  [data-layer="pines-left-back"] { --rise-from: -10% 12%; --rise-delay: 560ms; --sink: 11vh; }
+  [data-layer="pines-right-back"] { --rise-from: 10% 12%; --rise-delay: 620ms; --sink: 11vh; }
+  [data-layer="pines-left"] { --rise-from: -12% 10%; --rise-delay: 690ms; --sink: 13vh; }
+  [data-layer="pines-right"] { --rise-from: 12% 10%; --rise-delay: 760ms; --sink: 13vh; }
+
+  /* a sheet is laid down onto the scene, back to front down the page */
+  .rack-inner > * {
+    animation: sheet-down 760ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+    animation-delay: calc(var(--sheets-after, 520ms) + var(--nth, 6) * 70ms);
+  }
+
+  /* The 3D scene pops up from lying flat, which takes longer than the CSS
+     rise, and it can only start once three.js and the art are in: the sheets
+     wait for its first frame (Scene.tsx gives up on it after a short
+     budget, and then they come in over the CSS scene), then come down while
+     the near layers are still rising, so the headline is never held back. */
+  :root[data-scene-mode="3d"] .rack-inner > * {
+    --sheets-after: 300ms; /* over the scene's pop-up, not after it */
+  }
+  :root[data-scene-mode="3d"]:not([data-scene-gl="on"]) .rack-inner > * {
+    animation-play-state: paused;
+  }
+
+  /* later pages: the scene is already up */
+  :root[data-scene="settled"] .rack-inner > * {
+    --sheets-after: 0ms;
+  }
+
+  .rack-inner > :nth-child(1) { --nth: 0; }
+  .rack-inner > :nth-child(2) { --nth: 1; }
+  .rack-inner > :nth-child(3) { --nth: 2; }
+  .rack-inner > :nth-child(4) { --nth: 3; }
+  .rack-inner > :nth-child(5) { --nth: 4; }
+  .rack-inner > :nth-child(6) { --nth: 5; }
+}
+
+@keyframes layer-rise {
+  from {
+    translate: var(--rise-from, 0 10%);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+}
+
+@keyframes layer-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* a sheet is laid down: it fades in over the first part of its drop, on
+   the drop's own ease, so it arrives softly rather than popping */
+@keyframes sheet-down {
+  from {
+    translate: 0 -24px;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
+/* parallax on the page's own scroll, where scroll-driven animations exist;
+   it moves `transform`, so it composes with the rise (on `translate`) */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scene-layer:not([data-layer="sky"]) {
+      animation:
+        layer-rise 1150ms cubic-bezier(0.22, 1.18, 0.36, 1) var(--rise-delay) both,
+        layer-sink linear both;
+      animation-timeline: auto, scroll(root);
+    }
+  }
+}
+
+@keyframes layer-sink {
+  to {
+    transform: translateY(var(--sink, 0));
+  }
+}
+
+.rack {
+  position: relative;
+  max-width: calc(1180px + 2 * 24px);
+  margin: 0 auto;
+  padding: 32px 24px 112px;
+  min-height: 100vh;
+}
+
+/* Without a margin beside the column, it keeps one round itself, wide enough
+   for the scene to show at the sides, and room above the masthead for the
+   sun, upper left (see .scene-sun). */
+@media (max-width: 1399px) {
+  .rack {
+    padding: 86px 44px 112px;
+  }
+}
+
+/* a short screen (a 1024x768 tablet, a 1366x768 laptop) gives more of the
+   first screen to the sheets: the column starts higher, and the sun is
+   smaller and higher, so its whole disc still sits in clear sky above it */
+@media (min-width: 721px) and (max-width: 1399px) and (max-height: 860px) {
+  :root {
+    --sun-d: 36px;
+    --sun-y: 28px;
+  }
+
+  .rack {
+    padding-top: 74px;
+  }
+}
+
 .rack-inner {
   display: flex;
   flex-direction: column;
   gap: var(--rack-gap);
-  margin: 0 calc(var(--overhang) - var(--rail-w));
   position: relative;
-  z-index: 1; /* above both rails: ::after would otherwise paint over the right edge */
+  z-index: 1;
 }
 
-/* ---------- faceplate (9-slice) ---------- */
+@media (max-width: 720px) {
+  .rack {
+    padding: 58px 14px 72px; /* room above the masthead for the sun */
+  }
+}
 
-/* Any element can wear a faceplate. The three state layers are stacked on
-   pseudo-elements so that a state change swaps authored art (with a short
-   crossfade) and never scales, recrops or filters. */
+/* ---------- sheets (9-slice, four authored states) ---------- */
+
+/* Any element can wear a sheet. The state layers are stacked on
+   pseudo-elements, so a state change crossfades to authored art (the same
+   paper with a different shadow) and never scales, recrops or filters. */
 .faceplate {
   position: relative;
   isolation: isolate;
@@ -168,46 +450,71 @@ body:has(.rack) {
 }
 
 .faceplate::before,
-.faceplate::after {
+.faceplate::after,
+.detail-hero::before,
+.section::before,
+.colophon::before,
+.folio::before,
+.blank-leaf::before,
+.statusline::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  border: var(--plate-w) solid transparent;
-  border-image: var(--k-plate) var(--slice-plate) fill / var(--plate-w) stretch;
+  border: 0 solid transparent; /* Firefox only paints border-image over a border style */
+  border-image: var(--k-plate) var(--slice-plate) fill / calc(152px * var(--plate-k)) / calc(96px * var(--plate-k)) stretch;
   pointer-events: none;
 }
 
-/* At fractional device pixel ratios (125%/150% Windows scaling, 2.75x
-   phones) the browser snaps the nine slices separately, leaving hairline
-   gaps along the slice lines. Each 9-slice gets its own centre material
-   underneath, inset clear of the chamfered corners, so a gap shows the same
-   material instead of whatever is behind the plate. */
-.faceplate::before {
-  --under-in: calc(var(--plate-w) * 0.3);
+/* At fractional device pixel ratios the browser snaps the nine slices
+   separately, which can leave hairline gaps along the slice lines. Each
+   9-slice gets its own centre material underneath, inset clear of the torn
+   fringe, so a gap shows the same paper instead of the scene. */
+.faceplate::before,
+.detail-hero::before,
+.section::before,
+.colophon::before,
+.folio::before,
+.blank-leaf::before,
+.statusline::before {
+  --under-in: calc(var(--plate-w) * 0.6);
   background: linear-gradient(var(--plate-under), var(--plate-under)) center / calc(100% - 2 * var(--under-in))
-    calc(100% - 2 * var(--under-in)) no-repeat border-box;
+    calc(100% - 2 * var(--under-in)) no-repeat;
 }
 
 .faceplate::after {
   border-image-source: var(--k-plate-hover);
   opacity: 0;
-  transition: opacity 150ms ease-out;
+  transition: opacity 180ms ease-out;
 }
 
 .faceplate.is-live:hover::after {
   opacity: 1;
 }
 
-/* Focus is authored state art: a vermilion line printed inside the bevel,
-   following the chamfers. A plate whose rack stop is a child link (the
-   flagship) shows it too. */
+/* the lift itself: the sheet rises off the board as its shadow widens */
+.faceplate.is-live {
+  transition: transform 180ms ease-out;
+}
+
+.faceplate.is-live:hover {
+  transform: translateY(-3px);
+}
+
+.faceplate.is-live:active {
+  transform: none;
+}
+
+/* Focus is authored state art: the sheet lies on a terracotta under-sheet,
+   torn to follow its deckle, that shows past its edge. A sheet whose stop is
+   a child link (the flagship) shows it too. */
 .faceplate.is-live:focus-visible::after,
 .faceplate:has([data-rack-stop]:focus-visible)::after {
   border-image-source: var(--k-plate-focus);
   opacity: 1;
 }
 
+/* pressed: the sheet goes flat to the board, so its shadow tightens */
 .faceplate.is-live:active::after {
   border-image-source: var(--k-plate-pressed);
   opacity: 1;
@@ -219,15 +526,15 @@ body:has(.rack) {
   outline: none;
 }
 
-/* ---------- silkscreen + engraving ---------- */
+/* ---------- labels, notes, rules ---------- */
 
+/* Labels of a word or three are typed: the mono face, in small capitals. */
 .silk {
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 125%;
-  font-weight: 600;
-  font-size: 10.5px;
-  line-height: 1.3;
-  letter-spacing: 0.12em;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--print-soft);
 }
@@ -240,7 +547,7 @@ body:has(.rack) {
 
 /* Silkscreen is for labels of a word or three. Anything read as a sentence
    (instructions, captions) is printed as a note: the body face, sentence
-   case, at caption size. A note may lead with a silkscreened label. */
+   case, at caption size. A note may lead with a label. */
 .note {
   font-size: 13.5px;
   line-height: 1.45;
@@ -256,30 +563,75 @@ body:has(.rack) {
   margin-right: 2px;
 }
 
+/* a pencil rule */
 .engraved {
-  height: 2px;
+  height: 1px;
   border: 0;
   margin: 0;
-  background: linear-gradient(var(--engrave-lo) 0 1px, var(--engrave-hi) 1px 2px);
+  background: var(--engrave-lo);
 }
 
-/* ---------- screen (bezel 9-slice over a rice-coloured face) ---------- */
+/* A label typed on a strip of sage paper tape: the torn ends never stretch
+   (3-slice). By moonlight the tape is darker and the type cream. A page's
+   kicker is always taped. */
+.tape,
+.kicker {
+  display: inline-block;
+  padding: 5px 16px 4px;
+  border: 0 solid transparent;
+  border-image: var(--k-tape) 8 48 fill / 0 calc(48px * 0.3) / 0 2px stretch;
+  color: var(--tape-ink);
+}
 
-.screen {
+/* Inline code is typed on a scrap of the same tape: a label stuck into the
+   line, its torn ends at a finer scale. A long path wraps, each line its own
+   scrap (box-decoration-break, globals.css). */
+:not(pre) > code {
+  padding: 0 0.6em;
+  margin: 0 0.1em;
+  border: 0 solid transparent;
+  border-radius: 0;
+  border-image: var(--k-tape) 8 48 fill / 0 calc(48px * 0.16) / 0 1px stretch;
+  background: none;
+  box-shadow: none;
+  color: var(--tape-ink);
+}
+
+.tape.silk,
+.tape .silk,
+.tape b,
+.kicker,
+.kicker * {
+  color: var(--tape-ink);
+}
+
+/* ---------- screen (a window mat over a rice-coloured face) ---------- */
+
+.screen,
+.code-duet {
   position: relative;
   margin: 0;
-  padding: calc(var(--bezel-w) * 0.82);
-  /* the bezel's material under its 9-slice ring (see .faceplate::before) */
-  background: linear-gradient(var(--bezel-under), var(--bezel-under)) center / calc(100% - 10px) calc(100% - 10px)
+  /* the face meets the window's bevel: each slice less the 40px pad, which
+     lies outside the box (border-image-outset) */
+  padding: calc((var(--mat-t) - 40) * 1px * var(--mat-k)) calc((var(--mat-r) - 40) * 1px * var(--mat-k))
+    calc((var(--mat-b) - 40) * 1px * var(--mat-k)) calc((var(--mat-l) - 40) * 1px * var(--mat-k));
+  /* the mat's board under its 9-slice ring (see .faceplate::before) */
+  background: linear-gradient(var(--bezel-under), var(--bezel-under)) center / calc(100% - 14px) calc(100% - 14px)
     no-repeat;
 }
 
-.screen::after {
+/* The mat stands off the print it frames: its baked shadow falls inside the
+   window, across the top and left of the screen. */
+.screen::after,
+.code-duet::after {
   content: "";
   position: absolute;
   inset: 0;
-  border: var(--bezel-w) solid transparent;
-  border-image: var(--k-bezel) var(--slice-bezel) / var(--bezel-w) stretch;
+  border: 0 solid transparent;
+  border-image: var(--k-bezel) var(--mat-t) var(--mat-r) var(--mat-b) var(--mat-l) /
+    calc(var(--mat-t) * 1px * var(--mat-k)) calc(var(--mat-r) * 1px * var(--mat-k))
+    calc(var(--mat-b) * 1px * var(--mat-k)) calc(var(--mat-l) * 1px * var(--mat-k)) /
+    calc(40px * var(--mat-k)) stretch;
   pointer-events: none;
   z-index: 3;
 }
@@ -290,7 +642,6 @@ body:has(.rack) {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-mono), ui-monospace, monospace;
-  animation: screen-on 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 .screen-face.has-art {
@@ -306,50 +657,71 @@ body:has(.rack) {
   mask: var(--art) center / cover no-repeat;
 }
 
-/* Glare is a physical reflection, so it keeps its size whatever the screen
-   size and sits up-left toward the light. Each screen offsets it a little
-   (--glare-x/y) so a row of screens doesn't repeat one streak. It is only
-   drawn over decorative art and dark glass, never over content people read. */
+/* The screens are the only things here that aren't paper: they sit behind
+   glass, recessed in their mats. The mat's inner edge throws a shadow onto
+   the glass from the upper-left light, and the glass carries a reflection
+   (an authored map, blended so it lightens a dark screen and still reads on
+   a light one), fainter over content people read. */
+.screen-edge {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  /* the panel's edge, then the mat's shadow: the key light is upper left, so
+     the window's top and left bevels shade the screen below and right of
+     them, and its bottom and right edges throw none */
+  box-shadow:
+    inset 0 0 0 1px var(--panel-edge),
+    inset 3px 4px 0 rgba(18, 16, 24, 0.16),
+    inset 6px 9px 10px -2px rgba(18, 16, 24, 0.34);
+  --panel-edge: rgba(6, 6, 10, 0.5);
+}
+
+/* A light screen in a light room must still read as a display, not one more
+   sheet of cream: the panel's dark edge, and the mat's shade falling across
+   its top and left in steps (a band of depth from the light's side, not a
+   frame drawn on every side). */
+:root[data-rice="paper"] .screen-edge {
+  --panel-edge: rgba(30, 25, 40, 0.42);
+  box-shadow:
+    inset 0 0 0 1px var(--panel-edge),
+    inset 2px 3px 0 rgba(30, 25, 40, 0.16),
+    inset 5px 7px 0 rgba(30, 25, 40, 0.07),
+    inset 8px 12px 14px -2px rgba(38, 30, 52, 0.3);
+}
+
 .screen-glass {
   position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: url(/kit/glass.webp) var(--glare-x, -60px) var(--glare-y, -40px) / 420px auto no-repeat;
-  mix-blend-mode: screen;
-  opacity: 0.5;
+  background: url(/kit/paper/glass-glare.webp) center / 100% 100% no-repeat;
+  mix-blend-mode: soft-light;
+  opacity: 0.9;
 }
 
-:root[data-rice="paper"] .screen-glass {
-  display: none; /* an additive glare reads as nothing on a near-white face */
+/* by moonlight the room is dark: on a dark screen the same glare would read
+   as a glow from inside it, so only a faint reflection stays */
+:root:not([data-rice="paper"]) .screen-glass {
+  opacity: 0.4;
 }
 
-/* neighbouring screens catch the light at slightly different angles */
-.shelf > :nth-child(3n + 2) .screen-glass { --glare-x: -110px; --glare-y: -24px; }
-.shelf > :nth-child(3n) .screen-glass { --glare-x: -30px; --glare-y: -70px; }
-.shelf > :nth-child(4n + 1) .screen-glass { --glare-y: -10px; }
+/* over content people read (a capture, a live palette) the reflection is
+   fainter still, so it never washes out text */
+.screen-face:not(.has-art) .screen-glass {
+  opacity: 0.6;
+}
+
+:root:not([data-rice="paper"]) .screen-face:not(.has-art) .screen-glass {
+  opacity: 0.3;
+}
 
 [data-tone="rust"] { --tone: var(--rust); }
 [data-tone="amber"] { --tone: var(--amber); }
 [data-tone="olive"] { --tone: var(--olive); }
 [data-tone="cyan"] { --tone: var(--cyan); }
 
-@keyframes screen-on {
-  0% {
-    clip-path: inset(49.5% 0 49.5% 0);
-    opacity: 0.4;
-  }
-  45% {
-    clip-path: inset(49.5% 0 49.5% 0);
-    opacity: 1;
-  }
-  100% {
-    clip-path: inset(0 0 0 0);
-    opacity: 1;
-  }
-}
-
-/* ---------- keycaps (9-slice, three authored states) ---------- */
+/* ---------- tiles (9-slice, four authored states) ---------- */
 
 .key {
   --kn: var(--k-key);
@@ -357,21 +729,21 @@ body:has(.rack) {
   --kp: var(--k-key-pressed);
   --kf: var(--k-key-focus);
   --ki: var(--key-ink);
+  --ku: var(--key-under);
   position: relative;
   isolation: isolate;
   display: inline-flex;
   align-items: center;
   gap: 9px;
   min-height: 40px;
-  padding: 0 18px 2px;
+  padding: 0 18px 3px;
   border: 0;
+  background: none;
   color: var(--ki);
   font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 112%;
   font-weight: 650;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.01em;
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
@@ -380,31 +752,32 @@ body:has(.rack) {
 }
 
 .key[data-tone="signal"] {
-  --kn: url(/kit/key-signal-normal.webp);
-  --kh: url(/kit/key-signal-hover.webp);
-  --kp: url(/kit/key-signal-pressed.webp);
-  --kf: url(/kit/key-signal-focus.webp);
-  --ki: #fff6f0;
+  --kn: url(/kit/paper/tile-signal-normal.webp);
+  --kh: url(/kit/paper/tile-signal-hover.webp);
+  --kp: url(/kit/paper/tile-signal-pressed.webp);
+  --kf: url(/kit/paper/tile-signal-focus.webp);
+  --ki: #fff8ee; /* 4.87:1 on the signal board */
+  --ku: #a25b39;
 }
 
 /* A call to action never runs out of its column: when its label is wider
-   than the column it wraps onto a second line inside the cap (the 9-slice
-   grows with it). In a wrapping row it moves to its own line first. */
+   than the column it wraps onto a second line on the tile (the 9-slice grows
+   with it). In a wrapping row it moves to its own line first. */
 .key[data-size="lg"] {
-  min-height: 54px;
+  --key-k: 0.55;
+  min-height: 60px;
   max-width: 100%;
-  padding: 0 28px 3px;
-  font-size: 13.5px;
+  padding: 0 34px 4px;
+  font-size: 17px;
+  justify-content: center;
   white-space: normal;
   text-align: center;
-  --key-w: 20px;
 }
 
 @media (max-width: 400px) {
   .key[data-size="lg"] {
     padding-inline: 22px;
-    font-size: 12.5px;
-    letter-spacing: 0.06em;
+    font-size: 15px;
   }
 }
 
@@ -414,20 +787,14 @@ body:has(.rack) {
   position: absolute;
   inset: 0;
   z-index: -1;
-  border: var(--key-w) solid transparent;
-  border-image: var(--kn) var(--slice-key) fill / var(--key-w) stretch;
+  border: 0 solid transparent;
+  border-image: var(--kn) var(--slice-key) fill / calc(60px * var(--key-k)) / calc(20px * var(--key-k)) stretch;
 }
 
-/* A cap's underlay is its own art stretched whole (no slices, so no seams),
-   painted as the cap's own background under the 9-slice. The cap art is
-   424x100 sliced at 38, and caps render at about 2.6 slice widths tall, so
-   the stretched copy's vertical profile (face, lip, shadow) lines up with the
-   9-slice along every slice line: a gap shows the same lip or face. The
-   radius (the art's 12px corner plus a margin, in slice units) keeps the
-   copy's corners inside the cap's however much it is stretched sideways. */
-.key {
-  background: var(--kn) center / 100% 100% no-repeat;
-  border-radius: calc(var(--key-w) * 0.4);
+/* the board under the 9-slice, clear of its rounded corners and edge band */
+.key::before {
+  background: linear-gradient(var(--ku), var(--ku)) center / calc(100% - 2 * var(--key-w)) calc(100% - var(--key-w))
+    no-repeat;
 }
 
 .key::after {
@@ -440,6 +807,24 @@ body:has(.rack) {
 a.key:hover::after,
 button.key:hover:not(:disabled)::after {
   opacity: 1;
+}
+
+/* the hover art's shadow says the card stands off the sheet; the card itself
+   rises a pixel with it (the brief's limit for spatial movement) */
+a.key,
+button.key {
+  transition: translate 140ms ease-out;
+}
+
+a.key:hover,
+button.key:hover:not(:disabled) {
+  translate: 0 -1px;
+}
+
+a.key:active,
+button.key:active:not(:disabled) {
+  translate: 0 0;
+  transition-duration: 0ms;
 }
 
 .key:focus-visible::after {
@@ -468,12 +853,13 @@ button.key:hover:not(:disabled)::after {
   outline: none;
 }
 
-/* A key that can't be pressed now: unlit. A signal cap goes back to the
-   plain cap (the vermilion means "press me"), its legend prints faint, and
-   it neither lights on hover nor sinks. */
+/* A tile that can't be pressed now: a signal tile goes back to plain board
+   (terracotta means "press me"), its legend prints faint, and it neither
+   lifts nor sinks. */
 .key:disabled {
   --kn: var(--k-key);
   --ki: var(--key-ink);
+  --ku: var(--key-under);
   cursor: not-allowed;
 }
 
@@ -492,89 +878,119 @@ button.key:hover:not(:disabled)::after {
 }
 
 .key-legend {
-  font-stretch: 100%;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.86em;
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
   opacity: 0.72;
 }
 
-/* single-character keycap used for shortcut legends (Ctrl, P, /); legends
-   are printed in the chassis face like every other cap */
+/* single-character tile used for shortcut legends (Ctrl, P, /) */
 .key.cap {
   min-width: 46px;
   justify-content: center;
-  padding: 0 12px 2px;
-  font-stretch: 100%;
-  font-weight: 650;
-  text-transform: none;
-  letter-spacing: 0.02em;
+  padding: 0 12px 3px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0;
   cursor: default;
 }
 
-/* ---------- LEDs ---------- */
+/* a cap printed in a line of text: the same card at a third of the scale,
+   no taller than the line */
+.key.cap-inline {
+  --key-k: 0.2;
+  --key-w: calc(40px * var(--key-k));
+  min-width: 0;
+  min-height: 0;
+  height: 1.55em;
+  padding: 0 0.55em 1px;
+  margin: 0 0.1em;
+  font-size: 0.8em;
+  vertical-align: 0.08em;
+}
 
+/* ---------- pins (status) ---------- */
+
+/* A pushpin's colour is the status: brass when off, its colour when on. The
+   head art carries its own shadow, so it hangs a little outside its box. */
 .led {
   position: relative;
   display: inline-block;
   width: 14px;
   height: 14px;
   flex: none;
-  background: url(/kit/led-off.webp) center / contain no-repeat;
   vertical-align: middle;
-  margin-inline: 3px 7px; /* room for the halo beside a label */
+  margin-inline: 2px 7px;
 }
 
-.led::after {
+.led::before {
   content: "";
   position: absolute;
-  inset: -13px;
-  background: var(--glow) center / contain no-repeat;
-  mix-blend-mode: screen;
-  opacity: 0;
-  transition: opacity 120ms ease-out;
-  pointer-events: none;
+  inset: -3px -4px -5px -3px;
+  background: url(/kit/paper/pin-brass.webp) center / contain no-repeat;
 }
 
-.led[data-color="green"] { --glow: url(/kit/led-green.jpg); }
-.led[data-color="amber"] { --glow: url(/kit/led-amber.jpg); }
-.led[data-color="signal"] { --glow: url(/kit/led-signal.jpg); }
-
-/* On the light chassis an additive glow vanishes, so the halo is laid over
-   normally from straight-alpha sprites (scripts/glow-alpha.mjs). */
-:root[data-rice="paper"] .led::after { mix-blend-mode: normal; }
-:root[data-rice="paper"] .led[data-color="green"] { --glow: url(/kit/led-green-a.webp); }
-:root[data-rice="paper"] .led[data-color="amber"] { --glow: url(/kit/led-amber-a.webp); }
-:root[data-rice="paper"] .led[data-color="signal"] { --glow: url(/kit/led-signal-a.webp); }
-
-.led[data-on="true"]::after {
-  opacity: 1;
-}
-
-/* pointing at a live module brings its lamp up a notch: the halo widens */
-.faceplate.is-live:hover .led[data-on="true"]::after,
-.faceplate.is-live:focus-visible .led[data-on="true"]::after {
-  inset: -18px;
-}
-
-.led[data-blink="true"]::after {
-  animation: led-blink 1.6s steps(1, end) infinite;
-}
-
-/* A short off-beat, so the lamp reads as lit at a glance. It toggles
-   visibility rather than opacity: an opacity animation promotes the glow to
-   its own compositor layer, which can drop its screen blend. */
-@keyframes led-blink {
-  0%, 84% { visibility: visible; }
-  85%, 100% { visibility: hidden; }
-}
+.led[data-on="true"][data-color="green"]::before { background-image: url(/kit/paper/pin-green.webp); }
+.led[data-on="true"][data-color="amber"]::before { background-image: url(/kit/paper/pin-amber.webp); }
+.led[data-on="true"][data-color="signal"]::before { background-image: url(/kit/paper/pin-signal.webp); }
 
 @media (prefers-reduced-motion: reduce) {
-  .screen-face {
-    animation: none;
+  /* the hover art still lifts the card; it just doesn't move */
+  a.key:hover,
+  button.key:hover:not(:disabled) {
+    translate: none;
   }
-  .led[data-blink="true"]::after {
+
+  .scene::after {
     animation: none;
-    opacity: 1;
+    translate: 12vw 0;
   }
 }
+
+/* ---------- props ---------- */
+
+.prop {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  background: var(--prop) center bottom / contain no-repeat;
+}
+
+/* A pushpin holding a sheet to the scene, at the top of its paper, through
+   the torn edge: brass, or the sheet's status colour (.led.sheet-pin). Every
+   sheet in the column hangs on one; sheets drawn by their content's own
+   element (a section, a page's opening sheet, the colophon) carry it as a
+   pseudo-element, the rest as a .prop. */
+.prop[data-prop="pin"],
+.led.sheet-pin,
+.detail-hero::after,
+.section::after,
+.colophon::after {
+  --prop: url(/kit/paper/pin-brass.webp);
+  content: "";
+  position: absolute;
+  width: 26px;
+  height: auto;
+  aspect-ratio: 1;
+  margin: 0;
+  top: 4px;
+  left: var(--pin-x, 50%); /* a sheet may be pinned off-centre (globals.css .pin-left) */
+  translate: -50% 0;
+  z-index: 3;
+  pointer-events: none;
+  background: var(--prop) center bottom / contain no-repeat;
+}
+
+/* the status pin draws its head in ::before (.led), here at the brass pin's size */
+.led.sheet-pin {
+  background: none;
+}
+
+.led.sheet-pin::before {
+  inset: 0;
+  background-position: center bottom;
+}
+

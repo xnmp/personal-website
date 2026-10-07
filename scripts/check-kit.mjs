@@ -1,24 +1,33 @@
 // Registration check for the raster kit: every state of a 9-slice asset must
-// share the normal state's canvas and silhouette, or the corners and screws
-// jump when the state changes.
-//   node scripts/check-kit.mjs            (exit 1 on any drift)
+// share the normal state's canvas and silhouette, or the torn edges jump when
+// the state changes.
+//   node scripts/check-kit.mjs [dir]      (default public/kit/paper; exit 1 on any drift)
 import sharp from "sharp";
 import { readdirSync } from "node:fs";
 
-const DIR = "public/kit";
+const DIR = process.argv[2] ?? "public/kit/paper";
 const MAX_DRIFT = 0.004; // fraction of pixels whose opacity class may differ (edge antialiasing)
 // For the light-only states, each 9-slice corner's edge map must register
 // with the normal's at zero offset: lighting may change, geometry may not.
 // Pressed art is allowed to change the bevel (the cap travels), so it is held
 // to the silhouette check alone.
-const LIGHT_ONLY = new Set(["hover", "focus"]);
+const LIGHT_ONLY = new Set(["hover", "focus", "flat"]);
+// A mounted state (a sheet's focus) sets the paper on a larger card, so its
+// silhouette grows: it must contain the normal's, and the paper's own pixels
+// must be the normal's, unmoved and unrelit.
+const MOUNTED = (family, state) => family.startsWith("sheet-") && state === "focus";
+const MAX_PAPER_DELTA = 1.5; // mean per-channel difference over the paper
 const SEARCH = 28; // px searched each way; must exceed any plausible drift
 // slice insets from kit.css; the corners are the part a 9-slice never stretches
-const SLICE = { plate: 96, key: 38 };
+const SLICE = { sheet: 152, tile: 60 };
+// Each asset carries its cast shadow in its alpha, and a state may move the
+// shadow (a sheet lifts on hover). The paper itself is opaque and the shadow
+// never is, so the silhouette is the alpha above this.
+const PAPER = 200;
 
 // Sobel magnitude of the silhouette (alpha) plus a little of the luminance.
-// Alpha carries the chamfers and screw-free outline independent of lighting
-// or printed focus lines; the luminance term catches moved screws.
+// Alpha carries the torn outline independent of lighting or printed focus
+// lines; the luminance term catches moved paper detail.
 const edges = async (file) => {
   const img = sharp(`${DIR}/${file}`).ensureAlpha();
   const [{ data: alpha, info }, { data: lum }] = await Promise.all([
@@ -69,12 +78,25 @@ const cornerOffset = (a, b, slice) => {
 
 const alphaMask = async (file) => {
   const { data, info } = await sharp(`${DIR}/${file}`).ensureAlpha().extractChannel(3).raw().toBuffer({ resolveWithObject: true });
-  return { w: info.width, h: info.height, opaque: Uint8Array.from(data, (a) => (a > 127 ? 1 : 0)) };
+  return { w: info.width, h: info.height, opaque: Uint8Array.from(data, (a) => (a > PAPER ? 1 : 0)) };
+};
+
+/** mean per-channel difference between two states over the paper's pixels */
+const paperDelta = async (a, b, opaque) => {
+  const [pa, pb] = await Promise.all([a, b].map((f) => sharp(`${DIR}/${f}`).removeAlpha().raw().toBuffer()));
+  let sum = 0;
+  let n = 0;
+  for (let i = 0; i < opaque.length; i++)
+    if (opaque[i]) {
+      for (let k = 0; k < 3; k++) sum += Math.abs(pa[i * 3 + k] - pb[i * 3 + k]);
+      n += 3;
+    }
+  return sum / Math.max(1, n);
 };
 
 const families = new Map();
 for (const f of readdirSync(DIR)) {
-  const m = f.match(/^(.+)-(normal|hover|pressed|focus)\.webp$/);
+  const m = f.match(/^(.+)-(normal|hover|pressed|focus|flat)\.webp$/);
   if (m) families.set(m[1], [...(families.get(m[1]) ?? []), { state: m[2], file: f }]);
 }
 
@@ -88,6 +110,15 @@ for (const [family, states] of families) {
     if (m.w !== ref.w || m.h !== ref.h) {
       console.log(`FAIL ${family}-${s.state}: canvas ${m.w}x${m.h} != ${ref.w}x${ref.h}`);
       failed = true;
+      continue;
+    }
+    if (MOUNTED(family, s.state)) {
+      let lost = 0;
+      for (let i = 0; i < ref.opaque.length; i++) lost += ref.opaque[i] & (1 - m.opaque[i]);
+      const delta = await paperDelta(normal.file, s.file, ref.opaque);
+      const ok = lost / ref.opaque.length <= MAX_DRIFT && delta <= MAX_PAPER_DELTA;
+      failed ||= !ok;
+      console.log(`${ok ? "ok  " : "FAIL"} ${family}-${s.state}: mounted, paper lost ${((lost / ref.opaque.length) * 100).toFixed(2)}%, paper delta ${delta.toFixed(2)}`);
       continue;
     }
     let diff = 0;

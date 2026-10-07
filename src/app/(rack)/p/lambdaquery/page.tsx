@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   RunningHead,
   Tags,
@@ -7,7 +6,7 @@ import {
   Plate,
   Folio,
 } from "@/components/notebook";
-import { Screen } from "@/components/rack";
+import { Screen, Key } from "@/components/rack";
 
 export const metadata = {
   title: "LambdaQuery: Python comprehensions, compiled to SQL",
@@ -27,7 +26,7 @@ export default function LambdaQueryPage() {
         }
         nav={
           <>
-            <Link href="/">← the rack</Link>
+            <Key href="/">← all projects</Key>
           </>
         }
       />

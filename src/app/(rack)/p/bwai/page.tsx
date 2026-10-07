@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
   RunningHead,
   Tags,
@@ -7,7 +6,7 @@ import {
   OpenQuestion,
   Plate,
 } from "@/components/notebook";
-import { Cap, Screen } from "@/components/rack";
+import { Cap, Screen, Key } from "@/components/rack";
 import { BwaiBench } from "@/components/charts/BwaiBench";
 
 export const metadata: Metadata = {
@@ -40,7 +39,7 @@ export default function BwaiPage() {
         }
         nav={
           <>
-            <Link href="/">← the rack</Link>
+            <Key href="/">← all projects</Key>
           </>
         }
       />
@@ -248,7 +247,7 @@ export default function BwaiPage() {
       </main>
       <footer className="folio">
         <span className="fine-only">
-          Press <Cap>/</Cap> for the other modules
+          Press <Cap>/</Cap> for the other projects
         </span>
         <span>08 / 11</span>
       </footer>

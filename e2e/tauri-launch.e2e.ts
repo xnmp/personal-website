@@ -1,4 +1,10 @@
 import { expect, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { appThemeFor, demoUrl } from "../src/components/launch/appTheme";
+
+/** The live web build in the app theme that wears the page's current rice. */
+const demoForRice = async (page: Page) =>
+  demoUrl(appThemeFor(await page.evaluate(() => document.documentElement.dataset.rice)));
 
 test.describe("Tauri Explorer launch page", () => {
   test("Ctrl+P on the page powers on the live demo instead of printing", async ({ page, isMobile }) => {
@@ -8,7 +14,7 @@ test.describe("Tauri Explorer launch page", () => {
     await expect(page.locator("iframe.live-frame")).toHaveCount(0);
     await page.keyboard.press("Control+p");
     const frame = page.locator("iframe.live-frame");
-    await expect(frame).toHaveAttribute("src", "https://tauri-explorer.vercel.app/?theme=dark");
+    await expect(frame).toHaveAttribute("src", await demoForRice(page));
     await expect(frame).toBeInViewport();
     // once loaded, the app has the keyboard, so the next Ctrl+P is the app's own,
     // and the page says so (and how to take it back)
@@ -20,11 +26,11 @@ test.describe("Tauri Explorer launch page", () => {
     await expect(live).toContainText("web build, with a demo folder");
   });
 
-  test("tabbing to the power key keeps it: the demo doesn't boot out from under it", async ({ page, isMobile }) => {
+  test("tabbing to “Run it here” keeps it: the demo doesn't boot out from under it", async ({ page, isMobile }) => {
     test.skip(isMobile, "touch opens the app full screen instead");
     await page.goto("/p/tauri-explorer");
     await expect(page.locator(".rice-name")).not.toHaveText(/^(rice)?$/);
-    const power = page.getByRole("button", { name: "Power on the live demo" });
+    const power = page.getByRole("button", { name: "Run it here" });
     await power.focus(); // scrolls the screen into view, as Tab does
     await page.waitForTimeout(800);
     await expect(power).toBeFocused();
@@ -38,20 +44,20 @@ test.describe("Tauri Explorer launch page", () => {
     await page.goto("/p/tauri-explorer");
     await expect(page.locator(".rice-name")).not.toHaveText(/^(rice)?$/);
     await page.locator("#live").scrollIntoViewIfNeeded();
-    await expect(page.getByRole("button", { name: "Power on the live demo" })).toBeHidden();
+    await expect(page.getByRole("button", { name: "Run it here" })).toBeHidden();
     const open = page.getByRole("link", { name: "Open the live demo ↗" });
-    await expect(open).toHaveAttribute("href", "https://tauri-explorer.vercel.app/?theme=dark");
+    await expect(open).toHaveAttribute("href", await demoForRice(page));
     await expect(open).toHaveAttribute("target", "_blank");
     await expect(page.locator("iframe.live-frame")).toHaveCount(0);
   });
 
-  test("the power key starts the demo", async ({ page, isMobile }) => {
+  test("“Run it here” starts the demo", async ({ page, isMobile }) => {
     test.skip(isMobile, "touch opens the app full screen instead");
     // too short a window for half the screen to be in view, so it never boots on its own
     await page.setViewportSize({ width: 1280, height: 300 });
     await page.goto("/p/tauri-explorer");
     await expect(page.locator(".rice-name")).not.toHaveText(/^(rice)?$/);
-    await page.getByRole("button", { name: "Power on the live demo" }).click();
+    await page.getByRole("button", { name: "Run it here" }).click();
     await expect(page.locator("iframe.live-frame")).toBeVisible();
   });
 
@@ -192,7 +198,8 @@ test.describe("Tauri Explorer launch page", () => {
     await shot.click();
     const box = page.getByRole("dialog", { name: "Content search, full window" });
     await expect(box).toBeVisible();
-    await expect(box.locator("img")).toHaveAttribute("src", "/tauri/live-content-search.webp");
+    const theme = appThemeFor(await page.evaluate(() => document.documentElement.dataset.rice));
+    await expect(box.locator("img")).toHaveAttribute("src", `/tauri/live-content-search-${theme}.webp`);
     expect(page.url()).toMatch(/\/p\/tauri-explorer$/);
     await page.keyboard.press("Escape");
     await expect(box).toBeHidden();
@@ -217,6 +224,33 @@ test.describe("Tauri Explorer launch page", () => {
     await expect(box).toBeHidden();
     await page.keyboard.press("/");
     await expect(page.getByRole("dialog", { name: "Index of projects" })).toBeVisible(); // back in charge
+  });
+
+  test("the product shot is the app in the theme that wears the rice, and follows a rice switch", async ({ page }) => {
+    await page.goto("/p/tauri-explorer");
+    await expect(page.locator(".rice-name")).not.toHaveText(/^(rice)?$/);
+    const shot = page.locator(".launch-hero").getByRole("img", { name: /quick open/ });
+    const theme = async () => appThemeFor(await page.evaluate(() => document.documentElement.dataset.rice));
+    // exactly one shot is shown, and it is the current rice's (src on desktop, the strip on phones)
+    await expect(shot).toHaveCount(1);
+    await expect.poll(async () => shot.evaluate((img: HTMLImageElement) => img.currentSrc)).toContain(`-${await theme()}`);
+    const before = await theme();
+    await page.getByRole("button", { name: /Switch theme/ }).click(); // each rice has its own app theme
+    await expect.poll(theme).not.toBe(before);
+    const after = await theme();
+    await expect.poll(async () => shot.evaluate((img: HTMLImageElement) => img.currentSrc)).toContain(`-${after}`);
+    expect(await shot.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+  });
+
+  test("every picture of the app on the page is in the one theme, the rice's", async ({ page }) => {
+    await page.goto("/p/tauri-explorer");
+    await expect(page.locator(".rice-name")).not.toHaveText(/^(rice)?$/);
+    const theme = appThemeFor(await page.evaluate(() => document.documentElement.dataset.rice));
+    const shown = page.locator("[data-rice-shot] img:visible");
+    await expect(shown).toHaveCount(4); // the hero and the three gallery shots
+    const srcs = await shown.evaluateAll((imgs) => imgs.map((i) => i.getAttribute("src") ?? ""));
+    for (const src of srcs) expect(src).toContain(`-${theme}.webp`);
+    await expect(page.locator(".live-poster")).toHaveAttribute("src", `/tauri/live-app-${theme}.webp`);
   });
 
   test("on a phone, both calls to action, the key facts and the product are on the first screen", async ({ page, isMobile }) => {

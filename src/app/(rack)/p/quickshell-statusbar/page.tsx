@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature } from "@/components/notebook";
-import { Screen, Cap } from "@/components/rack";
+import { Screen, Cap, Key } from "@/components/rack";
 
 const REPO = "https://github.com/xnmp-setup/quickshell-statusbar";
 
@@ -23,8 +22,8 @@ export default function Page() {
         }
         nav={
           <>
-            <Link href="/">← the rack</Link>
-            <a href={REPO}>source on github →</a>
+            <Key href="/">← all projects</Key>
+            <Key href={REPO}>GitHub ↗</Key>
           </>
         }
       />
@@ -262,7 +261,7 @@ export default function Page() {
       </main>
       <footer className="folio">
         <span className="fine-only">
-          Press <Cap>/</Cap> for the other modules
+          Press <Cap>/</Cap> for the other projects
         </span>
         <span>04 / 11</span>
       </footer>

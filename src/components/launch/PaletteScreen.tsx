@@ -11,6 +11,9 @@ const ROWS: { name: string; match: number[] }[] = [
   { name: "features/ai-plugins.md", match: [5, 6, 9, 21] },
   { name: "features/views-and-themes.md", match: [5, 6, 15, 17] },
   { name: "features/terminal.md", match: [5, 6, 15, 19] },
+  { name: "features/content-search.md", match: [5, 6, 19, 25] },
+  { name: "features/tabs-and-panes.md", match: [5, 6, 10, 16] },
+  { name: "features/command-palette.md", match: [5, 6, 13, 15] },
 ];
 
 function Name({ name, match }: { name: string; match: number[] }) {
@@ -32,7 +35,6 @@ export function PaletteScreen() {
       <ol className="pal-rows">
         {ROWS.map((r, i) => (
           <li key={r.name} data-selected={i === 0 || undefined}>
-            <span className="pal-icon" />
             <Name {...r} />
           </li>
         ))}

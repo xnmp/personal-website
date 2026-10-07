@@ -1,0 +1,3 @@
+Recreate the attached reference (ref.png, the middle-distance layer of a cut-paper diorama: hills, small pines and a river) in the palette of palette.jpg: hills in deep blue-green and dark teal paper with patches of pale snow, the small pines near-black blue-green, and the river a pale steel blue reflecting a little peach from the sky. Take the colours, and only the colours, from palette.jpg, a photograph of alpine mountains at dusk: calm and cool, with a warm alpenglow.
+
+Keep the identical shapes, outlines, positions and framing of every element from ref.png, and keep every transparent area transparent (use a transparent background). Keep the cut-paper construction and the visible paper texture. Same 16:9 frame. No text.

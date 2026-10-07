@@ -79,7 +79,7 @@ body {
 }
 
 /* Text links on the chassis: focus prints a signal underline under the words,
-   like the plate's focus line, instead of a browser ring. */
+   instead of a browser ring. */
 a:not(.key):not([data-rack-stop]):not(.shot-link):not(.skip-link):focus-visible {
   outline: none;
   color: var(--print);
@@ -106,19 +106,11 @@ a {
   color: inherit;
 }
 
-/* inline code is a tiny lit LCD set into the plate */
+/* inline code: its tape is in kit.css */
 code {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.84em;
-  padding: 1px 6px 2px;
-  background: var(--paper);
-  color: var(--cyan);
-  border-radius: 2px;
-  box-shadow:
-    inset 0 1px 2px rgba(0, 0, 0, 0.55),
-    0 1px 0 var(--engrave-hi);
   white-space: nowrap;
-  margin: 0 0.12em;
 }
 
 pre code {
@@ -130,22 +122,43 @@ pre code {
   white-space: inherit;
 }
 
-/* long paths may wrap, each line keeping its own chip; short chords never split */
-.section p code,
-.section li code,
-.plate-caption code,
-.feat code,
-.openq code {
-  white-space: normal;
-  overflow-wrap: anywhere;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+/* the break points marked in a long chip (<wbr>) are for a small phone
+   only: anywhere wider, the chip is whole */
+@media (min-width: 480px) {
+  code wbr {
+    display: none;
+  }
+}
+
+/* A chip is one scrap of tape: it never splits across lines. Only on a
+   small phone may a long path (one marked with <wbr> break points) wrap,
+   each line keeping its own scrap; a short one like grep-searcher stays
+   whole rather than tear at its hyphen. */
+@media (max-width: 479px) {
+  .section p code:has(wbr),
+  .section li code:has(wbr),
+  .plate-caption code:has(wbr),
+  .feat code:has(wbr),
+  .openq code:has(wbr) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
 }
 
 
+/* on a screen, code is the terminal's own: no tape */
 .screen-face code {
-  box-shadow: none;
+  border-image-source: none; /* not the shorthand: Lightning CSS drops its `none` */
+}
+
+.screen-face :not(pre) > code,
+.screen-face > code {
+  padding: 1px 6px 2px;
+  border-radius: 2px;
   background: var(--code-bg);
+  color: var(--cyan);
 }
 
 /* Printed links: ink with a signal underline, the one mechanical accent. */
@@ -174,12 +187,11 @@ pre code {
   color: var(--signal);
 }
 
-/* ---------- plates on page-level blocks ----------
-   The shared primitives (sections, heroes, colophons …) are each a faceplate.
-   Same 9-slice as .faceplate, so pages written before the rack inherit it. */
+/* ---------- sheets on page-level blocks ----------
+   The shared primitives (sections, heroes, colophons …) are each a sheet of
+   paper, the same 9-slice as .faceplate. */
 
 .running-head,
-.hero,
 .detail-hero,
 .section,
 .colophon,
@@ -190,30 +202,22 @@ pre code {
   isolation: isolate;
 }
 
-.hero::before,
-.detail-hero::before,
-.section::before,
-.colophon::before,
-.folio::before,
-.blank-leaf::before,
-.statusline::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border: var(--plate-w) solid transparent;
-  border-image: var(--k-plate) var(--slice-plate) fill / var(--plate-w) stretch;
-  /* the plate's material under its slices; see .faceplate::before in kit.css */
-  --under-in: calc(var(--plate-w) * 0.3);
-  background: linear-gradient(var(--plate-under), var(--plate-under)) center / calc(100% - 2 * var(--under-in))
-    calc(100% - 2 * var(--under-in)) no-repeat border-box;
-  pointer-events: none;
+/* their sheet is drawn by kit.css (the page-level list beside .faceplate) */
+
+/* The masthead and the foot are strips, shorter than a full-scale sheet's
+   two corner slices: squeezed, a 9-slice smears its torn ends into streaks.
+   Like the divider, they print the sheet at a finer scale, and are never
+   shorter than its two corners (2 x 152 bitmap px). */
+.running-head,
+.folio,
+.statusline {
+  --plate-k: 0.24;
+  min-height: calc(2 * 152px * 0.24);
 }
 
 /* ---------- masthead ---------- */
 
 .running-head {
-  min-height: calc(var(--plate-w) * 2 + 14px);
   display: flex;
   align-items: center;
   gap: 14px 22px;
@@ -225,11 +229,11 @@ pre code {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 125%;
-  font-weight: 800;
-  font-size: 19px;
-  letter-spacing: 0.02em;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 650;
+  font-size: 25px;
+  line-height: 1;
+  letter-spacing: -0.01em;
   text-transform: lowercase;
 }
 
@@ -254,10 +258,12 @@ pre code {
   margin-left: auto;
 }
 
+/* wide enough for most rices, so cycling barely moves the masthead, and no
+   wider, so the tile does not run on past a short name */
 .rice-name {
   display: inline-block;
-  min-width: 9ch;
-  text-align: left;
+  min-width: 7ch;
+  text-align: start; /* the name sits by its key, as "/ index" does */
 }
 
 @media (max-width: 720px) {
@@ -267,33 +273,108 @@ pre code {
 }
 
 /* On a phone the brand and both keys share one row, with the page links
-   under them, so the masthead takes as little of the first screen as it can. */
+   printed under them as a line of text actions, so the masthead takes as
+   little of the first screen as it can: one row of tiles. */
 @media (max-width: 600px) {
   .running-head {
-    gap: 6px 12px;
+    gap: 8px 10px;
+    padding-block: calc(var(--plate-w) * 0.5);
   }
 
   .instruments {
     gap: 6px;
   }
+
+  .running-head .key {
+    min-height: 36px;
+    padding-inline: 12px;
+  }
+
+  /* no room for the rice's name at a fixed width, and at its own width a
+     theme change would rewrap the masthead: the tile says what it does */
+  .instruments .rice-name {
+    display: none;
+  }
+
+  .instruments .rice-word.coarse-only {
+    display: inline !important; /* outranks the pointer utility, see below */
+  }
+
+  /* the page links are printed under a rule, as text actions: they leave
+     the page, so they are links, not instruments */
+  .running-head .head-nav {
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 6px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .running-head .head-nav .key {
+    min-height: 30px;
+    padding: 0 2px;
+    color: var(--print);
+    font-size: 14px;
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+  }
+
+  .running-head .head-nav .key::before,
+  .running-head .head-nav .key::after {
+    display: none;
+  }
+
+  .running-head .head-nav .key:focus-visible {
+    outline: none;
+    text-decoration-thickness: 3px;
+    background: color-mix(in srgb, var(--signal) 18%, transparent);
+  }
+}
+
+/* On a narrow phone the brand and both keys still share one row: the keys
+   drop their keyboard legends (there is rarely a keyboard to press them on,
+   and each key says what it does in words and in its accessible name) and
+   the masthead's margins tighten. */
+@media (max-width: 400px) {
+  .running-head {
+    padding-inline: calc(var(--plate-w) + 2px);
+  }
+
+  .instruments .key-legend {
+    display: none;
+  }
+
+  .running-head .instruments .key {
+    padding-inline: 10px;
+  }
 }
 
 /* ---------- home hero ---------- */
 
+/* Two sheets pinned side by side, with the valley showing between them: the
+   promise, and the flagship's larger sheet, which leads with the product's
+   screen so the page opens on it, its call to action on the first screen. */
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
-  gap: clamp(24px, 4vw, 56px);
-  align-items: end;
-  padding: calc(var(--plate-w) + 30px) calc(var(--plate-w) + 22px) calc(var(--plate-w) + 18px);
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: var(--rack-gap);
+  align-items: start;
+}
+
+.hero-copy.faceplate {
+  margin-top: 28px; /* pinned a little lower than its neighbour */
+  padding: calc(var(--plate-w) + 34px) calc(var(--plate-w) + 26px) calc(var(--plate-w) + 22px);
 }
 
 .title {
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-weight: 760;
-  font-size: clamp(36px, 5.6vw, 68px);
-  line-height: 1;
-  letter-spacing: -0.035em;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(38px, 4.4vw, 58px);
+  line-height: 1.02;
+  letter-spacing: -0.018em;
   margin: 18px 0 22px;
   text-wrap: balance;
   color: var(--print);
@@ -301,10 +382,12 @@ pre code {
 
 .title .soft {
   color: var(--print-soft);
+  font-style: italic;
+  font-weight: 500;
 }
 
 .lede {
-  font-size: clamp(17px, 1.8vw, 19.5px);
+  font-size: clamp(17px, 1.6vw, 19px);
   line-height: 1.55;
   margin: 0;
   max-width: 54ch;
@@ -316,55 +399,35 @@ pre code {
   font-weight: 600;
 }
 
-.hero-aside {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  /* in one column the readout would stretch the full plate, leaving its
-     labels a screen's width from their values */
-  max-width: 420px;
-}
-
-.margin-note {
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: var(--print-soft);
-}
-
-.margin-note h2 {
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 125%;
-  font-weight: 600;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--print-faint);
-  margin: 0 0 8px;
-}
-
 @media (max-width: 900px) {
   .hero {
     grid-template-columns: 1fr;
-    align-items: start;
+  }
+  .hero-copy.faceplate {
+    margin-top: 0;
   }
 }
 
-/* ---------- divider: a 1U blanking panel silkscreened with the shelf's name ---------- */
+/* ---------- divider: a narrow strip of paper with the shelf's name ---------- */
 
+/* A strip is shorter than a full-scale sheet's two corner slices (2 x 152
+   bitmap px at --plate-k), and a 9-slice squeezed below that smears its
+   torn ends. So a strip renders the sheet at a smaller scale, which also
+   suits it: a narrow strip has a finer torn edge. */
 .divider {
-  min-height: calc(var(--plate-w) * 2 + 14px);
+  --plate-k: 0.3;
+  min-height: 92px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px 16px;
-  padding: calc(var(--plate-w) * 0.62) calc(var(--plate-w) + 14px);
+  padding: 17px 40px;
   word-spacing: 0.1em;
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 125%;
-  font-weight: 700;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 500;
   font-size: 13px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--print);
 }
@@ -377,27 +440,51 @@ pre code {
 
 /* ---------- shelves of modules (home) ---------- */
 
+/* the section's name is a headline, set like the sheets' titles */
 .shelf-label {
   display: flex;
   align-items: baseline;
   gap: 16px;
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: 27px;
+  letter-spacing: -0.01em;
+  text-transform: none;
 }
 
 .shelf-label .shelf-note {
   color: var(--print-soft);
+  font-style: italic;
   font-weight: 500;
-  font-stretch: 100%;
-  letter-spacing: 0.04em;
-  text-transform: none;
-  font-size: 12px;
+  letter-spacing: 0;
+  font-size: 19px;
 }
 
 /* Six-column rack. Modules are 2U wide; when a shelf's last row would hold
    only two, they widen to 3U each so the rack never has an empty bay. */
+/* The sheets on a shelf are separate pieces pinned at different depths: every
+   other one lies closer to the scene (a tighter baked shadow) and is pinned
+   a little lower, so a row never reads as a grid of identical cards. */
 .shelf {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: var(--rack-gap);
+  align-items: start;
+}
+
+.shelf > :nth-child(even) {
+  margin-top: 22px;
+}
+
+.shelf > :nth-child(even)::before {
+  border-image-source: var(--k-plate-flat);
+}
+
+@media (max-width: 680px) {
+  .shelf > :nth-child(even) {
+    margin-top: 0;
+  }
 }
 
 .shelf > * {
@@ -433,6 +520,10 @@ pre code {
   }
 }
 
+.module .screen {
+  --mat-k: 0.18;
+}
+
 .module {
   container-type: inline-size;
   display: block;
@@ -463,7 +554,7 @@ pre code {
 .module-status {
   display: inline-flex;
   align-items: center;
-  gap: 12px; /* clear of the lamp's halo */
+  gap: 12px;
 }
 
 .module-body {
@@ -474,9 +565,9 @@ pre code {
 }
 
 .module-title {
-  font-stretch: 112%;
-  font-weight: 750;
-  font-size: 22px;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: 25px;
   letter-spacing: -0.01em;
   line-height: 1.1;
 }
@@ -502,7 +593,9 @@ pre code {
   .module-inner {
     display: grid;
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    grid-template-rows: auto 1fr auto auto;
+    /* the copy, its rule and its numbers stack under each other beside
+       the screen; any spare height falls below them, not between */
+    grid-template-rows: auto auto auto auto 1fr;
     column-gap: 24px;
     row-gap: 12px;
   }
@@ -511,7 +604,10 @@ pre code {
   }
   .module-inner > .screen {
     grid-column: 1;
-    grid-row: 2 / 5;
+    grid-row: 2 / 6;
+  }
+  .module-inner > .engraved {
+    margin-top: 4px;
   }
   .module-inner > .module-body {
     grid-column: 2;
@@ -538,52 +634,35 @@ pre code {
 /* ---------- flagship module (home) ---------- */
 
 .flagship {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
-  gap: clamp(20px, 3.5vw, 48px);
-  align-items: center;
-  padding: calc(var(--plate-w) + 18px) calc(var(--plate-w) + 18px);
-  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: calc(var(--plate-w) + 18px) calc(var(--plate-w) + 18px) calc(var(--plate-w) + 16px);
   color: var(--print);
 }
 
-.flagship-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .flagship h2 {
-  font-stretch: 100%;
-  font-weight: 780;
-  font-size: clamp(30px, 4vw, 48px);
-  line-height: 1.02;
-  letter-spacing: -0.03em;
-  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(28px, 2.7vw, 38px);
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  margin: 4px 0 0;
   text-wrap: balance;
 }
 
 .flagship p {
   margin: 0;
   color: var(--print-soft);
-  font-size: 17px;
-  max-width: 46ch;
+  font-size: 16.5px;
+  max-width: 52ch;
 }
 
 .flagship .keys {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 6px;
-}
-
-@media (max-width: 860px) {
-  .flagship {
-    grid-template-columns: 1fr;
-  }
-  .flagship .screen {
-    order: -1;
-  }
+  margin-top: 4px;
 }
 
 /* ---------- tags: printed part numbers ---------- */
@@ -591,20 +670,14 @@ pre code {
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 14px;
+  gap: 6px 18px; /* spaced like the numbers on a project sheet, no bullets */
   margin-top: 18px;
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 125%;
-  font-weight: 600;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--print-soft);
-}
-
-.tag::before {
-  content: "■ ";
-  color: var(--print-faint);
 }
 
 /* ---------- open question: an amber lamp and a printed label ---------- */
@@ -623,10 +696,10 @@ pre code {
   align-items: center;
   gap: 10px;
   margin-bottom: 6px;
-  font-stretch: 125%;
-  font-weight: 650;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--print);
 }
@@ -642,11 +715,10 @@ pre code {
 
 .plate-figure-label {
   text-wrap: balance;
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 125%;
-  font-weight: 600;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--print-soft);
   padding-left: 4px;
@@ -707,7 +779,7 @@ pre code {
 /* On phones the glass gives the code nearly all of the plate. */
 @media (max-width: 600px) {
   .plate .screen {
-    --bezel-w: 14px;
+    --mat-k: 0.106; /* a 14px mat */
   }
 
   .plate .screen-face {
@@ -746,13 +818,13 @@ pre code {
 }
 
 .feat h3 {
-  font-stretch: 125%;
+  font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 11px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   color: var(--print);
   text-transform: uppercase;
   margin: 0 0 8px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .feat p {
@@ -770,21 +842,12 @@ pre code {
   }
 }
 
-/* after the instruments in the DOM too, so Tab follows what you see */
+/* a detail page's way back (and out) are tiles, like the masthead's keys;
+   after the instruments in the DOM too, so Tab follows what you see */
 .head-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 18px;
-}
-
-.head-nav a {
-  color: var(--print);
-  text-decoration: none;
-  transition: color 120ms ease-out;
-}
-
-.head-nav a:hover {
-  color: var(--signal);
+  gap: 8px;
 }
 
 /* ---------- detail page ---------- */
@@ -799,21 +862,13 @@ pre code {
 
 .kicker {
   text-wrap: balance;
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 125%;
-  font-weight: 650;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--print-soft);
+  color: var(--tape-ink); /* typed on sage tape (kit.css), in either finish */
   margin-bottom: 18px;
-}
-
-.detail-hero h1,
-.hero h1,
-.flagship h2,
-.launch-hero h1 {
-  word-spacing: 0.08em;
 }
 
 /* long words in display sizes on a phone: hyphenate, never overflow */
@@ -824,10 +879,11 @@ pre code {
 }
 
 .detail-hero h1 {
-  font-weight: 770;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
   font-size: clamp(36px, 5.6vw, 64px);
-  line-height: 1.02;
-  letter-spacing: -0.035em;
+  line-height: 1.04;
+  letter-spacing: -0.016em;
   margin: 0 0 20px;
   max-width: 18ch;
   text-wrap: balance;
@@ -861,11 +917,73 @@ pre code {
   }
 }
 
+/* A sheet whose content runs much longer than its head stacks them: the head
+   across the top, the content filling the sheet under it, so no column of
+   bare paper runs down beside a long list. */
+.section.stack {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+
+.section.stack > :first-child {
+  max-width: 44rem;
+}
+
+.section.stack .features {
+  margin-top: 0;
+}
+
+@media (min-width: 760px) {
+  /* the shortcuts as a two-column table of key and meaning */
+  .section.stack .reflexes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 44px;
+    max-width: none; /* a table across the sheet, not a column of prose */
+  }
+
+  .section.stack .reflexes li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    align-content: start; /* keys to meaning the same gap, however tall the row */
+    padding: 14px 0;
+  }
+
+  .section.stack .reflexes li:nth-last-child(2):nth-child(odd) {
+    background: none;
+  }
+
+  /* prose printed in two columns, as on a broadsheet, each column whole
+     paragraphs (a column never opens mid-sentence); an odd last paragraph
+     runs across both */
+  .section.stack .prose-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 44px;
+    align-items: start;
+  }
+
+  .section.stack .prose-cols > p:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .section.stack .prose-cols > p:first-child {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 1000px) {
+  .section.stack .features {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .section h2 {
-  font-weight: 740;
-  font-size: 26px;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: 29px;
   line-height: 1.12;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   margin: 0 0 10px;
   color: var(--print);
   text-wrap: balance;
@@ -873,11 +991,10 @@ pre code {
 
 .section-kicker {
   text-wrap: balance;
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 125%;
-  font-weight: 650;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--print-faint);
   margin-bottom: 10px;
@@ -930,6 +1047,85 @@ pre code {
   color: var(--signal);
 }
 
+/* ---------- a long page's sheets: separate pieces, not a stack of panels ----------
+   On a wide screen a page's sheets vary in width, lie to one side or the
+   other with the scene showing beside them, and at two depths (the flat
+   tier lies closer to the scene, as on the home shelves); some are pinned
+   off-centre. Below 1000px every sheet takes the column again. */
+
+.pin-left {
+  --pin-x: 24%;
+}
+
+.pin-right {
+  --pin-x: 76%;
+}
+
+.section.sheet-flat::before,
+.sheet-row > :nth-child(2)::before {
+  border-image-source: var(--k-plate-flat);
+}
+
+@media (min-width: 1000px) {
+  .rack-main > .sheet-narrow {
+    width: 74%;
+  }
+
+  .rack-main > .sheet-wide {
+    width: 86%;
+  }
+
+  .rack-main > .sheet-start {
+    align-self: flex-start;
+  }
+
+  .rack-main > .sheet-end {
+    align-self: flex-end;
+  }
+
+  .sheet-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: var(--rack-gap);
+    align-items: start;
+  }
+
+  /* the spec plate lies a step lower, at the closer depth */
+  .sheet-row > :nth-child(2) {
+    margin-top: 22px;
+  }
+
+  /* half a column is too narrow for a label column beside the content:
+     the head sits over it, and the keys get the sheet's width */
+  .sheet-row > .section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  /* the alpha is the page's end point: the column's full width (every other
+     sheet is narrower), with a larger head and more air, on the signal pin */
+  .section.alpha {
+    padding-block: calc(var(--plate-w) + 30px) calc(var(--plate-w) + 24px);
+  }
+
+  .section.alpha h2 {
+    font-size: 36px;
+    line-height: 1.08;
+  }
+}
+
+.section.alpha::after {
+  --prop: url(/kit/paper/pin-signal.webp);
+}
+
+@media (max-width: 999px) {
+  .sheet-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rack-gap);
+  }
+}
+
 /* ---------- colophon: the spec plate ---------- */
 
 .colophon {
@@ -940,10 +1136,10 @@ pre code {
 }
 
 .colophon div {
-  font-stretch: 125%;
-  font-weight: 600;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--print-faint);
 }
@@ -951,7 +1147,6 @@ pre code {
 .colophon div strong {
   overflow-wrap: anywhere;
   display: block;
-  font-stretch: 100%;
   font-weight: 500;
   font-size: 16.5px;
   letter-spacing: 0;
@@ -960,23 +1155,8 @@ pre code {
   margin-top: 6px;
 }
 
-/* ---------- screens built from older markup ---------- */
-
-.code-duet {
-  position: relative;
-  padding: calc(var(--bezel-w) * 0.82);
-  background: linear-gradient(var(--bezel-under), var(--bezel-under)) center / calc(100% - 10px) calc(100% - 10px)
-    no-repeat;
-}
-
-.code-duet::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: var(--bezel-w) solid transparent;
-  border-image: var(--k-bezel) var(--slice-bezel) / var(--bezel-w) stretch;
-  pointer-events: none;
-}
+/* ---------- screens built from older markup ----------
+   .code-duet is mounted in the same mat as .screen (kit.css). */
 
 .code-duet {
   display: grid;
@@ -1187,9 +1367,10 @@ pre code {
 }
 
 .blank-leaf h1 {
-  font-weight: 760;
-  font-size: clamp(34px, 5.5vw, 54px);
-  letter-spacing: -0.03em;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(34px, 5.5vw, 56px);
+  letter-spacing: -0.015em;
   margin: 0 0 14px;
 }
 
@@ -1203,18 +1384,16 @@ pre code {
 
 .folio,
 .statusline {
-  min-height: calc(var(--plate-w) * 2 + 14px);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 10px 22px;
   padding: calc(var(--plate-w) * 0.6) calc(var(--plate-w) + 14px);
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 125%;
-  font-weight: 600;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--print-faint);
 }
@@ -1227,6 +1406,16 @@ pre code {
   color: var(--print-soft);
 }
 
+/* the home page's keys, printed small along its foot */
+.statusline .sl-keys {
+  color: var(--print-soft);
+}
+
+.statusline .key.cap-inline {
+  font-size: 1.05em;
+  letter-spacing: 0;
+}
+
 /* ---------- print ---------- */
 
 @media print {
@@ -1234,67 +1423,13 @@ pre code {
   .ci-overlay,
   .rack::before,
   .rack::after,
-  .bench {
+  .scene {
     display: none !important;
   }
 
   body {
     background: #fff;
   }
-}
-
-/* ---------- home: readout + drive note ---------- */
-
-.readout {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 4px 18px;
-  margin: 0;
-  padding: 14px 16px;
-  font-size: 12.5px;
-}
-
-.readout dt {
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 11px;
-  padding-top: 1px;
-}
-
-.readout dd {
-  margin: 0;
-  color: var(--olive);
-  text-align: right;
-}
-
-.operate {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 8px 14px;
-  align-items: center;
-  margin: 0;
-}
-
-.operate dt {
-  display: flex;
-  gap: 4px;
-}
-
-.operate dd {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.35;
-  color: var(--print-soft);
-}
-
-.drive .key.cap {
-  min-height: 30px;
-  min-width: 34px;
-  padding: 0 9px 2px;
-  font-size: 12px;
-  --key-w: 11px;
-  vertical-align: middle;
 }
 
 .shelf-group {
@@ -1321,30 +1456,77 @@ pre code {
    Tauri Explorer launch page
    ========================================================================== */
 
+/* the tape is cut to its words, two lines at every width, so it is the same
+   strip on a phone, a tablet and a desktop (never a band across the sheet) */
 .launch-kicker {
   display: flex;
+  width: fit-content;
+  max-width: 100%;
   align-items: center;
   gap: 10px;
   color: var(--print);
 }
 
-/* hero: the promise on the left, the product doing it on the right */
+.launch-kicker > .seplist {
+  max-width: 28ch;
+}
+
+/* hero: the promise on one sheet, and the product doing it on a second,
+   larger sheet pinned beside it, set lower, with the scene between them (the
+   brief's 28-56px between sheets). Both stay inside the column. */
 .launch-hero {
+  --hero-gap: 32px; /* scene between the two sheets */
   display: grid;
-  /* the shot gets the wider column so the palette shows at about 1:1 */
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: clamp(24px, 4vw, 52px);
-  align-items: center;
-  padding: calc(var(--plate-w) + 22px) calc(var(--plate-w) + 22px) calc(var(--plate-w) + 16px);
+  /* the product's sheet takes the larger share, so its screen shows the app
+     near real size */
+  grid-template-columns: minmax(0, 0.77fr) minmax(0, 1.23fr);
+  align-items: start;
+}
+
+.launch-copy.faceplate {
+  padding: calc(var(--plate-w) + 26px) calc(var(--plate-w) + 16px) calc(var(--plate-w) + 22px);
+}
+
+.launch-shot.faceplate {
+  position: relative;
+  z-index: 1;
+  margin: 28px 0 0 var(--hero-gap);
+  padding: calc(var(--plate-w) + 20px) calc(var(--plate-w) + 6px) calc(var(--plate-w) + 10px);
+}
+
+/* The product is the proof, so its window gets the sheet: it sits in the
+   same mat as every screen, cut thinner (the board at 0.16), so the mat
+   frames it without taking its width. */
+.launch-shot .screen {
+  --mat-k: 0.16;
+}
+
+/* from 1100px to 1399px the column is narrower than its full 1180px: the
+   calls to action are cut a little tighter, so both stay on one row beside
+   the product */
+@media (min-width: 1100px) and (max-width: 1399px) {
+  .launch-keys .key[data-size="lg"] {
+    padding-inline: 20px;
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1400px) {
+  /* with the column at its full 1180px, the window takes the larger share;
+     the promise keeps room for both calls to action on one row */
+  .launch-hero {
+    grid-template-columns: minmax(0, 0.73fr) minmax(0, 1.27fr);
+  }
 }
 
 .launch-hero h1 {
   margin: 0 0 20px;
-  max-width: 11ch;
-  font-weight: 780;
-  font-size: clamp(36px, 5vw, 68px);
-  line-height: 0.96;
-  letter-spacing: -0.04em;
+  text-wrap: balance;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(40px, 5vw, 66px);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
   color: var(--print);
 }
 
@@ -1379,6 +1561,19 @@ pre code {
     flex: 1 1 100%;
     justify-content: center;
   }
+}
+
+/* product shots in the app theme that wears the current rice (one <picture>
+   per rice, see appTheme.ts); the others stay hidden, and unloaded */
+[data-rice-shot] img {
+  display: none;
+}
+:root[data-rice="paper"] [data-rice-shot="paper"] img,
+:root:not([data-rice]) [data-rice-shot="paper"] img,
+:root[data-rice="horizon"] [data-rice-shot="horizon"] img,
+:root[data-rice="cosmic-dusk"] [data-rice-shot="cosmic-dusk"] img,
+:root[data-rice="rapture"] [data-rice-shot="rapture"] img {
+  display: block;
 }
 
 /* a <picture> only picks the source; the <img> sizes against the screen face */
@@ -1450,6 +1645,46 @@ pre code {
   color: var(--print);
 }
 
+/* The lower tier of action: a utility beside a sheet's calls to action
+   (copy an address, jump down the page) is printed as text, not cut as a
+   tile, so a sheet carries no more than its two tiles. */
+.text-action {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--print);
+  text-decoration: underline;
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 120ms ease-out;
+}
+
+.text-action:hover {
+  color: var(--signal-ink);
+}
+
+/* focus marks the words as a highlighter would: a heavier rule and a wash
+   of the signal colour over them */
+.text-action:focus-visible {
+  outline: none;
+  text-decoration-thickness: 3px;
+  background: color-mix(in srgb, var(--signal) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--signal) 18%, transparent);
+}
+
+/* high contrast drops the wash: focus falls back to a ring */
+@media (forced-colors: active) {
+  .text-action:focus-visible,
+  .running-head .head-nav .key:focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 3px;
+  }
+}
+
 .launch-shot {
   margin: 0;
   display: flex;
@@ -1458,7 +1693,7 @@ pre code {
 }
 
 .launch-shot .screen-face {
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 1396 / 876; /* the app window, as cropped */
   background: #07080a;
 }
 
@@ -1470,59 +1705,135 @@ pre code {
   padding: 0 4px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
+  /* one column: the promise and the action on the first sheet, the product
+     pinned on the next, below it, wide enough that the whole window's text
+     reads (side by side, below 1100px it would be too narrow to) */
   .launch-hero {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0;
+  }
+  .launch-copy.faceplate {
+    padding: calc(var(--plate-w) + 22px) calc(var(--plate-w) + 22px) calc(var(--plate-w) + 30px);
+  }
+  /* the same scene between them as between any two sheets in the column */
+  .launch-shot.faceplate {
+    margin: var(--rack-gap) 0 0;
+  }
+}
+
+/* Stacked on a tablet, the promise's sheet is kept short so the product's
+   screen starts on the first screen: the head on one line, what it means
+   under it, then the two calls to action, an equal pair, with the note beside
+   them, and the facts across the foot. */
+@media (min-width: 900px) and (max-width: 1099px) {
+  .launch-copy.faceplate {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 28px;
+    align-items: center;
+    padding-block: calc(var(--plate-w) + 14px) calc(var(--plate-w) + 14px);
   }
 
-  /* one column: the promise, then the action, then the product, all on the
-     first screen of a phone; the explanation follows */
-  .launch-copy {
-    display: contents;
+  .launch-copy.faceplate > * {
+    grid-column: 1 / -1;
   }
 
-  .launch-kicker { order: 1; }
-  .launch-hero h1 { order: 2; }
-  .launch-keys { order: 3; margin-top: 4px; }
-  .launch-keys-note { order: 4; }
-  .launch-proof { order: 4; }
-  .launch-shot { order: 5; margin: 26px 0; }
-  .launch-sub { order: 2; }
-  .launch-hero .launch-lede { order: 6; }
+  .launch-copy.faceplate > .launch-keys {
+    grid-column: 1;
+  }
+
+  .launch-copy.faceplate > .launch-keys-note {
+    grid-column: 2;
+    margin-top: 0;
+  }
+
+  .launch-hero h1 {
+    font-size: 50px;
+    margin-bottom: 12px;
+  }
+
+  .launch-copy > .launch-keys {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 210px));
+  }
+
+  .launch-copy > .launch-keys .key {
+    width: 100%;
+  }
+
+  .launch-copy > .launch-proof {
+    margin-top: 14px;
+  }
+}
+
+/* on a short screen (a 1024x768 tablet) the explanation gives way, so the
+   product's window and its palette show on the first screen */
+@media (min-width: 900px) and (max-width: 1099px) and (max-height: 820px) {
+  .launch-copy > .launch-lede {
+    display: none;
+  }
+  .launch-hero h1 {
+    font-size: 46px;
+  }
+}
+
+/* A short laptop screen (1366x768, 1280x800) keeps both calls to action and
+   the note under them on the first screen: the explanation gives way (the
+   reflexes section says it next) and the head is sized to the height. */
+@media (min-width: 1100px) and (max-height: 860px) {
+  .launch-copy > .launch-lede {
+    display: none;
+  }
+  .launch-hero h1 {
+    font-size: clamp(44px, 7.4vh, 66px);
+  }
 }
 
 /* A phone's first screen holds the promise, both calls to action with the
    line that says the invite is an email, the facts a tester checks first
-   (trimmed to one line) and a strip of the product, in that order; the
-   explanation follows. */
+   (trimmed to one line) and a strip of the product, in that order. The
+   explanation is the reflexes section that follows. */
 @media (max-width: 600px) {
-  .launch-hero {
-    padding: calc(var(--plate-w) + 8px) calc(var(--plate-w) + 10px) calc(var(--plate-w) + 12px);
+  .launch-copy.faceplate {
+    padding: calc(var(--plate-w) + 8px) calc(var(--plate-w) + 10px) calc(var(--plate-w) + 22px);
+  }
+  .launch-shot.faceplate {
+    padding: calc(var(--plate-w) + 14px) calc(var(--plate-w) + 8px) calc(var(--plate-w) + 8px);
   }
   .launch-hero h1 { margin-bottom: 14px; }
   .launch-hero .launch-sub { margin-bottom: 0; font-size: 17px; }
-  .launch-keys { order: 3; margin-top: 16px; gap: 8px; }
+  .launch-keys { margin-top: 16px; gap: 8px; }
   /* both calls to action on one row, down to 360px */
-  .launch-keys .key[data-size="lg"] { padding-inline: 15px; font-size: 12.5px; letter-spacing: 0.06em; }
-  .launch-hero .launch-keys-note { order: 4; margin-top: 10px; gap: 4px 10px; flex-wrap: nowrap; font-size: 12.5px; }
+  /* one legend for both: the signal board marks the call to action */
+  .launch-keys .key[data-size="lg"] { padding-inline: 12px; font-size: 15px; letter-spacing: 0.01em; }
+  /* the call to action takes the larger share of the row */
+  .launch-keys .key[data-tone="signal"] { flex: 1.5 1 auto; }
+  .launch-keys .key:not([data-tone="signal"]) { flex: 1 1 auto; }
+  .launch-hero .launch-keys-note { margin-top: 10px; gap: 4px 10px; flex-wrap: nowrap; font-size: 12.5px; }
   /* one row: the address and its copy key; the terms are further down the page */
   .launch-keys-note .keys-note-terms { display: none; }
-  .launch-proof { order: 5; margin-top: 8px; padding-top: 10px; }
+  .launch-proof { margin-top: 8px; padding-top: 10px; }
   .launch-proof { letter-spacing: 0.07em; }
   .launch-proof li:nth-child(n + 4),
   .launch-proof .proof-more { display: none; }
   .launch-proof { --sep: 18px; }
-  .launch-shot { order: 6; margin: 10px 0 0; }
-  .launch-shot .screen-face { aspect-ratio: 12 / 5; }
+  .launch-hero .launch-lede { display: none; }
+  .launch-shot .screen-face { aspect-ratio: 812 / 324; }
   .launch-shot-cap { display: none; }
-  .launch-hero .launch-lede { order: 7; margin-top: 22px; }
 }
 
 @media (max-width: 400px) {
   .launch-hero h1 { margin-bottom: 10px; }
   .launch-keys { margin-top: 12px; }
   .launch-hero .launch-keys-note { flex-wrap: wrap; } /* too narrow for the address and its key on one row */
+}
+
+/* Newsreader's plus is a hairline beside its bold letters; in a headline it
+   is set in the mono face, whose plus matches their weight */
+:is(h1, h2) .chord-plus {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 0.9em;
 }
 
 .chord {
@@ -1552,7 +1863,6 @@ pre code {
 }
 
 .reflexes .key.cap,
-.drive .key.cap,
 .folio .key.cap,
 .launch-shot-cap .key.cap {
   min-height: 32px;
@@ -1582,29 +1892,20 @@ pre code {
 /* Text links that stand alone get a finger-sized hit box on touch screens
    (WCAG 2.2 target size, 24 px minimum). */
 @media (pointer: coarse) {
-  .head-nav a,
-  .launch-live-foot a,
-  .launch-keys-note a {
+  .launch-keys-note a,
+  .text-action {
     display: inline-flex;
     align-items: center;
     min-height: 32px;
   }
 
-  .head-nav {
-    row-gap: 0; /* the links' own boxes space the rows */
-  }
-
-  .head-nav a {
-    min-height: 24px; /* the head stays short enough to keep a hero's call to action on the first screen */
-  }
-
   .shot .plate-caption a.shot-full {
     margin-top: 0;
-    padding-block: 6px; /* a 24px-tall target */
+    padding-block: 7px; /* a 32px target, as other text actions on touch */
   }
 }
 
-/* live demo: a screen on standby until powered */
+/* live demo: a still of the app until it runs */
 
 .launch-live {
   display: flex;
@@ -1616,43 +1917,33 @@ pre code {
 
 .launch-live-foot {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 8px 14px;
   flex-wrap: wrap;
   padding: 0 6px;
 }
 
-.launch-live-foot a {
-  color: var(--print);
-  text-decoration: none;
-}
-
-.launch-live-foot a:hover,
-.live-give:hover {
-  color: var(--signal);
-}
-
-/* A text control, printed like the foot's link beside it, with the same
-   focus underline as a chassis link. */
-.live-give {
+/* the demo's actions are tiles, like every other action on the page; on a
+   narrow screen they wrap under each other rather than leave the sheet */
+.live-foot-keys {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
   margin-left: auto;
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  color: var(--print);
-  cursor: pointer;
+  max-width: 100%;
 }
 
-.live-give:focus-visible {
-  outline: none;
-  text-decoration: underline 2px var(--signal);
-  text-underline-offset: 5px;
-}
-
-@media (forced-colors: active) {
-  .live-give:focus-visible {
-    outline: 2px solid CanvasText;
+/* on a phone the caption and the one action stack, on one left edge */
+@media (max-width: 600px) {
+  .launch-live-foot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .live-foot-keys {
+    margin-left: 0;
+    justify-content: flex-start;
   }
 }
 
@@ -1660,8 +1951,8 @@ pre code {
   background: #07080a;
 }
 
-/* While the embedded app has the keyboard, its plate wears the focus line, so
-   it is plain why the page's own keys have stopped answering. */
+/* While the embedded app has the keyboard, its sheet lies on the focus
+   under-sheet, so it is plain why the page's own keys have stopped answering. */
 .launch-live[data-keys]::after {
   border-image-source: var(--k-plate-focus);
   opacity: 1;
@@ -1681,6 +1972,7 @@ pre code {
   aspect-ratio: 16 / 10;
   width: 100%;
   overflow: hidden;
+  background: var(--live-poster) top left / cover no-repeat;
 }
 
 .live-frame {
@@ -1692,17 +1984,14 @@ pre code {
   transform-origin: 0 0;
 }
 
-/* off: dark glass, a standby lamp and the power key on an empty field */
+/* off (and booting): a still of the app in the rice's theme, the same frame
+   the app paints over once it loads */
 .live-off {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 16px;
   background: #07080a;
 }
 
-/* a powered-down frame of the real app, so the product shows before it boots */
 .live-poster {
   position: absolute;
   inset: 0;
@@ -1712,35 +2001,17 @@ pre code {
   object-position: top left;
 }
 
-.live-off .screen-glass {
-  opacity: 0.8;
-  --glare-x: -20px;
-  --glare-y: -30px;
-}
+/* On a phone-wide screen the app, scaled to fit, is too small to read or
+   use: whatever the pointer, the demo is the still and a tile that opens the
+   app full screen, as on touch (LiveDemo's AUTO_BOOT agrees). */
+@media (max-width: 600px) {
+  .launch-live .key.fine-only {
+    display: none !important;
+  }
 
-/* bottom-left, clear of the glare that the upper-left light throws. The
-   lamp sits on its own dark strip that blanks the poster's status bar, so the
-   label never prints over the app's own text. */
-.live-standby {
-  position: absolute;
-  inset: auto 0 0;
-  padding: 16px 18px 14px;
-  background: linear-gradient(to bottom, transparent, #07080a 10px);
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-family: var(--font-print), system-ui, sans-serif;
-  font-stretch: 125%;
-  font-weight: 600;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #a19d95;
-}
-
-.live-off .key {
-  position: relative;
-  z-index: 3;
+  .launch-live .key.coarse-only {
+    display: inline-flex !important;
+  }
 }
 
 /* reflexes */
@@ -1778,31 +2049,60 @@ pre code {
 
 /* screenshots: feature crops at native size, the full window behind a link */
 
-.shots-plate {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 30px 26px;
-  padding: calc(var(--plate-w) + 14px) calc(var(--plate-w) + 16px);
-}
-
-@media (max-width: 760px) {
-  .shots-plate {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* A shot left alone on the last row is a full-width strip (its crop is
-   cut wide for it). (of-type: the lightbox <dialog> is the plate's last
-   child.) */
-.shot:last-of-type:nth-of-type(odd) {
-  grid-column: 1 / -1;
+/* Every shot is a print on its own pinned sheet, shown at the app's real
+   size (--shot-w, set per shot) so the app's text is the same size in all
+   of them, with its figure label and caption under it. On a wide screen the
+   sheets fit their prints and lie to alternate sides, the scene showing
+   beside them; the middle one at the closer depth. */
+.shots {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rack-gap);
 }
 
 .shot {
+  /* the glass at the crop's real size, plus the mat around it */
+  --shot-px: calc(var(--shot-w, 9999) * 1px + (var(--mat-l) + var(--mat-r) - 80) * 1px * var(--mat-k));
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  padding: calc(var(--plate-w) + 22px) calc(var(--plate-w) + 18px) calc(var(--plate-w) + 16px);
+}
+
+.shot-link {
+  width: min(100%, var(--shot-px));
+}
+
+.shot .plate-caption .plate-figure-label {
+  display: block;
+  margin-bottom: 4px;
+  padding-left: 0;
+}
+
+.shot:nth-of-type(2)::before {
+  border-image-source: var(--k-plate-flat);
+}
+
+@media (min-width: 1000px) {
+  /* the sheet is its print plus its margins (fit-content would take the
+     image's natural width) */
+  .shot {
+    width: calc(var(--shot-px) + 2 * (var(--plate-w) + 18px));
+    max-width: 100%;
+  }
+
+  .shot > .shot-link {
+    width: 100%;
+  }
+
+  .shot:nth-of-type(odd) {
+    align-self: flex-start;
+  }
+
+  .shot:nth-of-type(even) {
+    align-self: flex-end;
+  }
 }
 
 .shot-link {
@@ -1835,52 +2135,51 @@ pre code {
   object-position: top left;
 }
 
-/* gauges: small LCD readouts */
+/* ledger: figures printed on the sheet, a spec table rather than a grid of
+   cards; each figure stands over its label, on a printed rule */
 
-.gauges {
+.ledger {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: 22px 24px;
+  margin: 0;
 }
 
-/* two readouts a row on phones: one a row turns eight short numbers into a
-   screenful of empty glass */
-@media (max-width: 600px) {
-  .gauges {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.gauge {
-  --bezel-w: 18px;
-}
-
-.gauge .screen-face {
+.ledger-row {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 14px 14px 12px;
-  min-height: 96px;
+  flex-direction: column-reverse; /* the figure reads first; the label stays first in the markup */
+  justify-content: flex-end; /* reversed, this packs to the top: figures share a line, labels hang */
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
 }
 
-.gauge-n {
-  font-size: 28px;
+.ledger-n {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: 34px;
   line-height: 1;
-  color: var(--tone);
   letter-spacing: -0.02em;
+  font-variant-numeric: lining-nums;
+  color: var(--print);
+}
+
+.ledger-l {
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--print-soft);
+  text-wrap: balance;
 }
 
 @media (max-width: 600px) {
-  .gauge-n {
-    font-size: 22px; /* "595 ms" fits a half-width readout */
+  .ledger {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 20px;
   }
-}
-
-.gauge-l {
-  font-size: 11.5px;
-  line-height: 1.35;
-  color: var(--ink-soft);
-  text-wrap: balance;
+  .ledger-n {
+    font-size: 28px;
+  }
 }
 
 /* alpha + install */
@@ -1941,43 +2240,27 @@ pre code {
 }
 
 .cmd {
-  flex: 1 1 320px;
-  min-width: 0; /* lets the glass scroll a long command instead of widening the row */
-  --bezel-w: 20px;
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 9px 22px 8px;
 }
 
-.cmd .screen-face {
-  padding: 14px 16px;
-  overflow-x: auto;
-}
-
-/* When the command is wider than the glass, the edge with more command
-   beyond it fades, like the lightbox. A command that fits has no scroll
-   timeline, so it keeps the unfaded base. */
-@supports (animation-timeline: scroll()) {
-  .cmd .screen-face {
-    --pan-l: 0px;
-    --pan-r: 0px;
-    mask-image: linear-gradient(to right, rgb(0 0 0 / 0.3), #000 var(--pan-l), #000 calc(100% - var(--pan-r)), rgb(0 0 0 / 0.3));
-    animation: pan-x linear both;
-    animation-timeline: scroll(self inline);
-  }
-}
-
-/* a command is one token stream: it never breaks mid-word; on a narrow
-   screen the glass scrolls sideways instead */
+/* the command is typed straight on the strip, not on a scrap of its own */
 .cmd-text {
-  background: none !important;
-  box-shadow: none !important;
-  color: var(--olive);
+  border: 0;
+  border-image: none;
+  background: none;
+  color: var(--tape-ink);
   font-size: 15px;
   padding: 0;
-  white-space: pre;
+  margin: 0;
+  white-space: normal;
+  overflow-wrap: normal;
 }
 
 .cmd-text::before {
   content: "$ ";
-  color: var(--ink-soft);
+  opacity: 0.6;
 }
 
 @media (max-width: 420px) {
@@ -2016,35 +2299,18 @@ pre code {
   inset: 0;
   z-index: 100;
   display: grid;
-  padding: 22px 64px;
-  background: var(--bench) var(--k-bench) center / cover no-repeat;
-}
-
-.og-stage::before,
-.og-stage::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 56px;
-  background: var(--k-rail) center top / 56px auto repeat-y;
-}
-
-.og-stage::before {
-  left: 4px;
-}
-
-.og-stage::after {
-  right: 4px;
+  padding: 44px 96px 84px;
+  /* the flat scene: the site's layers composited (scripts/build-paper-kit.mjs) */
+  background: var(--scene-ground) var(--k-scene-flat) center bottom / cover no-repeat;
 }
 
 .og-plate {
-  --plate-w: 44px;
+  --plate-k: 0.6;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 34px;
   align-items: center;
-  padding: 50px 56px !important;
+  padding: 44px 52px !important;
 }
 
 .og-copy {
@@ -2055,20 +2321,26 @@ pre code {
 
 .og-title {
   margin: 0;
-  word-spacing: 0.08em;
-  font-weight: 780;
-  font-size: 60px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 64px;
   line-height: 0.98;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.018em;
   color: var(--print);
 }
 
 .og-title .soft {
+  font-style: italic;
+  font-weight: 500;
   color: var(--print-soft);
 }
 
+.og-home {
+  grid-template-columns: 1.12fr 0.88fr;
+}
+
 .og-home .og-title {
-  font-size: 46px;
+  font-size: 50px;
 }
 
 .og-kicker {
@@ -2082,8 +2354,8 @@ pre code {
 .og-tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  --bezel-w: 20px;
+  gap: 10px;
+  --mat-k: 0.12;
 }
 
 .og-caps {
@@ -2116,10 +2388,6 @@ pre code {
 }
 
 @media (max-width: 560px) {
-  .live-off .key {
-    padding: 0 18px 2px;
-    font-size: 12px;
-  }
   .module-top {
     gap: 10px;
     flex-wrap: wrap;
@@ -2167,10 +2435,17 @@ pre code {
   padding: 8px 14px;
   border-radius: 4px;
   background: var(--print);
-  color: var(--bench);
+  color: var(--scene-ground);
   font-size: 14px;
   font-weight: 650;
   text-decoration: none;
+}
+
+/* Hidden outright until focused: an offset alone would depend on its
+   ancestors, and the masthead it sits in is moved by its entrance. */
+.skip-link:not(:focus-visible) {
+  opacity: 0;
+  clip-path: inset(50%);
 }
 
 .skip-link:focus-visible {
@@ -2193,17 +2468,14 @@ main[tabindex="-1"]:focus {
   outline: none;
 }
 
-/* the caption's own link to the full window, set under it as a label */
+/* the caption's own link to the full window: a text action under it, with
+   a 24px target */
 .shot-full {
   display: block;
   width: fit-content;
-  margin-top: 6px;
-  color: var(--print);
-  text-decoration: none;
-}
-
-.shot-full:hover {
-  color: var(--signal);
+  margin-top: 2px;
+  padding-block: 3px;
+  line-height: 18px;
 }
 
 .sr-only {
@@ -2228,13 +2500,19 @@ main[tabindex="-1"]:focus {
 .pal {
   position: absolute;
   inset: 0;
-  padding: 7cqw 0 0 5cqw;
+  padding: 6cqw 5cqw 0;
   color: var(--tone);
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 4.9cqw;
+  /* about the app's own size: 16px on a 480px screen */
+  font-size: 3.4cqw;
   line-height: 1;
   /* phosphor: the lit text bleeds a little into the glass */
   text-shadow: 0 0 0.35em color-mix(in srgb, var(--tone) 45%, transparent);
+}
+
+/* a light screen is lit from outside, not glowing: its text is printed sharp */
+:root[data-rice="paper"] .pal {
+  text-shadow: none;
 }
 
 .pal-input {
@@ -2257,19 +2535,21 @@ main[tabindex="-1"]:focus {
   }
 }
 
+/* the rows reach 2cqw past the text on both sides, so the selection bar sits
+   inside the screen with even margins, as in the app */
 .pal-rows {
   list-style: none;
-  margin: 6.5cqw 0 0 -2cqw;
+  margin: 4.6cqw -2cqw 0;
   padding: 0;
 }
 
 .pal-rows li {
   display: flex;
   align-items: center;
-  gap: 0.9em;
-  height: 10.4cqw;
-  padding-left: 2cqw;
-  border-radius: 1.4cqw 0 0 1.4cqw;
+  height: 7.4cqw;
+  padding-inline: 2cqw;
+  border-radius: 1.4cqw;
+  white-space: nowrap;
 }
 
 .pal-rows li[data-selected] {
@@ -2278,20 +2558,12 @@ main[tabindex="-1"]:focus {
   text-shadow: none;
 }
 
-.pal-icon {
-  flex: none;
-  width: 0.62em;
-  height: 0.82em;
-  border: 0.12em solid currentColor;
-  border-radius: 0 0.22em 0 0;
-}
-
+/* the matched letters, underlined as the app does; one unbroken rule under
+   a run of them, clear of the glyphs and their glow */
 .pal-name u {
-  text-decoration-thickness: 0.1em;
-  text-underline-offset: 0.18em;
-}
-
-.pal-rows li[data-selected] .pal-name u {
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.26em;
+  text-decoration-skip-ink: none;
   font-weight: 700;
 }
 
@@ -2469,4 +2741,9 @@ html:has(dialog[open]) {
 /* the art carries the frame; a figure plate with a video needs no padding */
 .plate .screen-face:has(> .plate-art > .video-screen) {
   padding: 0;
+}
+
+/* a name that reads wrong broken at its hyphen (a repo, a path) */
+.nowrap {
+  white-space: nowrap;
 }

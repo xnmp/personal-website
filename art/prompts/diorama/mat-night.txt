@@ -1,0 +1,7 @@
+Redraw the attached reference (ref.png, a deep navy window mat with torn outer edges and a bevel-cut window) as the same mat, keeping its overall outline, border widths, and the window's size and position, but authored to be shown small: the mat will be displayed at about one fifth of this size, so every detail must be bold enough to survive that.
+- Board: thick deep ink-navy mounting board (about #1f2638 on average), with a pronounced mottled cotton-rag fibre: soft cloudy variations of a few percent in tone and fine lighter fibres, visible from a distance, never flat. Matte, no gloss.
+- Outer edge: torn by hand, coarse and irregular: tears of uneven length whose depth is about a fifth of the border's width, with a clearly visible pale cream fibrous core lip (a band about a twentieth of the border's width) all the way round, lighter along the top and left edges and a muted grey-blue along the bottom and right. No gold, no dotted line.
+- Window: a crisp 45-degree bevel cut, as wide as about a fifth of the border's width, showing the board's pale cream core. Lit from the upper left: the top and left bevels bright cream, the bottom and right bevels in clear shade (a muted slate grey), so the opening reads as cut into a thick board.
+- The window opening stays fully transparent like the outside. No shadow, no text. Wide 16:9 image.
+
+Background: use a fully transparent background (as in the reference). No text anywhere.

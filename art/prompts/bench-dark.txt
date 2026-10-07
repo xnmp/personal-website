@@ -1,8 +1,0 @@
-Environment background art for a website, very wide. A dim, quiet electronics workbench at night photographed from straight above: a large expanse of dark graphite anti-static mat with an extremely subtle fine grid texture, softly lit by a single warm desk lamp pool from the upper-left that falls off into near-black at the right and bottom. At the far edges only, out of focus: the corner of a keyboard, a coiled vermilion cable, a few machined screws. The center 70% must be calm, empty and low-contrast so UI can sit on top. Cinematic, restrained, photographic, shallow depth of field. No text, no logos, no people.
-
----
-Post-processing (current install): the authored desk carried props (lamp, mug,
-cables) that showed as stray fragments around the rack. public/kit/bench-dark.webp
-is now a prop-free crop of the mat only, with the illumination flattened, built by
-scripts/bench-mat.mjs from art/raw/bench-dark-props.webp (the previous install):
-  node scripts/bench-mat.mjs art/raw/bench-dark-props.webp public/kit/bench-dark.webp 330 210 1880 800 --flatten=0.8 --chroma=0.25 --tint=6f7a94 --level=0.55

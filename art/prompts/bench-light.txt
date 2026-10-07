@@ -1,8 +1,0 @@
-Environment background art for a website, very wide. A calm, bright electronics workbench in soft daylight photographed from straight above: a large expanse of pale warm-grey linoleum desk surface with an extremely subtle fine texture, lit by soft diffuse window light from the upper-left with a gentle falloff to the lower-right. At the far edges only, out of focus: the corner of an off-white keyboard, a coiled vermilion cable, a few machined screws. The center 70% must be calm, empty and low-contrast so UI can sit on top. Restrained, photographic. No text, no logos, no people.
-
----
-Post-processing (current install): the authored desk carried props (lamp, mug,
-cables) that showed as stray fragments around the rack. public/kit/bench-light.webp
-is now a prop-free crop of the mat only, with the illumination flattened, built by
-scripts/bench-mat.mjs from art/raw/bench-light-props.webp (the previous install):
-  node scripts/bench-mat.mjs art/raw/bench-light-props.webp public/kit/bench-light.webp 840 340 1300 560 --flatten=0.8

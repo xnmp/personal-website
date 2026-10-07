@@ -4,16 +4,16 @@ import { useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { flushSync } from "react-dom";
 import { Key } from "@/components/rack/Key";
 import { Screen } from "@/components/rack/Screen";
+import { Prop } from "@/components/rack/Prop";
+import { APP_THEME, shotFiles } from "./appTheme";
 import { withShortcutsFor } from "./shortcuts";
+import { useAppTheme } from "./useAppTheme";
 import { useOS } from "./useOS";
 
 export type Shot = {
-  src: string;
-  /** tighter crop for phones */
-  phone: string;
-  /** the whole window, and the same at 2x for HiDPI screens */
-  full: string;
-  full2x: string;
+  /** the captured scene (scripts/shot-crops.mjs), in every app theme: its
+   * crop, a tighter crop for phones, and the whole window at 1x and 2x */
+  scene: string;
   w: number;
   h: number;
   label: string;
@@ -36,7 +36,9 @@ export function ShotGallery({ shots, phoneMedia }: { shots: Shot[]; phoneMedia: 
   const dialog = useRef<HTMLDialogElement>(null);
   const [shown, setShown] = useState<Shot | null>(null);
   const os = useOS();
+  const theme = useAppTheme();
   const note = (s: Shot) => withShortcutsFor(s.note, os);
+  const files = (s: Shot) => shotFiles(s.scene, theme);
 
   const open = (s: Shot) => (e: MouseEvent) => {
     if (!opensInPlace(e) || !dialog.current) return;
@@ -56,22 +58,38 @@ export function ShotGallery({ shots, phoneMedia }: { shots: Shot[]; phoneMedia: 
 
   return (
     <>
-      {shots.map((s) => (
-        // the glass takes the crop's own shape (phone crops are all about 3:2)
-        <figure key={s.src} className="shot" style={{ "--shot-ar": `${s.w} / ${s.h}` } as CSSProperties}>
-          <span className="plate-figure-label">{s.label}</span>
-          <a href={s.full} className="shot-link" aria-label={`${s.label}: full window`} onClick={open(s)}>
+      {shots.map((s, i) => (
+        // each shot is a print pinned on its own sheet; the glass takes the
+        // crop's own shape (phone crops are all about 3:2), and on a wide
+        // screen the crop's real size (--shot-w, in CSS px)
+        <figure key={s.scene} className="shot faceplate" style={{ "--shot-ar": `${s.w} / ${s.h}`, "--shot-w": s.w / 2 } as CSSProperties}>
+          <Prop kind="pin" />
+          <a href={files(s).full} className="shot-link" aria-label={`${s.label}: full window`} onClick={open(s)}>
             <Screen>
-              <picture>
-                <source media={phoneMedia} srcSet={s.phone} />
-                <img src={s.src} alt={`${s.label}: ${note(s)}`} width={s.w} height={s.h} loading="lazy" className="shot-img" />
-              </picture>
+              {/* one capture per rice, in the app theme that wears it; CSS
+                  shows the current rice's, so only it loads (globals.css) */}
+              {Object.entries(APP_THEME).map(([rice, t]) => (
+                <picture key={rice} data-rice-shot={rice}>
+                  <source media={phoneMedia} srcSet={shotFiles(s.scene, t).phone} />
+                  <img
+                    src={shotFiles(s.scene, t).crop}
+                    alt={`${s.label}: ${note(s)}`}
+                    width={s.w}
+                    height={s.h}
+                    loading="lazy"
+                    className="shot-img"
+                  />
+                </picture>
+              ))}
             </Screen>
           </a>
           <figcaption className="plate-caption">
+            <span className="plate-figure-label">
+              Fig. {i + 1} · {s.label}
+            </span>
             {note(s)}{" "}
             {/* a second pointer target for the shot's own link; one tab stop is enough */}
-            <a href={s.full} onClick={open(s)} tabIndex={-1} className="shot-full silk">
+            <a href={files(s).full} onClick={open(s)} tabIndex={-1} className="shot-full text-action">
               Full window
             </a>
           </figcaption>
@@ -89,8 +107,8 @@ export function ShotGallery({ shots, phoneMedia }: { shots: Shot[]; phoneMedia: 
             <Screen>
               {/* eslint-disable-next-line @next/next/no-img-element -- static full-window capture, loaded on open */}
               <img
-                src={shown.full}
-                srcSet={`${shown.full} 1600w, ${shown.full2x} 2560w`}
+                src={files(shown).full}
+                srcSet={`${files(shown).full} 1600w, ${files(shown).full2x} 2560w`}
                 // up to 1180 CSS px on a desktop; at its real 1280 px, panning, on a phone
                 sizes="(max-width: 760px) 1280px, min(1180px, 100vw)"
                 alt={`${shown.label}, the whole window: ${note(shown)}`}

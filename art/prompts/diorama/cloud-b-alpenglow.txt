@@ -1,0 +1,3 @@
+Recreate the attached reference (ref.png: a single cut-paper cloud with torn edges, on a transparent background) in the colours and light of the painted clouds in palette.jpg (a cut-paper sky at alpenglow): a pale lilac-white paper cloud, its underside and lower edges lit a warm peach-rose by the low sun, with the soft light from the upper left. It must read as one of the same family of clouds, not a cream scrap of paper.
+
+Keep the identical shape, outline, torn edges and framing of ref.png, keep the paper fibre texture, and keep every transparent area transparent (use a transparent background). No cast shadow. Same frame. No text.

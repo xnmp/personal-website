@@ -6,7 +6,7 @@ export function Folio({ number }: { number: string }) {
   return (
     <footer className="folio">
       <span className="fine-only">
-        Press <Cap>/</Cap> for the other modules
+        Press <Cap>/</Cap> for the other projects
       </span>
       <span>
         {number} / {String(projects.length).padStart(2, "0")}

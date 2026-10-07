@@ -1,0 +1,5 @@
+A single sheet of thick cream watercolour paper (colour about #efe6d4) with hand-torn deckled edges on all four sides, lying perfectly flat and photographed straight-on, centred and filling about 86% of the frame. Its overall shape is a clean rectangle; only the edge is irregular, and the tear is shallow and even all the way round (the torn fringe is no deeper than 2% of the sheet width, with fine fibres). Even lighting across the whole sheet, a subtle cold-press texture, no folds, no stains, no curl, no objects, no shadow. Square 1:1 image.
+
+Style: a handmade cut-paper diorama, photographed straight-on in soft studio light from the upper left. Real textured card and cold-press watercolour paper with visible fibres; muted pastel palette (slate blue, sage, forest green, cream, terracotta). Match the paper, colours and lighting of the attached reference image (ref.png) exactly; use it for style only, not composition.
+
+Background: if your image tool supports a transparent background, use a fully transparent background. Otherwise use a perfectly flat, pure magenta #FF00FF background with no gradient, texture, vignette or cast shadow on it. No text anywhere.

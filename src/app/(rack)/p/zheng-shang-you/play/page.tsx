@@ -1,10 +1,10 @@
-import Link from "next/link";
 import {
   RunningHead,
   Plate,
   Folio,
 } from "@/components/notebook";
 import { ZsyGame } from "@/components/zsy/ZsyGame";
+import { Key } from "@/components/rack";
 
 export const metadata = {
   title: "Play Zheng Shang You against the strategist",
@@ -24,8 +24,8 @@ export default function ZsyPlayPage() {
         }
         nav={
           <>
-            <Link href="/p/zheng-shang-you">← the module</Link>
-            <Link href="/">← the rack</Link>
+            <Key href="/p/zheng-shang-you">← the project</Key>
+            <Key href="/">← all projects</Key>
           </>
         }
       />

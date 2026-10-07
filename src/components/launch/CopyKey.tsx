@@ -12,8 +12,20 @@ const SPOKEN: Record<Status, string> = {
   failed: "Couldn't reach the clipboard. The text is selectable on the page.",
 };
 
-/** A keycap that copies a command; the legend confirms instead of a toast. */
-export function CopyKey({ text, size = "md" }: { text: string; size?: "md" | "lg" }) {
+/**
+ * Copies a command or an address; the legend confirms instead of a toast. A
+ * tile by default; `variant="text"` prints it as a text action, the lower
+ * tier for a utility beside a sheet's calls to action.
+ */
+export function CopyKey({
+  text,
+  size = "md",
+  variant = "tile",
+}: {
+  text: string;
+  size?: "md" | "lg";
+  variant?: "tile" | "text";
+}) {
   const [status, setStatus] = useState<Status>("idle");
   const copy = async () => {
     try {
@@ -27,9 +39,15 @@ export function CopyKey({ text, size = "md" }: { text: string; size?: "md" | "lg
   };
   return (
     <>
-      <Key onClick={copy} size={size} ariaLabel={`Copy: ${text}`}>
-        {LEGEND[status]}
-      </Key>
+      {variant === "text" ? (
+        <button type="button" className="text-action" onClick={copy} aria-label={`Copy: ${text}`}>
+          {LEGEND[status]}
+        </button>
+      ) : (
+        <Key onClick={copy} size={size} ariaLabel={`Copy: ${text}`}>
+          {LEGEND[status]}
+        </Key>
+      )}
       <span className="sr-only" role="status">
         {SPOKEN[status]}
       </span>

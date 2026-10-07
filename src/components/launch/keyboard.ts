@@ -17,7 +17,7 @@ import { modalOpen } from "@/lib/page-keys";
 type Listener = () => void;
 
 let held: ReadonlySet<string> = new Set();
-/** off: standby poster. booting: the iframe is loading behind the poster. live: loaded. */
+/** off: a still of the app. booting: the iframe is loading behind the still. live: loaded. */
 export type DemoState = "off" | "booting" | "live";
 
 let demo: DemoState = "off";
@@ -36,11 +36,11 @@ export function bootDemo() {
   }
 }
 
-/** Boot the demo, bring it into view and give it the keyboard (the power key, or Ctrl+P anywhere). */
+/** Boot the demo, bring it into view and give it the keyboard ("Run it here", or Ctrl+P anywhere). */
 export function powerOnDemo() {
-  // the power key is about to unmount: park focus on the screen until the app takes it
+  // "Run it here" is about to unmount: park focus on the screen until the app takes it
   const screen = document.querySelector<HTMLElement>(`#${DEMO_ANCHOR} .live-demo`);
-  if (screen?.contains(document.activeElement)) screen.focus({ preventScroll: true });
+  if (document.getElementById(DEMO_ANCHOR)?.contains(document.activeElement)) screen?.focus({ preventScroll: true });
   bootDemo();
   document.getElementById(DEMO_ANCHOR)?.scrollIntoView({ behavior: scrollBehavior(), block: "center" });
   if (frame?.isConnected) frame.focus({ preventScroll: true });

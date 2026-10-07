@@ -14,24 +14,28 @@ export function DownloadKey({
   repo,
   version,
   others = false,
+  primary = false,
 }: {
   repo: string;
   version: string;
   /** also offer the release page next to an OS-specific build */
   others?: boolean;
+  /** the section's main action: printed on the signal board */
+  primary?: boolean;
 }) {
+  const tone = primary ? "signal" : undefined;
   const os = useOS();
   const releases = `${repo}/releases/latest`;
   if (!os)
     return (
-      <Key href={releases} size="lg" ariaLabel={`All desktop builds of ${version}, on GitHub`}>
+      <Key href={releases} size="lg" tone={tone} ariaLabel={`All desktop builds of ${version}, on GitHub`}>
         All desktop builds ↗
       </Key>
     );
   const build = buildFor(os, version);
   return (
     <>
-      <Key href={assetUrl(repo, version, build.file)} size="lg" ariaLabel={`${build.label} (${version}, ${build.kind})`}>
+      <Key href={assetUrl(repo, version, build.file)} size="lg" tone={tone} ariaLabel={`${build.label} (${version}, ${build.kind})`}>
         {build.label}
       </Key>
       {others ? (

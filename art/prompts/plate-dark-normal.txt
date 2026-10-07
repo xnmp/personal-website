@@ -1,6 +1,0 @@
-Game UI asset, product-render quality. A single blank rectangular instrument faceplate panel, photographed perfectly orthographic straight-on (no perspective, no tilt), centered, filling about 90% of the frame, on a perfectly flat solid pure magenta #FF00FF background with no shadow cast on the background.
-Material: bead-blasted black-graphite anodised aluminium (#2a2b2f), very fine matte grain, subtle and uniform.
-Shape: rectangle with small 45-degree chamfered corners. A narrow machined chamfer bevel runs along all four edges (about 2% of panel width) — the top and left bevels catch a crisp soft-white highlight from a key light at upper-left; the bottom and right bevels fall into shadow.
-Four small round hex-socket stainless steel screws, one near each corner, identical, inset evenly.
-The large flat interior must be completely empty, uniform and featureless — no text, no labels, no logos, no screens, no buttons, no lines, no gradients across the face except an extremely gentle falloff.
-Border details must be identical on all sides so it can be 9-sliced. Clean, crisp edges against the magenta.

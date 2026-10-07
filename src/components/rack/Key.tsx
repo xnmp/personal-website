@@ -59,10 +59,11 @@ export function Key({ tone = "neutral", size = "md", legend, children, className
   );
 }
 
-/** A non-interactive keycap legend, for printing shortcuts. */
-export function Cap({ children, down }: { children: ReactNode; down?: boolean }) {
+/** A non-interactive keycap legend, for printing shortcuts; `inline` sizes
+ * it to sit in a line of running text. */
+export function Cap({ children, down, inline }: { children: ReactNode; down?: boolean; inline?: boolean }) {
   return (
-    <kbd className="key cap" data-down={down ? "true" : undefined}>
+    <kbd className={inline ? "key cap cap-inline" : "key cap"} data-down={down ? "true" : undefined}>
       <span>{children}</span>
     </kbd>
   );

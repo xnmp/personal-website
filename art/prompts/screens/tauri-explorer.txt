@@ -8,9 +8,19 @@ palette, is kept in art/raw/screen-tauri-explorer-v1.png.)
 2. node scripts/prep-ui-capture.mjs art/raw/tauri-shots/app-dark-quickopen@2x.png prep.png 842 200 600 400
 3. node scripts/dither-mask.mjs prep.png public/screens/tauri-explorer.png 360 240 3 4 1
 
-Gallery crops and lightbox sources (public/tauri/crop-*.webp, live-*@2x.webp)
-Not generated: cut from the real captures in art/raw/tauri-shots/*.png
-(2560x1600, a 1280x800 window at 2x) at native resolution, never upscaled.
+Product shots (public/tauri/hero-quick-open*-<theme>.webp, crop-*-<theme>.webp,
+live-*-<theme>{,@2x}.webp, live-standby-<theme>.webp)
+Not generated: real captures of the app's web build, one set per app theme the
+site wears (src/components/launch/appTheme.ts), cut at native resolution and
+never upscaled.
+   node scripts/capture-tauri-shots.mjs                    (1280x800 @2x)
+   VIEW=720x460 SCENES=quick-open node scripts/capture-tauri-shots.mjs   (the hero window, shown near real size)
+   VIEW=440x340 node scripts/capture-tauri-shots.mjs       (the hero on phones)
+   VIEW=1440x900 node scripts/capture-tauri-shots.mjs      (the live demo's still)
    node scripts/shot-crops.mjs
-The regions are recorded in that script. The earlier, upscaled crops are kept
-in art/raw/tauri-crops-v2/.
+The raws land in art/raw/tauri-shots/<theme>/; the crop regions are recorded
+in shot-crops.mjs. One thing is staged: behind quick open, the app's backdrop
+(a navy dim at 0.42 with a blur) loses its dim and keeps a light blur, so the
+window reads behind the palette in its own colours (dimmed, the light theme
+turns a muddy olive). The phone strip is cut to the palette with a thin margin. The earlier single-theme captures are kept in
+art/raw/tauri-shots/*.png, and the upscaled crops in art/raw/tauri-crops-v2/.

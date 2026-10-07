@@ -1,0 +1,9 @@
+Redraw the attached reference (ref.png: a cluster of cut-paper pine trees at the left edge of a 16:9 diorama frame, on a transparent background) as a richer, deeper layered paper sculpture, in the same place in the frame: against the left edge, its tallest tip at the same height as in the reference, every trunk running down to the bottom edge, and nothing reaching further right than the reference's rightmost tree.
+
+Arrange the trees in two clear rows:
+- a back row of three tall pines: the tallest at the far left edge (partly cut off by the frame), and two more standing behind and to its right, a shade darker and cooler, as trees further back are;
+- a front row of three shorter pines standing in front of the back row's lower half, their trunks reaching the bottom edge.
+
+Build every tree from several stacked layers of cut card, as a paper diorama artist would: a darker back silhouette sheet, then two or three overlapping tiers of branches cut from lighter card stacked over it, each tier slightly raised and casting a thin soft shadow on the layer beneath, with a light dusting of pale snow along the tips of each tier. The stacking must be visible on every tree.
+
+Keep the reference's palette (dark blue-green and deep teal card, pale snow, a faint warm rose catch-light along the upper-left edges, soft light from the upper left) and its visible paper texture. Everything else in the frame fully transparent (use a transparent background). Same 16:9 frame. No text.

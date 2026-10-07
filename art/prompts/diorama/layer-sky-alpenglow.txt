@@ -1,0 +1,3 @@
+Recreate the attached reference (ref.png, the sky layer of a cut-paper diorama) exactly: the same graded paper sky, paper texture, colours and clouds in the same positions, with one change. The pale rose-peach paper sun disc at the upper left becomes smaller, about 6.5% of the image width across, and sits entirely inside the frame with its centre 9% of the image width from the left edge and 11% of the image height from the top, clear of every edge. The small paper cloud that overlaps the sun's lower edge moves with it, still overlapping it the same way. Lit from the upper left: any shadow the sun and clouds cast falls softly down and to the right.
+
+Fully opaque image, same 16:9 frame, same cut-paper construction and paper texture. No text.

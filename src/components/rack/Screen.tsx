@@ -7,7 +7,7 @@ type Props = {
   tone?: Tone;
   label?: string;
   className?: string;
-  /** glare on the glass; on by default only over decorative art, never over content people read */
+  /** glare on the glass (faint over content people read; see kit.css) */
   glass?: boolean;
   children?: ReactNode;
 };
@@ -16,7 +16,7 @@ type Props = {
  * A recessed display: authored bezel (9-slice) over a face lit in the active
  * rice. Content inside is live DOM: charts, code, text, games.
  */
-export function Screen({ art, tone, label, className, glass = Boolean(art), children }: Props) {
+export function Screen({ art, tone, label, className, glass = true, children }: Props) {
   return (
     <figure className={["screen", className].filter(Boolean).join(" ")} data-tone={tone} aria-label={label}>
       <div className={art ? "screen-face has-art" : "screen-face"}>
@@ -29,6 +29,9 @@ export function Screen({ art, tone, label, className, glass = Boolean(art), chil
         ) : null}
         {children}
         {glass ? <span className="screen-glass" aria-hidden /> : null}
+        {/* the panel's edge and its recess in the mat, above whatever the
+            screen shows (an image would cover a shadow on the face itself) */}
+        <span className="screen-edge" aria-hidden />
       </div>
     </figure>
   );

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { RunningHead } from "@/components/notebook";
-import { Cap, Key, Led, Screen } from "@/components/rack";
+import { Cap, Key, Led, Screen, Prop } from "@/components/rack";
 import { CopyKey } from "@/components/launch/CopyKey";
 import { DownloadKey } from "@/components/launch/DownloadKey";
 import { ForOS } from "@/components/launch/ForOS";
@@ -10,6 +9,7 @@ import { ShotGallery, type Shot } from "@/components/launch/ShotGallery";
 import { LiveSection } from "@/components/launch/LiveDemo";
 import { DEMO_ANCHOR } from "@/components/launch/keyboard";
 import { projects } from "@/data/projects";
+import { APP_THEME } from "@/components/launch/appTheme";
 
 const REPO = "https://github.com/xnmp/tauri-explorer";
 const VERSION = "v1.11.2";
@@ -19,7 +19,9 @@ const INVITE =
   encodeURIComponent(
     "OS + version:\nDesktop environment (Linux):\nDisplay scale:\nWhat file manager do you use today?\n"
   );
-const NIX = "nix run github:xnmp/tauri-explorer";
+const NIX_SCHEME = "nix run github:";
+const NIX_REPO = "xnmp/tauri-explorer";
+const NIX = NIX_SCHEME + NIX_REPO;
 /** The same counts the home rack prints on this module (minus the version,
  * which the kicker already shows). */
 const COUNTS = projects.find((p) => p.slug === "tauri-explorer")!.stats.filter((s) => !s.startsWith("v"));
@@ -57,12 +59,13 @@ const REFLEXES: { chord: string[]; what: string }[] = [
   { chord: ["Ctrl", "Z"], what: "Undo for file operations: rename, move, trash." },
 ];
 
-/** Feature crops at native resolution, tighter ones on phones so the text stays
- * legible; the full window is one click away. */
+/** Feature crops at native resolution (w, h in 2x px), each shown at the app's
+ * real size; tighter ones on phones so the text stays legible; the full window
+ * is one click away. */
 const SHOTS: Shot[] = [
-  { src: "/tauri/crop-content-search.webp", phone: "/tauri/crop-content-search-phone.webp", full: "/tauri/live-content-search.webp", full2x: "/tauri/live-content-search@2x.webp", w: 1320, h: 880, focus: { x: 0.25, y: 0.06 }, label: "Content search", note: "Ctrl+Shift+F searches inside files, grouped by file with the match in context." },
-  { src: "/tauri/crop-command-palette.webp", phone: "/tauri/crop-command-palette-phone.webp", full: "/tauri/live-command-palette.webp", full2x: "/tauri/live-command-palette@2x.webp", w: 1320, h: 880, focus: { x: 0.25, y: 0.06 }, label: "Command palette", note: "Every command, with its shortcut. Here: switching theme without a settings page." },
-  { src: "/tauri/crop-git-graph.webp", phone: "/tauri/crop-git-graph-phone.webp", full: "/tauri/live-git-graph.webp", full2x: "/tauri/live-git-graph@2x.webp", w: 1740, h: 436, focus: { x: 0.155, y: 0.5 }, label: "Git graph", note: "The commit graph sits beside your files, so you don’t have to leave for a git GUI." },
+  { scene: "content-search", w: 1176, h: 708, focus: { x: 0.25, y: 0.06 }, label: "Content search", note: "Ctrl+Shift+F searches inside files, grouped by file with the match in context." },
+  { scene: "command-palette", w: 1176, h: 784, focus: { x: 0.25, y: 0.06 }, label: "Command palette", note: "Every command, with its shortcut. Here: switching theme without a settings page." },
+  { scene: "git-graph", w: 1696, h: 374, focus: { x: 0.155, y: 0.15 }, label: "Git graph", note: "The commit graph sits beside your files, so you don’t have to leave for a git GUI." },
 ];
 
 export default function TauriExplorerPage() {
@@ -77,15 +80,17 @@ export default function TauriExplorerPage() {
         }
         nav={
           <>
-            <Link href="/">← the rack</Link>
-            <a href={REPO}>source on github →</a>
+            <Key href="/">← all projects</Key>
+            <Key href={REPO}>GitHub ↗</Key>
           </>
         }
       />
       <main id="content" className="rack-main" tabIndex={-1}>
 
-        <section className="launch-hero faceplate">
-          <div className="launch-copy">
+        {/* two sheets: the promise, and the product pinned beside it */}
+        <section className="launch-hero">
+          <div className="launch-copy faceplate">
+            <Prop kind="pin" />
             <div className="kicker launch-kicker">
               <Led color="signal" blink />
               <span className="seplist">
@@ -113,8 +118,8 @@ export default function TauriExplorerPage() {
               <span>
                 Opens an email to <b>{EMAIL}</b>
               </span>
-              <CopyKey text={EMAIL} />
-              <a href="#alpha" className="keys-note-terms">
+              <CopyKey text={EMAIL} variant="text" />
+              <a href="#alpha" className="text-action keys-note-terms">
                 What testers get ↓
               </a>
             </p>
@@ -127,23 +132,30 @@ export default function TauriExplorerPage() {
               ))}
             </ul>
           </div>
-          <figure className="launch-shot">
+          <figure className="launch-shot faceplate">
+            <Prop kind="pin" />
             <Screen>
-              {/* the palette at about its real size (2x pixels), and on phones a
-                  strip of its input and first rows at a legible size, short
-                  enough to share the first screen with the alpha key; the full
-                  window is one scroll away, running live */}
-              <picture>
-                <source media={PHONE} srcSet="/tauri/hero-quick-open-strip.webp" width={600} height={250} />
-                <img
-                  src="/tauri/hero-quick-open-2x.webp"
-                  alt="Tauri Explorer's quick open after typing “read”: README.md ranked first, then the feature docs, each with the matched letters underlined"
-                  width={1224}
-                  height={816}
-                  fetchPriority="high"
-                  className="shot-img"
-                />
-              </picture>
+              {/* the app window with quick open over it (2x pixels), and
+                  on phones a strip of the palette's input and first rows at
+                  about real size, short enough to share the first screen
+                  with the alpha key; the app itself is one scroll away,
+                  running live. One capture per rice, in the app's own theme
+                  nearest it (appTheme.ts); only the current rice's is shown,
+                  so only it loads. */}
+              {Object.entries(APP_THEME).map(([rice, theme]) => (
+                <picture key={rice} data-rice-shot={rice}>
+                  <source media={PHONE} srcSet={`/tauri/hero-quick-open-strip-${theme}.webp`} width={406} height={162} />
+                  <img
+                    src={`/tauri/hero-quick-open-${theme}.webp`}
+                    alt="Tauri Explorer’s window with quick open over it after typing “read”: README.md ranked first, then the feature docs, each with the matched letters underlined"
+                    width={698}
+                    height={438}
+                    loading="lazy"
+                    fetchPriority="high"
+                    className="shot-img"
+                  />
+                </picture>
+              ))}
             </Screen>
             <figcaption className="launch-shot-cap note">
               <LiveCaps chord={["Ctrl", "P"]} className="fine-only" />
@@ -155,13 +167,13 @@ export default function TauriExplorerPage() {
 
         <LiveSection />
 
-        <section className="section">
+        <section className="section stack sheet-narrow sheet-start pin-left">
           <div>
             <div className="section-kicker">The reflexes</div>
             <h2>Shortcuts your editor already taught you</h2>
             <p className="aside-note">
               These are the default bindings. All of them can be rebound, and
-              chords like <code>g&nbsp;h</code> (go home) work too.
+              chords like <Cap inline>g</Cap>&nbsp;<Cap inline>h</Cap> (go home) work too.
             </p>
           </div>
           <ul className="reflexes">
@@ -176,12 +188,12 @@ export default function TauriExplorerPage() {
           </ul>
         </section>
 
-        <section className="section">
+        <section className="section stack sheet-narrow sheet-end sheet-flat pin-right">
           <div>
             <div className="section-kicker">Why another file manager</div>
             <h2>Most of them are polished but slow, or fast but punishing</h2>
           </div>
-          <div>
+          <div className="prose-cols">
             <p>
               Finder and Explorer are polished, but every trip through them goes
               through the mouse. Ranger, <code>lf</code> and Midnight Commander are fast, but
@@ -191,10 +203,10 @@ export default function TauriExplorerPage() {
             <p>
               Quick open walks the tree with <code>jwalk</code> and ranks matches
               with <code>nucleo</code>, the matcher from the Helix editor. Frecency is
-              zoxide-style: each path scores <code>Σ&nbsp;1/(hours&nbsp;since&nbsp;access&nbsp;+&nbsp;1)</code>,
+              zoxide-style: each path scores <span className="nowrap"><code>Σ&nbsp;1/(hours&nbsp;since<wbr />&nbsp;access&nbsp;+&nbsp;1)</code>,</span>{" "}
               so a file you opened ten minutes ago beats one you opened a hundred
-              times last year. Content search embeds ripgrep’s own crates
-              (<code>grep-searcher</code> + <code>ignore</code>), so it respects
+              times last year. Content search embeds ripgrep’s own crates{" "}
+              <span className="nowrap">(<code>grep-searcher</code></span> + <span className="nowrap"><code>ignore</code>),</span> so it respects
               your <code>.gitignore</code> and doesn’t shell out.
             </p>
             <p>
@@ -204,11 +216,12 @@ export default function TauriExplorerPage() {
           </div>
         </section>
 
-        <section className="shots-plate faceplate" aria-label="Screenshots">
+        {/* the screenshots, each a print on its own sheet */}
+        <section className="shots" aria-label="Screenshots">
           <ShotGallery shots={SHOTS} phoneMedia={PHONE} />
         </section>
 
-        <section className="section">
+        <section className="section sheet-wide sheet-start sheet-flat pin-left">
           <div>
             <div className="section-kicker">Under the hood</div>
             <h2>One person, tested like a team</h2>
@@ -217,7 +230,8 @@ export default function TauriExplorerPage() {
               are enforced in CI, so a regression fails the build.
             </p>
           </div>
-          <div className="gauges">
+          {/* printed on the sheet, like a spec table: mats are for screens */}
+          <dl className="ledger">
             {[
               ["2,534", "commits since Jan 2026"],
               ["~2.7k", "unit test cases (vitest)"],
@@ -228,15 +242,15 @@ export default function TauriExplorerPage() {
               ["595\u00a0ms", "startup p50, down from 837 ms"],
               ["<50\u00a0ms", "sort 10k entries (CI budget)"],
             ].map(([n, l]) => (
-              <Screen key={l} tone="amber" className="gauge">
-                <span className="gauge-n">{n}</span>
-                <span className="gauge-l">{l}</span>
-              </Screen>
+              <div key={l} className="ledger-row">
+                <dt className="ledger-l">{l}</dt>
+                <dd className="ledger-n">{n}</dd>
+              </div>
             ))}
-          </div>
+          </dl>
         </section>
 
-        <section className="section">
+        <section className="section stack sheet-wide sheet-end pin-right">
           <div>
             <div className="section-kicker">Also in the box</div>
             <h2>Things you won’t find in the screenshots</h2>
@@ -264,16 +278,17 @@ export default function TauriExplorerPage() {
             </div>
             <div className="feat">
               <h3>No telemetry</h3>
-              <p>Nothing phones home. Bug reports go out only when you send one (<code><ForOS>Alt+I</ForOS></code>).</p>
+              <p>Nothing phones home. Bug reports go out only when you send one <span className="nowrap">(<Cap inline><ForOS>Alt+I</ForOS></Cap>).</span></p>
             </div>
           </div>
         </section>
 
+        {/* the page's end point: the one sheet wider than the column, on the
+            signal pin */}
         <section className="section alpha" id="alpha">
           <div>
-            <div className="section-kicker">
-              <Led color="signal" blink /> The alpha
-            </div>
+            {/* the sheet hangs on the signal pin; the kicker needs no lamp of its own */}
+            <div className="section-kicker">The alpha</div>
             <h2>Looking for a small first cohort of people who live in a file manager</h2>
             <div className="alpha-keys">
               <Key href={INVITE} tone="signal" size="lg">
@@ -297,7 +312,7 @@ export default function TauriExplorerPage() {
               <span>
                 No mail app? Write to <strong>{EMAIL}</strong>.
               </span>
-              <CopyKey text={EMAIL} />
+              <CopyKey text={EMAIL} variant="text" />
             </p>
             <p>
               Rather try it first? The builds are public: download {VERSION}{" "}
@@ -321,58 +336,67 @@ export default function TauriExplorerPage() {
               </li>
               <li>
                 <strong>Reporting is built in.</strong> Use the command palette
-                (Report Issue) or <code><ForOS>Alt+I</ForOS></code>. Reports are public GitHub
+                (Report Issue) or <Cap inline><ForOS>Alt+I</ForOS></Cap>. Reports are public GitHub
                 issues, so leave out private paths.
               </li>
             </ul>
           </div>
         </section>
 
-        <section className="section" id="install">
-          <div>
-            <div className="section-kicker">Install</div>
-            <h2>Install {VERSION}</h2>
-            <p className="aside-note">
-              Linux: AppImage, .deb, .rpm, a Nix flake and a PKGBUILD. macOS:
-              arm64 .dmg. Windows: .msi or setup .exe.
-            </p>
-          </div>
-          <div className="install">
-            <div className="install-keys">
-              <DownloadKey repo={REPO} version={VERSION} others />
+        {/* install and the spec plate lie side by side, at two depths */}
+        <div className="sheet-row">
+          <section className="section" id="install">
+            <div>
+              <div className="section-kicker">Install</div>
+              <h2>Install {VERSION}</h2>
+              <p className="aside-note">
+                Linux: AppImage, .deb, .rpm, a Nix flake and a PKGBUILD. macOS:
+                arm64 .dmg. Windows: .msi or setup .exe.
+              </p>
             </div>
-            <div className="install-nix">
-              <span className="silk">or, with Nix</span>
-              <Screen tone="olive" className="cmd">
-                <code className="cmd-text">{NIX}</code>
-              </Screen>
-              <CopyKey text={NIX} size="lg" />
+            <div className="install">
+              <div className="install-keys">
+                <DownloadKey repo={REPO} version={VERSION} others />
+              </div>
+              <div className="install-nix">
+                <span className="silk">or, with Nix</span>
+                {/* typed on a strip of tape, like any label; on a narrow screen
+                    the command wraps after its scheme, never mid-word */}
+                <div className="cmd tape">
+                  <code className="cmd-text">
+                    {NIX_SCHEME}
+                    <wbr />
+                    <span className="nowrap">{NIX_REPO}</span>
+                  </code>
+                </div>
+                <CopyKey text={NIX} variant="text" />
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="colophon">
-          <div>
-            Materials<strong>Rust, Tauri v2, Svelte 5</strong>
-          </div>
-          <div>
-            Platforms<strong>Linux · macOS · Windows</strong>
-          </div>
-          <div>
-            Licence<strong>MIT</strong>
-          </div>
-          <div>
-            Source
-            <strong>
-              <a href={REPO}>github/xnmp/tauri-explorer</a>
-            </strong>
-          </div>
-        </section>
+          <section className="colophon">
+            <div>
+              Materials<strong>Rust, Tauri v2, Svelte 5</strong>
+            </div>
+            <div>
+              Platforms<strong>Linux · macOS · Windows</strong>
+            </div>
+            <div>
+              Licence<strong>MIT</strong>
+            </div>
+            <div>
+              Source
+              <strong>
+                <a href={REPO} className="nowrap">github/xnmp/tauri-explorer</a>
+              </strong>
+            </div>
+          </section>
+        </div>
 
       </main>
       <footer className="folio">
         <span className="fine-only">
-          Press <Cap>/</Cap> for the other modules
+          Press <Cap>/</Cap> for the other projects
         </span>
         <span>01 / 11</span>
       </footer>
