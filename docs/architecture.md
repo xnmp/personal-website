@@ -73,7 +73,7 @@ The site can be worn in several art directions (issue #1). A style is a
 complete raster kit plus its type, selected by `<html data-style>`; pages and
 components never fork per style.
 
-- **Registry** (`lib/styles.ts`, pure, tested): the shipped styles, in picker
+- **Registry** (`lib/styles.ts`, pure, tested): the shipped styles, in menu
   order. Only a style listed there can be chosen; the head script in
   `app/layout.tsx` applies the stored choice (`localStorage["nb-style"]`)
   before paint and refuses anything unlisted, falling back to `paper`.
@@ -94,10 +94,19 @@ components never fork per style.
 - **Type**: the three roles stay; a style may re-point `--font-display` at its
   own face, declared in `app/fonts.ts` with `preload: false`, so its file is
   only fetched when that style is worn.
-- **Picker** (`StylePicker`, rendered by `Rack` at the foot of every page): a
-  native radio group, each option a tile (the chosen one the signal tile), so
-  arrows, Tab, touch and screen readers work natively. It is not part of the
-  `t` cycle: the rice colours the screens in every style.
+- **Menu** (`StyleMenu`, in the masthead's instruments beside the theme
+  key): a WAI-ARIA menu button whose menu lists the styles as
+  `menuitemradio` tiles, the chosen one the signal tile. The menu is a
+  popover (`popover="auto"`), so the browser lays it over everything and
+  dismisses it on Escape or a click elsewhere; it is placed under its key in
+  page coordinates as it opens (`menuPlacement`, `lib/menu.ts`) and closed
+  by a resize. The keyboard opens it synchronously on the checked item (a
+  popover's `toggle` event comes a task later, and a key pressed before it
+  would land on the button); arrows, Home and End move (`nextItem`), Enter
+  or Space chooses, and focus leaving the menu closes it. On a phone the key
+  is a palette glyph on a square tile (and below 400px the theme key its
+  disc), so the brand and three keys share one row at 320px. It is not part
+  of the `t` cycle: the rice colours the screens in every style.
 - **Briefs**: the diorama's is `art/BRIEF.md`; each other style's is
   `art/briefs/<style>.md`, with its prompts in `art/prompts/<style>/` and its
   kit config in `scripts/kits/<style>.mjs`.
@@ -120,10 +129,6 @@ components never fork per style.
   keylines run on round the corners without a step. A strip whose rail
   material has a broad grain (mottled silk) repeats it rather than stretching
   it (`--strip-repeat: round`; `stretch` by default).
-- **Picker columns**: the picker lays its options in two rows
-  (`--look-cols`, set from the registry's length in `StylePicker`), two
-  columns on a phone, the odd last option centred on its own row at a
-  column's width.
 - **State art only**: kit.css changes state by swapping art, in every
   style. Nothing filters a whole sheet: a brightness filter clips white
   paper and mounts, and changes the colours of the screen a sheet carries.
@@ -260,8 +265,9 @@ components never fork per style.
   glued to the end of an inline element in the served HTML.
 - `VideoScreen` (Eskiv) shows 1-bit art of the video with a tile that opens it
   on YouTube in a new tab; nothing loads from YouTube on the page.
-- The flagship's screen is `PaletteScreen`: the quick-open palette as live
-  text in the screen's tone, not a bitmap.
+- The home page's first screen shows the flagship's window as
+  `ExplorerWindow` (components/landing): the app's two panes as live text in
+  the rice, not a bitmap.
 - Screenshots swap to tighter phone crops below 600px (`<picture>`), so the
   text in them stays near its real size. Scripted scrolls go through
   `lib/motion.ts`, which honours `prefers-reduced-motion`.
@@ -589,7 +595,17 @@ returns native alpha, so there is no chroma-key step.
    material carries its texture (a stone slab's chamfer, an album's flat
    tints); fills are built before the sheets for it. A `cuts` entry is an
    opaque close-up panel (`{ name, src, width }`), scaled and encoded once,
-   for the page to crop into a tier cut. A frame whose band must not
+   for the page to crop into a tier cut. An `inks` entry is brushwork
+   generated on white (`{ name, src, width | height, tint?, alpha?, page? }`)
+   lifted off it by unmultiplying the white (alpha from the darkest channel,
+   colour what gives the pixel back over white); `tint` recolours its
+   unsaturated ink for a dark ground and leaves a seal's red, and `page`
+   writes it to the kit (sumi's opening-scroll painting). The scene's
+   `overlays` (`{ [layer]: [{ ink, at, mist? }] }`) composite an inked sprite
+   (`${ink}-${finish}`) into a layer after its grade, at `at` in the
+   1920x1080 frame, optionally on a soft wash of the ground (`mist`), so an
+   inscription registers with the landscape in the flat and 3D scenes
+   alike (sumi's corner calligraphy). A frame whose band must not
    stretch its texture along a side is drawn as its ink alone (an `ink`
    band of colour `null` is left clear) and its band painted by the page,
    a flat colour under a `veil` fill (ligne's screen frames and captions).

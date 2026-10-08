@@ -1,6 +1,8 @@
 // Sumi-e Ink (art/briefs/sumi.md): hanging scrolls of kozo washi in pale
-// silk mounts, washi cards ringed in dry-brush ink, lacquer beads, over a
-// sumi-e landscape. Raws in art/raw/sumi; prompts in art/prompts/sumi.
+// silk mounts (the flagship's in navy brocade), bands of torn washi, washi
+// cards ringed in dry-brush ink and vermilion seal-stamps, round seals, ink
+// brush swashes, over a sumi-e landscape inscribed in its corners. Raws in
+// art/raw/sumi; prompts in art/prompts/sumi.
 //
 // The art is authored lit from the upper left, so no rim is relit here. One
 // focus language throughout: a band of vermilion silk laid in on the paper
@@ -24,6 +26,19 @@ const NIGHT_SHADOW = {
 // falls away on the lower and right (scripts/relight-edge.mjs), as a satin
 // does, where the generated one was lit evenly.
 const MOON_SILK = { gain: [0.88, 1, 0.91], shade: 0.3, lift: 0.16 };
+
+// a band of torn washi: no line round it, its paper the page's (above)
+const BAND = {
+  width: 900,
+  alphaFloor: 0,
+  rivets: false,
+  feather: 6,
+  tileRails: { sides: ["t", "r", "b", "l"], overlap: 32 },
+  states: ["normal"],
+  // paper laid flat on the paper of the painting: a close, soft shadow
+  normal: ["2:4:6:0.16", "0.5:1:1.5:0.2"],
+  glass: { dx: 0, dy: 0, soft: 1, shadeColor: "000000", shadeAlpha: 0, glintAlpha: 0 },
+};
 
 const kit = {
   raw: "sumi",
@@ -81,40 +96,48 @@ const kit = {
       sheen: { color: "dfe6f0", alpha: 0.1 },
       hoverFlags: ["--catch=0.3", "--catch-width=22", "--sheen=0", "--light=dfe6f0"],
     },
-    // The strips (masthead, shelf heads, feet, picker): the same mount
-    // without its rollers, so no heading outranks the scrolls it heads. Their
-    // silk runs to the art's edge (kit.css --strip-fill-in). A strip runs
-    // many times its art's length, so its silk is cut seamless and repeated
-    // (sumi.css --strip-repeat), its corners mitred from it (scripts/mitre.mjs).
+    // The flagship's mount: the same scroll (brocade-day is an edit of
+    // sheet-day's art, its geometry kept) in navy brocade woven with gold
+    // clouds and waves. By night it is graded as the silk is.
     {
-      name: "sheet-strip-day",
-      src: "sheet-strip-day",
-      width: 680,
+      name: "sheet-brocade-day",
+      src: "brocade-day",
+      width: 770,
       alphaFloor: 150,
-      frame: { t: 53, r: 41, b: 55, l: 41 },
+      frame: { t: 50, r: 54, b: 50, l: 54 },
       rivets: false,
-      // printed at 0.24 on a desk (the scrolls at 0.5), 0.4 on a phone (the
-      // scrolls too): a grain 1.7 times as broad sits between the two
-      mitre: { tile: true, joint: 0.08, grain: 1.7 },
-      states: ["normal"],
-      glass: { dx: 1, dy: 1.5, soft: 2, shadeColor: "5a4a2e", shadeAlpha: 0.14, glintAlpha: 0 },
+      fillet: { side: "pane", width: 12, key: 2, keyColor: "1d1d1f", color: "c8371e", weave: 6 },
+      glass: { dx: 1, dy: 1.5, soft: 2, shadeColor: "1a1f30", shadeAlpha: 0.2, glintAlpha: 0 },
       light: { color: "fff8ea", alpha: 0.18 },
+      sheen: { color: "fffaf0", alpha: 0.2 },
+      hoverFlags: ["--catch=0.35", "--catch-width=22", "--sheen=0", "--light=fff4dc"],
     },
     {
-      name: "sheet-strip-night",
-      src: "sheet-strip-night",
-      width: 680,
+      name: "sheet-brocade-night",
+      src: "brocade-day",
+      width: 770,
       alphaFloor: 150,
-      ...MOON_SILK,
-      frame: { t: 52, r: 41, b: 53, l: 41 },
+      gain: [0.6, 0.64, 0.74],
+      shade: 0.3,
+      lift: 0.16,
+      frame: { t: 50, r: 54, b: 50, l: 54 },
       rivets: false,
-      // printed at 0.24 on a desk (the scrolls at 0.5), 0.4 on a phone (the
-      // scrolls too): a grain 1.7 times as broad sits between the two
-      mitre: { tile: true, joint: 0.08, grain: 1.7 },
-      states: ["normal"],
+      fillet: { side: "pane", width: 12, color: "d9532e", weave: 6 },
       glass: { dx: 1, dy: 1.5, soft: 2, shadeColor: "000000", shadeAlpha: 0.3, glintAlpha: 0 },
       light: { color: "c9d3e6", alpha: 0.06 },
+      sheen: { color: "dfe6f0", alpha: 0.1 },
+      hoverFlags: ["--catch=0.3", "--catch-width=22", "--sheen=0", "--light=dfe6f0"],
     },
+    // The bands (masthead, shelf heads, feet, picker): a strip of washi
+    // torn along every edge, laid on the scene. Its washi is cleared for the
+    // page's (as the scrolls' is), so `frame` is where solid paper begins
+    // past the deepest bite on each side (measured on the base), the art
+    // handing over to the page's paper over `feather` px; sumi.css starts
+    // the page's paper no nearer the edge than the deepest bite
+    // (--strip-fill-in), so a bite shows the scene, never the fill. The
+    // torn edges repeat along a band (--strip-repeat: round), cut seamless.
+    { name: "sheet-strip-day", src: "strip-day", gain: [1.034, 1.054, 1.058], frame: { t: 18, r: 14, b: 16, l: 14 }, ...BAND },
+    { name: "sheet-strip-night", src: "strip-night", gain: [0.65, 0.71, 0.77], frame: { t: 20, r: 14, b: 17, l: 18 }, ...BAND },
   ],
   tile: {
     normal: ["2:5:5:0.30", "0:1:1.2:0.35"],
@@ -128,27 +151,53 @@ const kit = {
     // pressed into the wall: the face dims
     pressedFlags: ["--dim=0.86"],
   },
-  // The cards are matte washi with the mounts' hair-thin gold line inset
-  // round them. Focus: a band of vermilion silk laid in along the inside of
-  // that line, its corners as round as the line's, with an ink keyline inside
-  // it where the card is light; on a vermilion card the band is cream.
+  // The secondary button: a slip of washi card in a thin, dry sumi-brush
+  // border (gofun white by night). Focus: a band of vermilion silk laid in
+  // along the inside of the border, with an ink keyline inside it where the
+  // card is light. The primary: a vermilion seal-stamp impression, its edge
+  // broken and grainy, its focus band cream; by night the same stamp under
+  // the moon.
   tiles: [
-    { name: "tile-day", src: "tile-day", ring: "c8371e", focusFlags: CARD_FOCUS("1d1d1f") },
-    { name: "tile-night", src: "tile-night", ring: "d9532e", focusFlags: CARD_FOCUS(null), lit: MOONLIT, shadow: NIGHT_SHADOW },
-    { name: "tile-signal", src: "tile-signal", ring: "f3ecdc", focusFlags: CARD_FOCUS("4a1206") },
-    { name: "tile-signal-night", src: "tile-signal-night", ring: "f3ecdc", focusFlags: CARD_FOCUS("4a1206"), lit: MOONLIT, shadow: NIGHT_SHADOW },
+    { name: "tile-day", src: "tile-brush-day", ring: "c8371e", focusFlags: CARD_FOCUS("1d1d1f") },
+    { name: "tile-night", src: "tile-brush-night", ring: "d9532e", focusFlags: CARD_FOCUS(null), lit: MOONLIT, shadow: NIGHT_SHADOW },
+    { name: "tile-signal", src: "tile-stamp-day", ring: "f3ecdc", focusFlags: CARD_FOCUS("4a1206") },
+    { name: "tile-signal-night", src: "tile-stamp-day", gain: [0.86, 0.84, 0.86], ring: "f3ecdc", focusFlags: CARD_FOCUS("4a1206"), shadow: NIGHT_SHADOW },
   ],
   mats: [
     { name: "mat-day", src: "mat-day" },
     { name: "mat-night", src: "mat-night" },
   ],
-  pins: { src: "pins" },
+  // round seals in cinnabar paste and its kin, one per status: ink (off),
+  // jade, ochre, vermilion
+  pins: { src: "seals", shadow: ["0:0:1:0", "0:0:1:0"] },
+  // a broad dry stroke of the brush that heads a card and a kicker: ink by
+  // day, gofun white by night
   tapes: [
-    { name: "tape-day", src: "tape-day" },
-    { name: "tape-night", src: "tape-night" },
+    { name: "tape-day", src: "swash-day", shadow: ["0:0:1:0", "0:0:1:0"] },
+    { name: "tape-night", src: "swash-night", shadow: ["0:0:1:0", "0:0:1:0"] },
     // inline code: a straight-cut slip of washi
     { name: "chip-day", src: "chip-day" },
     { name: "chip-night", src: "chip-night" },
+  ],
+  props: [
+    // the brand's seal, 重 (chóng), stamped beside the name: ink on paper
+    { name: "seal-brand", srcs: [{ src: "seal-brand" }], resize: { width: 112 }, pad: 4, shadow: ["0:0:1:0", "0:0:1:0"] },
+    // a jade bi disc on a vermilion cord, its tassel hanging from the
+    // flagship's top roller
+    { name: "pendant-day", srcs: [{ src: "pendant" }], resize: { height: 400 }, pad: 12, shadow: ["2:5:6:0.3", "0.5:1:1.2:0.3"] },
+    { name: "pendant-night", srcs: [{ src: "pendant", gain: [0.62, 0.66, 0.78] }], resize: { height: 400 }, pad: 12, shadow: ["2:5:6:0.5", "0.5:1:1.2:0.5"] },
+  ],
+  // brushwork painted on white, lifted off it (build-kit inks): the
+  // opening scroll's own painting, and the inscriptions in the scene's
+  // corners (scene.overlays). By night the ink is gofun white, its seals
+  // still cinnabar.
+  inks: [
+    { name: "vignette-day", src: "vignette", width: 720, page: true },
+    { name: "vignette-night", src: "vignette", width: 720, tint: "d6d1c4", alpha: 0.5, page: true },
+    { name: "calligraphy-left-day", src: "calligraphy-left", height: 172 },
+    { name: "calligraphy-left-night", src: "calligraphy-left", height: 172, tint: "e8e2d4", alpha: 0.82 },
+    { name: "calligraphy-right-day", src: "calligraphy-right", height: 200 },
+    { name: "calligraphy-right-night", src: "calligraphy-right", height: 200, tint: "e8e2d4", alpha: 0.82 },
   ],
   // the scrolls' washi, tiled by the page inside the mount (grain only: a
   // broad cloud of tone would repeat from tile to tile)
@@ -171,6 +220,14 @@ const kit = {
       pad: 16,
       // painted into the wash, not cut and stood off it: no shadow
       shadow: ["0:0:1:0", "0:0:1:0"],
+    },
+    // the inscriptions, in the corners the column leaves clear on a wide
+    // screen (as the concept has them): 行遠 on the cliff's foot at the lower
+    // left, 山水有相逢 at the lower right, each on bare paper the painter left
+    // for it (a wash of the ground under it)
+    overlays: {
+      left: [{ ink: "calligraphy-left", at: [36, 840], mist: { color: { day: "ece3cf", night: "1b2130" }, alpha: 0.8, grow: 34 } }],
+      right: [{ ink: "calligraphy-right", at: [1805, 866], mist: { color: { day: "ece3cf", night: "1b2130" }, alpha: 0.8, grow: 34 } }],
     },
     // the night layers came back lit like snow; the brief's night is dark
     // indigo washes, and the mist must meet the sky it parts to show (the

@@ -5,7 +5,7 @@
  * (worn by the light rice) and a night finish (the dark rices); the rice still
  * colours the screens in every style.
  *
- * Only styles whose kit has shipped are listed: the picker offers exactly
+ * Only styles whose kit has shipped are listed: the style menu offers exactly
  * these, and the head script refuses anything else.
  */
 

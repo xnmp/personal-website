@@ -206,13 +206,13 @@
   }
 }
 
-:root[data-style="atlas"] :is(.running-head, .divider, .folio, .statusline, .look) {
+:root[data-style="atlas"] :is(.running-head, .divider, .folio, .statusline) {
   --plate-k: 0.62;
   min-height: calc(2 * 56px * var(--plate-k) + 8px);
 }
 
 @media (max-width: 720px) {
-  :root[data-style="atlas"] :is(.running-head, .divider, .folio, .statusline, .look) {
+  :root[data-style="atlas"] :is(.running-head, .divider, .folio, .statusline) {
     --plate-k: 0.5;
   }
 }
@@ -233,12 +233,10 @@
 }
 
 /* the narrowest phones: the bezelled keys are wider than a flat slip, and
-   the row keeps them only with a hair less margin (the brand and the keys
-   stand apart anyway: the gap is only the least between them) */
+   the row keeps them only with a hair less margin */
 @media (max-width: 400px) {
   :root[data-style="atlas"] .running-head {
     padding-inline: calc(35px * var(--plate-k) + 2px);
-    column-gap: 6px;
   }
 }
 

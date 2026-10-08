@@ -680,6 +680,46 @@ for (const pr of kit.props ?? []) {
   report.push(`${pr.name}: from ${pick.src}`);
 }
 
+/* ---------- inks ----------
+   Brushwork generated on white paper (a painting, an inscription and its
+   seal), lifted off it: the white is unmultiplied out, so each pixel's
+   alpha is how far it stands from white in its darkest channel (past
+   `floor`, the paper's own faint tone) and its colour is what, laid over
+   white at that alpha, gives the pixel back (ink keeps its greys as
+   transparency, a vermilion seal its red). `tint` (hex) recolours the ink
+   for a dark ground (gofun white where black ink would vanish), the
+   unsaturated pixels wholly and a seal's red not at all; `alpha` scales it.
+   Scaled to `width` (or `height`); written to the kit with `page`, and kept
+   in the build for the scene's overlays (below) either way. */
+const inked = new Map();
+for (const k of kit.inks ?? []) {
+  if (!has(k.src)) continue;
+  const { data, info } = await sharp(raw(k.src))
+    .resize(k.height ? { height: k.height } : { width: k.width })
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const T = k.tint?.match(/../g).map((c) => parseInt(c, 16));
+  const floor = k.floor ?? 10;
+  const out = Buffer.alloc(info.width * info.height * 4);
+  for (let p = 0, i = 0; p < data.length; p += 3, i += 4) {
+    const c = [data[p], data[p + 1], data[p + 2]];
+    const a = Math.min(1, Math.max(0, (255 - Math.min(...c) - floor) / (255 - floor)));
+    if (a === 0) continue;
+    const C = c.map((v) => Math.min(255, Math.max(0, (v - (1 - a) * 255) / a)));
+    // how far from grey the ink is: a seal's red is far, black ink not at all
+    const hi = Math.max(...C);
+    const sat = hi > 0 ? (hi - Math.min(...C)) / hi : 0;
+    const keep = T ? Math.min(1, Math.max(0, (sat - 0.25) / 0.25)) : 1;
+    for (let j = 0; j < 3; j++) out[i + j] = Math.round(T ? T[j] + (C[j] - T[j]) * keep : C[j]);
+    out[i + 3] = Math.round(255 * a * (k.alpha ?? 1));
+  }
+  const png = await sharp(out, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
+  inked.set(k.name, png);
+  if (k.page) await sharp(png).webp({ quality: 86, alphaQuality: 90 }).toFile(`${OUT}/${k.name}.webp`);
+  report.push(`${k.name}: ${info.width}x${info.height}, inked off white${k.tint ? ` in #${k.tint}` : ""}`);
+}
+
 /* ---------- cuts ----------
    A closer cut of the scene: an opaque panel of its own, drawn as the
    close-up an album cuts to (art/prompts/<style>/cut-*), which the page
@@ -893,7 +933,34 @@ for (const finish of sc?.finishes ?? []) {
       shadow(sprite, `${dir}/sun.webp`, sc.sun.pad, "3:6:8:0.30", "1:1.5:1.5:0.32");
       report.push(`scene/${finish}/sun: ${lifted.spriteW + 2 * sc.sun.pad}x${lifted.spriteH + 2 * sc.sun.pad}`);
     }
-    const frame = await sharp(px, { raw: geometry(sized.info) }).png().toBuffer();
+    // brushwork inscribed on the layer after its grade (an inscription's
+    // gofun white is the ink's own, not the night's): `overlays`, by layer,
+    // each an inked sprite (kit.inks, named `${ink}-${finish}`) with its
+    // top left `at` in the 1920x1080 frame
+    // top left `at` in the 1920x1080 frame. A painter leaves the paper bare
+    // where an inscription goes: `mist` ({ color: { [finish]: hex }, alpha,
+    // grow }) lays a soft wash of the ground under it first, an ellipse
+    // `grow` px past the sprite on each side, fading out to its edge.
+    const marks = (sc.overlays?.[layer] ?? []).filter((o) => inked.has(`${o.ink}-${finish}`));
+    const flat = await sharp(px, { raw: geometry(sized.info) }).png().toBuffer();
+    const layers = [];
+    for (const o of marks) {
+      const ink = inked.get(`${o.ink}-${finish}`);
+      const { width: iw, height: ih } = await sharp(ink).metadata();
+      if (o.mist) {
+        const g = o.mist.grow ?? 30;
+        const [mw, mh] = [iw + 2 * g, ih + 2 * g];
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${mw}" height="${mh}"><defs><radialGradient id="m"><stop offset="0" stop-color="#${o.mist.color[finish]}" stop-opacity="${o.mist.alpha}"/><stop offset="0.55" stop-color="#${o.mist.color[finish]}" stop-opacity="${o.mist.alpha * 0.8}"/><stop offset="1" stop-color="#${o.mist.color[finish]}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${mw / 2}" cy="${mh / 2}" rx="${mw / 2}" ry="${mh / 2}" fill="url(#m)"/></svg>`;
+        const [left, top] = [o.at[0] - g, o.at[1] - g];
+        // cropped to the frame where the wash would run off it
+        const [cl, ct] = [Math.max(0, -left), Math.max(0, -top)];
+        const [cw, ch] = [Math.min(mw - cl, SW - Math.max(0, left)), Math.min(mh - ct, SH - Math.max(0, top))];
+        const wash = await sharp(Buffer.from(svg)).png().extract({ left: cl, top: ct, width: cw, height: ch }).toBuffer();
+        layers.push({ input: wash, left: Math.max(0, left), top: Math.max(0, top) });
+      }
+      layers.push({ input: ink, left: o.at[0], top: o.at[1] });
+    }
+    const frame = layers.length ? await sharp(flat).composite(layers).png().toBuffer() : flat;
     await sharp(frame).webp({ quality: 78, alphaQuality: 90 }).toFile(`${dir}/${layer}.webp`);
     frames.push(frame);
   }

@@ -213,7 +213,7 @@
 
 /* No two neighbouring tablets are the same slab: two were generated
    (scripts/kits/garden.mjs), set in turn among their siblings. */
-:root[data-style="garden"] .faceplate:not(.running-head, .divider, .statusline, .folio, .look):nth-child(2n) {
+:root[data-style="garden"] .faceplate:not(.running-head, .divider, .statusline, .folio):nth-child(2n) {
   --k-plate: var(--k-plate-b);
   --k-plate-hover: var(--k-plate-b-hover);
   --k-plate-pressed: var(--k-plate-b-pressed);
@@ -221,7 +221,7 @@
   --k-plate-flat: var(--k-plate-b-flat);
 }
 
-:root[data-style="garden"] :is(.running-head, .folio, .statusline, .look) {
+:root[data-style="garden"] :is(.running-head, .folio, .statusline) {
   --plate-k: 0.36;
   min-height: calc(2 * 56px * var(--plate-k) + 8px);
 }

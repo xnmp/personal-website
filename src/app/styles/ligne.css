@@ -283,7 +283,7 @@
    facts, a status, a figure's number, a section's heading, the foot) are
    lettered in the same capitals, upright, not typed in the terminal's face,
    which keeps to the screens and the code. */
-:root[data-style="ligne"] :is(.meta, .module-status, .module-stats, .launch-proof, .section-kicker, .plate-figure-label, .statusline, .colophon div, .feat h3, .openq strong, .code-panel h3, .tags, .look legend) {
+:root[data-style="ligne"] :is(.meta, .module-status, .module-stats, .launch-proof, .section-kicker, .plate-figure-label, .statusline, .colophon div, .feat h3, .openq strong, .code-panel h3, .tags) {
   font-family: var(--font-barlow), var(--font-print), sans-serif;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -350,7 +350,7 @@
    only holds its content (a page's opening, a section, the flagship, whose
    links are inside it) is printed flat on the page (scripts/kits/ligne.mjs
    `flat`), as are the strips. So what opens reads as such before a hover. */
-:root[data-style="ligne"] :is(.faceplate:not(.is-live, .running-head, .divider, .statusline, .folio, .look), .section, .detail-hero, .colophon, .blank-leaf)::before {
+:root[data-style="ligne"] :is(.faceplate:not(.is-live, .running-head, .divider, .statusline, .folio), .section, .detail-hero, .colophon, .blank-leaf)::before {
   border-image-source: var(--k-plate-flat);
 }
 
@@ -423,11 +423,11 @@
 
 /* the strips print the panel at 0.25 (drawn for it), never shorter than its
    two corners */
-:root[data-style="ligne"] :is(.running-head, .folio, .statusline, .look, .divider) {
+:root[data-style="ligne"] :is(.running-head, .folio, .statusline, .divider) {
   --plate-k: 0.25;
 }
 
-:root[data-style="ligne"] :is(.running-head, .folio, .statusline, .look) {
+:root[data-style="ligne"] :is(.running-head, .folio, .statusline) {
   min-height: calc(2 * 152px * var(--plate-k));
 }
 

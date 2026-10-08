@@ -38,10 +38,8 @@
    scroll inside their panel instead of widening the page */
 .section > *,
 .detail-hero > *,
-.hero > *,
 .code-duet > *,
-.shelf > *,
-.flagship > * {
+.shelf > * {
   min-width: 0;
 }
 
@@ -172,7 +170,7 @@ pre code {
 /* Printed links: ink with a signal underline, the one mechanical accent. */
 .section a:not(.key),
 .detail-hero a:not(.key),
-.hero a:not(.key),
+.intro a:not(.key),
 .colophon a:not(.key),
 .openq a:not(.key),
 .blank-leaf a:not(.key),
@@ -187,7 +185,7 @@ pre code {
 
 .section a:not(.key):hover,
 .detail-hero a:not(.key):hover,
-.hero a:not(.key):hover,
+.intro a:not(.key):hover,
 .colophon a:not(.key):hover,
 .openq a:not(.key):hover,
 .blank-leaf a:not(.key):hover,
@@ -336,6 +334,7 @@ pre code {
      inset a style keeps for its sheets, and the keys keep half theirs */
   .running-head {
     padding-inline: calc(56px * var(--plate-k) + 2px);
+    column-gap: 6px; /* the least between brand and keys: they stand apart anyway */
   }
 
   .brand {
@@ -354,37 +353,17 @@ pre code {
   }
 }
 
-/* ---------- home hero ---------- */
+/* ---------- the intro sheet (home, under the first screen) ---------- */
 
-/* Two sheets pinned side by side, with the valley showing between them: the
-   promise, and the flagship's larger sheet, which leads with the product's
-   screen so the page opens on it, its call to action on the first screen. */
-.hero {
-  display: grid;
-  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
-  gap: var(--rack-gap);
-  align-items: var(--hero-align);
-}
-
+/* the promise, in words, on a sheet of its own where the first screen ends */
 .hero-copy.faceplate {
-  margin-top: var(--hero-stagger); /* pinned a little lower than its neighbour */
   padding: calc(var(--plate-w) + 34px) calc(var(--plate-w) + 26px) calc(var(--plate-w) + 22px);
 }
 
-/* the promise's column: the promise, and under it the cut of the scene a
-   style whose panels in a row are set level shows (kit.css .tier-cut) */
-.hero-col {
-  display: flex;
-  flex-direction: column;
-  gap: var(--rack-gap);
-}
-
-/* Set level with a taller neighbour (--hero-align: stretch), the column's
-   spare height goes to the cut where the style shows one (kit.css: its
-   share outweighs the promise's a thousandfold), else to the promise
-   itself, whose sheet then ends level with its neighbour's */
-.hero-col > .hero-copy {
-  flex-grow: 1;
+@media (min-width: 1000px) {
+  .rack-main > .intro {
+    width: 74%;
+  }
 }
 
 .title {
@@ -422,12 +401,568 @@ pre code {
   font-weight: 600;
 }
 
-@media (max-width: 900px) {
-  .hero {
+/* ---------- home landing: the first screen ----------
+   The home page opens on one composed screen, as every style's mock does
+   (art/originals/<style>.webp): the brand and its line at the top left and
+   the keys at the right (.masthead), the flagship's name, pitch and keys over
+   the scene with its window beside them (.launchpad), and a row of four
+   projects at the foot (.showcase), the scene showing round all of it.
+
+   It is laid out on a stage of the mocks' proportions (1672 x 941) as wide
+   as the screen, or as its height allows, centred; lengths on it are mock
+   pixels (--u), so the composition keeps the mock's proportions at any
+   desktop size, as the scene, fitted to cover, keeps its own. A style places
+   the pieces with the --l-* tokens (mock px times --u), and colours the
+   words that stand on its scene with --l-ink. Below 900px it stacks. */
+:root {
+  /* less a classic scrollbar's width, so the stage never runs under it */
+  --stage-w: min(100vw - 16px, 177.7svh);
+  --u: calc(var(--stage-w) / 1672);
+  --l-left: calc(80 * var(--u)); /* brand and copy from the stage's left */
+  --l-right: calc(80 * var(--u)); /* the keys from its right */
+  --l-head-top: calc(26 * var(--u));
+  --l-brand: calc(60 * var(--u));
+  --l-tagline: calc(17 * var(--u));
+  --l-nav: calc(20 * var(--u));
+  --l-launch-top: calc(36 * var(--u)); /* the launchpad under the masthead */
+  --l-win-x: calc(734 * var(--u)); /* the window's left edge */
+  --l-win-w: calc(606 * var(--u));
+  --l-title: calc(88 * var(--u));
+  --l-pitch: calc(26 * var(--u));
+  --l-cards-l: calc(74 * var(--u));
+  --l-cards-r: calc(72 * var(--u));
+  --l-cards-gap: calc(20 * var(--u));
+  --l-foot: calc(40 * var(--u)); /* under the row */
+  --l-heading: calc(34 * var(--u));
+  --l-card-title: calc(24 * var(--u));
+  /* the words that stand on the scene, not on a sheet */
+  --l-ink: var(--print);
+  --l-ink-soft: var(--print-soft);
+  --l-call: var(--l-ink);
+  --l-halo: none; /* a soft shadow behind them, where the scene is busy */
+  --l-rule: color-mix(in srgb, var(--l-ink) 35%, transparent);
+}
+
+/* home: the stage starts at the top of the screen */
+.rack:has(.masthead) {
+  padding-top: 0;
+}
+
+.rack-inner:has(> .masthead) {
+  row-gap: 0;
+}
+
+.masthead,
+.landing {
+  align-self: center; /* wider than the column: centred on it, over its margins */
+  width: var(--stage-w);
+}
+
+.masthead {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: var(--l-head-top) var(--l-right) 0 var(--l-left);
+  color: var(--l-ink);
+  text-shadow: var(--l-halo);
+}
+
+.masthead .brand {
+  margin: 0;
+  font-size: max(30px, var(--l-brand));
+  font-weight: var(--l-brand-weight, 600);
+}
+
+.masthead .brand a {
+  color: var(--l-ink);
+}
+
+/* the power lamp is a style's mark beside the name (a seal, a sprig); unset, the lamp */
+.masthead .brand .led {
+  width: 0.36em;
+  height: 0.36em;
+}
+
+.tagline {
+  margin: calc(10 * var(--u)) 0 0;
+  font-family: var(--l-tagline-font, var(--font-display)), Georgia, serif;
+  font-size: max(13px, var(--l-tagline));
+  letter-spacing: var(--l-tagline-track, 0.01em);
+  color: var(--l-ink-soft);
+}
+
+/* the keys are the masthead's links, printed as words on the scene */
+.masthead .instruments {
+  gap: calc(34 * var(--u));
+  margin-top: calc(8 * var(--u));
+}
+
+.masthead .key {
+  --kn: none;
+  --kh: none;
+  --kp: none;
+  --kf: none;
+  --ki: var(--l-ink);
+  --ku: transparent;
+  min-height: 36px;
+  padding: 0 2px;
+  font-family: var(--l-nav-font, var(--font-display)), Georgia, serif;
+  font-size: max(15px, var(--l-nav));
+  font-weight: var(--l-nav-weight, 500);
+  letter-spacing: 0.01em;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1.5px;
+}
+
+.masthead :is(a.key, button.key):hover,
+.masthead .key[aria-expanded="true"] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--signal);
+}
+
+.masthead .key:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* the shortcuts are printed in the foot; here the keys are words */
+.masthead .key-legend {
+  display: none;
+}
+
+.landing {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - var(--masthead-h, calc(150 * var(--u))));
+  padding-bottom: var(--l-foot);
+}
+
+/* the flagship: its name, pitch and keys, its window beside them */
+.launchpad {
+  display: grid;
+  grid-template-columns: calc(var(--l-win-x) - var(--l-left)) var(--l-win-w);
+  align-items: var(--l-launch-align, center);
+  padding: var(--l-launch-top) 0 0 var(--l-left);
+  color: var(--l-ink);
+}
+
+.launchpad-copy {
+  padding-right: calc(40 * var(--u));
+  text-shadow: var(--l-halo);
+}
+
+.launchpad-title {
+  margin: 0;
+  font-family: var(--l-title-font, var(--font-display)), Georgia, serif;
+  font-weight: var(--l-title-weight, 600);
+  font-size: max(40px, var(--l-title));
+  line-height: 1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  color: var(--l-ink);
+}
+
+.launchpad-pitch,
+.launchpad-call {
+  margin: 0;
+  font-family: var(--l-pitch-font, var(--font-display)), Georgia, serif;
+  font-size: max(17px, var(--l-pitch));
+  line-height: 1.3;
+}
+
+.launchpad-pitch {
+  margin-top: calc(22 * var(--u));
+  color: var(--l-ink);
+}
+
+.launchpad-call {
+  color: var(--l-call);
+}
+
+.launchpad-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(22 * var(--u));
+  margin-top: calc(34 * var(--u));
+  text-shadow: none;
+}
+
+.key-arrow {
+  margin-left: 0.35em;
+}
+
+/* the window: the flagship's own link (its keys are the copy's) */
+/* the window's container, so its text is sized to it (cqw in .xw) */
+.launchpad-window {
+  container-type: inline-size;
+  display: block;
+  position: relative;
+  border-radius: var(--xw-round, calc(10 * var(--u)));
+  box-shadow: var(--xw-shadow, 0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(10, 8, 16, 0.38));
+  text-decoration: none;
+  color: inherit;
+}
+
+.launchpad-window:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 4px;
+}
+
+/* ---- the window itself: Tauri Explorer, live text in the rice ---- */
+.xw {
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 606 / 344;
+  overflow: hidden;
+  border: 1px solid var(--xw-edge, color-mix(in srgb, var(--ink) 22%, var(--paper)));
+  border-radius: inherit;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: max(8px, 2.05cqw);
+  line-height: 1;
+}
+
+.xw-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: none;
+  height: 6.2cqw;
+  padding-inline: 2.2cqw;
+  background: var(--paper-warm);
+  border-bottom: 1px solid var(--rule);
+}
+
+.xw-lights {
+  display: flex;
+  gap: 1.1cqw;
+}
+
+.xw-lights i {
+  width: 1.7cqw;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--rust);
+}
+
+.xw-lights i:nth-child(2) {
+  background: var(--amber);
+}
+
+.xw-lights i:nth-child(3) {
+  background: var(--olive);
+}
+
+.xw-title {
+  position: absolute;
+  inset-inline: 0;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.95em;
+}
+
+.xw-panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+  min-height: 0;
+}
+
+.xw-pane {
+  min-width: 0;
+}
+
+.xw-pane + .xw-pane {
+  border-left: 1px solid var(--rule);
+}
+
+.xw-path {
+  padding: 1.7cqw 2.4cqw;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.xw-rows {
+  list-style: none;
+  margin: 0;
+  padding: 1cqw 1.2cqw;
+}
+
+.xw-rows li {
+  display: flex;
+  align-items: center;
+  gap: 1.3cqw;
+  height: 3.95cqw;
+  padding-inline: 1.2cqw;
+  border-radius: 0.7cqw;
+  white-space: nowrap;
+}
+
+.xw-rows li[data-selected] {
+  background: color-mix(in srgb, var(--cyan) 30%, transparent);
+}
+
+/* a folder: a tab and its body; a file: a dog-eared sheet */
+.xw-icon {
+  flex: none;
+  width: 2.1cqw;
+  height: 1.65cqw;
+  background: var(--cyan);
+  clip-path: polygon(0 0, 42% 0, 52% 18%, 100% 18%, 100% 100%, 0 100%);
+}
+
+.xw-icon[data-kind="file"] {
+  width: 1.55cqw;
+  height: 1.95cqw;
+  background: var(--ink-soft);
+  clip-path: polygon(0 0, 66% 0, 100% 30%, 100% 100%, 0 100%);
+}
+
+.xw-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.xw-kind {
+  margin-left: auto;
+  padding-left: 1cqw;
+  color: var(--ink-soft);
+}
+
+.xw-status {
+  display: flex;
+  gap: 2.4cqw;
+  flex: none;
+  padding: 1.5cqw 2.4cqw;
+  border-top: 1px solid var(--rule);
+  background: var(--paper-warm);
+  color: var(--ink-soft);
+  font-size: 0.86em;
+  white-space: nowrap;
+}
+
+.xw-mode {
+  color: var(--cyan);
+}
+
+.xw-hints {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- the row of projects at the foot ---- */
+.showcase {
+  margin-top: auto;
+  padding: calc(30 * var(--u)) var(--l-cards-r) 0 var(--l-cards-l);
+}
+
+.showcase-title {
+  display: flex;
+  align-items: center;
+  gap: calc(20 * var(--u));
+  margin: 0 0 calc(14 * var(--u));
+  font-family: var(--l-heading-font, var(--font-display)), Georgia, serif;
+  font-weight: var(--l-heading-weight, 600);
+  font-size: max(22px, var(--l-heading));
+  line-height: 1.1;
+  color: var(--l-ink);
+  text-shadow: var(--l-halo);
+}
+
+/* a rule runs on from the heading to the row's end */
+.showcase-title::after {
+  content: var(--l-heading-rule, "");
+  flex: 1;
+  height: 0;
+  border-top: 1px solid var(--l-rule);
+}
+
+.showcase-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--l-cards-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.showcase-row > li {
+  display: flex;
+  min-width: 0;
+}
+
+.card.faceplate {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: calc(12 * var(--u));
+  padding: calc(var(--plate-w) + 8px) calc(var(--plate-w) + 10px) calc(var(--plate-w) + 12px);
+  color: var(--print);
+  text-decoration: none;
+}
+
+.card-title {
+  order: var(--card-title-order, 0);
+  margin: 0;
+  font-family: var(--l-card-font, var(--font-display)), Georgia, serif;
+  font-weight: var(--l-card-weight, 600);
+  font-size: max(16px, var(--l-card-title));
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+}
+
+.card-screen {
+  min-width: 0;
+}
+
+/* a screen as the mocks show one, a little wider than the shelves' 3:2 */
+.card-screen .screen-face.has-art {
+  aspect-ratio: 16 / 10;
+}
+
+.card-mark {
+  display: none;
+}
+
+/* Narrower than a desktop, the first screen stacks: the brand row, the
+   flagship and its keys, its window, then the projects two to a row. */
+@media (max-width: 899px) {
+  :root {
+    --u: 0.62px;
+  }
+
+  .masthead,
+  .landing {
+    width: 100%;
+  }
+
+  /* the brand and the keys share a row, the line under both */
+  .masthead {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 12px;
+    padding: 4px 0 0;
+  }
+
+  .masthead-brand {
+    display: contents;
+  }
+
+  .masthead .instruments {
+    grid-area: 1 / 2;
+  }
+
+  .masthead .tagline {
+    grid-area: 2 / 1 / 3 / -1;
+  }
+
+  .masthead .brand {
+    font-size: 34px;
+  }
+
+  .tagline {
+    margin-top: 6px;
+    font-size: 14px;
+  }
+
+  .masthead .instruments {
+    gap: 6px;
+    margin-top: 0;
+  }
+
+  /* a thumb's target, the glyphs centred in it */
+  .masthead .key {
+    min-width: 36px;
+    justify-content: center;
+  }
+
+  .landing {
+    min-height: 0;
+    padding-bottom: 0;
+  }
+
+  .launchpad {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    padding: 36px 0 0;
+  }
+
+  .launchpad-copy {
+    padding-right: 0;
+  }
+
+  .launchpad-title {
+    font-size: clamp(42px, 11vw, 64px);
+  }
+
+  .launchpad-pitch {
+    margin-top: 14px;
+  }
+
+  .launchpad-keys {
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .launchpad-window {
+    border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(10, 8, 16, 0.34);
+  }
+
+  .xw {
+    font-size: max(9px, 2.4cqw);
+  }
+
+  .showcase {
+    margin-top: 0;
+    padding: 40px 0 0;
+  }
+
+  .showcase-title {
+    gap: 14px;
+    margin-bottom: 14px;
+    font-size: 28px;
+  }
+
+  .showcase-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .card.faceplate {
+    gap: 8px;
+  }
+
+  .card-title {
+    font-size: 17px;
+  }
+}
+
+/* a narrow phone: the window's second pane would be a sliver */
+@media (max-width: 480px) {
+  .xw-panes {
     grid-template-columns: 1fr;
   }
-  .hero-copy.faceplate {
-    margin-top: 0;
+
+  .xw-pane + .xw-pane {
+    display: none;
+  }
+
+  .xw {
+    aspect-ratio: auto;
+    font-size: 11px;
+  }
+
+  .xw-hints {
+    display: none;
   }
 }
 
@@ -656,40 +1191,6 @@ pre code {
   font-size: 11px;
 }
 
-
-/* ---------- flagship module (home) ---------- */
-
-.flagship {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: calc(var(--plate-w) + 18px) calc(var(--plate-w) + 18px) calc(var(--plate-w) + 16px);
-  color: var(--print);
-}
-
-.flagship h2 {
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 600;
-  font-size: clamp(28px, 2.7vw, 38px);
-  line-height: 1.06;
-  letter-spacing: -0.015em;
-  margin: 4px 0 0;
-  text-wrap: balance;
-}
-
-.flagship p {
-  margin: 0;
-  color: var(--print-soft);
-  font-size: 16.5px;
-  max-width: 52ch;
-}
-
-.flagship .keys {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 4px;
-}
 
 /* ---------- tags: printed part numbers ---------- */
 
@@ -1533,20 +2034,6 @@ pre code {
   display: flex;
   flex-direction: column;
   gap: var(--rack-gap);
-}
-
-.flagship .soft {
-  color: var(--print-soft);
-}
-
-.flagship-screen {
-  display: block;
-  border-radius: 2px;
-}
-
-.flagship .module-top,
-.flagship .module-stats {
-  padding: 0;
 }
 
 /* ==========================================================================
@@ -2618,89 +3105,6 @@ main[tabindex="-1"]:focus {
   border: 0;
 }
 
-/* ---------- flagship screen: the quick-open palette as live LCD text ---------- */
-
-.pal-screen .screen-face {
-  aspect-ratio: 3 / 2;
-  container-type: inline-size;
-}
-
-.pal {
-  position: absolute;
-  inset: 0;
-  padding: 6cqw 5cqw 0;
-  color: var(--tone);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  /* about the app's own size: 16px on a 480px screen */
-  font-size: 3.4cqw;
-  line-height: 1;
-  /* phosphor: the lit text bleeds a little into the glass */
-  text-shadow: 0 0 0.35em color-mix(in srgb, var(--tone) 45%, transparent);
-}
-
-/* a light screen is lit from outside, not glowing: its text is printed sharp */
-:root[data-rice="paper"] .pal {
-  text-shadow: none;
-}
-
-.pal-input {
-  display: flex;
-  align-items: center;
-  gap: 0.12em;
-  height: 1em;
-}
-
-.pal-caret {
-  width: 0.55em;
-  height: 1.1em;
-  background: var(--tone);
-  animation: pal-blink 1.1s steps(1) infinite;
-}
-
-@keyframes pal-blink {
-  50% {
-    visibility: hidden;
-  }
-}
-
-/* the rows reach 2cqw past the text on both sides, so the selection bar sits
-   inside the screen with even margins, as in the app */
-.pal-rows {
-  list-style: none;
-  margin: 4.6cqw -2cqw 0;
-  padding: 0;
-}
-
-.pal-rows li {
-  display: flex;
-  align-items: center;
-  height: 7.4cqw;
-  padding-inline: 2cqw;
-  border-radius: 1.4cqw;
-  white-space: nowrap;
-}
-
-.pal-rows li[data-selected] {
-  background: var(--tone);
-  color: var(--paper);
-  text-shadow: none;
-}
-
-/* the matched letters, underlined as the app does; one unbroken rule under
-   a run of them, clear of the glyphs and their glow */
-.pal-name u {
-  text-decoration-thickness: 0.09em;
-  text-underline-offset: 0.26em;
-  text-decoration-skip-ink: none;
-  font-weight: 700;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pal-caret {
-    animation: none;
-  }
-}
-
 /* ---------- lightbox: a screenshot's full window, on a modal screen ---------- */
 
 .lightbox {
@@ -2876,94 +3280,108 @@ html:has(dialog[open]) {
   white-space: nowrap;
 }
 
-/* ---------- the art-direction picker (components/instrument/StylePicker) ----------
-   A strip at the foot of every page, printed at the strips' finer scale (it
-   is furniture, not content): a native radio group, each option a tile (the
-   chosen one the signal tile), the legend beside them and what the chosen
-   style is beneath. The tiles share one width on a grid of two even rows
-   (the picker sets --look-cols to half their number, rounded up), so
-   however many styles there are they stand as one bank of keys: a row
-   filled as far as it goes leaves the last style alone on the next.
-   The radio itself covers its tile, invisible, so the whole tile is the hit
-   target and the group keeps its native keyboard and screen-reader
-   behaviour. */
-.look {
-  --plate-k: 0.24;
-  min-height: calc(2 * 152px * var(--plate-k));
-  padding: calc(var(--plate-w) + 4px) calc(var(--plate-w) + 18px);
+/* ---------- the art-direction menu (components/instrument/StyleMenu) ----------
+   A key in the masthead beside the theme key, printed with the style's name
+   (and "style" where the theme key says "theme"), and its menu: a popover
+   laid over everything in the top layer, a small sheet of the style's own
+   paper hung under the key (StyleMenu places it, in document px, so it
+   scrolls with the masthead), holding one tile per style, the current one
+   the signal tile. It fades in; it is never scaled or slid. */
+.style-key {
+  gap: 7px;
 }
 
-.look-set {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 12px 24px;
-  border: 0;
-  margin: 0;
-  padding: 0;
-  min-width: 0;
+.style-caret {
+  font-size: 0.78em;
+  opacity: 0.7;
 }
 
-/* floated, a legend is laid out as a grid item, in the row */
-.look-set legend {
-  float: left;
-  padding: 0;
-  margin: 0;
-}
-
-.look-opts {
-  display: grid;
-  grid-template-columns: repeat(var(--look-cols, 4), minmax(0, 1fr));
-  gap: 10px 12px;
-}
-
-.look-opt {
-  justify-content: center;
-  padding-inline: calc(10px + var(--key-inset));
-}
-
-.look-opt input {
+.style-menu.faceplate {
+  --plate-k: 0.3;
   position: absolute;
-  inset: 0;
-  z-index: 1; /* over the legend: the radio is the hit target */
+  inset: auto;
   margin: 0;
+  border: 0;
+  overflow: visible;
+  background: none;
+  color: var(--print);
+  width: max-content;
+  max-width: calc(100vw - 28px);
+  padding: calc(var(--plate-w) + 4px) calc(var(--plate-w) + 8px);
   opacity: 0;
-  cursor: pointer;
+  transition: opacity 140ms ease-out;
 }
 
-.look-now {
-  grid-column: 2;
-  margin: 0;
+.style-menu.faceplate:popover-open {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 1;
 }
 
-/* narrower, the legend heads the bank, which takes the sheet's width */
-@media (max-width: 900px) {
-  .look-set {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .look-now {
-    grid-column: 1;
+@starting-style {
+  .style-menu.faceplate:popover-open {
+    opacity: 0;
   }
 }
 
-/* on a phone, two to a row, the bank taking all the strip leaves inside
-   its frame (a style's name is long for half a phone); an odd one out
-   stands centred on its row at the others' width, one more key of the bank
-   rather than a bar */
+.style-opt {
+  justify-content: flex-start;
+  min-width: 11.5em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .style-menu.faceplate {
+    transition: none;
+  }
+}
+
+.style-icon,
+.rice-icon {
+  display: none;
+  flex: none;
+}
+
+/* on a phone the brand and all three keys share the masthead's one row:
+   the key is a palette (its accessible name still says which style) */
 @media (max-width: 600px) {
-  .look {
-    padding-inline: calc(var(--plate-w) + 6px);
+  .instruments :is(.style-name, .style-word, .style-caret) {
+    display: none !important; /* outranks the pointer utility */
   }
 
-  .look-opts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 8px;
+  .instruments .style-icon {
+    display: block;
   }
 
-  .look-opt:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-    justify-self: center;
-    width: calc((100% - 8px) / 2);
+  /* one glyph, so a square tile, as a legend cap is: no room kept for a
+     word's sidebearings */
+  .running-head .instruments .style-key {
+    min-width: 36px;
+    padding-inline: 0;
+    justify-content: center;
+  }
+}
+
+/* on a narrow phone the theme key goes to its disc as well */
+@media (max-width: 400px) {
+  .instruments .theme-key :is(.rice-name, .rice-word) {
+    display: none !important;
+  }
+
+  .instruments .rice-icon {
+    display: block;
+  }
+
+  .running-head .instruments .theme-key {
+    min-width: 36px;
+    padding-inline: 0;
+    justify-content: center;
+  }
+}
+
+/* the narrowest: the keys stand closer */
+@media (max-width: 340px) {
+  .running-head .instruments {
+    gap: 4px;
   }
 }

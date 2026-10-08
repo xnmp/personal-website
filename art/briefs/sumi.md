@@ -2,84 +2,84 @@
 
 One of the selectable styles (issue #1; `data-style="sumi"`). The Paper
 Diorama's brief (`art/BRIEF.md`) sets the system every style shares: one column
-of surfaces over a scene, a calm centre, the key light upper left, the screens
-in the rice. This file says only what Sumi-e Ink changes. Concept:
-`art/raw/sumi/concept-a` (hanging-scroll mounts), chosen over `concept-b`
-(feathered washi sheets held by tape), which read as the Paper Diorama in
-another palette.
+of surfaces over a scene, the screens in the rice. This file says what Sumi-e
+Ink changes. Concept: `art/raw/sumi/concept-a` (hanging-scroll mounts), chosen
+over `concept-b` (feathered washi sheets held by tape).
+
+**The concept is the target.** The page is judged side by side with
+`concept-a` at the concept's own size (1672x941): it must read as that
+picture, not as a page in its palette. The signature devices below are
+requirements; a missing one is a defect, not a simplification.
 
 ## Thesis
 
-An ink-wash landscape gallery. Each surface on the page is a hanging scroll
-(kakejiku): a panel of cream kozo washi in a mount of mottled, pale celadon
-woven silk, with a thin gold line along the washi and silk-wrapped rollers
-top and bottom whose turned lacquer knobs stand out at the corners. The
-scrolls hang in front of a sumi-e landscape: misty mountains in graded ink,
-a gnarled pine at the left, bamboo and a pavilion at the right, empty mist in
-the middle. Controls are slips of thick matte washi card with the mounts'
-hair-thin gold line inset round them; the one accent is vermilion, the colour
-of a seal. **The screens
-still run the author's terminal rice**, mounted in indigo silk.
+A gallery of hanging scrolls before a sumi-e landscape. Each panel is a
+kakejiku: cream kozo washi inside a mount of pale celadon silk, a hair-thin
+gold line round the washi, dark lacquered rollers across its top and foot
+whose turned knobs stand out past the silk. The flagship is the one scroll
+mounted in navy brocade, a jade disc and a vermilion tassel hanging from its
+roller. Seals in cinnabar mark the brand, the paintings and the work; brush
+strokes of ink head the cards. Behind, a landscape in ink: a gnarled pine on a
+cliff at the left, misty ranges across the top, a pavilion, waterfall and
+bamboo at the right, cranes, a pale sun, calligraphy inscribed in the corners.
 
-## Why it reads as expensive
+## Signature devices (requirements)
 
-Restraint and real craft. Mounting silk, washi fibre and lacquer are each
-used for what they are, and nothing is decorated: the gold line and the rods
-are how a scroll is made. Most of every surface is empty paper; the
-landscape carries the mood and keeps its detail at the edges, as a sumi-e
-painting leaves its centre to mist.
+1. **Masthead on torn washi:** a band of cream washi across the top of the
+   page, its lower edge torn; on it the brand set large in a heavy serif with
+   a square vermilion seal (重, read *chóng*) beside it, a line of serif text
+   after a hairline rule, and the page links as plain serif words at the
+   right. No silk mount, no buttons. Shelf heads, the footer and the picker
+   are the same torn washi.
+2. **Hanging scrolls with rollers:** every content panel has visible dark
+   wooden rollers top and foot, their knobs standing out past the silk;
+   the silk wide enough to read as a mount.
+3. **The flagship in navy brocade,** with a jade bi disc and a vermilion silk
+   tassel hanging from the right end of its top roller.
+4. **A heavy serif headline** (EB Garamond, bold), and serif throughout the
+   page's prose and labels; mono only on the screens and for code.
+5. **The primary button a vermilion seal-stamp impression** (broken, grainy
+   edges, cream serif lettering); the secondary a slip of washi card in a
+   thin, dry sumi-brush border, lettered in ink.
+6. **Cards headed by an ink brush swash** (the card's number in cream on a
+   broad dry-brush stroke), **a round seal at the top right** for the status
+   (vermilion, jade, ochre or ink), and a vermilion arrow at the foot.
+7. **The opening scroll is a painting too:** a small ink landscape painted on
+   its washi at the lower right, a small seal beside it.
+8. **Calligraphy and seals in the landscape:** a vertical inscription with its
+   seal at the lower left (行遠) and the lower right (山水有相逢), in the
+   corners the panels leave clear; the sun a pale disc at the upper right.
 
-## System (what differs from the diorama)
+## System
 
-- **Type:** Cormorant (high-contrast old-style serif with a brush-like italic,
-  `--font-cormorant`) for headlines; Archivo body and JetBrains Mono labels as
-  everywhere.
-- **Shape language:** rectangular scroll mounts with square corners; rollers
-  with turned end knobs on the content scrolls only (the strips, masthead,
-  shelf heads, feet and picker, are the same silk mount without rollers, so no
-  heading outranks what it heads); cards with softly rounded corners; round
-  lacquered beads. No torn edges on the mounts (the washi's fibres are inside
-  them). Scrolls in a row hang from one line; a shelf's are one height, the
-  opening pair each its own length.
-- **Palette (day, the light rice):** warm washi `#f3ecdc`, sumi ink `#1d1d1f`
-  and its greys, pale celadon silk `#c9d3c0`, indigo `#2f3e5c`, ochre
-  `#c49a5a`, muted gold `#b89a5a`. Vermilion `#c8371e` is the one accent (the
-  primary card, the active bead, focus).
-- **Palette (night):** the same gallery by moonlight: the scrolls' washi
-  ink-dyed near black (`#1e2024`) with cream type, their celadon silk silvered
-  by the moon (`#6a776f`), so the mounts stand off the landscape; their knobs
-  black lacquer; the landscape in dark indigo washes under a pale moon at the
-  upper left. The vermilion deepens to `#d9532e`.
-- **Light:** soft daylight from the upper left by day; moonlight from the
-  upper left by night (cool, no warm light without a lamp in the scene).
-- **Labels:** typed on narrow strips of indigo-dyed washi by day, pale silk
-  by night (the tape role), in cream and in ink. Inline code on a
-  straight-cut slip of pale washi by day, indigo by night, in ink and in
-  cream (its own ink, `--chip-ink`).
+- **Type:** EB Garamond (`--font-garamond`): headlines bold, prose regular,
+  labels in small capitals. JetBrains Mono on screens and inline code only.
+- **Palette (day):** warm washi `#f3ecdc`, sumi ink `#1d1d1f` and its greys,
+  pale celadon silk `#c9d3c0`, navy brocade `#26304a`, indigo `#2f3e5c`,
+  ochre `#c49a5a`, muted gold `#b89a5a`, vermilion `#c8371e` (the one accent:
+  seals, the primary stamp, arrows, focus).
+- **Palette (night):** the same gallery by moonlight: the washi ink-dyed near
+  black with cream type, the silk silvered, the brocade a deeper navy; the
+  landscape in dark indigo washes; brush strokes and calligraphy in pale gofun
+  white where black ink would vanish; seals stay cinnabar.
+- **Light:** soft daylight from the upper left; moonlight by night.
 - **States:** hover lifts a scroll off the wall (its shadow widens, its silk
-  and knobs catch the light) and a card toward the light (matte: no gloss);
-  pressed presses it back (its shadow tightens, its silk dims). By night a
-  card's edge takes the moon at rest, as the scrolls' silk does. Focus is one
-  language everywhere: a band of vermilion silk laid in on the paper just
-  inside the gold line (a scroll's, round its washi; a card's), with an ink
-  keyline on its inner side where the paper is light; cream on a vermilion
-  card. The gold line stays whole.
-- **Paper:** the scrolls' washi is painted by the page as a seamless tile
-  inside the mount, so its fibres keep their scale at any size.
-- **Motion:** the diorama's (the landscape's layers part with parallax; mist
-  drifts); nothing new.
+  catches the light) and a button toward the light; pressed presses it back.
+  Focus is one language: a band of vermilion silk inside the gold line (a
+  scroll's; a button's border), an ink keyline inside it on light paper.
+- **Paper:** the washi inside every mount and band is painted by the page as a
+  seamless tile, so its fibres keep their scale at any size.
 
 ## Raster kit (prompts in `art/prompts/sumi/`)
 
 | group | assets |
 |---|---|
-| scene | `scene/{day,night}/{sky,far,mid,near,left,right}` full-frame layers, cut from `scene-day` (the night layers graded darker in the build), the sky painted clear of its disc; `scene/{day,night}/sun` the sun and the moon, generated alone, hung by the page in the margin behind the pine, painted into the wash (no shadow) |
-| sheets | `sheet-{day,night}-{normal,hover,focus,pressed,flat}` 9-slice scroll mount (washi cleared), `sheet-{day,night}-sheen` |
-| paper | `washi-{day,night}` seamless tile, painted by the page inside the mount |
-| strips | `sheet-strip-{day,night}-normal` the same mount without rollers |
-| tiles | `tile-{day,night,signal,signal-night}-{normal,hover,focus,pressed}` 9-slice matte washi card with a gold line |
-| mounts | `mat-{day,night}` 9-slice indigo silk screen mount |
-| fittings | `pin-{brass,green,amber,signal}` lacquer beads (ink, jade, ochre, vermilion), `tape-{day,night}` washi strip, `chip-{day,night}` washi slip |
+| scene | `scene/{day,night}/{sky,far,mid,near,left,right}`, the left and right with their inscriptions (`calligraphy-{left,right}`) inked in; `scene/{day,night}/sun` |
+| scrolls | `sheet-{day,night}-*` celadon mount with rollers; `sheet-brocade-{day,night}-*` the flagship's navy brocade mount |
+| bands | `sheet-strip-{day,night}-normal` torn washi band (masthead, shelf heads, footer, picker) |
+| buttons | `tile-{day,night}-*` washi card in a dry-brush border; `tile-signal{,-night}-*` vermilion stamp |
+| fittings | `pin-*` round seals (ink, jade, ochre, vermilion); `tape-{day,night}` ink brush swash; `chip-{day,night}` washi slip; `seal-brand` 重; `pendant` jade disc and tassel; `vignette-{day,night}` the opening scroll's painting |
+| paper | `washi-{day,night}` seamless tile |
 
-No calligraphy, seals or writing anywhere in the art: generated characters
-are not real ones, and text never belongs in a bitmap.
+Generated characters are checked by eye before use: only 重, 行遠 and 山水有相逢
+appear, each as written above.

@@ -138,7 +138,7 @@
   --plate-sheen: none;
   /* and the key light's pool on it at rest (a stretched smooth field) */
   --plate-light: none;
-  /* The strips (masthead, shelf heads, the feet, the picker) wear this
+  /* The strips (masthead, shelf heads, the feet) wear this
      sheet: the diorama's are its paper like any other, a framed style's may
      drop the fixings a content sheet has. */
   --k-strip: var(--k-plate);
@@ -1184,8 +1184,7 @@ label.key:active {
 .running-head,
 .divider,
 .statusline,
-.folio,
-.look {
+.folio {
   --k-plate: var(--k-strip);
   --plate-fill-in: var(--strip-fill-in);
   --plate-repeat: var(--strip-repeat);

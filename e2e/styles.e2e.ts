@@ -21,30 +21,86 @@ const asStyle = (page: Page, id: string) =>
     }
   }, id);
 
-test("picking a style dresses the page in its kit and survives a reload", async ({ page }) => {
+const styleKey = (page: Page) => page.getByRole("button", { name: /^Art direction/ });
+const styleMenu = (page: Page) => page.getByRole("menu", { name: "Art direction" });
+
+test("picking a style from the masthead's menu dresses the page in its kit and survives a reload", async ({ page }) => {
   await page.goto("/");
-  const group = page.getByRole("group", { name: "Art direction" });
-  await group.scrollIntoViewIfNeeded();
-  const solarpunk = group.getByRole("radio", { name: "Solarpunk" });
-  await solarpunk.check();
+  await styleKey(page).click();
+  await expect(styleMenu(page)).toBeVisible();
+  await styleMenu(page).getByRole("menuitemradio", { name: "Solarpunk" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-style", "solarpunk");
-  // the sheets now wear the style's own art
+  await expect(styleMenu(page)).toBeHidden();
+  // the sheets now wear the style's own art, and the key says which
   const plate = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--k-plate"));
   expect(plate).toContain("/kit/solarpunk/");
+  await expect(styleKey(page)).toHaveAccessibleName("Art direction: Solarpunk");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-style", "solarpunk");
-  await expect(page.getByRole("radio", { name: "Solarpunk" })).toBeChecked();
+  await styleKey(page).click();
+  await expect(styleMenu(page).getByRole("menuitemradio", { name: "Solarpunk" })).toHaveAttribute("aria-checked", "true");
 });
 
-test("the picker is a radio group the keyboard can drive", async ({ page, isMobile }) => {
+test("the art-direction menu is a menu button the keyboard can drive", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard");
   await page.goto("/");
-  const first = page.getByRole("radio", { name: STYLES[0].name });
-  await expect(first).toBeChecked(); // after hydration, the current style is chosen
-  await first.focus();
-  await page.keyboard.press("ArrowRight");
+  const key = styleKey(page);
+  await expect(key).toHaveAccessibleName(`Art direction: ${STYLES[0].name}`); // hydrated
+  await expect(key).toHaveAttribute("aria-expanded", "false");
+  // Enter opens it on the current style
+  await key.focus();
+  await page.keyboard.press("Enter");
+  await expect(styleMenu(page)).toBeVisible();
+  await expect(key).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("menuitemradio", { name: STYLES[0].name })).toBeFocused();
+  // Escape closes it, back on the key, the style as it was
+  await page.keyboard.press("Escape");
+  await expect(styleMenu(page)).toBeHidden();
+  await expect(key).toBeFocused();
+  await expect(page.locator("html")).toHaveAttribute("data-style", STYLES[0].id);
+  // the arrows open it too, then move; Enter chooses and closes it
+  await page.keyboard.press("ArrowDown");
+  await expect(styleMenu(page)).toBeVisible();
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("menuitemradio", { name: STYLES[1].name })).toBeFocused();
+  await page.keyboard.press("End");
+  await expect(page.getByRole("menuitemradio", { name: STYLES[STYLES.length - 1].name })).toBeFocused();
+  await page.keyboard.press("ArrowDown"); // wraps to the first
+  await expect(page.getByRole("menuitemradio", { name: STYLES[0].name })).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
   await expect(page.locator("html")).toHaveAttribute("data-style", STYLES[1].id);
-  await expect(page.getByRole("radio", { name: STYLES[1].name })).toBeFocused();
+  await expect(styleMenu(page)).toBeHidden();
+  await expect(key).toBeFocused();
+  // Tab out of an open menu closes it
+  await page.keyboard.press("Enter");
+  await expect(styleMenu(page)).toBeVisible();
+  await page.keyboard.press("Tab");
+  await expect(styleMenu(page)).toBeHidden();
+});
+
+test("a click outside the menu closes it, choosing nothing", async ({ page }) => {
+  await page.goto("/");
+  await styleKey(page).click();
+  await expect(styleMenu(page)).toBeVisible();
+  await page.mouse.click(8, 400);
+  await expect(styleMenu(page)).toBeHidden();
+  await expect(page.locator("html")).toHaveAttribute("data-style", STYLES[0].id);
+});
+
+test("the menu hangs under its key, inside the screen, on a phone too", async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto("/");
+    await styleKey(page).click();
+    const k = (await styleKey(page).boundingBox())!;
+    const m = (await styleMenu(page).boundingBox())!;
+    expect(m.y, `${width}`).toBeGreaterThan(k.y + k.height - 1);
+    expect(m.x, `${width}`).toBeGreaterThanOrEqual(0);
+    expect(m.x + m.width, `${width}`).toBeLessThanOrEqual(width + 0.5);
+    // every style is on it
+    await expect(styleMenu(page).getByRole("menuitemradio")).toHaveCount(STYLES.length);
+  }
 });
 
 test("an unknown stored style falls back to the default", async ({ page }) => {
@@ -67,10 +123,7 @@ for (const s of STYLES) {
     const seen = kitRequests(page);
     await asStyle(page, s.id);
     await page.goto("/", { waitUntil: "networkidle" });
-    // a tile, a mount and a status marker are on the first screen; the
-    // picker's own tiles sit at the foot
-    await page.getByRole("group", { name: "Art direction" }).scrollIntoViewIfNeeded().catch(() => {});
-    await page.waitForLoadState("networkidle");
+    // a tile, a mount and a status marker are on the first screen
     expect(seen.length).toBeGreaterThan(5);
     for (const r of seen) expect(r.status, r.url).toBeLessThan(400);
     // the screens' glare map is one neutral bitmap every style shares
@@ -88,7 +141,7 @@ for (const s of STYLES) {
 // fade left applied after it ends (the blur then dies as soon as the pane is
 // repainted, as on a change of finish). So, once the entrance has played and
 // the visitor has changed the finish: taking the blur away must change what a
-// card and the picker look like, by more than two shots of the page differ.
+// card and a shelf head look like, by more than two shots of the page differ.
 test("a glass style's panes frost the scene behind them, after a change of finish too", async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("nb-style", "solarpunk");
@@ -105,7 +158,7 @@ test("a glass style's panes frost the scene behind them, after a change of finis
   const rice = await page.locator("html").getAttribute("data-rice");
   await page.keyboard.press("t");
   await expect(page.locator("html")).not.toHaveAttribute("data-rice", rice!);
-  for (const sel of ["a.module", ".look"]) {
+  for (const sel of ["a.module", ".divider"]) {
     const el = page.locator(sel).first();
     await el.scrollIntoViewIfNeeded();
     await page.waitForTimeout(600);

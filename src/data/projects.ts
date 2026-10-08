@@ -192,6 +192,13 @@ export const projects: Project[] = [
 
 export const bySlug = new Map(projects.map((p) => [p.slug, p]));
 
+/** The flagship: the home page opens on it, its name the first screen's headline. */
+export const FLAGSHIP = "tauri-explorer";
+
+/** The row of projects on the home page's first screen, after the flagship:
+ *  a tool and three games, as the art directions' mocks show them. */
+export const FEATURED = ["scrivo", "ashen-cathedral", "zheng-shang-you", "bwai"];
+
 export const shelves: { id: Shelf; label: string; note: string }[] = [
   { id: "tools", label: "Tools", note: "things I use every day" },
   { id: "games", label: "Games & agents", note: "things that play" },

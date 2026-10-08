@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { Key } from "@/components/rack/Key";
 import { openIndex, riceLabel, toggleTheme, THEME_EVENT } from "./CommandIndex";
+import { StyleMenu } from "./StyleMenu";
 
 function subscribe(cb: () => void) {
   window.addEventListener(THEME_EVENT, cb);
@@ -11,7 +12,8 @@ function subscribe(cb: () => void) {
 const readRice = () => document.documentElement.dataset.rice ?? "paper";
 
 /**
- * The masthead's control cluster: index and theme. Mouse affordances for what
+ * The masthead's control cluster: index, theme and art direction (its menu,
+ * StyleMenu). Mouse affordances for what
  * the keyboard already does (`/`, `t`). The theme key prints the current
  * theme's name where there's a keyboard legend beside it, and "theme" on touch
  * screens (where the legend is hidden and the name alone wouldn't say what the
@@ -31,7 +33,13 @@ export function Instruments() {
           {rice ? riceLabel(rice) : "rice"}
         </span>
         <span className="rice-word coarse-only">theme</span>
+        {/* on the narrowest phones, a half-lit disc: the row has no room for the word */}
+        <svg className="rice-icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden>
+          <circle cx="10" cy="10" r="7.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M10 2.75a7.25 7.25 0 0 1 0 14.5Z" fill="currentColor" />
+        </svg>
       </Key>
+      <StyleMenu />
       <span className="sr-only" role="status" data-theme-status />
     </span>
   );

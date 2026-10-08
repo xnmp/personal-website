@@ -234,7 +234,7 @@
    also hung turned end for end; scripts/kits/cyanotype.mjs) hang in turn,
    and the strips alternate two. Counted among a print's own siblings, so a
    row of three starts each row on a different print. */
-:root[data-style="cyanotype"] .faceplate:not(.running-head, .divider, .statusline, .folio, .look):nth-child(4n + 2) {
+:root[data-style="cyanotype"] .faceplate:not(.running-head, .divider, .statusline, .folio):nth-child(4n + 2) {
   --k-plate: var(--k-plate-b);
   --k-plate-hover: var(--k-plate-b-hover);
   --k-plate-pressed: var(--k-plate-b-pressed);
@@ -242,7 +242,7 @@
   --k-plate-flat: var(--k-plate-b-flat);
 }
 
-:root[data-style="cyanotype"] .faceplate:not(.running-head, .divider, .statusline, .folio, .look):nth-child(4n + 3) {
+:root[data-style="cyanotype"] .faceplate:not(.running-head, .divider, .statusline, .folio):nth-child(4n + 3) {
   --k-plate: var(--k-plate-c);
   --k-plate-hover: var(--k-plate-c-hover);
   --k-plate-pressed: var(--k-plate-c-pressed);
@@ -250,7 +250,7 @@
   --k-plate-flat: var(--k-plate-c-flat);
 }
 
-:root[data-style="cyanotype"] .faceplate:not(.running-head, .divider, .statusline, .folio, .look):nth-child(4n) {
+:root[data-style="cyanotype"] .faceplate:not(.running-head, .divider, .statusline, .folio):nth-child(4n) {
   --k-plate: var(--k-plate-d);
   --k-plate-hover: var(--k-plate-d-hover);
   --k-plate-pressed: var(--k-plate-d-pressed);
@@ -258,7 +258,7 @@
   --k-plate-flat: var(--k-plate-d-flat);
 }
 
-:root[data-style="cyanotype"] :is(.running-head, .divider, .statusline, .folio, .look):nth-child(2n) {
+:root[data-style="cyanotype"] :is(.running-head, .divider, .statusline, .folio):nth-child(2n) {
   --k-plate: var(--k-strip-d);
 }
 
@@ -303,13 +303,13 @@
    Their art's sides are cut down to a strip's height, so a strip need only
    be as tall as its two corners inside the box (2 x 56 of the art's px),
    not the full slices the shared rule keeps clear (globals.css). */
-:root[data-style="cyanotype"] :is(.running-head, .divider, .folio, .statusline, .look) {
+:root[data-style="cyanotype"] :is(.running-head, .divider, .folio, .statusline) {
   --plate-k: 0.66;
   min-height: calc(2 * 56px * var(--plate-k) + 8px);
 }
 
 @media (max-width: 720px) {
-  :root[data-style="cyanotype"] :is(.running-head, .divider, .folio, .statusline, .look) {
+  :root[data-style="cyanotype"] :is(.running-head, .divider, .folio, .statusline) {
     --plate-k: 0.52;
   }
 }
