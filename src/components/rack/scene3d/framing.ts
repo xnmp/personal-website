@@ -42,13 +42,29 @@ export const worldPerPx = (depth: number, fov: number, h: number) => (2 * depth 
 export const coverScale = (view: Size, art: Size) => Math.max(view.w / art.w, view.h / art.h);
 
 /**
- * Place a layer at `depth` so that, from the resting camera, it covers the
- * same screen rect as the CSS layer (cover, centred, bottom-anchored), with
- * `over` extra mirrored art around it.
+ * Where a layer sits across the frame. By default a layer covers the frame,
+ * centred. A cut-out that carries a landmark at one side of the art (a
+ * style's left and right layers, kit.css --left-anchor, --right-anchor,
+ * --side-span) may instead be anchored to that side, `anchor` 0 putting the
+ * art's left edge on the frame's and 1 its right edge on the frame's (as CSS
+ * background-position-x in %), and held to `span` frame widths at most, so
+ * that on a narrow screen its landmark keeps to its side, smaller, rather
+ * than being cropped away. Its art's foot stays on the frame's foot.
  */
-export function layoutPlane(view: Size, art: Size, depth: number, fov: number, over: Overscan): PlaneLayout {
+export type Placement = { anchor: number; span: number };
+export const COVER: Placement = { anchor: 0.5, span: Infinity };
+
+/** The scale a layer placed by `place` is drawn at: `cover`, held to its span. */
+export const placedScale = (view: Size, art: Size, place: Placement) => Math.min(coverScale(view, art), (place.span * view.w) / art.w);
+
+/**
+ * Place a layer at `depth` so that, from the resting camera, it covers the
+ * same screen rect as the CSS layer (by default cover, centred,
+ * bottom-anchored; see Placement), with `over` extra mirrored art around it.
+ */
+export function layoutPlane(view: Size, art: Size, depth: number, fov: number, over: Overscan, place: Placement = COVER): PlaneLayout {
   const k = worldPerPx(depth, fov, view.h);
-  const s = coverScale(view, art);
+  const s = placedScale(view, art, place);
   const artW = art.w * s; // the art's on-screen size in px
   const artH = art.h * s;
   const width = artW * (1 + 2 * over.side) * k;
@@ -56,10 +72,13 @@ export function layoutPlane(view: Size, art: Size, depth: number, fov: number, o
   // the art's bottom edge sits on the screen's bottom edge; the plane carries
   // on below it by the bottom overscan, and that edge is the hinge
   const hingeScreenY = view.h + over.bottom * artH;
+  // across, the art's `anchor` point on the frame's: its centre that far
+  // from the frame's centre
+  const hingeScreenX = place.anchor * (view.w - artW) + artW / 2;
   return {
     width,
     height,
-    hinge: { x: 0, y: (view.h / 2 - hingeScreenY) * k, z: -depth },
+    hinge: { x: (hingeScreenX - view.w / 2) * k, y: (view.h / 2 - hingeScreenY) * k, z: -depth },
     repeat: [1 + 2 * over.side, 1 + over.top + over.bottom],
     offset: [-over.side, -over.bottom],
   };

@@ -1,0 +1,3 @@
+A seamless, tileable square texture of warm cream kozo washi paper seen straight-on (average colour about #f3ecdc): fine long pale fibres scattered evenly in every direction, a few slightly darker short fibres, and a soft cloudy formation of one or two percent in tone, lit evenly. No objects, no edges, no frame, no vignette and no gradient across the image: the left edge must continue seamlessly into the right edge and the top into the bottom. Fully opaque, square 1:1 image. No text.
+
+Match the paper colour and fibre of the attached reference image (ref.png) exactly; use it for material only, not composition.

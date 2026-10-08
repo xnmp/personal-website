@@ -30,6 +30,7 @@
  */
 import * as THREE from "three";
 import {
+  COVER,
   cameraAt,
   castShadow,
   hingeAngle,
@@ -39,6 +40,7 @@ import {
   standing,
   sunRect,
   worldPerPx,
+  type Placement,
   type Rig,
   type Rise,
   type Size,
@@ -47,13 +49,13 @@ import {
 
 export const LAYERS = [
   "sky",
-  "mountains",
-  "hills-far",
-  "hills-near",
-  "pines-left-back",
-  "pines-right-back",
-  "pines-left",
-  "pines-right",
+  "far",
+  "mid",
+  "near",
+  "left-back",
+  "right-back",
+  "left",
+  "right",
 ] as const;
 type Layer = (typeof LAYERS)[number];
 
@@ -62,43 +64,43 @@ const FOV = 30;
 /** depth of each layer from the camera: the spread sets the parallax */
 const DEPTH: Record<Layer, number> = {
   sky: 10,
-  mountains: 8.6,
-  "hills-far": 7,
-  "hills-near": 5.6,
+  far: 8.6,
+  mid: 7,
+  near: 5.6,
   // each grove is two rows of trees, the back row an arm's length behind
-  "pines-left-back": 4.95,
-  "pines-right-back": 4.9,
-  "pines-left": 4.3,
-  "pines-right": 4.2,
+  "left-back": 4.95,
+  "right-back": 4.9,
+  left: 4.3,
+  right: 4.2,
 };
 const RIG: Rig = { nearDepth: 4.2, pointerPx: 20, sink: 0.13 };
 /** the entrance: each layer stands up, back to front. The sky is drawn
  *  whole from the first frame: the CSS sky under the canvas has already
  *  faded up, and the canvas cross-fades in over it (kit.css). */
 const RISE: Record<Exclude<Layer, "sky">, Rise> = {
-  mountains: { delay: 80, duration: 1250 },
-  "hills-far": { delay: 230, duration: 1250 },
-  "hills-near": { delay: 380, duration: 1250 },
-  "pines-left-back": { delay: 520, duration: 1300 },
-  "pines-right-back": { delay: 580, duration: 1300 },
-  "pines-left": { delay: 660, duration: 1300 },
-  "pines-right": { delay: 730, duration: 1300 },
+  far: { delay: 80, duration: 1250 },
+  mid: { delay: 230, duration: 1250 },
+  near: { delay: 380, duration: 1250 },
+  "left-back": { delay: 520, duration: 1300 },
+  "right-back": { delay: 580, duration: 1300 },
+  left: { delay: 660, duration: 1300 },
+  right: { delay: 730, duration: 1300 },
 };
 
 /** Who shades whom: each layer is shaded by the layer(s) just in front of it.
  *  `gap` scales the shadow's offset: how far that layer stands off. */
 const CASTERS: Record<Layer, { from: Layer; gap: number }[]> = {
-  sky: [{ from: "mountains", gap: 1.5 }],
-  mountains: [{ from: "hills-far", gap: 1 }],
-  "hills-far": [{ from: "hills-near", gap: 1 }],
-  "hills-near": [
-    { from: "pines-left-back", gap: 1.2 },
-    { from: "pines-right-back", gap: 1.2 },
+  sky: [{ from: "far", gap: 1.5 }],
+  far: [{ from: "mid", gap: 1 }],
+  mid: [{ from: "near", gap: 1 }],
+  near: [
+    { from: "left-back", gap: 1.2 },
+    { from: "right-back", gap: 1.2 },
   ],
-  "pines-left-back": [{ from: "pines-left", gap: 1.1 }],
-  "pines-right-back": [{ from: "pines-right", gap: 1.1 }],
-  "pines-left": [],
-  "pines-right": [],
+  "left-back": [{ from: "left", gap: 1.1 }],
+  "right-back": [{ from: "right", gap: 1.1 }],
+  left: [],
+  right: [],
 };
 /** the shadow's offset per unit of gap, in art UV (x right, y up): down and
  *  to the right of a key light at the upper left, about 12px on the art */
@@ -127,7 +129,8 @@ export type DioramaOptions = {
 };
 
 type Finish = {
-  layers: Record<Layer, string>;
+  /** a style may leave out any layer but the sky (kit.css: `none`) */
+  layers: Record<Layer, string | null>;
   cloud: string | null;
   sun: { url: string; sprite: SunSprite } | null;
   motes: THREE.Color;
@@ -145,18 +148,33 @@ function readFinish(): Finish {
     return m ? m[1] : null;
   };
   const layers = Object.fromEntries(LAYERS.map((l) => [l, url(`--k-${l}`)])) as Record<Layer, string | null>;
-  const missing = LAYERS.filter((l) => !layers[l]);
-  if (missing.length) throw new Error(`scene tokens missing: ${missing.join(", ")}`);
+  if (!layers.sky) throw new Error("scene token missing: --k-sky");
   const sunUrl = url("--k-sun");
   const sprite = { w: num(css, "--sun-sw"), h: num(css, "--sun-sh"), cx: num(css, "--sun-cx"), cy: num(css, "--sun-cy"), r: num(css, "--sun-r") };
   return {
-    layers: layers as Record<Layer, string>,
+    layers,
     cloud: url("--k-drift-cloud"),
     sun: sunUrl && Object.values(sprite).every(Number.isFinite) ? { url: sunUrl, sprite } : null,
     // the colour is used as written (sRGB numbers), like the art
     motes: new THREE.Color().setStyle(css.getPropertyValue("--motes").trim() || "#ffe2b8", THREE.LinearSRGBColorSpace),
     fireflies: css.getPropertyValue("--motes-kind").trim() === "fireflies",
   };
+}
+
+/** Where kit.css places each layer across the frame (framing.ts Placement):
+ *  a style may anchor its left and right cut-outs to their sides
+ *  (--left-anchor, --right-anchor) and hold them to --side-span frame widths.
+ *  Such a layer is then out of register with the layers it would shade or be
+ *  shaded by, so a style anchors only side layers outside the shadow chain
+ *  (no left-back or right-back behind them). */
+function readPlacements(): Partial<Record<Layer, Placement>> {
+  const css = getComputedStyle(document.documentElement);
+  const span = num(css, "--side-span");
+  const side = (name: string): Placement => {
+    const anchor = num(css, name);
+    return { anchor: Number.isFinite(anchor) ? anchor : COVER.anchor, span: Number.isFinite(span) && span > 0 ? span : COVER.span };
+  };
+  return { left: side("--left-anchor"), right: side("--right-anchor") };
 }
 
 /** Where kit.css puts the sun at this width: its disc's centre and diameter. */
@@ -387,8 +405,9 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
   const skyRest = new THREE.Vector3();
   const layout = () => {
     const over = overscanFor(view, ART, RIG, DEPTH.sky);
+    const placed = readPlacements();
     for (const [layer, { hinge, mesh }] of planes) {
-      const p = layoutPlane(view, ART, DEPTH[layer], FOV, over);
+      const p = layoutPlane(view, ART, DEPTH[layer], FOV, over, placed[layer] ?? COVER);
       hinge.position.set(p.hinge.x, p.hinge.y, p.hinge.z);
       mesh.scale.set(p.width, p.height, 1);
       mesh.position.set(0, p.height / 2, 0);
@@ -458,12 +477,12 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
     const token = ++loadToken;
     const texW = small() ? 1280 : 1920;
     const [imgs, cloudImg, sunImg] = await Promise.all([
-      Promise.all(LAYERS.map((l) => bitmap(f.layers[l], texW))),
+      Promise.all(LAYERS.map((l) => (f.layers[l] ? bitmap(f.layers[l], texW) : Promise.resolve(null)))),
       f.cloud ? bitmap(f.cloud, 512) : Promise.resolve(null),
       f.sun ? bitmap(f.sun.url, f.sun.sprite.w) : Promise.resolve(null),
     ]);
     if (disposed || token !== loadToken) {
-      imgs.forEach((i) => i.close());
+      imgs.forEach((i) => i?.close());
       cloudImg?.close();
       sunImg?.close();
       return;
@@ -475,8 +494,10 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
     LAYERS.forEach((l, i) => {
       const p = planes.get(l)!;
       p.tex?.dispose();
-      p.tex = paperTexture(imgs[i], renderer, true);
-      p.mesh.material.uniforms.map.value = p.tex;
+      const img = imgs[i];
+      p.tex = img ? paperTexture(img, renderer, true) : null;
+      p.mesh.material.uniforms.map.value = p.tex ?? blank;
+      p.mesh.visible = !!p.tex;
     });
     cloudTex?.dispose();
     cloudTex = cloudImg ? paperTexture(cloudImg, renderer, false) : null;
@@ -502,7 +523,7 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
   canvas.addEventListener("webglcontextlost", onLost);
 
   const rice = new MutationObserver(() => applyFinish().catch(opts.onFail));
-  rice.observe(document.documentElement, { attributes: true, attributeFilter: ["data-rice"] });
+  rice.observe(document.documentElement, { attributes: true, attributeFilter: ["data-rice", "data-style"] });
 
   // ---- the loop ----
   const ro = new ResizeObserver(resize);

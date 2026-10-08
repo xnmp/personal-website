@@ -59,41 +59,46 @@ export function ShotGallery({ shots, phoneMedia }: { shots: Shot[]; phoneMedia: 
   return (
     <>
       {shots.map((s, i) => (
-        // each shot is a print pinned on its own sheet; the glass takes the
-        // crop's own shape (phone crops are all about 3:2), and on a wide
-        // screen the crop's real size (--shot-w, in CSS px)
-        <figure key={s.scene} className="shot faceplate" style={{ "--shot-ar": `${s.w} / ${s.h}`, "--shot-w": s.w / 2 } as CSSProperties}>
-          <Prop kind="pin" />
-          <a href={files(s).full} className="shot-link" aria-label={`${s.label}: full window`} onClick={open(s)}>
-            <Screen>
-              {/* one capture per rice, in the app theme that wears it; CSS
-                  shows the current rice's, so only it loads (globals.css) */}
-              {Object.entries(APP_THEME).map(([rice, t]) => (
-                <picture key={rice} data-rice-shot={rice}>
-                  <source media={phoneMedia} srcSet={shotFiles(s.scene, t).phone} />
-                  <img
-                    src={shotFiles(s.scene, t).crop}
-                    alt={`${s.label}: ${note(s)}`}
-                    width={s.w}
-                    height={s.h}
-                    loading="lazy"
-                    className="shot-img"
-                  />
-                </picture>
-              ))}
-            </Screen>
-          </a>
-          <figcaption className="plate-caption">
-            <span className="plate-figure-label">
-              Fig. {i + 1} · {s.label}
-            </span>
-            {note(s)}{" "}
-            {/* a second pointer target for the shot's own link; one tab stop is enough */}
-            <a href={files(s).full} onClick={open(s)} tabIndex={-1} className="shot-full text-action">
-              Full window
+        // each shot is a print pinned on its own sheet, in a tier of its own:
+        // a style whose panels in a row are set level shows a cut of its
+        // scene beside it (kit.css .tier-cut); elsewhere the tier is no box
+        <div key={s.scene} className="shot-tier">
+          {/* the glass takes the crop's own shape (phone crops are all about
+              3:2), and on a wide screen the crop's real size (--shot-w, in CSS px) */}
+          <figure className="shot faceplate" style={{ "--shot-ar": `${s.w} / ${s.h}`, "--shot-w": s.w / 2 } as CSSProperties}>
+            <Prop kind="pin" />
+            <a href={files(s).full} className="shot-link" aria-label={`${s.label}: full window`} onClick={open(s)}>
+              <Screen>
+                {/* one capture per rice, in the app theme that wears it; CSS
+                    shows the current rice's, so only it loads (globals.css) */}
+                {Object.entries(APP_THEME).map(([rice, t]) => (
+                  <picture key={rice} data-rice-shot={rice}>
+                    <source media={phoneMedia} srcSet={shotFiles(s.scene, t).phone} />
+                    <img
+                      src={shotFiles(s.scene, t).crop}
+                      alt={`${s.label}: ${note(s)}`}
+                      width={s.w}
+                      height={s.h}
+                      loading="lazy"
+                      className="shot-img"
+                    />
+                  </picture>
+                ))}
+              </Screen>
             </a>
-          </figcaption>
-        </figure>
+            <figcaption className="plate-caption">
+              <span className="plate-figure-label">
+                Fig. {i + 1} · {s.label}
+              </span>
+              {note(s)}{" "}
+              {/* a second pointer target for the shot's own link; one tab stop is enough */}
+              <a href={files(s).full} onClick={open(s)} tabIndex={-1} className="shot-full text-action">
+                Full window
+              </a>
+            </figcaption>
+          </figure>
+          <div className="tier-cut" aria-hidden="true" />
+        </div>
       ))}
       <dialog
         ref={dialog}

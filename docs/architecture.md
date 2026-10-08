@@ -25,9 +25,9 @@ group and `components/rack/`. Those names are historical. Mapping:
 |---|---|
 | Framework | Next.js 16 App Router (read `node_modules/next/dist/docs/`; APIs differ from older Next) |
 | Runtime | React 19 |
-| Styling | Plain CSS: `src/app/kit.css` (raster kit) + `globals.css` (layout/type) + `rice.css` (generated palettes) |
+| Styling | Plain CSS: `src/app/kit.css` (the raster kit, Paper Diorama's tokens) + `src/app/styles/<style>.css` (each other art direction's tokens) + `globals.css` (layout/type) + `rice.css` (generated palettes) |
 | Fonts | `next/font/google`: Newsreader (`--font-display`, headlines), Archivo (`--font-print`, body and UI), JetBrains Mono (`--font-mono`, tape labels, key legends, screens) |
-| Art | Generated bitmaps in `public/kit/paper` and `public/screens`, composited with 9-slice `border-image` |
+| Art | Generated bitmaps in `public/kit/<style>` and `public/screens`, composited with 9-slice `border-image` |
 | Tests | `bun test tests/` (unit), `bunx playwright test` (e2e, `e2e/*.e2e.ts`) |
 | Package manager | `bun` |
 
@@ -56,13 +56,101 @@ linked.
   on the sheets and tiles. There are two finishes: **night** (`:root`, worn by
   every dark rice) and **alpenglow** (`:root[data-rice="paper"]`, the light
   rice). Each finish swaps the scene layers, sheets, tiles, mat and
-  inks. Terracotta (`--signal`) is the one accent.
+  inks. Terracotta (`--signal`) is the one accent. A link's underline is
+  `--signal-rule` (falls back to `--signal`): a rule needs 3:1 on its
+  ground where the signal as text needs 4.5:1, so a style with a deep
+  accent on a dark page rules in the accent itself.
 - **Screen** (`rice.css`, generated from the dotfiles by
   `scripts/theme-from-dotfiles.mjs`): `--paper`, `--ink`, `--cyan`, `--rust`,
   `--amber`, `--olive`. These are only used *inside* `<Screen>`: figures,
   charts, code on screens, the index. Pressing `t` cycles the rice,
   which reflashes every screen and swaps the paper finish when it switches
   to/from `paper`. Screens take rice colours in both finishes.
+
+## Art directions (styles)
+
+The site can be worn in several art directions (issue #1). A style is a
+complete raster kit plus its type, selected by `<html data-style>`; pages and
+components never fork per style.
+
+- **Registry** (`lib/styles.ts`, pure, tested): the shipped styles, in picker
+  order. Only a style listed there can be chosen; the head script in
+  `app/layout.tsx` applies the stored choice (`localStorage["nb-style"]`)
+  before paint and refuses anything unlisted, falling back to `paper`.
+- **Tokens**: Paper Diorama's are the base (`kit.css`: `:root` for night,
+  `:root[data-rice="paper"]` for day). Every other style overrides all of them
+  in `src/app/styles/<style>.css`, under `:root[data-style="<id>"]` (night)
+  and `:root[data-style="<id>"][data-rice="paper"]` (day). `tests/styles.test.ts`
+  fails if a style leaves a token unset (which would show the diorama's art),
+  names another style's bitmap, or names a file that doesn't exist. Geometry
+  (`--slice-*`, `--*-k`) is shared: every kit is built to the same source sizes.
+  A token's `url()` is only fetched where it is used, so a visitor downloads
+  only the active kit (e2e checks this per style).
+- **Scene slots** are generic depth roles, back to front: `sky`, `far`, `mid`,
+  `near`, `left-back`, `right-back`, `left`, `right` (`--k-<slot>`). A style
+  may leave any but the sky as `none`; the CSS layer then paints nothing and
+  the 3D diorama hides that plane. The diorama maps its mountains, hills and
+  groves onto them. A style with no lifted sun sets `--k-sun: none`.
+- **Type**: the three roles stay; a style may re-point `--font-display` at its
+  own face, declared in `app/fonts.ts` with `preload: false`, so its file is
+  only fetched when that style is worn.
+- **Picker** (`StylePicker`, rendered by `Rack` at the foot of every page): a
+  native radio group, each option a tile (the chosen one the signal tile), so
+  arrows, Tab, touch and screen readers work natively. It is not part of the
+  `t` cycle: the rice colours the screens in every style.
+- **Briefs**: the diorama's is `art/BRIEF.md`; each other style's is
+  `art/briefs/<style>.md`, with its prompts in `art/prompts/<style>/` and its
+  kit config in `scripts/kits/<style>.mjs`.
+- **Framed surfaces** (Solarpunk's brass round frosted glass): a sheet that is
+  a frame round a material slices without `fill` (`--plate-slice`) and the
+  page paints the material itself: `--plate-fill` tiled
+  (`--plate-fill-size`/`-repeat`), with `--plate-backdrop` over the scene
+  behind it and `--plate-round` keeping it inside the frame's corners; it
+  falls back to the solid `--plate-under` under
+  `prefers-reduced-transparency`. So the material tiles at any size, where a
+  9-slice would smear it across its stretched edges. `--plate-sheen` is the
+  light the material takes as its sheet lifts (crossfaded in with the hover
+  art; not on focus or press). `--key-inset` is the room a tile's legend
+  needs inside a bezel. The fill and its backdrop start `--plate-fill-in`
+  inside the frame's outer edge (the fill layer is inset by it and its
+  border-image pushed back out by as much), past a brass frame's soft fringe
+  or a mount's clear margin, so the frost never shows outside the frame.
+- **Rails and strips**: a frame whose rails keep one profile along their
+  length is mitred in the build (`mitre`, under Image pipeline), so its
+  keylines run on round the corners without a step. A strip whose rail
+  material has a broad grain (mottled silk) repeats it rather than stretching
+  it (`--strip-repeat: round`; `stretch` by default).
+- **Picker columns**: the picker lays its options in two rows
+  (`--look-cols`, set from the registry's length in `StylePicker`), two
+  columns on a phone, the odd last option centred on its own row at a
+  column's width.
+- **State art only**: kit.css changes state by swapping art, in every
+  style. Nothing filters a whole sheet: a brightness filter clips white
+  paper and mounts, and changes the colours of the screen a sheet carries.
+- **Per-style layout tokens**: `--key-lift` raises a tile's legend off its
+  centre by the card's thickness where that shows along its foot (0 for a
+  flat slip or a bezel); `--hero-align` and `--hero-stagger` set how the
+  opening pair hang (the diorama pins one lower; a scroll gallery hangs both
+  from one line).
+- **Tier cut**: a style that sets the opening pair level (`--hero-align:
+  stretch`) can fill the shorter column's foot with a panel of its own
+  scene (`.tier-cut`, kit.css: `--tier-cut: block`, the crop by
+  `--tier-cut-at` and `--tier-cut-size`), framed by the flat plate. The home
+  hero and the Tauri Explorer launch hero carry the slot (`aria-hidden`);
+  it is hidden where the pair stack. The cut takes the column's spare height
+  (its flex share outweighs the copy's a thousandfold); without one, the
+  copy panel takes it and ends level with its neighbour. A style turns it
+  off on a hero whose columns come out nearly equal (atlas's home page),
+  where the cut would force the taller panel taller. A cut is a crop of the
+  flat scene unless the style gives it a close-up of its own
+  (`--tier-cut-art`, built by the kit's `cuts`): a closer framing cropped
+  from the scene would be the scene enlarged, and soft. A page's
+  screenshots may stand in tiers too (`.shot-tier`, no box unless a style
+  sets `--shot-cut`), each print's sheet with a cut level beside it.
+- **Fill phase**: `--plate-fill-at` (default `center`) places a tiled fill
+  inside a sheet. A style whose material is one large print (cyanotype's
+  emulsion) sets it per card in a row, so neighbours are never cut from the
+  same place in it.
 
 ## Components
 
@@ -191,12 +279,20 @@ lives in `public/kit/paper/`: `sheet-*`, `tile-*`, `mat-*`, `pin-*`,
 (the layers composited) is only for the social cards (`--k-scene-flat`).
 
 - **Scene**: `<Scene>` renders `.scene` (fixed, `z-index: -2`) holding eight
-  `.scene-layer` divs, back to front: sky, mountains, hills-far, hills-near,
-  pines-left-back, pines-right-back, pines-left, pines-right. Each grove is
+  `.scene-layer` divs, one per slot, back to front: `sky`, `far`, `mid`,
+  `near`, `left-back`, `right-back`, `left`, `right` (in the diorama: sky,
+  mountains, far hills, near hills, and each grove's back and front rows). Each grove is
   two rows of trees (each tree itself cut as stacked tiers of card), the back
   row a separate layer so the rows part as the scene moves. Each layer is a
   full-frame bitmap with identical framing,
-  `center bottom / cover`, so they register. The art has a calm centre and its
+  `center bottom / cover`, so they register. A style may anchor its `left`
+  and `right` cut-outs to their sides instead (`--left-anchor`,
+  `--right-anchor`, 0 to 1 as background-position-x) and hold them to
+  `--side-span` frame widths (drawn at `--side-size`), so on a narrow
+  screen each landmark keeps to its side, smaller, rather than being cropped
+  away; the 3D scene reads the same tokens (`framing.ts` `Placement`). Such a
+  layer is out of register with the rest, so only side layers outside the
+  shadow chain (no `left-back`/`right-back` behind them) are anchored. The art has a calm centre and its
   incident at the edges and foot. One cloud (`.scene::after`) drifts across in
   150s, in the alpenglow finish only. `scripts/register-layer.mjs` corrects a
   generated layer's vertical drift or scale and can mirror-fill below its
@@ -242,6 +338,10 @@ lives in `public/kit/paper/`: `sheet-*`, `tile-*`, `mat-*`, `pin-*`,
   inset shadow) and `.screen-glass` lays the authored `glass-glare` map over
   it with `mix-blend-mode: soft-light`, so a light screen gets a sheen
   without washing out (fainter at night, where it would read as a glow).
+  `.screen-face` is isolated, so that blend composites inside the face: a
+  blend that reaches the sheet makes the sheet a render surface of its own,
+  and a framed sheet's backdrop blur then has nothing behind it to frost
+  (`e2e/styles.e2e.ts` checks the frost).
 - **Pins** (`.led`): a 14px box with a pin bitmap as `::before`, hung a little
   outside it. Brass when off; `pin-{green,amber,signal}` when on. The head art
   carries its own shadow, so there is no glow layer or blend mode.
@@ -274,7 +374,9 @@ lives in `public/kit/paper/`: `sheet-*`, `tile-*`, `mat-*`, `pin-*`,
   (masthead, section heads, folio) have none.
 - **Tape** (`.kicker`, `.tape`, inline `<code>`): `tape-sage` (and
   `tape-sage-night`) as a 3-slice `border-image` so the torn ends never
-  stretch; inline code is typed on a scrap of it at a finer scale. Code on a
+  stretch; inline code is typed on a scrap of it at a finer scale (`--k-chip`,
+  in `--chip-ink`: a style may cut its chips from another material, an
+  etched slip of glass or a slip of washi, and ink them to suit). Code on a
   screen keeps the screen's own colours instead.
 - **Seams**: at fractional device pixel ratios (125%/150% Windows scaling,
   2.75x phones) browsers snap the nine slices separately and leave hairline
@@ -313,6 +415,10 @@ paint and the fallback, and the two show the same picture at rest.
   corner below 1400px, smaller and higher on a short screen; always clear
   of the masthead), and `--sun-cx`/`--sun-cy`/`--sun-r` say where the
   disc lies in the sprite. The 3D scene reads the same tokens (`sunRect`).
+  Where a lift can't read the disc cleanly (a moon on its own glow, a sun
+  close to the sky's tone; Sumi-e Ink), the sky is generated clear of it
+  and the disc on its own, and the build sizes that sprite and reports its
+  `--sun-*` (`scene.sun.sky` / `scene.sun.sprites` in the kit config).
 - **Geometry** (`scene3d/framing.ts`, pure, unit-tested): each layer is a
   plane at its own depth, sized so that from the resting camera it covers
   exactly the CSS layer's rect (`layoutPlane`; the sun is a plane of its
@@ -347,15 +453,19 @@ motion the scene is still and finished, and the cloud rests.
 - **Pop-up entrance** (`layer-rise`, 1150ms, slight overshoot): on first load
   the sky fades (`layer-fade`) and each other layer rises from below the frame
   with a staggered `--rise-delay`, back to front.
-- **Sheets down** (`sheet-down`, 760ms): each child of `.rack-inner` settles
-  down 24px onto the scene, staggered by `--nth`, after `--sheets-after`
-  (520ms, so the scene lands first; 700ms behind the 3D diorama, from its first frame).
+- **Sheets down** (`sheet-fade` 230ms, `sheet-down` 760ms): each child of
+  `.rack-inner` fades in and settles down 24px onto the scene, staggered by
+  `--nth`, after `--sheets-after` (520ms, so the scene lands first; 700ms
+  behind the 3D diorama, from its first frame). Both fill `backwards` only:
+  an opacity animation left applied after it ends keeps the sheet a backdrop
+  root, and a framed sheet's frost dies the next time it repaints (on a
+  change of finish, say). The e2e checks the frost after one.
 - **Settled**: when the last layer's `layer-rise` ends, `Scene` sets
   `<html data-scene="settled">` and `--sheets-after` drops to 0, so sheets on
   later client navigations don't wait for a scene that is already up.
 - **Scroll parallax** (`layer-sink`): where `animation-timeline: scroll()` is
   supported, every layer but the sky also runs `layer-sink` on `scroll(root)`,
-  translating `transform` by its `--sink` (2vh for mountains up to 13vh for
+  translating `transform` by its `--sink` (2vh for the far slot up to 13vh for
   the pines), so near layers sink faster than far ones. It uses `transform`,
   so it composes with the rise on `translate`. Unsupported browsers just get
   the entrance.
@@ -375,15 +485,20 @@ motion the scene is still and finished, and the cloud rests.
   rice picks their colour.
 
 Slice insets are measured on the built bitmaps, whose sizes are fixed by
-`scripts/build-paper-kit.mjs`. If you regenerate an asset, rebuild the kit and
+`scripts/build-kit.mjs`. If you regenerate an asset, rebuild the kit and
 re-measure before changing `--slice-*`, then run `bun run kit:check` (it checks
-`public/kit/paper` by default): every state must share the normal state's
+every kit in `public/kit` by default): every state must share the normal state's
 canvas and silhouette, and the light-only states (hover, focus) must register
-with it at zero offset in all four 9-slice corners. A mounted state (a
-sheet's focus) may grow the silhouette, but must contain the normal's and
-leave the paper's own pixels unchanged. Each asset carries its
+with it at zero offset in all four 9-slice corners. A sheet's focus may add
+to the sheet (the diorama's mount behind it, the brass frame's enamel strip
+laid in along its pane), growing the silhouette, but must contain the
+normal's and leave its opaque pixels unchanged (to within lossy-encoding
+jitter). Each asset carries its
 shadow in its alpha and a state may move the shadow, so the silhouette is the
-alpha above 200 (the paper is opaque; shadow never is).
+alpha above 200 (the paper is opaque; shadow never is), and a pixel counts as
+moved only when it crosses clearly (below 180 to above 220, or back): a soft
+edge row whose coverage sits at 200 flips on a hair's change of the shadow
+under it, which is antialiasing, not the edge moving. A 2px shift fails.
 
 ## Image pipeline
 
@@ -393,21 +508,143 @@ in `art/raw/diorama/<name>/<name>.png`, which is gitignored and can be
 regenerated. The kit is generated with Codex headless image generation, which
 returns native alpha, so there is no chroma-key step.
 
-1. Generate each asset from its prompt in `art/prompts/diorama/<name>.txt`
-   into `art/raw/diorama/<name>/<name>.png`.
-2. `node scripts/build-paper-kit.mjs` builds `public/kit/paper` from the raws.
+1. Generate each asset from its prompt in `art/prompts/<style>/<name>.txt`
+   into `art/raw/<style>/<name>/<name>.png` with `scripts/gen-asset.sh
+   art/raw/<style>/<name> [ref.png]` (copy the prompt in as `prompt.txt`
+   first; the diorama's raws live in `art/raw/diorama`). It runs one Codex
+   session with its built-in image tool; several can run side by side.
+2. `node scripts/build-kit.mjs <style>` builds `public/kit/<style>` from the raws
+   (the style's config is `scripts/kits/<style>.mjs`; `paper` is the diorama).
    Each asset is trimmed to its paper, resized to a fixed source size (so the
    slice insets in `kit.css` stay valid), and given its shadow. Per-asset
-   grading (gain per finish) lives in the script. It also flattens the scene
-   layers into `scene-{alpenglow,night}.webp`. Assets whose raw is missing are
-   skipped.
+   grading (gain per finish) lives in the config (a scene layer's `gain` by
+   `layer`, or by `layer-finish` for one finish). A raw buffer read back into
+   sharp is described by its geometry only: sharp's own output info says
+   `premultiplied: true` after a resize, and passed back in, it would divide
+   every soft edge by its alpha again (a pale halo round every cut-out). It also flattens the scene
+   layers into `scene-<finish>.webp`. Assets whose raw is missing are
+   skipped. A finish may be graded from another's art rather than generated
+   on its own: a sheet, tile, mat or tape names the other finish's raw as
+   its `src` with a `gain` (Cyanotype's night is its day under a lamp), and
+   the scene's `source` ({ night: "day" }) does the same for every layer,
+   graded by the scene's `gain`. A scene layer generated with its ground
+   behind it (a photogram's silhouettes on their blue) is keyed (`key`): its
+   alpha is how far each pixel stands from the ground's colour toward the
+   silhouettes'. A tile may take the light at rest (`lit`: hover's catch
+   flags, applied to its base, so every state keeps it) and cast its own
+   shadows (`shadow`: deeper on a dark finish). A fill may be `soften`ed
+   before its grain is taken. `alphaFloor` (per sheet or strip) clears the soft shadow a
+   generator paints under an opaque object (alpha below the floor goes to 0)
+   before the trim, so the trim and the baked shadow measure the object, not
+   its halo. A mat's window is measured as it is built and reported as the
+   `--mat-t/r/b/l` to set.
 3. `scripts/relight-edge.mjs <in> <out> [--band=] [--shade=] [--lift=]`
    relights a base's outer torn rim for the upper-left key light (a generated
    rim is lit evenly, which reads as an outline). The build runs it on sheets
    and mats before their states are derived.
    States are derived from the normal art, so they register by construction:
    `scripts/derive-state.mjs <normal> <out> hover|focus|pressed [--ring=a:b]
-   [--ring-color=hex] [--catch=] [--catch-width=px] [--sheen=] [--halo=a:b] [--groove=depth] [--groove-tint=hex]`.
+   [--ring-color=hex] [--ring-radius=px] [--catch=] [--catch-width=px] [--sheen=] [--halo=a:b[,c:d]]
+   [--crown=] [--groove=depth] [--groove-tint=hex] [--dim=] [--light=hex]`
+   (`--dim`: what a pressed face keeps of its brightness; `--light`: the key
+   light's colour, warm so brass stays gold; `--halo`: dark keylines beside
+   the focus line, one either side where it must hold against a bezel and a
+   face; `--crown`: the line laid in as enamel, proud along its middle).
+   A tile's long edges are straightened across the span the 9-slice
+   stretches, by a smoothed, fractional shift (a whole-pixel shift that
+   changes from column to column breaks a bezel's highlights into seams).
+   A frame whose rails keep one profile (`mitre` in a sheet's or strip's
+   config) first goes through `scripts/mitre.mjs`: each corner is rebuilt
+   from its two rails, mirrored at the slice line and cut from the frame's
+   outer corner to its inner one (45 degrees where the rails are as deep),
+   with a fine joint line. `tile` first makes the rails seamless along their
+   length (for `--strip-repeat: round`); `grain` enlarges the rails' texture
+   by its factor, keeping each row's mean (a strip prints at about half a
+   sheet's scale, which turns a broad mottle into stripes).
+   A framed sheet (`frame` in its config) goes through
+   `scripts/framed-pane.mjs`: the frame is a band per side plus, where it is
+   riveted, a disc per corner rivet (fitted to the rivet's rim); the pane is cleared for the
+   page's fill and given the frame's shade and a glint along its lit edges;
+   focus lays an enamel strip along the pane's edge under the rivets (or,
+   `side: "frame"`, re-dyes the frame's inner edge; a band of the frame's
+   own material, a scroll's silk laid in on its washi, takes the frame's
+   texture mirrored across the edge, `weave`); a frame with no line to end
+   on (a cyanotype's brushed edge) hands over to the page's material over
+   `feather` px instead of ending square;
+   the light pool and hover sheen (`-light`, `-sheen`) fade in from every
+   edge of their square, so no edge of the layer shows on the pane. All of
+   it stays straight between the corners and inside the 56px a sheet's
+   corners keep unstretched. Its states are finished losslessly and encoded
+   once. A tiled material (`fills`) is made seamless from a generated
+   square (`mono` keeps only the grain's lightness, on the mean's hue: a
+   stone's pits, not a painted grain's stains; `despeckle` clears specks
+   lighter than their surround by more than its threshold, a print's
+   flecks of bare paper; `veil: <hex>` writes the grain alone, as that
+   colour over a clear tile, for the page to lay over a flat tint it
+   paints itself, ligne's fittings). A sheet's base can be cut
+   to a fixed `height` where `prescale` needs whole px. `grain` (on a sheet,
+   a tile, a mat or a tape: `{ fill, size, k, gain }`) lays a fill's grain
+   into the asset's art at the size the page prints the fill over the scale
+   the asset prints at, so what is cut from or printed on the page's
+   material carries its texture (a stone slab's chamfer, an album's flat
+   tints); fills are built before the sheets for it. A `cuts` entry is an
+   opaque close-up panel (`{ name, src, width }`), scaled and encoded once,
+   for the page to crop into a tier cut. A frame whose band must not
+   stretch its texture along a side is drawn as its ink alone (an `ink`
+   band of colour `null` is left clear) and its band painted by the page,
+   a flat colour under a `veil` fill (ligne's screen frames and captions).
+   Rails that must never read as a printed trim are rebuilt in
+   `scripts/mitre.mjs`: `lengthenRails` quilts a rail longer from pieces of
+   itself along a minimum-error cut, never reusing a piece nearby (`pool`
+   draws from all four rails; `quiet: {share, depth}` cuts only from the
+   calmest share of the pieces, each scored by its worst 12px chip within
+   `depth` of the outer edge); `tileRails` then makes each rail seamless
+   along its length for `round`, its `blend` crossfading the rail's broad
+   tone through the overlap while keeping the cut's grain (each side works
+   on the art as the sides before it left it, right, bottom, top, left, so
+   no side puts back a corner another has handed over; a rail it will
+   repeat is begun by `lengthenRails` `splice` with the piece that best
+   follows the copy of its far corner, not with its drawn first piece);
+   `smoothRails` (before a `mitre`, which cuts the corners from the rails as
+   finished)
+   evens a rail's broad tone across it, or with `along` medians it along
+   its length (a row of stamped stars goes; the mouldings running the
+   rail's length stay). `window` (`clearWindow` in framed-pane.mjs) clears
+   a frame's whole window from its centre out to the metal (judged by
+   saturation, the finish's gain divided out), for frames whose window is
+   rounded inside a square cut; its frame is then the art's own metal
+   (`frameMask` `cleared`: a rounded corner or an arc reaching past the
+   frame's line stays in every state), and the focus band (`fillet`) is
+   laid in up to that metal, its depth measured from the metal's real edge
+   (round a corner, round an arc), the metal over it. `alignPane` (opt-in per kit)
+   puts the pane's sides on the lossy encoder's 8px blocks; a frame whose
+   inner edge is a hard line keeps it off (the shift leaves a sliver).
+   A surface drawn rather than generated (Ligne Claire) is ruled by
+   `scripts/ink.mjs`: nested rounded rectangles (`rings`, one per band of
+   ink or colour, then the fill), polygons, and a caption's tail hung from
+   its foot (`tail`), each band's weight divided by the scale the page
+   prints it at. A band drawn by `hand` gives a little of its width along
+   its sides (slow waves, none at the corners), every band inside moving
+   with it; a band marked `keep` (a focus band) is reported to the glaze,
+   and the frame of a drawn sheet is exactly what is not its field (`drawInk`
+   returns the field's coverage; `frameMask` `field`), so the page's fill
+   runs right up to a line that gives. An ellipse contour draws a lamp's
+   flat highlight (`pins.ink.glint`), toward the upper left, or the upper
+   right (`pins.ink.light: "right"`) for a style lit from there. A ring's
+   band can restart the rounding (`round`: an ink line round a rounded
+   window cut in a square band). A generated head can be ringed (`pins.rim`,
+   by name: a white dot across a print's white margin and its blue). A sheet the page prints well below
+   its art's size is stored at that size (`prescale`; the style sets
+   `--plate-slice` to match), so the browser never resamples its fine lines
+   (a rail scaled in one axis and a corner in both filter differently: a
+   seam at each slice). `pins.night` (a gain)
+   grades the status markers for the night finish (`pin-<name>-night`).
+   The scene has two more steps: `paper` (blur a ground layer, premultiplied,
+   and lay the fill tile's grain in, so the scene's paper is the sheets'),
+   and `photogram` (an object generated modelled printed as a silhouette:
+   its cover from its lightness, its colour flat). A finish's `warm` is
+   multiplied into the layer's gain, never clamped between, and a scene
+   `gain` is one number or one per channel.
    A baked shadow's offset plus twice its blur must fit inside the asset's
    pad, or the shadow is clipped to a hard line. Generated hover art
    drifted (the model reframes the object), which made corners jump on hover.

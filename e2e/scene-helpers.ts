@@ -30,5 +30,5 @@ export async function sceneStats(page: Page) {
 
 /** The CSS layers' own visibility (they are hidden while the canvas draws them). */
 export const cssLayersShown = (page: Page) =>
-  page.locator('.scene-layer[data-layer="pines-left"]').evaluate((el) => getComputedStyle(el).visibility === "visible");
+  page.locator('.scene-layer[data-layer="left"]').evaluate((el) => getComputedStyle(el).visibility === "visible");
 

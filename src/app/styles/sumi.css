@@ -1,0 +1,181 @@
+/* ==========================================================================
+   SUMI-E INK (art/briefs/sumi.md): hanging scrolls of kozo washi in pale silk
+   mounts, washi cards ringed in dry-brush ink, lacquer beads, before a sumi-e
+   landscape. The kit is built by `node scripts/build-kit.mjs sumi` to the
+   same source geometry as the Paper Diorama, so only the art, the inks and
+   the mounts' slices change. Night (the dark rices) first, then day (the
+   light rice).
+   ========================================================================== */
+
+:root[data-style="sumi"] {
+  --font-display: var(--font-cormorant);
+
+  --signal: #d9532e; /* vermilion: the primary card, the active bead, focus */
+  --signal-ink: #f08a68;
+  --print: #ece4d2; /* cream ink on ink-dyed washi */
+  --print-soft: #c4bdae;
+  --print-faint: #a8a297;
+  --engrave-lo: rgba(236, 228, 210, 0.18);
+  --engrave-hi: transparent;
+  --scene-ground: #141a26;
+  --k-scene-flat: url(/kit/sumi/scene-night.webp);
+  --k-sky: url(/kit/sumi/scene/night/sky.webp);
+  --k-sun: url(/kit/sumi/scene/night/sun.webp); /* the moon (see .scene-sun) */
+  --sun-sw: 192;
+  --sun-sh: 192;
+  --sun-cx: 96;
+  --sun-cy: 96;
+  --sun-r: 68;
+  --k-far: url(/kit/sumi/scene/night/far.webp);
+  --k-mid: url(/kit/sumi/scene/night/mid.webp);
+  --k-near: url(/kit/sumi/scene/night/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/sumi/scene/night/left.webp);
+  --k-right: url(/kit/sumi/scene/night/right.webp);
+  --k-plate: url(/kit/sumi/sheet-night-normal.webp);
+  --k-plate-hover: url(/kit/sumi/sheet-night-hover.webp);
+  --k-plate-pressed: url(/kit/sumi/sheet-night-pressed.webp);
+  --k-plate-focus: url(/kit/sumi/sheet-night-focus.webp);
+  --k-plate-flat: url(/kit/sumi/sheet-night-flat.webp);
+  /* the sheets are scroll mounts with their washi cleared
+     (scripts/framed-pane.mjs): the washi is painted here, tiled, so its
+     fibres keep their scale at any size */
+  --plate-slice: var(--slice-plate);
+  --plate-fill: url(/kit/sumi/washi-night.webp);
+  --plate-fill-size: 512px;
+  --plate-fill-repeat: repeat;
+  /* the rollers' knobs stand out past the silk: the washi starts under the
+     silk (30 of the art's px in from its edge), never in the clear margin
+     beside it; the strips' silk runs to their edge */
+  --plate-fill-in: 30px;
+  /* pressed: the face dims with its frame (the sheets' pressedFlags --dim) */
+  --plate-press-dim: 0.78;
+  --strip-fill-in: 6px;
+  /* the silk's mottle would smear stretched the length of a strip: its rails
+     are cut seamless and repeated */
+  --strip-repeat: round;
+  --plate-backdrop: none;
+  --plate-round: 0px;
+  --plate-light: url(/kit/sumi/sheet-night-light.webp);
+  --plate-light-in: 0px; /* a framed pane: the pool's edge lies under the frame (kit.css) */
+  --plate-sheen: url(/kit/sumi/sheet-night-sheen.webp);
+  /* a scroll is mostly empty paper: content stands well clear of the mount */
+  --plate-inset: 12px;
+  --k-strip: url(/kit/sumi/sheet-strip-night-normal.webp); /* the mount without rods */
+  /* nothing pins a scroll: it hangs */
+  --k-pin-hold: none;
+  --k-pin-hold-signal: none;
+  /* scrolls hang in a level row */
+  --shelf-stagger: 0px;
+  --shelf-align: stretch;
+  /* the opening pair hangs from one line, each scroll its own length, as
+     scrolls of different paintings do */
+  --hero-stagger: 0px;
+  --hero-align: start;
+  --silk-shadow: none;
+  --k-bezel: url(/kit/sumi/mat-night.webp);
+  --mat-t: 112;
+  --mat-r: 112;
+  --mat-b: 108;
+  --mat-l: 118;
+  --k-key: url(/kit/sumi/tile-night-normal.webp);
+  --k-key-hover: url(/kit/sumi/tile-night-hover.webp);
+  --k-key-pressed: url(/kit/sumi/tile-night-pressed.webp);
+  --k-key-focus: url(/kit/sumi/tile-night-focus.webp);
+  --key-inset: 0px;
+  --key-lift: 0px; /* a card's edge is a hair: the label centres in the box */
+  --k-tape: url(/kit/sumi/tape-night.webp); /* a strip of pale silk */
+  --tape-ink: #1d1d1f;
+  --k-chip: url(/kit/sumi/chip-night.webp); /* inline code: a slip of indigo washi */
+  --chip-ink: #ece4d2;
+  --chip-pad: 0.35em; /* a straight-cut slip */
+  --k-drift-cloud: none;
+  --motes: #dfe6f0;
+  --motes-kind: dust;
+  --plate-under: #1e2024;
+  --bezel-under: #22304a;
+  --key-under: #2a3854;
+  --key-ink: #ece4d2;
+  --key-ink-soft: #c4bdae;
+  --k-key-signal: url(/kit/sumi/tile-signal-night-normal.webp);
+  --k-key-signal-hover: url(/kit/sumi/tile-signal-night-hover.webp);
+  --k-key-signal-pressed: url(/kit/sumi/tile-signal-night-pressed.webp);
+  --k-key-signal-focus: url(/kit/sumi/tile-signal-night-focus.webp);
+  --key-signal-ink: #fbf3e4; /* cream on vermilion */
+  --key-signal-under: #a82c16;
+  --k-pin-brass: url(/kit/sumi/pin-brass.webp); /* ink lacquer */
+  --k-pin-green: url(/kit/sumi/pin-green.webp); /* jade */
+  --k-pin-amber: url(/kit/sumi/pin-amber.webp); /* ochre */
+  --k-pin-signal: url(/kit/sumi/pin-signal.webp); /* vermilion */
+  --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+}
+
+/* day: soft daylight on cream washi, pale celadon silk */
+:root[data-style="sumi"][data-rice="paper"] {
+  --k-tape: url(/kit/sumi/tape-day.webp); /* a strip of indigo-dyed washi */
+  --k-chip: url(/kit/sumi/chip-day.webp); /* a slip of pale washi */
+  --chip-ink: #1d1d1f;
+  --tape-ink: #f3ecdc;
+  --signal: #c8371e;
+  --signal-ink: #a82c16;
+  --print: #1d1d1f;
+  --print-soft: #3b3b3e;
+  --print-faint: #55555a;
+  --engrave-lo: rgba(29, 29, 31, 0.18);
+  --scene-ground: #e9e0cc;
+  --k-scene-flat: url(/kit/sumi/scene-day.webp);
+  --k-sky: url(/kit/sumi/scene/day/sky.webp);
+  --k-sun: url(/kit/sumi/scene/day/sun.webp);
+  --sun-cx: 96;
+  --sun-cy: 95;
+  --sun-r: 79;
+  --k-far: url(/kit/sumi/scene/day/far.webp);
+  --k-mid: url(/kit/sumi/scene/day/mid.webp);
+  --k-near: url(/kit/sumi/scene/day/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/sumi/scene/day/left.webp);
+  --k-right: url(/kit/sumi/scene/day/right.webp);
+  --k-plate: url(/kit/sumi/sheet-day-normal.webp);
+  --k-plate-hover: url(/kit/sumi/sheet-day-hover.webp);
+  --k-plate-pressed: url(/kit/sumi/sheet-day-pressed.webp);
+  --k-plate-focus: url(/kit/sumi/sheet-day-focus.webp);
+  --k-plate-flat: url(/kit/sumi/sheet-day-flat.webp);
+  --plate-fill: url(/kit/sumi/washi-day.webp);
+  --plate-light: url(/kit/sumi/sheet-day-light.webp);
+  --plate-sheen: url(/kit/sumi/sheet-day-sheen.webp);
+  --k-strip: url(/kit/sumi/sheet-strip-day-normal.webp);
+  --k-bezel: url(/kit/sumi/mat-day.webp);
+  --mat-t: 108;
+  --mat-r: 110;
+  --mat-b: 104;
+  --mat-l: 110;
+  --k-key: url(/kit/sumi/tile-day-normal.webp);
+  --k-key-hover: url(/kit/sumi/tile-day-hover.webp);
+  --k-key-pressed: url(/kit/sumi/tile-day-pressed.webp);
+  --k-key-focus: url(/kit/sumi/tile-day-focus.webp);
+  --k-key-signal: url(/kit/sumi/tile-signal-normal.webp);
+  --k-key-signal-hover: url(/kit/sumi/tile-signal-hover.webp);
+  --k-key-signal-pressed: url(/kit/sumi/tile-signal-pressed.webp);
+  --k-key-signal-focus: url(/kit/sumi/tile-signal-focus.webp);
+  --k-drift-cloud: none;
+  --motes: #fff6e2;
+  --motes-kind: dust;
+  --plate-under: #f3ecdc;
+  --bezel-under: #2f3e5c;
+  --key-under: #e9e0cc;
+  --key-ink: #1d1d1f;
+  --key-ink-soft: #3b3b3e;
+}
+
+/* The sun and moon hang behind the pine's branches, in the margin of a wide
+   screen. Narrower, the pine is cropped away and the page would pin the disc
+   in the corner over the masthead, alone, where it reads as a sticker: the
+   sky goes without it. */
+@media (max-width: 1399px) {
+  :root[data-style="sumi"],
+  :root[data-style="sumi"][data-rice="paper"] {
+    --k-sun: none;
+  }
+}

@@ -24,7 +24,7 @@ described in `art/BRIEF.md`; how the kit is composited is in
   (`grove-*` then row extraction and night recolour).
 - **Link-preview cards** re-rendered in alpenglow (`bun run og`).
 - **Kit tooling:**
-  - `scripts/build-paper-kit.mjs` builds `public/kit/paper/` from
+  - `scripts/build-kit.mjs paper` builds `public/kit/paper/` from
     `art/raw/diorama/` (gitignored).
   - `scripts/check-kit.mjs` (`bun run kit:check`) checks state registration
     of the paper kit.
@@ -352,6 +352,24 @@ Older:
 - **Flat CSS pieces:** project tags and some inline code chips are plain CSS
   rather than kit art.
 
+## Art directions (issue #1)
+
+Each style is a complete raster kit (`scripts/kits/<style>.mjs`, built into
+`public/kit/<style>/`), its tokens in `src/app/styles/<style>.css`, its brief
+in `art/briefs/<style>.md` and its prompts in `art/prompts/<style>/`. The raw
+generations (`art/raw/<style>/`) are gitignored. Each goes through the same
+gate as the diorama: a fresh independent reviewer per round, until no HIGH or
+MEDIUM finding remains.
+
+| style | state |
+|---|---|
+| Solarpunk | **accepted** (rev15). |
+| Sumi-e Ink | **accepted** (rev7). LOWs: flat night washi at 1x, the strip silk repeats every 128px, identical flecks on the buttons, plain inline-code chip, home kicker off tape, jade bead faint on celadon, muddy night accent, small knobs, moon hidden by the pine. |
+| Cyanotype | **accepted** (rev15). LOWs: the strips share one tiled edge (masthead, shelf heads, footer; repeat every 553px), a faint straight seam where the brushed edge meets the emulsion, a flat taupe night photogram, white-on-white merges where a silhouette meets a print's margin by day, the pressed label a uniform darkening, a lopsided tablet hero, the phone's night footer credit at 4.6:1. |
+| Natural Garden | **accepted** (rev15). LOWs: the night copper reads as wood, the night focus band too bright and even, a faint tile hover, the complete bead lost on cream stone by day, the night stone near concrete, heavy slate chips, the tablets' rims softer than chiselled, the first row's tablets ending at different heights, uneven text insets between tablets, an unlabelled bead on the phone's flagship. |
+| Ligne Claire | **accepted** (rev15). LOWs: a stray straight edge of the left layer's sand ledge slides through the gutters, the night clouds' saturated blue and un-inked tails behind the rocket, the shelf caption without the panels' white margin, the card's number tag 4.5px high of its lamp, Fig. 1 printed twice on a project page, a subtle caption hover, the scene's ink softer than the UI's line, a loose tablet hero, a lamp inside the launch hero's tag. |
+| Celestial Atlas | **accepted** (rev5). The hero's copy plate now ends level with its neighbour (`.hero-col > .hero-copy` takes the column's spare height). LOWs: the focus keyline jogs 1px near the corner arcs, a generic glow on the night hover sheen, a gloss streak on the night neutral buttons, a dark band of the desk in the phone gutters, strip-rail end slots read as smudges, the amber jewel faint on gilt, the footer keycap baseline 2px low, two kicker treatments. |
+
 ## Housekeeping
 
 - [x] **Commit** the redesign on `redesign` (nothing committed since
@@ -380,7 +398,7 @@ Older:
 ## Working notes
 
 - **Rebuild the kit** after any change to the raw art or the build script with
-  `node scripts/build-paper-kit.mjs`, then `bun run kit:check`. The raw
+  `node scripts/build-kit.mjs <style>`, then `bun run kit:check`. The raw
   generations in `art/raw/diorama/` are gitignored, so only this machine can
   rebuild the kit.
 - **Stale CSS:** Turbopack can serve stale CSS after edits. If a change doesn't

@@ -1,0 +1,5 @@
+A single small slip of dark grey slate (about #4a4f52) lying flat, seen straight-on, about 7 times as wide as it is tall, with clean straight-cut edges and square ends, a faint natural cleft texture, evenly lit. Plain and uniform along its length so it can be stretched. No text, no chalk marks, no shadow. Centred, filling about 84% of the frame width. Wide 16:9 image.
+
+Style: a cottage garden painted as a fine botanical watercolour with delicate ink line, seen straight-on in warm late-morning sunlight from the upper left. Real materials: pale honey limestone with a fine sandy grain, glazed ceramic, bronze, weathered copper, slate, ivy. Palette: limestone #e8dcc0, moss #4f6b45, sage #8fa77f, terracotta #c46a43, rose #d98c9a, ink #2d3328. Match the materials, colours and lighting of the attached reference image (ref.png) exactly; use it for style only, not composition.
+
+Background: if your image tool supports a transparent background, use a fully transparent background. Otherwise use a perfectly flat, pure magenta #FF00FF background with no gradient, texture, vignette or cast shadow on it. No text anywhere.

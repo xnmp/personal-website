@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { RunningHead } from "@/components/notebook";
 import { Cap, Key, Led, ModuleCard, RackKeys, Screen, Prop } from "@/components/rack";
 import { bySlug, projects, shelves } from "@/data/projects";
@@ -21,18 +22,25 @@ export default function Home() {
       <main id="content" className="rack-main" tabIndex={-1}>
 
         <section className="hero">
-          <div className="hero-copy faceplate">
-            <Prop kind="pin" />
-            <div className="silk">Field notes, 2026</div>
-            <h1 className="title">
-              Tools I use every day, <span className="soft">and agents for the games I grew up on.</span>
-            </h1>
-            <p className="lede">
-              A file manager, a markdown editor, a mood diary and the bar at the
-              top of my screen. Next to them are agents learning Brood War, Magic
-              and our family card game. Each sheet is one project, with the
-              numbers I’ve measured and <b>the parts that didn’t work</b>.
-            </p>
+          <div className="hero-col">
+            <div className="hero-copy faceplate">
+              <Prop kind="pin" />
+              <div className="silk">Field notes, 2026</div>
+              <h1 className="title">
+                Tools I use every day, <span className="soft">and agents for the games I grew up on.</span>
+              </h1>
+              <p className="lede">
+                A file manager, a markdown editor, a mood diary and the bar at the
+                top of my screen. Next to them are agents learning Brood War, Magic
+                and our family card game. Each sheet is one project, with the
+                numbers I’ve measured and <b>the parts that didn’t work</b>.
+              </p>
+              <p className="hero-more">
+                <Link href="/about" className="text-action">More about me</Link>
+              </p>
+            </div>
+            {/* a style whose panels in a row are set level shows a cut of its scene here (kit.css .tier-cut) */}
+            <div className="tier-cut" aria-hidden="true" />
           </div>
           {/* the flagship sheet: the product leads the page, its screen
               first, with its call to action on the first screen */}
@@ -94,10 +102,24 @@ export default function Home() {
 
       </main>
       <footer className="statusline">
+        {/* each key with what it does, unbroken, its separator trailing it (the
+            spaces explicit: one before an entity on its line is dropped) */}
         <span className="sl-keys fine-only">
-          <Cap inline>j</Cap>
-          <Cap inline>k</Cap> projects &nbsp;·&nbsp; <Cap inline>↵</Cap> open &nbsp;·&nbsp; <Cap inline>/</Cap> search
-          &nbsp;·&nbsp; <Cap inline>t</Cap> theme
+          <span>
+            <Cap inline>j</Cap>{" "}<Cap inline>k</Cap>{" "}projects&nbsp;&nbsp;·
+          </span>{" "}
+          <span>
+            <Cap inline>↵</Cap>{" "}open&nbsp;&nbsp;·
+          </span>{" "}
+          <span>
+            <Cap inline>/</Cap>{" "}search&nbsp;&nbsp;·
+          </span>{" "}
+          <span>
+            <Cap inline>t</Cap>{" "}theme
+          </span>
+        </span>
+        <span>
+          <Link href="/about">about me</Link>
         </span>
         <span>
           <a href="https://github.com/xnmp">github/xnmp</a>

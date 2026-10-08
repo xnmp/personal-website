@@ -1,0 +1,163 @@
+/* ==========================================================================
+   SOLARPUNK (art/briefs/solarpunk.md): frosted glass panes in riveted brass,
+   enamel-and-brass plates, in a golden-hour glasshouse. The kit is built by
+   `node scripts/build-kit.mjs solarpunk` to the same source geometry as the
+   Paper Diorama, so only the art, the inks and the mounts' slices change.
+   Night (the dark rices) first, then day (the light rice).
+   ========================================================================== */
+
+:root[data-style="solarpunk"] {
+  --font-display: var(--font-fraunces);
+
+  --signal: #e8a24a; /* marigold enamel: the accent tile, the active stud, focus */
+  --signal-ink: #f0b462;
+  --print: #efe6cf; /* cream ink on bottle-green glass */
+  --print-soft: #c9c2ab;
+  --print-faint: #b3ad98;
+  --engrave-lo: rgba(239, 230, 207, 0.2);
+  --engrave-hi: transparent;
+  --scene-ground: #0e1622;
+  --k-scene-flat: url(/kit/solarpunk/scene-night.webp);
+  --k-sky: url(/kit/solarpunk/scene/night/sky.webp);
+  --k-sun: none; /* the moon is painted into the glass, upper left */
+  --sun-cx: 0;
+  --sun-cy: 0;
+  --sun-r: 1;
+  --k-far: none;
+  --k-mid: url(/kit/solarpunk/scene/night/mid.webp);
+  --k-near: url(/kit/solarpunk/scene/night/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/solarpunk/scene/night/left.webp);
+  --k-right: url(/kit/solarpunk/scene/night/right.webp);
+  --k-plate: url(/kit/solarpunk/sheet-night-normal.webp);
+  --k-plate-hover: url(/kit/solarpunk/sheet-night-hover.webp);
+  --k-plate-pressed: url(/kit/solarpunk/sheet-night-pressed.webp);
+  --k-plate-focus: url(/kit/solarpunk/sheet-night-focus.webp);
+  --k-plate-flat: url(/kit/solarpunk/sheet-night-flat.webp);
+  /* the sheets are brass frames with their panes cleared (scripts/framed-pane.mjs):
+     the glass is painted here, frost tiled over the scene, blurred */
+  --plate-slice: var(--slice-plate);
+  --plate-fill: url(/kit/solarpunk/frost-night.webp);
+  --plate-fill-size: 512px;
+  --plate-fill-repeat: repeat;
+  /* the brass's outer edge is soft for up to 11 of the art's px inside the
+     box: the frost and its blur start under the solid brass */
+  --plate-fill-in: 12px;
+  --strip-fill-in: 12px;
+  /* pressed: the glass dims with its frame (the sheets' pressedFlags --dim) */
+  --plate-press-dim: 0.8;
+  --strip-repeat: stretch; /* brass rails stretch clean */
+  --plate-backdrop: blur(14px) saturate(1.15);
+  --plate-round: 3px;
+  --plate-light: url(/kit/solarpunk/sheet-night-light.webp);
+  --plate-light-in: 0px; /* a framed pane: the pool's edge lies under the frame (kit.css) */
+  --plate-sheen: url(/kit/solarpunk/sheet-night-sheen.webp);
+  /* content clears the frame and the focus strip laid inside it */
+  --plate-inset: 10px;
+  /* the strips are the same glazing without the rivets, and nothing pins a
+     pane: it stands in its frame */
+  --k-strip: url(/kit/solarpunk/sheet-strip-night-normal.webp);
+  --k-pin-hold: none;
+  --k-pin-hold-signal: none;
+  /* a glazing grid hangs square */
+  --shelf-stagger: 0px;
+  --shelf-align: stretch;
+  --hero-stagger: 0px; /* the opening pair hangs square with the grid */
+  --hero-align: start;
+  /* small labels are etched into the glass: a dark cut, lit on its lower lip */
+  --silk-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
+  --k-bezel: url(/kit/solarpunk/mat-night.webp);
+  --mat-t: 100;
+  --mat-r: 96;
+  --mat-b: 98;
+  --mat-l: 97;
+  --k-key: url(/kit/solarpunk/tile-night-normal.webp);
+  --k-key-hover: url(/kit/solarpunk/tile-night-hover.webp);
+  --k-key-pressed: url(/kit/solarpunk/tile-night-pressed.webp);
+  --k-key-focus: url(/kit/solarpunk/tile-night-focus.webp);
+  --key-inset: 6px; /* the legend clears the plate's brass bezel */
+  --key-lift: 0px; /* the bezel is even all round: the label centres in the box */
+  --k-tape: url(/kit/solarpunk/tape-night.webp); /* a bronze name-plate */
+  --tape-ink: #efe6cf;
+  --k-chip: url(/kit/solarpunk/chip-night.webp); /* inline code: etched into the glass */
+  --chip-ink: var(--tape-ink);
+  --chip-pad: 0.35em; /* a straight-cut slip */
+  --k-drift-cloud: none;
+  --motes: #ffc86a;
+  --motes-kind: fireflies;
+  --plate-under: #202d24;
+  --bezel-under: #453827;
+  --key-under: #293a26;
+  --key-ink: #efe6cf;
+  --key-ink-soft: #c9c2ab;
+  --k-key-signal: url(/kit/solarpunk/tile-signal-night-normal.webp);
+  --k-key-signal-hover: url(/kit/solarpunk/tile-signal-night-hover.webp);
+  --k-key-signal-pressed: url(/kit/solarpunk/tile-signal-night-pressed.webp);
+  --k-key-signal-focus: url(/kit/solarpunk/tile-signal-night-focus.webp);
+  --key-signal-ink: #2a1806; /* dark on marigold enamel (6:1) */
+  --key-signal-under: #dd8a20;
+  --k-pin-brass: url(/kit/solarpunk/pin-brass.webp);
+  --k-pin-green: url(/kit/solarpunk/pin-green.webp);
+  --k-pin-amber: url(/kit/solarpunk/pin-amber.webp);
+  --k-pin-signal: url(/kit/solarpunk/pin-signal.webp);
+  --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+}
+
+/* day: honey light through the glass, pale frosted panes, bright brass */
+:root[data-style="solarpunk"][data-rice="paper"] {
+  --k-tape: url(/kit/solarpunk/tape-day.webp);
+  --k-chip: url(/kit/solarpunk/chip-day.webp);
+  --tape-ink: #2a1f0c;
+  --signal: #de8a2c;
+  --signal-ink: #7a4210;
+  --print: #1f2b22;
+  --print-soft: #2c372d; /* body ink: 4.5:1 where the foliage darkens the frost most */
+  --print-faint: #344036;
+  --engrave-lo: rgba(31, 43, 34, 0.2);
+  --scene-ground: #c9a35a;
+  --k-scene-flat: url(/kit/solarpunk/scene-day.webp);
+  --k-sky: url(/kit/solarpunk/scene/day/sky.webp);
+  --k-sun: none; /* the sun is painted into the glass, upper left */
+  --sun-cx: 0;
+  --sun-cy: 0;
+  --sun-r: 1;
+  --k-far: none;
+  --k-mid: url(/kit/solarpunk/scene/day/mid.webp);
+  --k-near: url(/kit/solarpunk/scene/day/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/solarpunk/scene/day/left.webp);
+  --k-right: url(/kit/solarpunk/scene/day/right.webp);
+  --k-plate: url(/kit/solarpunk/sheet-day-normal.webp);
+  --k-plate-hover: url(/kit/solarpunk/sheet-day-hover.webp);
+  --k-plate-pressed: url(/kit/solarpunk/sheet-day-pressed.webp);
+  --k-plate-focus: url(/kit/solarpunk/sheet-day-focus.webp);
+  --k-plate-flat: url(/kit/solarpunk/sheet-day-flat.webp);
+  --plate-fill: url(/kit/solarpunk/frost-day.webp);
+  --plate-light: url(/kit/solarpunk/sheet-day-light.webp);
+  --plate-sheen: url(/kit/solarpunk/sheet-day-sheen.webp);
+  --k-strip: url(/kit/solarpunk/sheet-strip-day-normal.webp);
+  --silk-shadow: 0 1px 0 rgba(255, 252, 238, 0.7);
+  --k-bezel: url(/kit/solarpunk/mat-day.webp);
+  --mat-t: 103;
+  --mat-r: 94;
+  --mat-b: 95;
+  --mat-l: 95;
+  --k-key: url(/kit/solarpunk/tile-day-normal.webp);
+  --k-key-hover: url(/kit/solarpunk/tile-day-hover.webp);
+  --k-key-pressed: url(/kit/solarpunk/tile-day-pressed.webp);
+  --k-key-focus: url(/kit/solarpunk/tile-day-focus.webp);
+  --k-key-signal: url(/kit/solarpunk/tile-signal-normal.webp);
+  --k-key-signal-hover: url(/kit/solarpunk/tile-signal-hover.webp);
+  --k-key-signal-pressed: url(/kit/solarpunk/tile-signal-pressed.webp);
+  --k-key-signal-focus: url(/kit/solarpunk/tile-signal-focus.webp);
+  --k-drift-cloud: none;
+  --motes: #ffe2a8;
+  --motes-kind: dust;
+  --plate-under: #c1c7b2;
+  --bezel-under: #b19a64;
+  --key-under: #e8ddc1;
+  --key-ink: #1f2b22;
+  --key-ink-soft: #344036;
+}

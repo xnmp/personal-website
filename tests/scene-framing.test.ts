@@ -1,6 +1,8 @@
 import { test, expect, describe } from "bun:test";
 import {
   layoutPlane,
+  placedScale,
+  COVER,
   project,
   cameraAt,
   overscanFor,
@@ -67,6 +69,59 @@ describe("layoutPlane: at rest the 3D scene is the CSS scene", () => {
       close(s.x, spots[0].x);
       close(s.y, spots[0].y);
     }
+  });
+
+  test("by default a layer is placed as `cover`, centred", () => {
+    for (const view of Object.values(VIEWS)) {
+      const over: Overscan = { top: 0.2, bottom: 0.1, side: 0.05 };
+      expect(layoutPlane(view, ART, 5, FOV, over)).toEqual(layoutPlane(view, ART, 5, FOV, over, COVER));
+      expect(placedScale(view, ART, COVER)).toBe(coverScale(view, ART));
+    }
+  });
+
+  // the CSS side layer: background-position-x anchor * 100%, its height
+  // min(cover's, span frame widths' worth of the art), its foot on the frame's
+  const placedRect = (view: Size, anchor: number, span: number) => {
+    const s = Math.min(coverScale(view, ART), (span * view.w) / ART.w);
+    const [w, h] = [ART.w * s, ART.h * s];
+    const left = anchor * (view.w - w);
+    return { left, top: view.h - h, right: left + w, bottom: view.h };
+  };
+
+  for (const [name, view] of Object.entries(VIEWS))
+    for (const [anchor, span] of [
+      [0, Infinity],
+      [1, Infinity],
+      [0, 1.6],
+      [1, 1.6],
+      [0.3, 1.2],
+    ])
+      test(`${name}: a side layer anchored at ${anchor}, at most ${span} frames wide, lands on its CSS rect`, () => {
+        const over: Overscan = { top: 0.2, bottom: 0.1, side: 0.05 };
+        const p = layoutPlane(view, ART, 4.3, FOV, over, { anchor, span });
+        const r = placedRect(view, anchor, span);
+        const tl = project(view, FOV, REST, artPoint(p, 0, 1));
+        const br = project(view, FOV, REST, artPoint(p, 1, 0));
+        close(tl.x, r.left);
+        close(tl.y, r.top);
+        close(br.x, r.right);
+        close(br.y, r.bottom);
+      });
+
+  test("anchored to its side, a layer's edge is the frame's: the left art edge at 0, the right at the frame's width", () => {
+    const view = VIEWS.desktop;
+    const over: Overscan = { top: 0, bottom: 0, side: 0 };
+    const left = layoutPlane(view, ART, 4.3, FOV, over, { anchor: 0, span: Infinity });
+    const right = layoutPlane(view, ART, 4.3, FOV, over, { anchor: 1, span: Infinity });
+    close(project(view, FOV, REST, artPoint(left, 0, 0.5)).x, 0);
+    close(project(view, FOV, REST, artPoint(right, 1, 0.5)).x, view.w);
+  });
+
+  test("held to its span on a phone, a side layer is narrower than cover and still at least the frame's width", () => {
+    const view = VIEWS.phone;
+    const s = placedScale(view, ART, { anchor: 0, span: 1.6 });
+    expect(s).toBeLessThan(coverScale(view, ART));
+    expect(ART.w * s).toBeCloseTo(1.6 * view.w, 6);
   });
 
   test("a degenerate 1px viewport and a huge one still give finite layouts", () => {

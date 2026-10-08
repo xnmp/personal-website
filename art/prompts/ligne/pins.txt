@@ -1,0 +1,5 @@
+Four small round signal lamps from a comic, drawn in the clear-line style, in a row with clear gaps between them, each seen straight-on: a flat circle inside one even black ink outline with a small flat white highlight at its upper left, in four flat colours, left to right: cream white, mint green, apricot orange, coral red. Same size. No shadow, no text. Wide 4:1 image.
+
+Style: a page from a European science-fiction comic album in the clear-line style (ligne claire): every outline one even weight of black ink (#1c1c1c), no hatching, no gradients, flat pastel colour fields, shadows only as crisp flat shapes. Palette: cream #fbf3e1, mint #cfe8d5, powder blue #bcd7ea, apricot #f2c39b, pale yellow #fbe7a1, coral #e2553f (the one accent), ink #1c1c1c. Even daylight from the upper left. Match the line, colours and finish of the attached reference image (ref.png) exactly; use it for style only, not composition.
+
+Background: if your image tool supports a transparent background, use a fully transparent background. Otherwise use a perfectly flat, pure magenta #FF00FF background with no gradient, texture, vignette or cast shadow on it. No text anywhere.

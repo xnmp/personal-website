@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "./rice.css";
 @import "./kit.css";
+@import "./styles/solarpunk.css";
+@import "./styles/sumi.css";
+@import "./styles/cyanotype.css";
+@import "./styles/garden.css";
+@import "./styles/ligne.css";
+@import "./styles/atlas.css";
 @import "./zsy.css";
 
 @theme inline {
@@ -21,7 +27,7 @@
      the faceplates. Text on a plate uses --print*; text in a screen uses the rice. */
 :root {
   --font-ui: var(--font-print);
-  --measure: 72ch;
+  --measure: 60ch; /* about 70 characters of Archivo: a "0" is wider than the average letter */
 }
 
 * {
@@ -79,11 +85,13 @@ body {
 }
 
 /* Text links on the chassis: focus prints a signal underline under the words,
-   instead of a browser ring. */
+   instead of a browser ring. A style may give the rule its own shade
+   (--signal-rule): a rule needs 3:1 against its ground, where the signal as
+   text (a link's hover) needs 4.5:1, so a deep accent can rule a dark page. */
 a:not(.key):not([data-rack-stop]):not(.shot-link):not(.skip-link):focus-visible {
   outline: none;
   color: var(--print);
-  text-decoration: underline 2px var(--signal);
+  text-decoration: underline 2px var(--signal-rule, var(--signal));
   text-underline-offset: 5px;
 }
 
@@ -171,7 +179,7 @@ pre code {
 .statusline a:not(.key) {
   color: var(--print);
   text-decoration: underline;
-  text-decoration-color: var(--signal);
+  text-decoration-color: var(--signal-rule, var(--signal));
   text-decoration-thickness: 1.5px;
   text-underline-offset: 3px;
   transition: color 120ms ease-out;
@@ -212,7 +220,7 @@ pre code {
 .folio,
 .statusline {
   --plate-k: 0.24;
-  min-height: calc(2 * 152px * 0.24);
+  min-height: calc(2 * 152px * var(--plate-k));
 }
 
 /* ---------- masthead ---------- */
@@ -258,12 +266,14 @@ pre code {
   margin-left: auto;
 }
 
-/* wide enough for most rices, so cycling barely moves the masthead, and no
-   wider, so the tile does not run on past a short name */
-.rice-name {
-  display: inline-block;
-  min-width: 7ch;
-  text-align: start; /* the name sits by its key, as "/ index" does */
+/* The theme key is wide enough for most rices' names (7ch), so cycling
+   barely moves the masthead, and no wider. The width is the key's, not the
+   name's: a short name and its legend centre in it together, the legend as
+   close to the name as on every other key (a name centred in a box of its
+   own left a gap after the legend). */
+.theme-key {
+  justify-content: center;
+  min-width: calc(2 * (18px + var(--key-inset)) + 9px + 0.52em + 7ch);
 }
 
 @media (max-width: 720px) {
@@ -287,7 +297,7 @@ pre code {
 
   .running-head .key {
     min-height: 36px;
-    padding-inline: 12px;
+    padding-inline: calc(12px + var(--key-inset));
   }
 
   /* no room for the rice's name at a fixed width, and at its own width a
@@ -296,41 +306,24 @@ pre code {
     display: none;
   }
 
+  .instruments .theme-key {
+    min-width: 0;
+  }
+
   .instruments .rice-word.coarse-only {
     display: inline !important; /* outranks the pointer utility, see below */
   }
 
-  /* the page links are printed under a rule, as text actions: they leave
-     the page, so they are links, not instruments */
+  /* the page links take a row of their own, still tiles: the same family
+     as the instruments beside them at every width. They share the row out
+     between them, so one link is a bar, not a tile adrift in an empty row */
   .running-head .head-nav {
     flex: 1 1 100%;
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    padding-top: 6px;
-    border-top: 1px solid var(--rule);
   }
 
-  .running-head .head-nav .key {
-    min-height: 30px;
-    padding: 0 2px;
-    color: var(--print);
-    font-size: 14px;
-    text-decoration: underline;
-    text-decoration-color: var(--signal);
-    text-decoration-thickness: 1.5px;
-    text-underline-offset: 3px;
-  }
-
-  .running-head .head-nav .key::before,
-  .running-head .head-nav .key::after {
-    display: none;
-  }
-
-  .running-head .head-nav .key:focus-visible {
-    outline: none;
-    text-decoration-thickness: 3px;
-    background: color-mix(in srgb, var(--signal) 18%, transparent);
+  .running-head .head-nav > .key {
+    flex: 1 1 0;
+    justify-content: center;
   }
 }
 
@@ -339,16 +332,25 @@ pre code {
    and each key says what it does in words and in its accessible name) and
    the masthead's margins tighten. */
 @media (max-width: 400px) {
+  /* a strip's frame is thin at this scale: content clears it without the
+     inset a style keeps for its sheets, and the keys keep half theirs */
   .running-head {
-    padding-inline: calc(var(--plate-w) + 2px);
+    padding-inline: calc(56px * var(--plate-k) + 2px);
+  }
+
+  .brand {
+    gap: 8px;
+    font-size: 22px;
   }
 
   .instruments .key-legend {
     display: none;
   }
 
+  /* as much room round the legend as the row leaves: a label pressed
+     against a plate's line or bezel reads as a squeezed button */
   .running-head .instruments .key {
-    padding-inline: 10px;
+    padding-inline: calc(clamp(8px, 3.4vw, 14px) + var(--key-inset) * 0.75);
   }
 }
 
@@ -361,12 +363,28 @@ pre code {
   display: grid;
   grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
   gap: var(--rack-gap);
-  align-items: start;
+  align-items: var(--hero-align);
 }
 
 .hero-copy.faceplate {
-  margin-top: 28px; /* pinned a little lower than its neighbour */
+  margin-top: var(--hero-stagger); /* pinned a little lower than its neighbour */
   padding: calc(var(--plate-w) + 34px) calc(var(--plate-w) + 26px) calc(var(--plate-w) + 22px);
+}
+
+/* the promise's column: the promise, and under it the cut of the scene a
+   style whose panels in a row are set level shows (kit.css .tier-cut) */
+.hero-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rack-gap);
+}
+
+/* Set level with a taller neighbour (--hero-align: stretch), the column's
+   spare height goes to the cut where the style shows one (kit.css: its
+   share outweighs the promise's a thousandfold), else to the promise
+   itself, whose sheet then ends level with its neighbour's */
+.hero-col > .hero-copy {
+  flex-grow: 1;
 }
 
 .title {
@@ -392,6 +410,11 @@ pre code {
   margin: 0;
   max-width: 54ch;
   color: var(--print-soft);
+}
+
+.hero-more {
+  margin: 16px 0 0;
+  font-size: 16px;
 }
 
 .lede b {
@@ -470,11 +493,11 @@ pre code {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: var(--rack-gap);
-  align-items: start;
+  align-items: var(--shelf-align);
 }
 
 .shelf > :nth-child(even) {
-  margin-top: 22px;
+  margin-top: var(--shelf-stagger);
 }
 
 .shelf > :nth-child(even)::before {
@@ -605,6 +628,9 @@ pre code {
   .module-inner > .screen {
     grid-column: 1;
     grid-row: 2 / 6;
+    /* the mount is as tall as its screen: a row grown by a taller
+       neighbour would otherwise stretch it, a band of bare mount below */
+    align-self: start;
   }
   .module-inner > .engraved {
     margin-top: 4px;
@@ -741,10 +767,13 @@ pre code {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  box-shadow:
+  /* a style whose mount casts no shadow sets --screen-occlusion: none */
+  box-shadow: var(
+    --screen-occlusion,
     inset 0 0 0 1px rgba(0, 0, 0, 0.55),
     inset 8px 10px 22px -10px rgba(0, 0, 0, 0.7),
-    inset 0 0 60px rgba(0, 0, 0, 0.18);
+    inset 0 0 60px rgba(0, 0, 0, 0.18)
+  );
 }
 
 .plate-art pre {
@@ -786,9 +815,12 @@ pre code {
     padding: 8px;
   }
 
-  .plate-art pre,
-  .code-panel pre {
+  .plate-art pre {
     font-size: 12px;
+  }
+
+  .code-duet {
+    --code-max: 12px;
   }
 
   .plate-art .code-panel {
@@ -860,6 +892,37 @@ pre code {
   padding: calc(var(--plate-w) + 32px) calc(var(--plate-w) + 22px) calc(var(--plate-w) + 22px);
 }
 
+/* a hero with nothing mounted beside it (the about page without a
+   portrait) gives the copy the sheet */
+.detail-hero.solo {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.detail-hero.solo h1 {
+  max-width: 22ch;
+}
+
+.detail-hero.solo p {
+  max-width: 60ch;
+}
+
+/* a photo mounted in the mat: it fills the window, cropped, never stretched */
+.portrait {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+/* a placeholder section (src/data/about.ts, draft: true), only seen in dev */
+.section[data-draft] {
+  opacity: 0.72;
+}
+
+.draft-tag {
+  color: var(--signal);
+}
+
 .kicker {
   text-wrap: balance;
   font-family: var(--font-mono), ui-monospace, monospace;
@@ -914,6 +977,16 @@ pre code {
   .detail-hero,
   .section {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Beside a long column, the head travels with it: it stays in view as the
+   section scrolls past (held below the masthead's height), so the narrow
+   column is the section's running title rather than bare paper. */
+@media (min-width: 901px) {
+  .section:not(.stack) > :first-child {
+    position: sticky;
+    top: 24px;
   }
 }
 
@@ -1032,6 +1105,16 @@ pre code {
   max-width: var(--measure);
 }
 
+/* the reset (tailwindcss preflight) takes every list's markers away: a
+   section's lists keep theirs, its steps numbered */
+.section ol {
+  list-style: decimal;
+}
+
+.section ul {
+  list-style: disc;
+}
+
 .section ol li,
 .section ul li {
   margin: 10px 0;
@@ -1115,7 +1198,7 @@ pre code {
 }
 
 .section.alpha::after {
-  --prop: url(/kit/paper/pin-signal.webp);
+  --prop: var(--k-pin-hold-signal);
 }
 
 @media (max-width: 999px) {
@@ -1158,18 +1241,20 @@ pre code {
 /* ---------- screens built from older markup ----------
    .code-duet is mounted in the same mat as .screen (kit.css). */
 
+/* The two listings sit side by side while each column can hold the longest
+   line (41 characters, 24.6em of mono) at 11px, and stack when it can't.
+   Within a column the code takes the largest size up to 12.5px at which its
+   longest line fits, so a figure never cuts a line off. Only a phone, where
+   that would mean code under 10px, scrolls it (with the shade below). */
 .code-duet {
+  --code-max: 12.5px;
+  --code-min: 11px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
-@media (max-width: 900px) {
-  .code-duet {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(24.8 * var(--code-min) + 36px)), 1fr));
 }
 
 .code-panel {
+  container-type: inline-size;
   background: var(--paper);
   color: var(--ink);
   padding: 16px 18px;
@@ -1194,7 +1279,7 @@ pre code {
   margin: 0;
   overflow-x: auto;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 12.5px;
+  font-size: clamp(10px, 100cqi / 24.8, var(--code-max));
   line-height: 1.55;
   color: var(--ink);
 }
@@ -1402,6 +1487,12 @@ pre code {
   text-decoration-thickness: 1px;
 }
 
+/* a credit that wraps does so evenly, never leaving a word alone */
+.folio > *,
+.statusline > * {
+  text-wrap: balance;
+}
+
 .statusline .sl-k {
   color: var(--print-soft);
 }
@@ -1409,6 +1500,12 @@ pre code {
 /* the home page's keys, printed small along its foot */
 .statusline .sl-keys {
   color: var(--print-soft);
+  word-spacing: 0.5em; /* the groups stand apart as the old separators did */
+}
+
+.statusline .sl-keys > span {
+  white-space: nowrap;
+  word-spacing: normal;
 }
 
 .statusline .key.cap-inline {
@@ -1480,7 +1577,7 @@ pre code {
   /* the product's sheet takes the larger share, so its screen shows the app
      near real size */
   grid-template-columns: minmax(0, 0.77fr) minmax(0, 1.23fr);
-  align-items: start;
+  align-items: var(--hero-align);
 }
 
 .launch-copy.faceplate {
@@ -1490,8 +1587,22 @@ pre code {
 .launch-shot.faceplate {
   position: relative;
   z-index: 1;
-  margin: 28px 0 0 var(--hero-gap);
+  margin: var(--hero-stagger) 0 0 var(--hero-gap);
   padding: calc(var(--plate-w) + 20px) calc(var(--plate-w) + 6px) calc(var(--plate-w) + 10px);
+}
+
+/* the product's column: its sheet, and under it the cut of the scene a style
+   whose panels in a row are set level shows (kit.css .tier-cut), in line
+   with the sheet */
+.launch-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rack-gap);
+  min-width: 0;
+}
+
+.launch-col > .tier-cut {
+  margin-inline-start: var(--hero-gap);
 }
 
 /* The product is the proof, so its window gets the sheet: it sits in the
@@ -1552,6 +1663,12 @@ pre code {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 26px;
+}
+
+/* the calls to action share their row out between them, so when the column
+   is too narrow for both and they stack, they stack at one width */
+.launch-keys .key[data-size="lg"] {
+  flex: 1 1 auto;
 }
 
 /* stacked in the narrow column, the keys share one width, so the column
@@ -1656,7 +1773,7 @@ pre code {
   font-weight: 600;
   color: var(--print);
   text-decoration: underline;
-  text-decoration-color: var(--signal);
+  text-decoration-color: var(--signal-rule, var(--signal));
   text-decoration-thickness: 1.5px;
   text-underline-offset: 3px;
   cursor: pointer;
@@ -1678,8 +1795,7 @@ pre code {
 
 /* high contrast drops the wash: focus falls back to a ring */
 @media (forced-colors: active) {
-  .text-action:focus-visible,
-  .running-head .head-nav .key:focus-visible {
+  .text-action:focus-visible {
     outline: 2px solid CanvasText;
     outline-offset: 3px;
   }
@@ -1866,9 +1982,10 @@ pre code {
 .folio .key.cap,
 .launch-shot-cap .key.cap {
   min-height: 32px;
-  min-width: 36px;
+  min-width: calc(36px + 2 * var(--key-inset));
   font-size: 12px;
-  padding: 0 9px 2px;
+  /* the legend clears a bezel, where the style's plates have one */
+  padding: 0 calc(9px + var(--key-inset)) 2px;
   --key-w: 12px;
 }
 
@@ -2060,6 +2177,17 @@ pre code {
   gap: var(--rack-gap);
 }
 
+/* a shot's tier: no box of its own (its print lies in .shots as if
+   unwrapped) unless a style sets a page's panels in tiers, where a cut of
+   its scene stands beside the print (kit.css .tier-cut, --shot-cut) */
+.shot-tier {
+  display: contents;
+}
+
+.shot-tier > .tier-cut {
+  display: var(--shot-cut, none);
+}
+
 .shot {
   /* the glass at the crop's real size, plus the mat around it */
   --shot-px: calc(var(--shot-w, 9999) * 1px + (var(--mat-l) + var(--mat-r) - 80) * 1px * var(--mat-k));
@@ -2080,7 +2208,7 @@ pre code {
   padding-left: 0;
 }
 
-.shot:nth-of-type(2)::before {
+.shot-tier:nth-child(2) > .shot::before {
   border-image-source: var(--k-plate-flat);
 }
 
@@ -2096,11 +2224,11 @@ pre code {
     width: 100%;
   }
 
-  .shot:nth-of-type(odd) {
+  .shot-tier:nth-child(odd) > .shot {
     align-self: flex-start;
   }
 
-  .shot:nth-of-type(even) {
+  .shot-tier:nth-child(even) > .shot {
     align-self: flex-end;
   }
 }
@@ -2300,7 +2428,7 @@ pre code {
   z-index: 100;
   display: grid;
   padding: 44px 96px 84px;
-  /* the flat scene: the site's layers composited (scripts/build-paper-kit.mjs) */
+  /* the flat scene: the site's layers composited (scripts/build-kit.mjs) */
   background: var(--scene-ground) var(--k-scene-flat) center bottom / cover no-repeat;
 }
 
@@ -2746,4 +2874,96 @@ html:has(dialog[open]) {
 /* a name that reads wrong broken at its hyphen (a repo, a path) */
 .nowrap {
   white-space: nowrap;
+}
+
+/* ---------- the art-direction picker (components/instrument/StylePicker) ----------
+   A strip at the foot of every page, printed at the strips' finer scale (it
+   is furniture, not content): a native radio group, each option a tile (the
+   chosen one the signal tile), the legend beside them and what the chosen
+   style is beneath. The tiles share one width on a grid of two even rows
+   (the picker sets --look-cols to half their number, rounded up), so
+   however many styles there are they stand as one bank of keys: a row
+   filled as far as it goes leaves the last style alone on the next.
+   The radio itself covers its tile, invisible, so the whole tile is the hit
+   target and the group keeps its native keyboard and screen-reader
+   behaviour. */
+.look {
+  --plate-k: 0.24;
+  min-height: calc(2 * 152px * var(--plate-k));
+  padding: calc(var(--plate-w) + 4px) calc(var(--plate-w) + 18px);
+}
+
+.look-set {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px 24px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+/* floated, a legend is laid out as a grid item, in the row */
+.look-set legend {
+  float: left;
+  padding: 0;
+  margin: 0;
+}
+
+.look-opts {
+  display: grid;
+  grid-template-columns: repeat(var(--look-cols, 4), minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+.look-opt {
+  justify-content: center;
+  padding-inline: calc(10px + var(--key-inset));
+}
+
+.look-opt input {
+  position: absolute;
+  inset: 0;
+  z-index: 1; /* over the legend: the radio is the hit target */
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.look-now {
+  grid-column: 2;
+  margin: 0;
+}
+
+/* narrower, the legend heads the bank, which takes the sheet's width */
+@media (max-width: 900px) {
+  .look-set {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .look-now {
+    grid-column: 1;
+  }
+}
+
+/* on a phone, two to a row, the bank taking all the strip leaves inside
+   its frame (a style's name is long for half a phone); an odd one out
+   stands centred on its row at the others' width, one more key of the bank
+   rather than a bar */
+@media (max-width: 600px) {
+  .look {
+    padding-inline: calc(var(--plate-w) + 6px);
+  }
+
+  .look-opts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 8px;
+  }
+
+  .look-opt:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc((100% - 8px) / 2);
+  }
 }

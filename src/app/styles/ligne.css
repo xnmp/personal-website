@@ -1,0 +1,595 @@
+/* ==========================================================================
+   LIGNE CLAIRE (art/briefs/ligne.md): panels of a European science-fiction
+   comic album in the clear line, flat cream fields inside one ink border,
+   caption boxes, powder-blue inset frames, flat lamps, mint caption tags,
+   powder-blue code boxes, over the album's establishing shot of a desert
+   outpost. The kit is built by `node scripts/build-kit.mjs ligne` to the
+   same source geometry as the Paper Diorama, so only the art, the inks and
+   the mounts' slices change. Night (the dark rices: the album's night
+   pages) first, then day (the light rice).
+   ========================================================================== */
+
+:root[data-style="ligne"] {
+  --font-display: var(--font-barlow);
+
+  --signal: #e2553f; /* coral: the primary caption, the active lamp, focus */
+  --signal-ink: #ffd0c4; /* on the night-blue field (>= 4.5:1) */
+  --print: #fbf3e1; /* cream on the night page's blue */
+  --print-soft: #efe7d6;
+  --print-faint: #ebe3d1; /* >= 4.5:1 on the field, small labels too */
+  /* flat colour: nothing is cut or embossed */
+  --engrave-lo: transparent;
+  --engrave-hi: transparent;
+  --silk-shadow: none;
+  --scene-ground: #343c86;
+  --k-scene-flat: url(/kit/ligne/scene-night.webp);
+  --k-sky: url(/kit/ligne/scene/night/sky.webp);
+  --k-sun: none; /* the ringed planet is painted in the sky */
+  --sun-sw: 1;
+  --sun-sh: 1;
+  --sun-cx: 0;
+  --sun-cy: 0;
+  --sun-r: 0;
+  --k-far: url(/kit/ligne/scene/night/far.webp);
+  --k-mid: url(/kit/ligne/scene/night/mid.webp);
+  --k-near: url(/kit/ligne/scene/night/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/ligne/scene/night/left.webp);
+  --k-right: url(/kit/ligne/scene/night/right.webp);
+  --k-plate: url(/kit/ligne/sheet-night-normal.webp);
+  --k-plate-hover: url(/kit/ligne/sheet-night-hover.webp);
+  --k-plate-pressed: url(/kit/ligne/sheet-night-pressed.webp);
+  --k-plate-focus: url(/kit/ligne/sheet-night-focus.webp);
+  --k-plate-flat: url(/kit/ligne/sheet-night-flat.webp);
+  /* The ink line is one weight, 3px, on every surface: each is drawn at
+     that weight for the scale it prints at here (scripts/kits/ligne.mjs),
+     and every scale puts the line's edges on whole px. Panels print at 0.5
+     on a phone too (a narrower inset makes up the corner's width). */
+  --plate-k: 0.5;
+  --mat-k: 0.2;
+  /* a panel's field is cleared from the art (scripts/framed-pane.mjs) and
+     painted here, the album's paper at the art's own field colour, tiled,
+     so the ink border is the art and the field any size, its fibre at one
+     scale everywhere */
+  --plate-slice: var(--slice-plate);
+  --plate-field: #4757a6; /* a tone lighter than the moonlit ground */
+  --plate-fill: url(/kit/ligne/paper-night.webp);
+  --plate-fill-size: 384px;
+  --plate-fill-repeat: repeat;
+  /* the field starts under the ink line (inside the paper margin round it),
+     never outside it */
+  --plate-fill-in: 10px;
+  --strip-fill-in: 20px;
+  --plate-repeat: stretch; /* an even ink line stretches clean */
+  --strip-repeat: stretch;
+  --plate-backdrop: none;
+  --plate-round: 0px;
+  --plate-light: none;
+  --plate-sheen: none;
+  /* content clears the ink line and the focus band inside it (10px), not
+     the corner's full slice: the field is flat to the line */
+  --plate-inset: -10px;
+  /* the album's sun is upper right (scripts/kits/ligne.mjs): hover lifts a
+     panel up and to the right off its flat shadow, which stays where it lay
+     to its lower left (the hover art's shadow is that much longer); pressed
+     sets it down onto it */
+  --plate-hover-shift: translate(3px, -3px);
+  --plate-press-shift: translate(-4px, 4px);
+  --key-k: 0.5; /* the captions' line is drawn for it (scripts/kits/ligne.mjs) */
+  --key-hover-shift: 2px -2px;
+  --key-press-shift: -3px 3px;
+  --key-legend-sink: 0px; /* the caption moves whole */
+  /* the frame is flat: it throws no shade into the screen */
+  --screen-occlusion: none;
+  --k-strip: url(/kit/ligne/sheet-strip-night-normal.webp);
+  /* panels sit on the page: nothing pins them */
+  --k-pin-hold: none;
+  --k-pin-hold-signal: none;
+  /* panels in a row are set level, as on a page */
+  --shelf-stagger: 0px;
+  --shelf-align: stretch;
+  --hero-stagger: 0px;
+  /* a tier's panels are set level, top and foot, as on a page: under the
+     shorter of a pair, a closer panel (kit.css .tier-cut), the outpost's
+     door and its rover, a close-up drawn at its own scale (scripts/kits/
+     ligne.mjs cuts), its middle band in the strip */
+  --hero-align: stretch;
+  --tier-cut: block;
+  --tier-cut-art: var(--k-cut-outpost);
+  --tier-cut-at: 50% 56%;
+  --tier-cut-size: cover;
+  --k-bezel: url(/kit/ligne/mat-night.webp);
+  /* the frame's slices take in the ink line round its window (the window
+     opens 120 of the art's px in: scripts/kits/ligne.mjs mat) */
+  --mat-t: 120;
+  --mat-r: 120;
+  --mat-b: 120;
+  --mat-l: 120;
+  --k-key: url(/kit/ligne/tile-night-normal.webp);
+  --k-key-hover: url(/kit/ligne/tile-night-hover.webp);
+  --k-key-pressed: url(/kit/ligne/tile-night-pressed.webp);
+  --k-key-focus: url(/kit/ligne/tile-night-focus.webp);
+  --key-inset: 3px; /* the legend clears the caption's ink line */
+  --key-lift: 0px;
+  --k-tape: url(/kit/ligne/tape-night.webp); /* a mint caption tag */
+  --tape-ink: #1c1414;
+  --k-chip: url(/kit/ligne/chip-night.webp); /* inline code: a flat powder-blue tint */
+  --k-cap: url(/kit/ligne/cap-night.webp); /* a printed keycap: a white caption */
+  --k-caption: url(/kit/ligne/caption-night.webp); /* a shelf's narrative caption */
+  /* the paper's fibre, a veil laid over a flat tint where a box grows to
+     its words (scripts/kits/ligne.mjs fibre-*), and the tints it lies on */
+  --k-fibre: url(/kit/ligne/fibre-night.webp);
+  --caption-fill: #dcbf5c;
+  --tag-fill: #c4d7c0;
+  --code-fill: #acc6d5;
+  --mat-fill: #b0c7d6;
+  --k-cut-outpost: url(/kit/ligne/cut-outpost-night.webp);
+  --k-cut-butte: url(/kit/ligne/cut-butte-night.webp);
+  --k-cut-track: url(/kit/ligne/cut-track-night.webp);
+  --k-cut-pillar: url(/kit/ligne/cut-pillar-night.webp);
+  --chip-ink: #1c1414;
+  --chip-pad: 0.35em;
+  --k-drift-cloud: none;
+  --motes: #cfd6ff;
+  --motes-kind: dust;
+  --plate-under: var(--plate-field);
+  --bezel-under: #b0c7d6;
+  /* the neutral caption by night is the night's deep blue, lettered in
+     cream (scripts/kits/ligne.mjs NIGHT_CAPTION), so the coral primary is
+     what calls */
+  --key-under: #2b3577;
+  --key-ink: #fbf3e1;
+  --key-ink-soft: #e4dccb;
+  --k-key-signal: url(/kit/ligne/tile-signal-night-normal.webp);
+  --k-key-signal-hover: url(/kit/ligne/tile-signal-night-hover.webp);
+  --k-key-signal-pressed: url(/kit/ligne/tile-signal-night-pressed.webp);
+  --k-key-signal-focus: url(/kit/ligne/tile-signal-night-focus.webp);
+  --key-signal-ink: #1c1414; /* ink on the lifted coral, as the album letters it (5.8:1) */
+  --key-signal-under: #ee6448;
+  --k-pin-brass: url(/kit/ligne/pin-brass.webp); /* a cream lamp */
+  --k-pin-green: url(/kit/ligne/pin-green.webp); /* mint */
+  --k-pin-amber: url(/kit/ligne/pin-amber.webp); /* apricot */
+  --k-pin-signal: url(/kit/ligne/pin-signal.webp); /* coral */
+  --k-glass: none; /* flat colour: no glare on the glass */
+  /* The establishing shot keeps its landmarks: the arch and mast to the
+     left, the outpost and rocket to the right, each anchored to its side and
+     on a narrow screen drawn at most 1.6 screens wide (the art is 16:9), so
+     they keep to their corners instead of being cropped away (kit.css; the
+     3D scene reads the same tokens). */
+  --left-anchor: 0;
+  --right-anchor: 1;
+  --side-span: 1.6;
+  --side-size: auto min(max(100%, 56.25vw), calc(56.25vw * 1.6));
+}
+
+/* On a tablet or a phone the sheets fill the width and the landmarks show
+   only above the masthead and between the sheets: held to 1.6 screens they
+   sink behind the sheets, so there they are drawn as tall as the screen
+   (the art spans about two screens on a tablet, four on a phone; the span
+   allows for a phone up to 2.36 times as tall as it is wide), the mast's
+   lamp, the planet and the rocket's nose in the open sky. */
+@media (max-width: 1099px) {
+  :root[data-style="ligne"] {
+    --side-span: 4.2;
+    --side-size: auto min(max(100%, 56.25vw), calc(56.25vw * 4.2));
+  }
+}
+
+/* On a phone, the band of open sky above the masthead (kit.css: room for a
+   sun) is the establishing shot's: deep enough for the mast's lamp and dish
+   and the rocket's nose cone, so the outpost is still there at a glance. */
+@media (max-width: 600px) {
+  :root[data-style="ligne"] .rack {
+    padding-top: 84px;
+  }
+}
+
+/* day: the album's daylight pages */
+:root[data-style="ligne"][data-rice="paper"] {
+  --signal: #e2553f;
+  --signal-ink: #b8361f;
+  --engrave-lo: transparent;
+  --plate-under: var(--plate-field);
+  --print: #1c1414; /* the scene's ink on the cream field */
+  --print-soft: #2f2d29;
+  --print-faint: #3d3a35;
+  --scene-ground: #e9b98a;
+  --k-scene-flat: url(/kit/ligne/scene-day.webp);
+  --k-sky: url(/kit/ligne/scene/day/sky.webp);
+  --k-far: url(/kit/ligne/scene/day/far.webp);
+  --k-mid: url(/kit/ligne/scene/day/mid.webp);
+  --k-near: url(/kit/ligne/scene/day/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/ligne/scene/day/left.webp);
+  --k-right: url(/kit/ligne/scene/day/right.webp);
+  --k-sun: none;
+  --sun-cx: 0;
+  --sun-cy: 0;
+  --sun-r: 0;
+  --k-drift-cloud: none;
+  --k-plate: url(/kit/ligne/sheet-day-normal.webp);
+  --k-plate-hover: url(/kit/ligne/sheet-day-hover.webp);
+  --k-plate-pressed: url(/kit/ligne/sheet-day-pressed.webp);
+  --k-plate-focus: url(/kit/ligne/sheet-day-focus.webp);
+  --k-plate-flat: url(/kit/ligne/sheet-day-flat.webp);
+  --plate-field: #f5ebd8;
+  --plate-fill: url(/kit/ligne/paper-day.webp);
+  --k-strip: url(/kit/ligne/sheet-strip-day-normal.webp);
+  --k-bezel: url(/kit/ligne/mat-day.webp);
+  --k-key: url(/kit/ligne/tile-day-normal.webp);
+  --k-key-hover: url(/kit/ligne/tile-day-hover.webp);
+  --k-key-pressed: url(/kit/ligne/tile-day-pressed.webp);
+  --k-key-focus: url(/kit/ligne/tile-day-focus.webp);
+  --k-key-signal: url(/kit/ligne/tile-signal-normal.webp);
+  --k-key-signal-hover: url(/kit/ligne/tile-signal-hover.webp);
+  --k-key-signal-pressed: url(/kit/ligne/tile-signal-pressed.webp);
+  --k-key-signal-focus: url(/kit/ligne/tile-signal-focus.webp);
+  --k-tape: url(/kit/ligne/tape-day.webp);
+  --k-chip: url(/kit/ligne/chip-day.webp);
+  --k-cap: url(/kit/ligne/cap-day.webp);
+  --k-caption: url(/kit/ligne/caption-day.webp);
+  --k-fibre: url(/kit/ligne/fibre-day.webp);
+  --caption-fill: #fce89e;
+  --tag-fill: #cee5d1;
+  --code-fill: #b5d3e7;
+  --mat-fill: #b9d4e9;
+  --k-cut-outpost: url(/kit/ligne/cut-outpost-day.webp);
+  --k-cut-butte: url(/kit/ligne/cut-butte-day.webp);
+  --k-cut-track: url(/kit/ligne/cut-track-day.webp);
+  --k-cut-pillar: url(/kit/ligne/cut-pillar-day.webp);
+  --tape-ink: #1c1414;
+  --mat-t: 120;
+  --mat-r: 120;
+  --mat-b: 120;
+  --mat-l: 120;
+  --key-ink: #1c1414;
+  --key-ink-soft: #33302a;
+  --chip-ink: #1c1414;
+  --motes: #fff3dc;
+  --motes-kind: dust;
+  --bezel-under: #b9d4e9;
+  --key-under: #fffaf0;
+  --key-signal-ink: #1c1414;
+  --key-signal-under: #e25d42;
+}
+
+@media (max-width: 720px) {
+  :root[data-style="ligne"] {
+    --plate-inset: -12px;
+  }
+
+  /* prose sheets keep the cards' measure from the line on a phone */
+  :root[data-style="ligne"] :is(.hero-copy.faceplate, .flagship, .detail-hero, .section, .launch-copy.faceplate) {
+    padding-inline: calc(var(--plate-w) + 14px);
+  }
+}
+
+
+/* Lettered: what a comic letters by hand (captions, tags, the strips'
+   names, a panel's number) is in the album's capitals, in the face that
+   sets its headlines (the album's lettering set in type); what speaks from
+   a balloon or a narrative caption (a tag, a shelf's heading) leans, as a
+   letterer's pen does there */
+:root[data-style="ligne"] :is(.key, .tape, .kicker, .shelf-label, .module-num, .hero-copy > .silk) {
+  font-family: var(--font-barlow), var(--font-print), sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* The album has one voice for what it letters: the small labels (a strip's
+   facts, a status, a figure's number, a section's heading, the foot) are
+   lettered in the same capitals, upright, not typed in the terminal's face,
+   which keeps to the screens and the code. */
+:root[data-style="ligne"] :is(.meta, .module-status, .module-stats, .launch-proof, .section-kicker, .plate-figure-label, .statusline, .colophon div, .feat h3, .openq strong, .code-panel h3, .tags, .look legend) {
+  font-family: var(--font-barlow), var(--font-print), sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  /* the condensed capitals set as tall as the terminal face's were at the
+     label's size, not shrunk with their width */
+  font-size-adjust: cap-height 0.86;
+}
+
+:root[data-style="ligne"] :is(.tape, .kicker, .shelf-label, .module-num, .hero-copy > .silk) {
+  font-style: italic;
+}
+
+/* A shelf opens on a narrative caption, as a sequence in the album does: a
+   pale yellow box in the one ink line, as long as its words, printed flat
+   on the page. Its heading outranks the panels' titles under it. */
+:root[data-style="ligne"] .divider.faceplate {
+  width: fit-content;
+  max-width: 100%;
+  min-height: 0;
+  padding: 9px 22px 8px;
+  color: #1c1414;
+}
+
+/* (its line drawn, its yellow laid by the page inside it with the paper's
+   fibre at the page's scale: drawn into the art, the fibre would stretch
+   with the caption into streaks) */
+:root[data-style="ligne"] .divider.faceplate::before {
+  inset: 0;
+  border-image: var(--k-caption) 32 / 8px / 2px stretch;
+  border-radius: 2px;
+  background: var(--k-fibre) 0 0 / 384px 384px, var(--caption-fill);
+}
+
+/* a shelf's caption sits on the panels' line, its ink edge in line with
+   theirs (inside their margin of paper), not stepped out past it */
+:root[data-style="ligne"] .divider.faceplate {
+  margin-inline-start: 6px;
+}
+
+:root[data-style="ligne"] .divider.faceplate::after {
+  content: none;
+}
+
+:root[data-style="ligne"] .divider {
+  align-items: baseline; /* the count on the heading's baseline */
+}
+
+:root[data-style="ligne"] .divider :is(.shelf-label, .shelf-note, .shelf-count) {
+  color: #1c1414;
+}
+
+:root[data-style="ligne"] .shelf-label {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+:root[data-style="ligne"] .shelf-label .shelf-note {
+  font-weight: 600;
+  font-size: 16px;
+  font-style: normal;
+}
+
+/* A panel you can open stands off the page on its flat shadow; a panel that
+   only holds its content (a page's opening, a section, the flagship, whose
+   links are inside it) is printed flat on the page (scripts/kits/ligne.mjs
+   `flat`), as are the strips. So what opens reads as such before a hover. */
+:root[data-style="ligne"] :is(.faceplate:not(.is-live, .running-head, .divider, .statusline, .folio, .look), .section, .detail-hero, .colophon, .blank-leaf)::before {
+  border-image-source: var(--k-plate-flat);
+}
+
+:root[data-style="ligne"] .shelf > .is-live:nth-child(even)::before {
+  border-image-source: var(--k-plate);
+}
+
+/* One flat shadow at a time: a state's art replaces the resting art rather
+   than lying over it (two flat shadows overlapping print as a darker
+   double), and changes at once, as a panel on the page does. */
+:root[data-style="ligne"] :is(.faceplate, .key)::after {
+  transition: none;
+}
+
+:root[data-style="ligne"] :is(.faceplate.is-live:hover, .faceplate.is-live:focus-visible, .faceplate:has([data-rack-stop]:focus-visible))::before,
+:root[data-style="ligne"] :is(a.key:hover, button.key:hover:not(:disabled), label.key:hover, .key:focus-visible, .key:has(input:focus-visible))::before {
+  border-image-source: none;
+}
+
+/* A card's tag hangs a hand below its panel's line, and its last line of
+   figures stands as far above it: focused, the panel's coral band and its
+   inner line are laid inside that line (8px), and the tag must stay a tag
+   in the panel, clear of them, not hang off the band */
+:root[data-style="ligne"] .module {
+  padding-top: calc(var(--plate-w) * 0.75 + 8px);
+  padding-bottom: calc(var(--plate-w) * 0.8 + 8px);
+}
+
+/* A status lamp is lettered beside the status it marks, as everywhere else
+   on the page (the masthead, a tag), not hung where a pin would hold the
+   panel: no pin holds a panel to an album's page. */
+:root[data-style="ligne"] :is(.module, .flagship) > .led.sheet-pin {
+  display: none;
+}
+
+:root[data-style="ligne"] :is(.module, .flagship) .module-status::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin: -4px 4px -4px -3px;
+  vertical-align: -1px;
+  background: var(--k-pin-brass) center / contain no-repeat;
+}
+
+:root[data-style="ligne"] :is(.module, .flagship):has(> .led[data-on="true"][data-color="green"]) .module-status::before {
+  background-image: var(--k-pin-green);
+}
+
+:root[data-style="ligne"] :is(.module, .flagship):has(> .led[data-on="true"][data-color="amber"]) .module-status::before {
+  background-image: var(--k-pin-amber);
+}
+
+:root[data-style="ligne"] :is(.module, .flagship):has(> .led[data-on="true"][data-color="signal"]) .module-status::before {
+  background-image: var(--k-pin-signal);
+}
+
+/* a page's kicker and a panel's number are caption balloons, as on the
+   inner pages */
+:root[data-style="ligne"] :is(.hero-copy > .silk, .module-num) {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 5px 12px var(--balloon-foot);
+  font-size: 13px;
+  line-height: 1.25;
+  border: 0 solid transparent;
+  border-image: var(--balloon);
+  color: var(--tape-ink);
+}
+
+/* the strips print the panel at 0.25 (drawn for it), never shorter than its
+   two corners */
+:root[data-style="ligne"] :is(.running-head, .folio, .statusline, .look, .divider) {
+  --plate-k: 0.25;
+}
+
+:root[data-style="ligne"] :is(.running-head, .folio, .statusline, .look) {
+  min-height: calc(2 * 152px * var(--plate-k));
+}
+
+/* every screen's frame at the one scale its line is drawn for, the small
+   screens' too. The frame's art is its ink line alone (scripts/kits/ligne.mjs
+   mat): its powder band is the page's, as a caption's face is, the paper's
+   fibre in it at the page's scale, so no slice stretches the fibre along a
+   side. The band's outer corners are the art's (4px round). */
+:root[data-style="ligne"] :is(.screen, .code-duet) {
+  --mat-k: 0.2;
+  border-radius: 4px;
+  background: var(--k-fibre) 0 0 / 384px 384px, var(--mat-fill);
+}
+
+/* the screen sits flat in its frame, whose ink line is its edge: no shade
+   falls across it from the frame */
+:root[data-style="ligne"] .screen-edge {
+  box-shadow: none;
+}
+
+/* a call to action is a larger caption in the same line */
+:root[data-style="ligne"] .key[data-size="lg"] {
+  --key-k: 0.5;
+}
+
+/* Tags and code boxes are 9-sliced on every side (scripts/kits/ligne.mjs:
+   32px slices, 8 of them pad, at 0.25), so their line holds its weight at
+   any height. A tag is a caption balloon: its tail hangs below its box at
+   the left, so it is sliced deeper there (76 at the left, 64 at the foot),
+   and the box's foot sits 9.5px above the tag's: the words clear it by
+   --balloon-foot. */
+:root[data-style="ligne"] {
+  --balloon: var(--k-tape) 32 32 64 76 fill / 8px 8px 16px 19px / 2px 2px 0 2px stretch;
+  --balloon-foot: 15px;
+}
+
+:root[data-style="ligne"] :is(.tape, .kicker) {
+  padding: 6px 14px var(--balloon-foot);
+  border-image: var(--balloon);
+}
+
+/* A tag grows to its words (a second line, a long label), and the mint and
+   its fibre drawn into the art would stretch with it: inside its line the
+   page lays the mint again, the paper's fibre in it at the page's scale,
+   over the art's (its line and its tail stay the art's). The box's line is
+   2px deep, its foot --balloon-box-foot above the tag's (the tail below). */
+:root[data-style="ligne"] {
+  --balloon-box-foot: 11.5px;
+}
+
+:root[data-style="ligne"] :is(.tape, .kicker, .hero-copy > .silk, .module-num) {
+  position: relative;
+  isolation: isolate;
+}
+
+:root[data-style="ligne"] :is(.tape, .kicker, .hero-copy > .silk, .module-num)::before {
+  content: "";
+  position: absolute;
+  inset: 2px 2px var(--balloon-box-foot);
+  z-index: -1;
+  background: var(--k-fibre) 0 0 / 384px 384px, var(--tag-fill);
+  pointer-events: none;
+}
+
+/* Inline code is tinted, not boxed: a colourist's flat powder blue behind
+   the words, no line (scripts/kits/ligne.mjs `tint`), within the line of
+   text it sits in, so the paragraph keeps its leading and a comma after it
+   stays with it. */
+:root[data-style="ligne"] :not(pre) > code {
+  margin: 0;
+  /* (the tint runs a pixel above the words and two below, as the drawn
+     tint did; an inline box's padding never moves the line) */
+  padding: 1px 0.15em 2px;
+  border-image: none;
+  border-radius: 2px;
+  /* the tint laid by the page, the paper's fibre in it at the page's scale
+     (a drawn tint stretched along a long identifier into streaks) */
+  background: var(--k-fibre) 0 0 / 384px 384px, var(--code-fill);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* A shortcut is printed once, as a keycap where the page names it (the
+   foot, the launch page), lettered as the buttons are: the masthead's
+   buttons carry their words alone, so every button on the page is lettered
+   alike. A keycap is a white caption flat on the page, in the finer line,
+   with no shadow: it is named, never pressed. */
+:root[data-style="ligne"] .running-head .key-legend {
+  display: none;
+}
+
+:root[data-style="ligne"] .key.cap {
+  --ki: var(--chip-ink); /* ink on the white caption, by night too */
+}
+
+:root[data-style="ligne"] .key.cap::before {
+  border-image: var(--k-cap) 32 fill / 8px / 0 stretch;
+  background: none;
+}
+
+/* in a line of text, a keycap is drawn smaller than the line round a
+   caption (its art at 5/8 of its scale: a line of 1.25px), with room
+   round its letter, so the letter never runs into the line */
+:root[data-style="ligne"] .key.cap-inline {
+  height: 1.7em;
+  padding: 0 0.6em 1px;
+}
+
+:root[data-style="ligne"] .key.cap-inline::before {
+  border-image-width: 5px;
+}
+
+:root[data-style="ligne"] .key.cap::after {
+  content: none;
+}
+
+/* A page's screenshots are tiers of their own, as on an album page: the
+   print at its real size in its panel, its caption under it, and beside it,
+   set level, a closer panel (kit.css .tier-cut): a close-up of its own on
+   each tier, the butte, the track, the pillar; never prints laid to
+   alternate sides. */
+@media (min-width: 1000px) {
+  :root[data-style="ligne"] {
+    --shot-cut: block;
+  }
+
+  :root[data-style="ligne"] .shot-tier {
+    display: flex;
+    gap: var(--rack-gap);
+  }
+
+  :root[data-style="ligne"] .shot-tier > .shot {
+    flex: 0 1 auto;
+    min-width: 0;
+    align-self: stretch;
+  }
+
+  :root[data-style="ligne"] .shot-tier > .tier-cut {
+    flex: 1 0 120px;
+    /* a close-up of its own, upright, cropped to the panel */
+    --tier-cut-art: var(--k-cut-butte);
+    --tier-cut-size: cover;
+    --tier-cut-at: 50% 50%;
+  }
+
+  /* (cropped a little low: the night's moon, at the top, never cut by the
+     panel's line) */
+  :root[data-style="ligne"] .shot-tier:nth-child(2) > .tier-cut {
+    --tier-cut-art: var(--k-cut-track);
+    --tier-cut-at: 50% 62%;
+  }
+
+  :root[data-style="ligne"] .shot-tier:nth-child(3) > .tier-cut {
+    --tier-cut-art: var(--k-cut-pillar);
+  }
+}
+
+/* On a phone the masthead wraps its page links under the brand: its rows
+   clear the strip's line by a gap, top and foot, as a caption clears a
+   panel's, never touching it. */
+@media (max-width: 600px) {
+  :root[data-style="ligne"] .running-head {
+    padding-block: calc(var(--plate-w) + 6px);
+  }
+}

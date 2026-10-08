@@ -26,7 +26,7 @@ export function Instruments() {
       <Key legend="/" onClick={openIndex} ariaLabel="Open the index of projects">
         index
       </Key>
-      <Key legend="t" onClick={toggleTheme} ariaLabel={rice ? `Theme: ${riceLabel(rice)}. Switch theme` : "Switch theme"}>
+      <Key legend="t" className="theme-key" onClick={toggleTheme} ariaLabel={rice ? `Theme: ${riceLabel(rice)}. Switch theme` : "Switch theme"}>
         <span className="rice-name fine-only" suppressHydrationWarning>
           {rice ? riceLabel(rice) : "rice"}
         </span>

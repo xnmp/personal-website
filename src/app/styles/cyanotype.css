@@ -1,0 +1,411 @@
+/* ==========================================================================
+   CYANOTYPE (art/briefs/cyanotype.md): prints brushed in Prussian blue on
+   white watercolour paper, taped at their top corners, paper labels and a
+   white card window mount, before a photogram. The kit is built by
+   `node scripts/build-kit.mjs cyanotype` to the same source geometry as the
+   Paper Diorama, so only the art, the inks and the mounts' slices change.
+   Night (the dark rices: the studio after dark, under a desk lamp) first,
+   then day (the light rice).
+   ========================================================================== */
+
+:root[data-style="cyanotype"] {
+  --font-display: var(--font-bodoni);
+
+  --signal: #f2c14e; /* sun yellow: the primary label, the active dot, focus */
+  --signal-ink: #f2c14e; /* on the blue print */
+  --print: #ede2c8; /* the stencil's white, warmed by the lamp */
+  --print-soft: #c9c0ab;
+  --print-faint: #a9a291;
+  --engrave-lo: rgba(237, 226, 200, 0.2);
+  --engrave-hi: transparent;
+  --scene-ground: #041f4a;
+  --k-scene-flat: url(/kit/cyanotype/scene-night.webp);
+  --k-sky: url(/kit/cyanotype/scene/night/sky.webp);
+  --k-sun: none; /* a photogram has no sky */
+  --sun-sw: 1;
+  --sun-sh: 1;
+  --sun-cx: 0;
+  --sun-cy: 0;
+  --sun-r: 0;
+  --k-far: url(/kit/cyanotype/scene/night/far.webp);
+  --k-mid: url(/kit/cyanotype/scene/night/mid.webp);
+  --k-near: url(/kit/cyanotype/scene/night/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/cyanotype/scene/night/left.webp);
+  --k-right: url(/kit/cyanotype/scene/night/right.webp);
+  --k-plate: url(/kit/cyanotype/sheet-night-normal.webp);
+  --k-plate-hover: url(/kit/cyanotype/sheet-night-hover.webp);
+  --k-plate-pressed: url(/kit/cyanotype/sheet-night-pressed.webp);
+  --k-plate-focus: url(/kit/cyanotype/sheet-night-focus.webp);
+  --k-plate-flat: url(/kit/cyanotype/sheet-night-flat.webp);
+  /* the other three prints, hung in turn with the first (below) */
+  --k-plate-b: url(/kit/cyanotype/sheet-night-b-normal.webp);
+  --k-plate-b-hover: url(/kit/cyanotype/sheet-night-b-hover.webp);
+  --k-plate-b-pressed: url(/kit/cyanotype/sheet-night-b-pressed.webp);
+  --k-plate-b-focus: url(/kit/cyanotype/sheet-night-b-focus.webp);
+  --k-plate-b-flat: url(/kit/cyanotype/sheet-night-b-flat.webp);
+  --k-plate-c: url(/kit/cyanotype/sheet-night-c-normal.webp);
+  --k-plate-c-hover: url(/kit/cyanotype/sheet-night-c-hover.webp);
+  --k-plate-c-pressed: url(/kit/cyanotype/sheet-night-c-pressed.webp);
+  --k-plate-c-focus: url(/kit/cyanotype/sheet-night-c-focus.webp);
+  --k-plate-c-flat: url(/kit/cyanotype/sheet-night-c-flat.webp);
+  --k-plate-d: url(/kit/cyanotype/sheet-night-d-normal.webp);
+  --k-plate-d-hover: url(/kit/cyanotype/sheet-night-d-hover.webp);
+  --k-plate-d-pressed: url(/kit/cyanotype/sheet-night-d-pressed.webp);
+  --k-plate-d-focus: url(/kit/cyanotype/sheet-night-d-focus.webp);
+  --k-plate-d-flat: url(/kit/cyanotype/sheet-night-d-flat.webp);
+  /* the prints' blue is cleared from the art (scripts/framed-pane.mjs) and
+     painted here, tiled, so its tooth and brush marks keep their scale at
+     any size; the art keeps the paper margin and the brushed edge, which
+     hands over to this blue */
+  --plate-slice: var(--slice-plate);
+  --plate-fill: url(/kit/cyanotype/print-night.webp);
+  --plate-fill-size: 640px;
+  --plate-fill-repeat: repeat;
+  /* the blue starts under the white margin (24 of the art's px in from its
+     edge), clear of the deckle and the tape's overhang */
+  --plate-fill-in: 24px;
+  --strip-fill-in: 20px;
+  --strip-repeat: round; /* a strip's rails tile, as a print's do */
+  --plate-backdrop: none;
+  --plate-round: 0px;
+  /* the prints are hung near their own size, a size up from the other
+     styles' sheets: their margin and brushed edge are the only ornament they
+     have, and the edge's bites must read as a brush's, not a trim */
+  --plate-k: 0.95;
+  /* pressed: a print is pressed flat to the wall, set down a hair as its
+     shadow closes; it keeps its light (the sheets' pressedFlags --dim 1), as
+     the mount on it does */
+  --plate-press-dim: 1;
+  --plate-press-shift: translateY(2px);
+  /* a print's rails tile (their dry brush ends run across them, and a
+     stretch smears them into streaks; scripts/mitre.mjs tileRails) */
+  --plate-repeat: round;
+  --plate-light: url(/kit/cyanotype/sheet-night-light.webp);
+  --plate-light-in: 0px; /* the lamp's pool runs under the margin, edge unseen */
+  /* no sheen the page lays inside its frame: it lights the box the page
+     draws, a rectangle inside the brushed edge the art draws */
+  --plate-sheen: none;
+  /* content clears the brushed edge and the focus rule laid inside it,
+     with room between the rule and what it marks */
+  --plate-inset: 12px;
+  --k-strip: url(/kit/cyanotype/sheet-strip-night-normal.webp); /* a print without tape */
+  --k-strip-d: url(/kit/cyanotype/sheet-strip-night-d-normal.webp);
+  /* a page's own prints, wide (below) */
+  --k-plate-w: url(/kit/cyanotype/sheet-night-w-b-normal.webp);
+  --k-plate-w-flat: url(/kit/cyanotype/sheet-night-w-b-flat.webp);
+  --k-plate-w-b: url(/kit/cyanotype/sheet-night-w-c-normal.webp);
+  --k-plate-w-b-flat: url(/kit/cyanotype/sheet-night-w-c-flat.webp);
+  /* tape holds a print: no pin */
+  --k-pin-hold: none;
+  --k-pin-hold-signal: none;
+  /* prints in a row hang from one line */
+  --shelf-stagger: 0px;
+  --shelf-align: stretch;
+  --hero-stagger: 0px;
+  --hero-align: start;
+  --silk-shadow: none;
+  --k-bezel: url(/kit/cyanotype/mat-night.webp);
+  --mat-t: 123;
+  --mat-r: 140;
+  --mat-b: 123;
+  --mat-l: 144;
+  --k-key: url(/kit/cyanotype/tile-night-normal.webp);
+  --k-key-hover: url(/kit/cyanotype/tile-night-hover.webp);
+  --k-key-pressed: url(/kit/cyanotype/tile-night-pressed.webp);
+  --k-key-focus: url(/kit/cyanotype/tile-night-focus.webp);
+  --key-inset: 4px; /* the legend clears the label's printed rule */
+  --key-lift: 0px; /* a label's edge is a hair: the legend centres in the box */
+  --k-tape: url(/kit/cyanotype/tape-night.webp); /* cream paper tape */
+  --tape-ink: #1c1a16;
+  --k-chip: url(/kit/cyanotype/chip-night.webp); /* inline code: a slip of card */
+  --chip-ink: #1c1a16;
+  --chip-pad: 0.35em; /* a straight-cut slip */
+  --k-drift-cloud: none;
+  --motes: #ffd9a0;
+  --motes-kind: dust;
+  --plate-under: #072e52;
+  --bezel-under: #d1c1a4;
+  --key-under: #d1c0a1;
+  --key-ink: #1a1f2a;
+  --key-ink-soft: #3d3a33;
+  --k-key-signal: url(/kit/cyanotype/tile-signal-night-normal.webp);
+  --k-key-signal-hover: url(/kit/cyanotype/tile-signal-night-hover.webp);
+  --k-key-signal-pressed: url(/kit/cyanotype/tile-signal-night-pressed.webp);
+  --k-key-signal-focus: url(/kit/cyanotype/tile-signal-night-focus.webp);
+  --key-signal-ink: #142033; /* ink on sun-yellow card */
+  --key-signal-under: #d09a37;
+  --k-pin-brass: url(/kit/cyanotype/pin-brass.webp); /* a white paper dot */
+  --k-pin-green: url(/kit/cyanotype/pin-green.webp);
+  --k-pin-amber: url(/kit/cyanotype/pin-amber.webp); /* coral */
+  --k-pin-signal: url(/kit/cyanotype/pin-signal.webp); /* sun yellow */
+  --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+}
+
+/* day: soft daylight on white paper and Prussian blue */
+:root[data-style="cyanotype"][data-rice="paper"] {
+  --signal: #f2c14e;
+  --signal-ink: #f2c14e;
+  --print: #f6f4ee;
+  --print-soft: #cfd8e6;
+  --print-faint: #aebcd2;
+  --engrave-lo: rgba(246, 244, 238, 0.22);
+  --scene-ground: #0a3b78;
+  --k-scene-flat: url(/kit/cyanotype/scene-day.webp);
+  --k-sky: url(/kit/cyanotype/scene/day/sky.webp);
+  --k-far: url(/kit/cyanotype/scene/day/far.webp);
+  --k-mid: url(/kit/cyanotype/scene/day/mid.webp);
+  --k-near: url(/kit/cyanotype/scene/day/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/cyanotype/scene/day/left.webp);
+  --k-right: url(/kit/cyanotype/scene/day/right.webp);
+  --k-sun: none;
+  --sun-cx: 0;
+  --sun-cy: 0;
+  --sun-r: 0;
+  --k-drift-cloud: none;
+  --k-plate: url(/kit/cyanotype/sheet-day-normal.webp);
+  --k-plate-hover: url(/kit/cyanotype/sheet-day-hover.webp);
+  --k-plate-pressed: url(/kit/cyanotype/sheet-day-pressed.webp);
+  --k-plate-focus: url(/kit/cyanotype/sheet-day-focus.webp);
+  --k-plate-flat: url(/kit/cyanotype/sheet-day-flat.webp);
+  --k-plate-b: url(/kit/cyanotype/sheet-day-b-normal.webp);
+  --k-plate-b-hover: url(/kit/cyanotype/sheet-day-b-hover.webp);
+  --k-plate-b-pressed: url(/kit/cyanotype/sheet-day-b-pressed.webp);
+  --k-plate-b-focus: url(/kit/cyanotype/sheet-day-b-focus.webp);
+  --k-plate-b-flat: url(/kit/cyanotype/sheet-day-b-flat.webp);
+  --k-plate-c: url(/kit/cyanotype/sheet-day-c-normal.webp);
+  --k-plate-c-hover: url(/kit/cyanotype/sheet-day-c-hover.webp);
+  --k-plate-c-pressed: url(/kit/cyanotype/sheet-day-c-pressed.webp);
+  --k-plate-c-focus: url(/kit/cyanotype/sheet-day-c-focus.webp);
+  --k-plate-c-flat: url(/kit/cyanotype/sheet-day-c-flat.webp);
+  --k-plate-d: url(/kit/cyanotype/sheet-day-d-normal.webp);
+  --k-plate-d-hover: url(/kit/cyanotype/sheet-day-d-hover.webp);
+  --k-plate-d-pressed: url(/kit/cyanotype/sheet-day-d-pressed.webp);
+  --k-plate-d-focus: url(/kit/cyanotype/sheet-day-d-focus.webp);
+  --k-plate-d-flat: url(/kit/cyanotype/sheet-day-d-flat.webp);
+  --plate-fill: url(/kit/cyanotype/print-day.webp);
+  --plate-light: url(/kit/cyanotype/sheet-day-light.webp);
+  --k-strip: url(/kit/cyanotype/sheet-strip-day-normal.webp);
+  --k-strip-d: url(/kit/cyanotype/sheet-strip-day-d-normal.webp);
+  --k-plate-w: url(/kit/cyanotype/sheet-day-w-b-normal.webp);
+  --k-plate-w-flat: url(/kit/cyanotype/sheet-day-w-b-flat.webp);
+  --k-plate-w-b: url(/kit/cyanotype/sheet-day-w-c-normal.webp);
+  --k-plate-w-b-flat: url(/kit/cyanotype/sheet-day-w-c-flat.webp);
+  --k-bezel: url(/kit/cyanotype/mat-day.webp);
+  --mat-t: 123;
+  --mat-r: 140;
+  --mat-b: 123;
+  --mat-l: 144;
+  --k-key: url(/kit/cyanotype/tile-day-normal.webp);
+  --k-key-hover: url(/kit/cyanotype/tile-day-hover.webp);
+  --k-key-pressed: url(/kit/cyanotype/tile-day-pressed.webp);
+  --k-key-focus: url(/kit/cyanotype/tile-day-focus.webp);
+  --k-key-signal: url(/kit/cyanotype/tile-signal-normal.webp);
+  --k-key-signal-hover: url(/kit/cyanotype/tile-signal-hover.webp);
+  --k-key-signal-pressed: url(/kit/cyanotype/tile-signal-pressed.webp);
+  --k-key-signal-focus: url(/kit/cyanotype/tile-signal-focus.webp);
+  --k-tape: url(/kit/cyanotype/tape-day.webp);
+  --tape-ink: #142033;
+  --k-chip: url(/kit/cyanotype/chip-day.webp);
+  --chip-ink: #142033;
+  --motes: #f6f4ee;
+  --motes-kind: dust;
+  --plate-under: #083975;
+  --bezel-under: #f3f1ea;
+  --key-under: #f3f0e6;
+  --key-ink: #142033;
+  --key-ink-soft: #33435c;
+  --key-signal-under: #f2c14e;
+}
+
+@media (max-width: 720px) {
+  :root[data-style="cyanotype"] {
+    --plate-k: 0.73;
+    /* a phone's prints are a column's width: the focus rule keeps a
+       narrower berth, so the copy keeps its measure */
+    --plate-inset: 6px;
+  }
+}
+
+/* No two neighbouring prints are the same print: four (two generated, each
+   also hung turned end for end; scripts/kits/cyanotype.mjs) hang in turn,
+   and the strips alternate two. Counted among a print's own siblings, so a
+   row of three starts each row on a different print. */
+:root[data-style="cyanotype"] .faceplate:not(.running-head, .divider, .statusline, .folio, .look):nth-child(4n + 2) {
+  --k-plate: var(--k-plate-b);
+  --k-plate-hover: var(--k-plate-b-hover);
+  --k-plate-pressed: var(--k-plate-b-pressed);
+  --k-plate-focus: var(--k-plate-b-focus);
+  --k-plate-flat: var(--k-plate-b-flat);
+}
+
+:root[data-style="cyanotype"] .faceplate:not(.running-head, .divider, .statusline, .folio, .look):nth-child(4n + 3) {
+  --k-plate: var(--k-plate-c);
+  --k-plate-hover: var(--k-plate-c-hover);
+  --k-plate-pressed: var(--k-plate-c-pressed);
+  --k-plate-focus: var(--k-plate-c-focus);
+  --k-plate-flat: var(--k-plate-c-flat);
+}
+
+:root[data-style="cyanotype"] .faceplate:not(.running-head, .divider, .statusline, .folio, .look):nth-child(4n) {
+  --k-plate: var(--k-plate-d);
+  --k-plate-hover: var(--k-plate-d-hover);
+  --k-plate-pressed: var(--k-plate-d-pressed);
+  --k-plate-focus: var(--k-plate-d-focus);
+  --k-plate-flat: var(--k-plate-d-flat);
+}
+
+:root[data-style="cyanotype"] :is(.running-head, .divider, .statusline, .folio, .look):nth-child(2n) {
+  --k-plate: var(--k-strip-d);
+}
+
+/* A page's own prints (its sections, a detail page's opening, its foot)
+   hang in turn as the cards do; they are not cards (.faceplate), so they
+   are counted here. From 900px they run the column's width, and hang the
+   two wide prints in turn, whose rails are a page's width long
+   (scripts/kits/cyanotype.mjs WIDE): a card's would come round twice on
+   one edge. */
+:root[data-style="cyanotype"] :is(.section, .detail-hero, .colophon, .blank-leaf):nth-child(4n + 2) {
+  --k-plate: var(--k-plate-b);
+  --k-plate-flat: var(--k-plate-b-flat);
+}
+
+:root[data-style="cyanotype"] :is(.section, .detail-hero, .colophon, .blank-leaf):nth-child(4n + 3) {
+  --k-plate: var(--k-plate-c);
+  --k-plate-flat: var(--k-plate-c-flat);
+}
+
+:root[data-style="cyanotype"] :is(.section, .detail-hero, .colophon, .blank-leaf):nth-child(4n) {
+  --k-plate: var(--k-plate-d);
+  --k-plate-flat: var(--k-plate-d-flat);
+}
+
+@media (min-width: 900px) {
+  :root[data-style="cyanotype"] :is(.section, .detail-hero, .colophon, .blank-leaf):nth-child(2n + 1) {
+    --k-plate: var(--k-plate-w);
+    --k-plate-flat: var(--k-plate-w-flat);
+  }
+
+  :root[data-style="cyanotype"] :is(.section, .detail-hero, .colophon, .blank-leaf):nth-child(2n) {
+    --k-plate: var(--k-plate-w-b);
+    --k-plate-flat: var(--k-plate-w-b-flat);
+  }
+}
+
+/* The strips are the prints' paper at the prints' scale, near enough that
+   their margin and brushed edge read as one material with the cards' (at
+   the other styles' 0.24 they are a fine stamp border). Their rails are
+   rebuilt from the prints' shallower stretches (scripts/kits/cyanotype.mjs
+   STRIP, `quiet`), so the brushed edge leaves a strip room for its line.
+   Their art's sides are cut down to a strip's height, so a strip need only
+   be as tall as its two corners inside the box (2 x 56 of the art's px),
+   not the full slices the shared rule keeps clear (globals.css). */
+:root[data-style="cyanotype"] :is(.running-head, .divider, .folio, .statusline, .look) {
+  --plate-k: 0.66;
+  min-height: calc(2 * 56px * var(--plate-k) + 8px);
+}
+
+@media (max-width: 720px) {
+  :root[data-style="cyanotype"] :is(.running-head, .divider, .folio, .statusline, .look) {
+    --plate-k: 0.52;
+  }
+}
+
+/* On a phone the masthead's brand and keys share one row (globals.css): its
+   words clear the brushed edge itself, the deepest bite 40 of the art's px
+   in from the paper's edge, not the whole corner slice, by as much again as
+   a label's own margin (a label against the blue's ragged end reads as
+   pressed into it); on the narrowest phones, where the brand and both keys
+   only just share the row, that margin goes, and the wordmark takes a size
+   down (Bodoni sets wide). */
+@media (max-width: 600px) {
+  :root[data-style="cyanotype"] .running-head {
+    padding: calc(40px * var(--plate-k) + 2px) calc(40px * var(--plate-k) + 10px);
+  }
+}
+
+@media (max-width: 400px) {
+  :root[data-style="cyanotype"] .running-head {
+    padding-inline: calc(40px * var(--plate-k) + 3px);
+  }
+
+  :root[data-style="cyanotype"] .running-head .brand {
+    font-size: 19px;
+  }
+}
+
+/* The photogram's silhouettes stand at its edges, and every layer is
+   cropped to cover the frame from its middle: narrower than the frame's
+   proportions the crop takes them off the page, leaving prints of blue on a
+   wall of the same blue. So narrower, the ferns keep to their side, the
+   full height of the wall. The keyboard is left off: it stands in the
+   right-hand margin of a desktop, and a tablet's or a phone's is too narrow
+   for it; anywhere it lay it would meet the prints, its white against their
+   white margins and under their tape (the edge between print and wall is
+   only that margin), and cover-scaled it stands twice its size at the top,
+   the brightest thing on the wall. The tools at the foot keep its side. */
+@media (max-width: 1100px) {
+  :root[data-style="cyanotype"] {
+    --left-anchor: 0;
+  }
+
+  :root[data-style="cyanotype"] [data-layer="right"] {
+    display: none;
+  }
+}
+
+/* Bodoni's hairlines, at the optical size of its text cuts (its display cuts'
+   hairlines drop out over the brushed emulsion's mottle, and "e" reads "c") */
+:root[data-style="cyanotype"] body {
+  font-variation-settings: "opsz" 11;
+}
+
+/* A print changes its light only where its art carries the change: lifted,
+   off the wall on a longer shadow, its margin's lit edges catching the
+   light; pressed, flat to the wall on a closed one. Nothing is laid over
+   the whole print: a brightening clips the white paper and the mount, and
+   with them the screen it carries, whose colours are the app's own. */
+
+/* A print's frame is its paper margin and brushed edge, and both are wide
+   (it hangs near its own size, --plate-k): the copy on a hero print sits
+   just inside the focus rule laid along the edge (--plate-w), not the
+   further inset the other styles' thin frames take, so a half-width print
+   keeps a reading measure. Bodoni Moda sets wide, so its display sizes are
+   a step down, and a long word ("filesystem.") fits the measure. */
+:root[data-style="cyanotype"] :is(.hero-copy, .launch-copy, .detail-hero).faceplate,
+:root[data-style="cyanotype"] .detail-hero {
+  padding-inline: calc(var(--plate-w) + 6px);
+}
+
+:root[data-style="cyanotype"] .title {
+  font-size: clamp(34px, 3.5vw, 50px);
+}
+
+:root[data-style="cyanotype"] .launch-hero h1 {
+  font-size: clamp(34px, 3.6vw, 52px);
+}
+
+:root[data-style="cyanotype"] .detail-hero h1 {
+  font-size: clamp(32px, 4.6vw, 56px);
+}
+
+/* Every print is its own print: the brushed emulsion is one tile the page
+   lays in each, and laid from the same place in every card of a size it
+   makes them one print, its marks at the same place in each (a fleck by
+   every title). Each card in a run of four is cut from its own place in
+   the tile (640px), so no two neighbours match, in rows of three, two or
+   one. */
+:root[data-style="cyanotype"] .module:nth-child(4n + 2) {
+  --plate-fill-at: calc(50% + 213px) calc(50% + 347px);
+}
+
+:root[data-style="cyanotype"] .module:nth-child(4n + 3) {
+  --plate-fill-at: calc(50% + 427px) calc(50% + 91px);
+}
+
+:root[data-style="cyanotype"] .module:nth-child(4n) {
+  --plate-fill-at: calc(50% + 139px) calc(50% + 503px);
+}

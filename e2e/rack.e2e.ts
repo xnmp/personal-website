@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { projects } from "../src/data/projects";
+import { STYLES } from "../src/lib/styles";
 import type { Page } from "@playwright/test";
 
 /** The rice key prints the live theme name only once React has hydrated. */
@@ -123,7 +124,7 @@ test("Tab and Shift+Tab never reach the page behind the open index", async ({ pa
 // follows spans lines and contains an HTML entity (`</em> gave …&rsquo;…` comes
 // out as `</em>gave`). Fixed upstream in 16.4; until then, catch it in the HTML.
 test("no word is glued to the end of an inline element", async ({ request }) => {
-  const routes = ["/", ...projects.map((p) => p.href), "/p/zheng-shang-you/play", "/tableau-frog"];
+  const routes = ["/", "/about", ...projects.map((p) => p.href), "/p/zheng-shang-you/play", "/tableau-frog"];
   for (const route of routes) {
     const html = await (await request.get(route)).text();
     const body = html.slice(html.indexOf("<body"));
@@ -137,7 +138,7 @@ test("no word is glued to the end of an inline element", async ({ request }) => 
 // `,so a file`; `crates` then `<span>(` renders `crates(`). Checked in the
 // rendered prose, with code standing in as a word.
 test("prose keeps its spaces around inline elements", async ({ page }) => {
-  const routes = ["/", ...projects.map((p) => p.href)];
+  const routes = ["/", "/about", ...projects.map((p) => p.href)];
   for (const route of routes) {
     await page.goto(route);
     const glued = await page.evaluate(() => {
@@ -150,21 +151,27 @@ test("prose keeps its spaces around inline elements", async ({ page }) => {
   }
 });
 
-test("on a narrow phone the masthead keeps the brand and both keys on one row", async ({ page }) => {
-  for (const width of [320, 360]) {
-    await page.setViewportSize({ width, height: 700 });
-    for (const route of ["/", "/p/tauri-explorer"]) {
-      await page.goto(route);
-      const brand = await page.locator(".running-head .brand").boundingBox();
-      for (const key of await page.locator(".running-head .instruments .key").all()) {
-        const k = (await key.boundingBox())!;
-        // the key's box spans the brand's middle: the same row
-        expect(k.y, `${route} at ${width}`).toBeLessThan(brand!.y + brand!.height / 2);
-        expect(k.y + k.height, `${route} at ${width}`).toBeGreaterThan(brand!.y + brand!.height / 2);
+// in every style: each dresses the masthead's strip and keys in its own art,
+// with its own insets and its own wordmark face
+for (const style of STYLES) {
+  test(`on a narrow phone the masthead keeps the brand and both keys on one row (${style.id})`, async ({ page }) => {
+    await page.addInitScript((s) => localStorage.setItem("nb-style", s), style.id);
+    for (const width of [320, 360]) {
+      await page.setViewportSize({ width, height: 700 });
+      for (const route of ["/", "/p/tauri-explorer"]) {
+        await page.goto(route);
+        await page.evaluate(() => document.fonts.ready);
+        const brand = await page.locator(".running-head .brand").boundingBox();
+        for (const key of await page.locator(".running-head .instruments .key").all()) {
+          const k = (await key.boundingBox())!;
+          // the key's box spans the brand's middle: the same row
+          expect(k.y, `${route} at ${width}`).toBeLessThan(brand!.y + brand!.height / 2);
+          expect(k.y + k.height, `${route} at ${width}`).toBeGreaterThan(brand!.y + brand!.height / 2);
+        }
       }
     }
-  }
-});
+  });
+}
 
 test("nothing scrolls sideways at 320px", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
@@ -198,4 +205,17 @@ test.describe("the Eskiv heatmap's timeline", () => {
     await page.waitForTimeout(3500); // over two of its 1.4s steps
     expect(await bucket(page)).toBe(first);
   });
+});
+
+test("the about page is linked from home and prints its facts", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "More about me" }).click();
+  await expect(page).toHaveURL(/\/about$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Chong");
+  const facts = page.getByRole("region", { name: "Facts" });
+  await expect(facts).toContainText("Sydney");
+  await expect(facts.getByRole("link", { name: "github/xnmp" })).toHaveAttribute("href", "https://github.com/xnmp");
+  // the way back is a tile on the masthead
+  await page.getByRole("link", { name: "← all projects" }).click();
+  await expect(page).toHaveURL(/\/$/);
 });

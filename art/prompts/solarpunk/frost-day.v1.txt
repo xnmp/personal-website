@@ -1,0 +1,3 @@
+A seamless, tileable square texture of frosted glass seen straight-on: pale sage-green satin-frosted glass (average colour about #dfe4d2), a very fine, even, soft-grained frost, with faint large-scale cloudy variations of one or two percent in tone, as if lit evenly by warm daylight from behind. No objects, no reflections, no edges, no frame, no vignette, no gradient across the image: the left edge must continue seamlessly into the right edge and the top into the bottom. Fully opaque, square 1:1 image. No text.
+
+Match the glass colour and frost of the attached reference image (ref.png) exactly; use it for material only, not composition.

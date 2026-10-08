@@ -1,5 +1,5 @@
 // Bake the cast shadow of a cut-paper asset into its bitmap.
-//   node scripts/paper-shadow.mjs <in.webp> <out.webp> --pad=48 [--ambient=dx:dy:blur:opacity] [--contact=dx:dy:blur:opacity] [--tint=2a2418] [--mount=width:hex]
+//   node scripts/paper-shadow.mjs <in.webp> <out.webp> --pad=48 [--ambient=dx:dy:blur:opacity] [--contact=dx:dy:blur:opacity] [--tint=2a2418] [--mount=width:hex[:crisp]]
 //
 // Paper on paper casts two shadows under a soft key light from the upper
 // left: a tight, dark contact shadow where the sheet nearly touches the layer
@@ -16,8 +16,10 @@
 // fibres catch the upper-left light along the top and left and fall into
 // shade along the bottom and right. The under-sheet, not the paper, casts the
 // shadow. Used for a focused sheet: focus is a physical layer, not a line
-// drawn on the paper.
+// drawn on the paper. With `:crisp` the under-sheet is cut, not torn: a clean
+// edge at a steady `width` (an enamel backing plate rather than paper).
 import sharp from "sharp";
+import { webpOptions } from "./webp.mjs";
 
 const args = process.argv.slice(2);
 const [src, out] = args.filter((a) => !a.startsWith("--"));
@@ -37,7 +39,9 @@ const base = sharp(src).ensureAlpha();
 const { width: W, height: H } = await base.metadata();
 const CW = W + 2 * PAD;
 const CH = H + 2 * PAD;
-const [MW, MOUNT] = opt.mount ? [+opt.mount.split(":")[0], opt.mount.split(":")[1].match(/../g).map((c) => parseInt(c, 16))] : [0, null];
+const [MW, MOUNT, CRISP] = opt.mount
+  ? [+opt.mount.split(":")[0], opt.mount.split(":")[1].match(/../g).map((c) => parseInt(c, 16)), opt.mount.split(":")[2] === "crisp"]
+  : [0, null, false];
 if (MW > PAD) throw new Error(`mount ${MW}px does not fit the ${PAD}px pad`);
 
 // the silhouette on the padded canvas: the paper, or the card it is mounted on
@@ -87,7 +91,7 @@ if (MOUNT) {
   for (let y = 0; y < CH; y++)
     for (let x = 0; x < CW; x++) {
       const i = y * CW + x;
-      const reach = MW + 0.35 * MW * slow(x, y) + 1.6 * fine(x, y);
+      const reach = CRISP ? MW : MW + 0.35 * MW * slow(x, y) + 1.6 * fine(x, y);
       const left = reach - dist[i] / 3;
       reachLeft[i] = left;
       mountAlpha[i] = Math.round(255 * Math.min(1, Math.max(0, left / 1.2)));
@@ -157,8 +161,7 @@ if (CONTACT && CONTACT[3] > 0) layers.push({ input: await shadow(CONTACT) });
 if (MOUNT) layers.push({ input: await mount() });
 layers.push({ input: await base.png().toBuffer(), left: PAD, top: PAD });
 
-const meta = await sharp({ create: { width: CW, height: CH, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
-  .composite(layers)
-  .webp({ quality: 90, alphaQuality: 100 })
-  .toFile(out);
+// a .png out is an intermediate (a framed sheet is finished after this), kept lossless
+const canvas = sharp({ create: { width: CW, height: CH, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).composite(layers);
+const meta = await (out.endsWith(".png") ? canvas.png() : canvas.webp(webpOptions(90))).toFile(out);
 console.log(`${out} ${meta.width}x${meta.height} (pad ${PAD})`);

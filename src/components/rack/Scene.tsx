@@ -5,13 +5,13 @@ import { Fragment, type AnimationEvent } from "react";
 /** The scene's paper layers, back to front (art in kit.css: --k-<layer>). */
 export const SCENE_LAYERS = [
   "sky",
-  "mountains",
-  "hills-far",
-  "hills-near",
-  "pines-left-back",
-  "pines-right-back",
-  "pines-left",
-  "pines-right",
+  "far",
+  "mid",
+  "near",
+  "left-back",
+  "right-back",
+  "left",
+  "right",
 ] as const;
 
 /** The last layer to land; when it does, the scene is settled. */

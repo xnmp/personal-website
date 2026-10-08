@@ -132,37 +132,41 @@ export default function TauriExplorerPage() {
               ))}
             </ul>
           </div>
-          <figure className="launch-shot faceplate">
-            <Prop kind="pin" />
-            <Screen>
-              {/* the app window with quick open over it (2x pixels), and
-                  on phones a strip of the palette's input and first rows at
-                  about real size, short enough to share the first screen
-                  with the alpha key; the app itself is one scroll away,
-                  running live. One capture per rice, in the app's own theme
-                  nearest it (appTheme.ts); only the current rice's is shown,
-                  so only it loads. */}
-              {Object.entries(APP_THEME).map(([rice, theme]) => (
-                <picture key={rice} data-rice-shot={rice}>
-                  <source media={PHONE} srcSet={`/tauri/hero-quick-open-strip-${theme}.webp`} width={406} height={162} />
-                  <img
-                    src={`/tauri/hero-quick-open-${theme}.webp`}
-                    alt="Tauri Explorer’s window with quick open over it after typing “read”: README.md ranked first, then the feature docs, each with the matched letters underlined"
-                    width={698}
-                    height={438}
-                    loading="lazy"
-                    fetchPriority="high"
-                    className="shot-img"
-                  />
-                </picture>
-              ))}
-            </Screen>
-            <figcaption className="launch-shot-cap note">
-              <LiveCaps chord={["Ctrl", "P"]} className="fine-only" />
-              <span className="fine-only">Press these keys to jump to the live demo and hand it the keyboard.</span>
-              <span className="coarse-only">Quick open, typing “read”.</span>
-            </figcaption>
-          </figure>
+          <div className="launch-col">
+            <figure className="launch-shot faceplate">
+              <Prop kind="pin" />
+              <Screen>
+                {/* the app window with quick open over it (2x pixels), and
+                    on phones a strip of the palette's input and first rows at
+                    about real size, short enough to share the first screen
+                    with the alpha key; the app itself is one scroll away,
+                    running live. One capture per rice, in the app's own theme
+                    nearest it (appTheme.ts); only the current rice's is shown,
+                    so only it loads. */}
+                {Object.entries(APP_THEME).map(([rice, theme]) => (
+                  <picture key={rice} data-rice-shot={rice}>
+                    <source media={PHONE} srcSet={`/tauri/hero-quick-open-strip-${theme}.webp`} width={406} height={162} />
+                    <img
+                      src={`/tauri/hero-quick-open-${theme}.webp`}
+                      alt="Tauri Explorer’s window with quick open over it after typing “read”: README.md ranked first, then the feature docs, each with the matched letters underlined"
+                      width={698}
+                      height={438}
+                      loading="lazy"
+                      fetchPriority="high"
+                      className="shot-img"
+                    />
+                  </picture>
+                ))}
+              </Screen>
+              <figcaption className="launch-shot-cap note">
+                <LiveCaps chord={["Ctrl", "P"]} className="fine-only" />
+                <span className="fine-only">Press these keys to jump to the live demo and hand it the keyboard.</span>
+                <span className="coarse-only">Quick open, typing “read”.</span>
+              </figcaption>
+            </figure>
+            {/* a style whose panels in a row are set level shows a cut of its scene here (kit.css .tier-cut) */}
+            <div className="tier-cut" aria-hidden="true" />
+          </div>
         </section>
 
         <LiveSection />

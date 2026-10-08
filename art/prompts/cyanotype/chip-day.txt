@@ -1,0 +1,5 @@
+A single small slip of white card (about #f3f0e6) lying flat, seen straight-on, about 7 times as wide as it is tall, with clean straight-cut edges and square ends, a faint paper tooth in it, evenly lit. Plain and uniform along its length so it can be stretched. No text, no shadow. Centred, filling about 84% of the frame width. Wide 16:9 image.
+
+Style: a cyanotype sun-printing studio, seen straight-on in soft, even daylight from the upper left. Real materials: heavy cold-pressed white watercolour paper with a visible tooth, Prussian-blue cyanotype emulsion brushed on by hand, cream paper tape, off-white card. Palette: Prussian blue #1f4e8c and its deep #12325e, white paper #f6f4ee, cream tape #efe6cf, sun yellow #f2c14e, blue-black ink #142033. Match the materials, colours and lighting of the attached reference image (ref.png) exactly; use it for style only, not composition.
+
+Background: if your image tool supports a transparent background, use a fully transparent background. Otherwise use a perfectly flat, pure magenta #FF00FF background with no gradient, texture, vignette or cast shadow on it. No text anywhere.

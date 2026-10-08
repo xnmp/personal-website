@@ -1,0 +1,292 @@
+/* ==========================================================================
+   NATURAL GARDEN (art/briefs/garden.md): tablets of honey limestone with a
+   chiselled bevel set into a walled cottage garden, glazed tiles and beads,
+   copper plant labels, slate slips. The kit is built by `node scripts/build-kit.mjs garden` to the same
+   source geometry as the Paper Diorama, so only the art, the inks and the
+   mounts' slices change. Night (the dark rices: the same garden under a full
+   moon) first, then day (the light rice).
+   ========================================================================== */
+
+:root[data-style="garden"] {
+  --font-display: var(--font-garamond);
+
+  --signal: #d9825a; /* terracotta glaze: the primary tile, the active bead, focus */
+  --signal-ink: #fbd3bd; /* on the moonlit stone */
+  --print: #f6f1e4; /* cream on the stone in moonlight */
+  --print-soft: #efe9da;
+  --print-faint: #ebe5d5;
+  --engrave-lo: rgba(0, 0, 0, 0.4);
+  --engrave-hi: rgba(239, 232, 214, 0.12);
+  --scene-ground: #505458;
+  --k-scene-flat: url(/kit/garden/scene-night.webp);
+  --k-sky: url(/kit/garden/scene/night/sky.webp);
+  --k-sun: url(/kit/garden/scene/night/sun.webp); /* the moon (see .scene-sun) */
+  --sun-sw: 182;
+  --sun-sh: 182;
+  --sun-cx: 91;
+  --sun-cy: 90;
+  --sun-r: 66;
+  --k-far: url(/kit/garden/scene/night/far.webp);
+  --k-mid: url(/kit/garden/scene/night/mid.webp);
+  --k-near: url(/kit/garden/scene/night/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/garden/scene/night/left.webp);
+  --k-right: url(/kit/garden/scene/night/right.webp);
+  --k-plate: url(/kit/garden/sheet-night-normal.webp);
+  --k-plate-hover: url(/kit/garden/sheet-night-hover.webp);
+  --k-plate-pressed: url(/kit/garden/sheet-night-pressed.webp);
+  --k-plate-focus: url(/kit/garden/sheet-night-focus.webp);
+  --k-plate-flat: url(/kit/garden/sheet-night-flat.webp);
+  /* the second slab, set in turn with the first (below) */
+  --k-plate-b: url(/kit/garden/sheet-night-b-normal.webp);
+  --k-plate-b-hover: url(/kit/garden/sheet-night-b-hover.webp);
+  --k-plate-b-pressed: url(/kit/garden/sheet-night-b-pressed.webp);
+  --k-plate-b-focus: url(/kit/garden/sheet-night-b-focus.webp);
+  --k-plate-b-flat: url(/kit/garden/sheet-night-b-flat.webp);
+  /* the tablets' face is cleared from the art (scripts/framed-pane.mjs) and
+     painted here, tiled, so the stone's grain keeps its scale at any size;
+     the art keeps the chiselled bevel, which hands over to this stone */
+  --plate-slice: var(--slice-plate);
+  --plate-fill: url(/kit/garden/stone-night.webp);
+  --plate-fill-size: 640px;
+  --plate-fill-repeat: repeat;
+  /* the stone starts under the bevel (16 of the art's px in from its edge),
+     clear of the tablet's soft outer edge */
+  --plate-fill-in: 16px;
+  --strip-fill-in: 16px;
+  /* the slab's long edges tile between its corners, rebuilt long from
+     pieces of themselves (scripts/kits/garden.mjs): stretched, a chip in
+     the arris smears into a streak */
+  --plate-repeat: round;
+  --strip-repeat: round;
+  /* pressed: the slab is set down into its bed (it lifts 3px on hover) and
+     the face dims with its frame (the sheets' pressedFlags --dim): the
+     moonlit stone further than the sunlit, or on its dark face it barely
+     changes */
+  --plate-press-shift: translateY(2px);
+  --plate-press-dim: 0.84;
+  --plate-backdrop: none;
+  --plate-round: 0px;
+  --plate-light: url(/kit/garden/sheet-night-light.webp);
+  --plate-light-in: 0px; /* a framed pane: the pool's edge lies under the frame (kit.css) */
+  --plate-sheen: url(/kit/garden/sheet-night-sheen.webp);
+  /* content clears the bevel and the glaze laid in along it */
+  --plate-inset: 4px; /* the slabs print a size up (below): their corner is wider */
+  --k-strip: url(/kit/garden/sheet-strip-night-normal.webp); /* a plain tablet */
+  /* a tablet is set, not pinned */
+  --k-pin-hold: none;
+  --k-pin-hold-signal: none;
+  /* tablets in a row are set level */
+  --shelf-stagger: 0px;
+  --shelf-align: stretch;
+  --hero-stagger: 0px;
+  --hero-align: start; /* the opening pair set level along their tops, each as tall as it holds */
+  /* small labels are cut into the stone: a dark cut */
+  --silk-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  --k-bezel: url(/kit/garden/mat-night.webp);
+  --mat-t: 84;
+  --mat-r: 81;
+  --mat-b: 82;
+  --mat-l: 83;
+  --k-key: url(/kit/garden/tile-night-normal.webp);
+  --k-key-hover: url(/kit/garden/tile-night-hover.webp);
+  --k-key-pressed: url(/kit/garden/tile-night-pressed.webp);
+  --k-key-focus: url(/kit/garden/tile-night-focus.webp);
+  --key-inset: 3px; /* the legend clears the glaze's rim */
+  --key-repeat: round stretch; /* the glaze repeats along a tile, never smears */
+  --key-lift: 0px;
+  --k-tape: url(/kit/garden/tape-night.webp); /* copper plant label */
+  --tape-ink: #efe8d6;
+  --k-chip: url(/kit/garden/chip-night.webp); /* inline code: a slip of slate */
+  --chip-ink: #efe8d6;
+  --chip-pad: 0.35em; /* a straight-cut slip */
+  --k-drift-cloud: none;
+  --motes: #f2e7a0;
+  --motes-kind: fireflies;
+  --plate-under: #565964;
+  --bezel-under: #463a2a;
+  --key-under: #445342;
+  --key-ink: #efe8d6;
+  --key-ink-soft: #d0cab8;
+  --k-key-signal: url(/kit/garden/tile-signal-night-normal.webp);
+  --k-key-signal-hover: url(/kit/garden/tile-signal-night-hover.webp);
+  --k-key-signal-pressed: url(/kit/garden/tile-signal-night-pressed.webp);
+  --k-key-signal-focus: url(/kit/garden/tile-signal-night-focus.webp);
+  --key-signal-ink: #fbf3e4; /* cream on terracotta glaze */
+  --key-signal-under: #75371d;
+  --k-pin-brass: url(/kit/garden/pin-brass-night.webp); /* a cream glazed bead, by moonlight */
+  --k-pin-green: url(/kit/garden/pin-green-night.webp); /* sage */
+  --k-pin-amber: url(/kit/garden/pin-amber-night.webp); /* ochre */
+  --k-pin-signal: url(/kit/garden/pin-signal-night.webp); /* terracotta */
+  --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+}
+
+/* day: late-morning sun on honey limestone */
+:root[data-style="garden"][data-rice="paper"] {
+  --k-pin-brass: url(/kit/garden/pin-brass.webp);
+  --k-pin-green: url(/kit/garden/pin-green.webp);
+  --k-pin-amber: url(/kit/garden/pin-amber.webp);
+  --k-pin-signal: url(/kit/garden/pin-signal.webp);
+  --plate-press-dim: 0.93;
+  --signal: #c46a43;
+  --signal-ink: #8f4526;
+  --print: #2d3328; /* moss-black ink on the stone */
+  --print-soft: #3f4637;
+  --print-faint: #4d5444;
+  --engrave-lo: rgba(45, 51, 40, 0.28);
+  --engrave-hi: rgba(255, 250, 235, 0.5);
+  --scene-ground: #9f8a52;
+  --k-scene-flat: url(/kit/garden/scene-day.webp);
+  --k-sky: url(/kit/garden/scene/day/sky.webp);
+  --k-far: url(/kit/garden/scene/day/far.webp);
+  --k-mid: url(/kit/garden/scene/day/mid.webp);
+  --k-near: url(/kit/garden/scene/day/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/garden/scene/day/left.webp);
+  --k-right: url(/kit/garden/scene/day/right.webp);
+  --k-sun: none; /* the sun's glow is painted in the sky */
+  --sun-cx: 0;
+  --sun-cy: 0;
+  --sun-r: 0;
+  --k-drift-cloud: none;
+  --k-plate: url(/kit/garden/sheet-day-normal.webp);
+  --k-plate-hover: url(/kit/garden/sheet-day-hover.webp);
+  --k-plate-pressed: url(/kit/garden/sheet-day-pressed.webp);
+  --k-plate-focus: url(/kit/garden/sheet-day-focus.webp);
+  --k-plate-flat: url(/kit/garden/sheet-day-flat.webp);
+  --k-plate-b: url(/kit/garden/sheet-day-b-normal.webp);
+  --k-plate-b-hover: url(/kit/garden/sheet-day-b-hover.webp);
+  --k-plate-b-pressed: url(/kit/garden/sheet-day-b-pressed.webp);
+  --k-plate-b-focus: url(/kit/garden/sheet-day-b-focus.webp);
+  --k-plate-b-flat: url(/kit/garden/sheet-day-b-flat.webp);
+  --plate-fill: url(/kit/garden/stone-day.webp);
+  --plate-light: url(/kit/garden/sheet-day-light.webp);
+  --plate-sheen: url(/kit/garden/sheet-day-sheen.webp);
+  --k-strip: url(/kit/garden/sheet-strip-day-normal.webp);
+  /* small labels cut into the sunlit stone: the cut's lower lip catches the light */
+  --silk-shadow: 0 1px 0 rgba(255, 250, 235, 0.55);
+  --k-bezel: url(/kit/garden/mat-day.webp);
+  --mat-t: 84;
+  --mat-r: 81;
+  --mat-b: 82;
+  --mat-l: 83;
+  --k-key: url(/kit/garden/tile-day-normal.webp);
+  --k-key-hover: url(/kit/garden/tile-day-hover.webp);
+  --k-key-pressed: url(/kit/garden/tile-day-pressed.webp);
+  --k-key-focus: url(/kit/garden/tile-day-focus.webp);
+  --k-key-signal: url(/kit/garden/tile-signal-normal.webp);
+  --k-key-signal-hover: url(/kit/garden/tile-signal-hover.webp);
+  --k-key-signal-pressed: url(/kit/garden/tile-signal-pressed.webp);
+  --k-key-signal-focus: url(/kit/garden/tile-signal-focus.webp);
+  --k-tape: url(/kit/garden/tape-day.webp);
+  --tape-ink: #2a1d12; /* stamped into the copper */
+  --k-chip: url(/kit/garden/chip-day.webp);
+  --chip-ink: #efe8d6; /* chalk on slate */
+  --motes: #fff3c8;
+  --motes-kind: dust;
+  --plate-under: #e7d8bd;
+  --bezel-under: #87663e;
+  --key-under: #839261;
+  --key-ink: #161b12;
+  --key-ink-soft: #2a3124;
+  --key-signal-under: #ad5127;
+}
+
+/* A row of tablets is named by a copper plant label hung before it, sized to
+   its name, not by one more tablet: the stone is every surface's, the
+   label marks where a row begins. The label is the kicker's art (3-slice:
+   its weathered ends never stretch), its type stamped into the copper. */
+/* The slabs are printed a size up, so their dressed edge and rounded corner
+   read as a slab's thickness, not a trim; the strips likewise, their sides
+   (never lengthened) kept to their two corners' height inside the box. */
+:root[data-style="garden"] {
+  --plate-k: 0.625;
+}
+
+@media (max-width: 720px) {
+  :root[data-style="garden"] {
+    --plate-k: 0.5;
+  }
+}
+
+/* No two neighbouring tablets are the same slab: two were generated
+   (scripts/kits/garden.mjs), set in turn among their siblings. */
+:root[data-style="garden"] .faceplate:not(.running-head, .divider, .statusline, .folio, .look):nth-child(2n) {
+  --k-plate: var(--k-plate-b);
+  --k-plate-hover: var(--k-plate-b-hover);
+  --k-plate-pressed: var(--k-plate-b-pressed);
+  --k-plate-focus: var(--k-plate-b-focus);
+  --k-plate-flat: var(--k-plate-b-flat);
+}
+
+:root[data-style="garden"] :is(.running-head, .folio, .statusline, .look) {
+  --plate-k: 0.36;
+  min-height: calc(2 * 56px * var(--plate-k) + 8px);
+}
+
+:root[data-style="garden"] .divider.faceplate {
+  width: fit-content;
+  max-width: 100%;
+  min-height: 0;
+  padding: 12px 34px 11px;
+  color: var(--tape-ink);
+}
+
+:root[data-style="garden"] .divider.faceplate::before {
+  inset: 0;
+  border-image: var(--k-tape) 8 48 fill / 0 calc(48px * 0.5) / 0 4px stretch;
+  background: none;
+}
+
+:root[data-style="garden"] .divider .shelf-label,
+:root[data-style="garden"] .divider .shelf-note,
+:root[data-style="garden"] .divider .shelf-count {
+  color: var(--tape-ink);
+}
+
+/* A card's words keep clear of the glaze laid in along the inside of its
+   edge when it has focus (about 30px in at the slab's scale), by a margin,
+   so the band never runs against a line of type. Its status bead is set
+   into the face at the end of its label row, just after the status it
+   marks ("active ●"), clear of the band too (the arris is too narrow to
+   hold it): the row keeps room for it, and the bead sits on the row's
+   middle, at the card's own padding (a card's and the flagship's differ). */
+:root[data-style="garden"] .module {
+  --bead-top: calc(var(--plate-w) * 0.75 + 12px);
+  --bead-end: calc(var(--plate-w) * 0.75 + 16px + 6px);
+  padding: calc(var(--plate-w) * 0.75 + 12px) calc(var(--plate-w) * 0.75 + 16px) calc(var(--plate-w) * 0.8 + 12px);
+}
+
+:root[data-style="garden"] .flagship {
+  --bead-top: calc(var(--plate-w) + 18px);
+  --bead-end: calc(var(--plate-w) + 18px);
+}
+
+:root[data-style="garden"] .module-top {
+  padding-inline-end: calc(6px + 24px);
+}
+
+:root[data-style="garden"] .flagship .module-top {
+  padding-inline-end: 24px;
+}
+
+:root[data-style="garden"] .led.sheet-pin {
+  /* a 20px bead box on the 15px row's middle */
+  width: 20px;
+  top: calc(var(--bead-top) - 2.5px);
+  left: auto;
+  right: var(--bead-end);
+  translate: none;
+}
+
+/* On a phone, a prose sheet's words run from just inside its frame (the dressed edge is 18px deep at a phone's scale),
+   not at the tablet's inset: a column of 26 letters breaks every few words.
+   (The flagship and the cards keep theirs: their status and focus band sit
+   at it.) */
+@media (max-width: 720px) {
+  :root[data-style="garden"] :is(.hero-copy.faceplate, .detail-hero, .section, .launch-copy.faceplate, .colophon) {
+    padding-inline: calc(var(--plate-w) + 4px);
+  }
+}

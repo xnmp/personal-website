@@ -4,12 +4,16 @@
    pinned over a layered paper landscape. Screens are mounted in card window
    mats, controls are tiles cut from mounting board, and status is the colour
    of a pushpin. Every surface is a generated bitmap
-   (scripts/build-paper-kit.mjs) composited with 9-slice border-image. Each
+   (scripts/build-kit.mjs) composited with 9-slice border-image. Each
    bitmap carries its own cast shadow in a transparent margin, which
    border-image-outset hangs outside the box, so the paper edge is the box
    edge. There are two finishes: alpenglow (a mountain dusk) for the "paper"
    rice, and night for the dark rices. The rice colours belong to the screens
    only.
+
+   These are the Paper Diorama's tokens and the base every style overrides:
+   another art direction sets all of them under :root[data-style] in
+   src/app/styles/<style>.css (docs/architecture.md, Art directions).
 
    The class names are the site's structural roles and outlive any one skin:
    .faceplate is a surface (a sheet), .key a control (a tile), .screen a
@@ -18,11 +22,14 @@
 
 :root {
   /* Source geometry in bitmap px (shadow pad + paper corner), from
-     scripts/build-paper-kit.mjs. A 9-slice renders at --*-k CSS px per
+     scripts/build-kit.mjs. A 9-slice renders at --*-k CSS px per
      bitmap px. */
   --slice-plate: 152; /* sheet: 96 pad + 56 paper */
   --plate-k: 0.5;
-  --plate-w: calc(56px * var(--plate-k)); /* rendered paper corner */
+  /* the rendered paper corner, which content is set in from, plus whatever
+     a style's frame needs on top (the diorama's paper has no frame) */
+  --plate-inset: 0px;
+  --plate-w: calc(56px * var(--plate-k) + var(--plate-inset));
   --slice-key: 60; /* tile: 20 pad + 40 board */
   --key-k: 0.4;
   --key-w: calc(40px * var(--key-k));
@@ -51,13 +58,13 @@
   --sun-cx: 157;
   --sun-cy: 105;
   --sun-r: 52;
-  --k-mountains: url(/kit/paper/scene/night/mountains.webp);
-  --k-hills-far: url(/kit/paper/scene/night/hills-far.webp);
-  --k-hills-near: url(/kit/paper/scene/night/hills-near.webp);
-  --k-pines-left-back: url(/kit/paper/scene/night/pines-left-back.webp);
-  --k-pines-right-back: url(/kit/paper/scene/night/pines-right-back.webp);
-  --k-pines-left: url(/kit/paper/scene/night/pines-left.webp);
-  --k-pines-right: url(/kit/paper/scene/night/pines-right.webp);
+  --k-far: url(/kit/paper/scene/night/mountains.webp);
+  --k-mid: url(/kit/paper/scene/night/hills-far.webp);
+  --k-near: url(/kit/paper/scene/night/hills-near.webp);
+  --k-left-back: url(/kit/paper/scene/night/pines-left-back.webp);
+  --k-right-back: url(/kit/paper/scene/night/pines-right-back.webp);
+  --k-left: url(/kit/paper/scene/night/pines-left.webp);
+  --k-right: url(/kit/paper/scene/night/pines-right.webp);
   --k-plate: url(/kit/paper/sheet-night-normal.webp);
   --k-plate-hover: url(/kit/paper/sheet-night-hover.webp);
   --k-plate-pressed: url(/kit/paper/sheet-night-pressed.webp);
@@ -74,6 +81,15 @@
   --k-key-focus: url(/kit/paper/tile-night-focus.webp);
   --k-tape: url(/kit/paper/tape-sage-night.webp); /* the same tape by moonlight */
   --tape-ink: #ece3d1;
+  /* inline code is typed on a scrap of the same tape (a style may cut it
+     plainer: a label's fixings would crowd a line of text) */
+  --k-chip: var(--k-tape);
+  /* and in the tape's ink, unless the style's chip is cut from another
+     material (a slip of a different tone needs its own) */
+  --chip-ink: var(--tape-ink);
+  /* clear of the scrap's torn ends; a straight-cut slip sits closer to its
+     word, so the punctuation round it stays with it */
+  --chip-pad: 0.6em;
   /* the 3D scene's air: no cloud at night, fireflies in the valley */
   --k-drift-cloud: none;
   --motes: #ffc86a;
@@ -84,6 +100,69 @@
   --key-under: #40475e;
   --key-ink: #ece3d1;
   --key-ink-soft: #c3bba9;
+  /* the primary tile and the fittings: one set in both finishes */
+  --k-key-signal: url(/kit/paper/tile-signal-normal.webp);
+  --k-key-signal-hover: url(/kit/paper/tile-signal-hover.webp);
+  --k-key-signal-pressed: url(/kit/paper/tile-signal-pressed.webp);
+  --k-key-signal-focus: url(/kit/paper/tile-signal-focus.webp);
+  --key-signal-ink: #fff8ee; /* 4.87:1 on the signal board */
+  --key-signal-under: #a25b39;
+  --k-pin-brass: url(/kit/paper/pin-brass.webp);
+  --k-pin-green: url(/kit/paper/pin-green.webp);
+  --k-pin-amber: url(/kit/paper/pin-amber.webp);
+  --k-pin-signal: url(/kit/paper/pin-signal.webp);
+  --k-glass: url(/kit/paper/glass-glare.webp);
+  /* A sheet's middle is the 9-slice's own centre (`fill`), with its centre
+     colour laid under it against seams. A style whose surface is a frame
+     round a material (glass in brass) slices without `fill` and paints the
+     material itself as --plate-fill, tiled (--plate-fill-size/-repeat), with
+     whatever it does to the scene behind it (--plate-backdrop). */
+  --plate-slice: var(--slice-plate) fill;
+  --plate-fill: linear-gradient(var(--plate-under), var(--plate-under));
+  --plate-backdrop: none;
+  /* how far in from the sheet's box its fill (and backdrop) starts, in the
+     art's px (each sheet scales it by its own --plate-k): 0 where the art is
+     opaque to the box's edge; past a frame's soft outer fringe, or a clear
+     margin outside it (a scroll's rod-ends stand out past its silk), far
+     enough in that the fill starts under the frame. The strips wear their
+     own art, so their own inset. */
+  --plate-fill-in: 0px;
+  --strip-fill-in: 0px;
+  /* how a strip's rails run its length: stretched, or, where their material
+     has a broad grain that stretching would smear (mottled silk), repeated
+     (the rails are cut seamless for it, scripts/mitre.mjs) */
+  --strip-repeat: stretch;
+  /* such a material may take the light as its sheet lifts: the sheen
+     crossfades in with the hover art (none on paper, whose lift is all in
+     its shadow) */
+  --plate-sheen: none;
+  /* and the key light's pool on it at rest (a stretched smooth field) */
+  --plate-light: none;
+  /* The strips (masthead, shelf heads, the feet, the picker) wear this
+     sheet: the diorama's are its paper like any other, a framed style's may
+     drop the fixings a content sheet has. */
+  --k-strip: var(--k-plate);
+  /* the pins holding sheets to the scene (a card's status pin is its own);
+     a style whose surfaces stand in a frame needs none */
+  --k-pin-hold: var(--k-pin-brass);
+  --k-pin-hold-signal: var(--k-pin-signal);
+  /* small labels' finish: printed (none), or etched into glass */
+  --silk-shadow: none;
+  /* every second card hangs lower, as pinned paper does */
+  --shelf-stagger: 22px;
+  /* and each takes its own height; a style that hangs its sheets square
+     stretches a row's to one height, so their foot rails line up */
+  --shelf-align: start;
+  /* the same for a page's opening pair of sheets (the home hero, a launch
+     page's promise and product): one is pinned a little lower */
+  --hero-stagger: 28px;
+  --hero-align: start;
+  /* extra room a tile's legend needs inside a bezel (a frame round the
+     board's face); the diorama's card has none */
+  --key-inset: 0px;
+  /* how far a key's label sits above its box's centre, so it centres on the
+     face: a card's thickness shows along its bottom edge, lifting the face */
+  --key-lift: 3px;
 }
 
 /* alpenglow: slate-lilac sky warming to peach, rose light on the snow */
@@ -103,13 +182,13 @@
   --sun-cx: 169;
   --sun-cy: 96;
   --sun-r: 55;
-  --k-mountains: url(/kit/paper/scene/alpenglow/mountains.webp);
-  --k-hills-far: url(/kit/paper/scene/alpenglow/hills-far.webp);
-  --k-hills-near: url(/kit/paper/scene/alpenglow/hills-near.webp);
-  --k-pines-left-back: url(/kit/paper/scene/alpenglow/pines-left-back.webp);
-  --k-pines-right-back: url(/kit/paper/scene/alpenglow/pines-right-back.webp);
-  --k-pines-left: url(/kit/paper/scene/alpenglow/pines-left.webp);
-  --k-pines-right: url(/kit/paper/scene/alpenglow/pines-right.webp);
+  --k-far: url(/kit/paper/scene/alpenglow/mountains.webp);
+  --k-mid: url(/kit/paper/scene/alpenglow/hills-far.webp);
+  --k-near: url(/kit/paper/scene/alpenglow/hills-near.webp);
+  --k-left-back: url(/kit/paper/scene/alpenglow/pines-left-back.webp);
+  --k-right-back: url(/kit/paper/scene/alpenglow/pines-right-back.webp);
+  --k-left: url(/kit/paper/scene/alpenglow/pines-left.webp);
+  --k-right: url(/kit/paper/scene/alpenglow/pines-right.webp);
   --k-plate: url(/kit/paper/sheet-alpenglow-normal.webp);
   --k-plate-hover: url(/kit/paper/sheet-alpenglow-hover.webp);
   --k-plate-pressed: url(/kit/paper/sheet-alpenglow-pressed.webp);
@@ -167,7 +246,7 @@ body:has(.rack) {
 .scene-layer {
   position: absolute;
   inset: 0;
-  background: var(--layer) center bottom / cover no-repeat;
+  background: var(--layer) var(--layer-x, center) bottom / var(--layer-size, cover) no-repeat;
 }
 
 [data-layer="sky"] { --layer: var(--k-sky); }
@@ -223,13 +302,29 @@ body:has(.rack) {
   background: var(--k-sun) center / 100% 100% no-repeat;
 }
 
-[data-layer="mountains"] { --layer: var(--k-mountains); }
-[data-layer="hills-far"] { --layer: var(--k-hills-far); }
-[data-layer="hills-near"] { --layer: var(--k-hills-near); }
-[data-layer="pines-left-back"] { --layer: var(--k-pines-left-back); }
-[data-layer="pines-right-back"] { --layer: var(--k-pines-right-back); }
-[data-layer="pines-left"] { --layer: var(--k-pines-left); }
-[data-layer="pines-right"] { --layer: var(--k-pines-right); }
+[data-layer="far"] { --layer: var(--k-far); }
+[data-layer="mid"] { --layer: var(--k-mid); }
+[data-layer="near"] { --layer: var(--k-near); }
+[data-layer="left-back"] { --layer: var(--k-left-back); }
+[data-layer="right-back"] { --layer: var(--k-right-back); }
+[data-layer="left"] { --layer: var(--k-left); }
+[data-layer="right"] { --layer: var(--k-right); }
+
+/* A style may anchor its left and right cut-outs to their sides, 0 to 1 as
+   background-position-x (--left-anchor, --right-anchor), and hold them to
+   --side-span frame widths (drawn at --side-size, which the style writes
+   from it), so that on a narrow screen each landmark keeps to its side,
+   smaller, instead of being cropped away. Unset, they cover, centred. The
+   3D scene reads the same tokens (scene3d/framing.ts Placement). */
+[data-layer="left"] {
+  --layer-x: calc(var(--left-anchor, 0.5) * 100%);
+  --layer-size: var(--side-size, cover);
+}
+
+[data-layer="right"] {
+  --layer-x: calc(var(--right-anchor, 0.5) * 100%);
+  --layer-size: var(--side-size, cover);
+}
 
 /* One loose cloud drifts across the sky, in front of the painted ones, lit
    peach by the low sun. Not at night: pale paper reads as a hole in the
@@ -307,17 +402,24 @@ body:has(.rack) {
 
   [data-layer="sky"],
   .scene-sun { animation: layer-fade 700ms ease-out both; }
-  [data-layer="mountains"] { --rise-from: 0 7%; --rise-delay: 120ms; --sink: 2vh; }
-  [data-layer="hills-far"] { --rise-from: 0 14%; --rise-delay: 270ms; --sink: 5vh; }
-  [data-layer="hills-near"] { --rise-from: 0 22%; --rise-delay: 420ms; --sink: 9vh; }
-  [data-layer="pines-left-back"] { --rise-from: -10% 12%; --rise-delay: 560ms; --sink: 11vh; }
-  [data-layer="pines-right-back"] { --rise-from: 10% 12%; --rise-delay: 620ms; --sink: 11vh; }
-  [data-layer="pines-left"] { --rise-from: -12% 10%; --rise-delay: 690ms; --sink: 13vh; }
-  [data-layer="pines-right"] { --rise-from: 12% 10%; --rise-delay: 760ms; --sink: 13vh; }
+  [data-layer="far"] { --rise-from: 0 7%; --rise-delay: 120ms; --sink: 2vh; }
+  [data-layer="mid"] { --rise-from: 0 14%; --rise-delay: 270ms; --sink: 5vh; }
+  [data-layer="near"] { --rise-from: 0 22%; --rise-delay: 420ms; --sink: 9vh; }
+  [data-layer="left-back"] { --rise-from: -10% 12%; --rise-delay: 560ms; --sink: 11vh; }
+  [data-layer="right-back"] { --rise-from: 10% 12%; --rise-delay: 620ms; --sink: 11vh; }
+  [data-layer="left"] { --rise-from: -12% 10%; --rise-delay: 690ms; --sink: 13vh; }
+  [data-layer="right"] { --rise-from: 12% 10%; --rise-delay: 760ms; --sink: 13vh; }
 
-  /* a sheet is laid down onto the scene, back to front down the page */
+  /* a sheet is laid down onto the scene, back to front down the page. Its
+     fade is short and leaves nothing behind (fill backwards only): an
+     opacity effect still applied to a sheet, even a finished one at 1, makes
+     it its own backdrop root, and a glass sheet's frost would then blur
+     nothing and show the scene clear. The drop moves `translate`, which
+     doesn't. */
   .rack-inner > * {
-    animation: sheet-down 760ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+    animation:
+      sheet-fade 230ms ease-out backwards,
+      sheet-down 760ms cubic-bezier(0.2, 0.9, 0.25, 1) backwards;
     animation-delay: calc(var(--sheets-after, 520ms) + var(--nth, 6) * 70ms);
   }
 
@@ -362,15 +464,17 @@ body:has(.rack) {
   }
 }
 
-/* a sheet is laid down: it fades in over the first part of its drop, on
-   the drop's own ease, so it arrives softly rather than popping */
+/* a sheet is laid down: it fades in over the first part of its drop, so it
+   arrives softly rather than popping */
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+
 @keyframes sheet-down {
   from {
     translate: 0 -24px;
-    opacity: 0;
-  }
-  30% {
-    opacity: 1;
   }
 }
 
@@ -462,8 +566,43 @@ body:has(.rack) {
   inset: 0;
   z-index: -1;
   border: 0 solid transparent; /* Firefox only paints border-image over a border style */
-  border-image: var(--k-plate) var(--slice-plate) fill / calc(152px * var(--plate-k)) / calc(96px * var(--plate-k)) stretch;
+  border-image: var(--k-plate) var(--plate-slice) / calc(152px * var(--plate-k)) / calc(96px * var(--plate-k))
+    var(--plate-repeat, stretch);
   pointer-events: none;
+}
+
+/* A style whose panels in a row are set level, as on a comic page or an
+   instrument maker's board (--tier-cut: block, with --hero-align: stretch),
+   fills the height the shorter of a pair leaves with a panel of its own:
+   its frame (the flat sheet's art, no fill) round a cut of its scene (the
+   flattened scene, --k-scene-flat, at --tier-cut-size from
+   --tier-cut-at; or a close-up of its own, --tier-cut-art, which a cut
+   enlarged from the scene could only be soft). It is decoration
+   (aria-hidden, nothing to read) and only where the pair stand side by
+   side. Hidden by default. */
+.tier-cut {
+  display: var(--tier-cut, none);
+  flex: 1000 0 140px;
+  border: 0 solid transparent;
+  border-image: var(--k-plate-flat) var(--slice-plate) / calc(152px * var(--plate-k)) / calc(96px * var(--plate-k)) stretch;
+  /* the cut runs under the frame from a little inside its outer edge (the
+     frame is drawn over it), its corners as round as the frame's */
+  padding: var(--tier-cut-in, calc(8px * var(--plate-k)));
+  border-radius: var(--tier-cut-round, calc(20px * var(--plate-k)));
+  background: var(--tier-cut-art, var(--k-scene-flat)) var(--tier-cut-at, 50% 50%) / var(--tier-cut-size, 220% auto) no-repeat content-box;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .hero .tier-cut {
+    display: none;
+  }
+}
+
+@media (max-width: 1099px) {
+  .launch-hero .tier-cut {
+    display: none;
+  }
 }
 
 /* At fractional device pixel ratios the browser snaps the nine slices
@@ -478,12 +617,49 @@ body:has(.rack) {
 .blank-leaf::before,
 .statusline::before {
   --under-in: calc(var(--plate-w) * 0.6);
-  background: linear-gradient(var(--plate-under), var(--plate-under)) center / calc(100% - 2 * var(--under-in))
-    calc(100% - 2 * var(--under-in)) no-repeat;
+  /* the key light's pool on the face: clear of a torn fringe by default; a
+     framed pane's (--plate-fill-in, this box already under its frame) sets
+     --plate-light-in: 0px, so the pool's edge lies under the frame, not
+     across the face where the content inset happens to put it */
+  --light-in: var(--plate-light-in, var(--under-in));
+  /* (a tiled material's phase, --plate-fill-at: a style may set each sheet
+     of a row at its own, so that neighbours are never cut from the same
+     place in it) */
+  background:
+    var(--plate-light) center / calc(100% - 2 * var(--light-in)) calc(100% - 2 * var(--light-in)) no-repeat,
+    var(--plate-fill) var(--plate-fill-at, center) /
+      var(--plate-fill-size, calc(100% - 2 * var(--under-in)) calc(100% - 2 * var(--under-in))) var(--plate-fill-repeat, no-repeat);
+  /* a tile's size is not where it paints, and a backdrop filter takes the
+     whole box: both would run to the box's edge, out through the soft
+     outer fringe of a frame (or into a scroll's clear margin). So the box
+     itself stands --plate-fill-in in from the sheet's, and the frame hangs
+     that much further out, drawn where it always was. */
+  inset: calc(var(--plate-fill-in) * var(--plate-k));
+  border-image-outset: calc((96px + var(--plate-fill-in)) * var(--plate-k));
+  backdrop-filter: var(--plate-backdrop);
+  /* a tiled material runs to the sheet's edge, under its frame: kept inside
+     the frame's own rounded corner */
+  border-radius: var(--plate-round, 0);
+}
+
+/* where the visitor has asked for less transparency, a see-through surface
+   goes solid: its fill, over its own centre colour */
+@media (prefers-reduced-transparency: reduce) {
+  .faceplate::before,
+  .detail-hero::before,
+  .section::before,
+  .colophon::before,
+  .folio::before,
+  .blank-leaf::before,
+  .statusline::before {
+    backdrop-filter: none;
+    background-color: var(--plate-under);
+  }
 }
 
 .faceplate::after {
   border-image-source: var(--k-plate-hover);
+  background: var(--plate-sheen) center / calc(100% - 1.2 * var(--plate-w)) calc(100% - 1.2 * var(--plate-w)) no-repeat;
   opacity: 0;
   transition: opacity 180ms ease-out;
 }
@@ -492,17 +668,20 @@ body:has(.rack) {
   opacity: 1;
 }
 
-/* the lift itself: the sheet rises off the board as its shadow widens */
+/* the lift itself: the sheet rises off the board as its shadow widens (a
+   style whose shadow is a flat offset shape moves the sheet along it:
+   --plate-hover-shift, --plate-press-shift) */
 .faceplate.is-live {
   transition: transform 180ms ease-out;
 }
 
 .faceplate.is-live:hover {
-  transform: translateY(-3px);
+  transform: var(--plate-hover-shift, translateY(-3px));
 }
 
 .faceplate.is-live:active {
-  transform: none;
+  transform: var(--plate-press-shift, none);
+  transition-duration: 0ms; /* set down at once, as a key is */
 }
 
 /* Focus is authored state art: the sheet lies on a terracotta under-sheet,
@@ -511,14 +690,35 @@ body:has(.rack) {
 .faceplate.is-live:focus-visible::after,
 .faceplate:has([data-rack-stop]:focus-visible)::after {
   border-image-source: var(--k-plate-focus);
+  background-image: none;
   opacity: 1;
 }
 
-/* pressed: the sheet goes flat to the board, so its shadow tightens */
+/* pressed: the sheet goes flat to the board, so its shadow tightens. A sheet
+   whose face the page paints (--plate-fill) dims it here, with its frame: the
+   pressed art's centre is never drawn (a border-image without `fill`), so a
+   veil baked into it would only reach the band inside the frame. The veil
+   is the frame's own dimming (--plate-press-dim, the pressed art's --dim in
+   scripts/derive-state.mjs: what is left of its brightness), so the two
+   match, and it lies where the fill does (see .faceplate::before), under the
+   frame, so its edge is never seen through the frame's soft outer fringe. */
 .faceplate.is-live:active::after {
+  --wash: rgb(0 0 0 / calc(1 - var(--plate-press-dim, 1)));
+  --wash-in: calc(var(--plate-fill-in) * var(--plate-k));
   border-image-source: var(--k-plate-pressed);
+  background: linear-gradient(var(--wash), var(--wash)) center / calc(100% - 2 * var(--wash-in))
+    calc(100% - 2 * var(--wash-in)) no-repeat;
   opacity: 1;
-  transition-duration: 70ms;
+  transition-duration: 0ms;
+}
+
+/* The pressed art lies over the resting art, whose shadow is the wider one:
+   left drawn, it would show past the pressed shadow and the two would stack.
+   So the resting frame goes while the pressed one is down (its fill, the
+   page's, stays), and the pressed art comes in at once, with no fade for
+   the sheet to show through. */
+.faceplate.is-live:active::before {
+  border-image-source: none;
 }
 
 .faceplate.is-live:focus-visible,
@@ -537,6 +737,7 @@ body:has(.rack) {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--print-soft);
+  text-shadow: var(--silk-shadow);
 }
 
 .silk b,
@@ -587,14 +788,14 @@ body:has(.rack) {
    line, its torn ends at a finer scale. A long path wraps, each line its own
    scrap (box-decoration-break, globals.css). */
 :not(pre) > code {
-  padding: 0 0.6em;
+  padding: 0 var(--chip-pad);
   margin: 0 0.1em;
   border: 0 solid transparent;
   border-radius: 0;
-  border-image: var(--k-tape) 8 48 fill / 0 calc(48px * 0.16) / 0 1px stretch;
+  border-image: var(--k-chip) 8 48 fill / 0 calc(48px * 0.16) / 0 1px stretch;
   background: none;
   box-shadow: none;
-  color: var(--tape-ink);
+  color: var(--chip-ink);
 }
 
 .tape.silk,
@@ -638,6 +839,10 @@ body:has(.rack) {
 
 .screen-face {
   position: relative;
+  /* the glare blends with the face alone: left to blend up to the sheet,
+     it would make the whole sheet its own surface, the backdrop root of the
+     sheet's glass, which then frosts nothing and shows the scene clear */
+  isolation: isolate;
   overflow: hidden;
   background: var(--paper);
   color: var(--ink);
@@ -695,7 +900,7 @@ body:has(.rack) {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: url(/kit/paper/glass-glare.webp) center / 100% 100% no-repeat;
+  background: var(--k-glass) center / 100% 100% no-repeat;
   mix-blend-mode: soft-light;
   opacity: 0.9;
 }
@@ -736,7 +941,7 @@ body:has(.rack) {
   align-items: center;
   gap: 9px;
   min-height: 40px;
-  padding: 0 18px 3px;
+  padding: 0 calc(18px + var(--key-inset)) var(--key-lift);
   border: 0;
   background: none;
   color: var(--ki);
@@ -752,12 +957,12 @@ body:has(.rack) {
 }
 
 .key[data-tone="signal"] {
-  --kn: url(/kit/paper/tile-signal-normal.webp);
-  --kh: url(/kit/paper/tile-signal-hover.webp);
-  --kp: url(/kit/paper/tile-signal-pressed.webp);
-  --kf: url(/kit/paper/tile-signal-focus.webp);
-  --ki: #fff8ee; /* 4.87:1 on the signal board */
-  --ku: #a25b39;
+  --kn: var(--k-key-signal);
+  --kh: var(--k-key-signal-hover);
+  --kp: var(--k-key-signal-pressed);
+  --kf: var(--k-key-signal-focus);
+  --ki: var(--key-signal-ink);
+  --ku: var(--key-signal-under);
 }
 
 /* A call to action never runs out of its column: when its label is wider
@@ -767,7 +972,7 @@ body:has(.rack) {
   --key-k: 0.55;
   min-height: 60px;
   max-width: 100%;
-  padding: 0 34px 4px;
+  padding: 0 calc(34px + var(--key-inset)) calc(var(--key-lift) + 1px);
   font-size: 17px;
   justify-content: center;
   white-space: normal;
@@ -776,7 +981,7 @@ body:has(.rack) {
 
 @media (max-width: 400px) {
   .key[data-size="lg"] {
-    padding-inline: 22px;
+    padding-inline: calc(22px + var(--key-inset));
     font-size: 15px;
   }
 }
@@ -788,7 +993,10 @@ body:has(.rack) {
   inset: 0;
   z-index: -1;
   border: 0 solid transparent;
-  border-image: var(--kn) var(--slice-key) fill / calc(60px * var(--key-k)) / calc(20px * var(--key-k)) stretch;
+  /* a tile's length stretches unless its style's art is cut to repeat along
+     it (--key-repeat: round stretch; scripts/mitre.mjs tileRails), as a
+     mottled glaze must: stretched, its mottle turns to streaks */
+  border-image: var(--kn) var(--slice-key) fill / calc(60px * var(--key-k)) / calc(20px * var(--key-k)) var(--key-repeat, stretch);
 }
 
 /* the board under the 9-slice, clear of its rounded corners and edge band */
@@ -805,29 +1013,34 @@ body:has(.rack) {
 
 /* printed caps (kbd) are legends, not controls: they never light on hover */
 a.key:hover::after,
-button.key:hover:not(:disabled)::after {
+button.key:hover:not(:disabled)::after,
+label.key:hover::after {
   opacity: 1;
 }
 
 /* the hover art's shadow says the card stands off the sheet; the card itself
    rises a pixel with it (the brief's limit for spatial movement) */
 a.key,
-button.key {
+button.key,
+label.key {
   transition: translate 140ms ease-out;
 }
 
 a.key:hover,
-button.key:hover:not(:disabled) {
-  translate: 0 -1px;
+button.key:hover:not(:disabled),
+label.key:hover {
+  translate: var(--key-hover-shift, 0 -1px);
 }
 
 a.key:active,
-button.key:active:not(:disabled) {
-  translate: 0 0;
+button.key:active:not(:disabled),
+label.key:active {
+  translate: var(--key-press-shift, 0 0);
   transition-duration: 0ms;
 }
 
-.key:focus-visible::after {
+.key:focus-visible::after,
+.key:has(input:focus-visible)::after {
   border-image-source: var(--kf);
   opacity: 1;
 }
@@ -839,13 +1052,20 @@ button.key:active:not(:disabled) {
   transition-duration: 0ms;
 }
 
+/* the resting art's wider shadow must not show past the pressed one's (see
+   .faceplate.is-live:active::before) */
+.key:active:not(:disabled)::before,
+.key[data-down="true"]::before {
+  border-image-source: none;
+}
+
 .key > * {
   transition: transform 140ms ease-out;
 }
 
 .key:active:not(:disabled) > *,
 .key[data-down="true"] > * {
-  transform: translateY(1px);
+  transform: translateY(var(--key-legend-sink, 1px));
   transition-duration: 70ms;
 }
 
@@ -888,9 +1108,9 @@ button.key:active:not(:disabled) {
 
 /* single-character tile used for shortcut legends (Ctrl, P, /) */
 .key.cap {
-  min-width: 46px;
+  min-width: calc(46px + 2 * var(--key-inset));
   justify-content: center;
-  padding: 0 12px 3px;
+  padding: 0 calc(12px + var(--key-inset)) 3px;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-weight: 500;
   font-size: 13px;
@@ -930,17 +1150,18 @@ button.key:active:not(:disabled) {
   content: "";
   position: absolute;
   inset: -3px -4px -5px -3px;
-  background: url(/kit/paper/pin-brass.webp) center / contain no-repeat;
+  background: var(--k-pin-brass) center / contain no-repeat;
 }
 
-.led[data-on="true"][data-color="green"]::before { background-image: url(/kit/paper/pin-green.webp); }
-.led[data-on="true"][data-color="amber"]::before { background-image: url(/kit/paper/pin-amber.webp); }
-.led[data-on="true"][data-color="signal"]::before { background-image: url(/kit/paper/pin-signal.webp); }
+.led[data-on="true"][data-color="green"]::before { background-image: var(--k-pin-green); }
+.led[data-on="true"][data-color="amber"]::before { background-image: var(--k-pin-amber); }
+.led[data-on="true"][data-color="signal"]::before { background-image: var(--k-pin-signal); }
 
 @media (prefers-reduced-motion: reduce) {
   /* the hover art still lifts the card; it just doesn't move */
   a.key:hover,
-  button.key:hover:not(:disabled) {
+  button.key:hover:not(:disabled),
+  label.key:hover {
     translate: none;
   }
 
@@ -959,6 +1180,17 @@ button.key:active:not(:disabled) {
   background: var(--prop) center bottom / contain no-repeat;
 }
 
+/* the strips wear their own sheet (--k-strip) */
+.running-head,
+.divider,
+.statusline,
+.folio,
+.look {
+  --k-plate: var(--k-strip);
+  --plate-fill-in: var(--strip-fill-in);
+  --plate-repeat: var(--strip-repeat);
+}
+
 /* A pushpin holding a sheet to the scene, at the top of its paper, through
    the torn edge: brass, or the sheet's status colour (.led.sheet-pin). Every
    sheet in the column hangs on one; sheets drawn by their content's own
@@ -969,7 +1201,7 @@ button.key:active:not(:disabled) {
 .detail-hero::after,
 .section::after,
 .colophon::after {
-  --prop: url(/kit/paper/pin-brass.webp);
+  --prop: var(--k-pin-hold);
   content: "";
   position: absolute;
   width: 26px;
@@ -982,6 +1214,11 @@ button.key:active:not(:disabled) {
   z-index: 3;
   pointer-events: none;
   background: var(--prop) center bottom / contain no-repeat;
+}
+
+/* a card's status pin is the card's own marker, worn in every style */
+.led.sheet-pin {
+  --prop: var(--k-pin-brass);
 }
 
 /* the status pin draws its head in ::before (.led), here at the brass pin's size */

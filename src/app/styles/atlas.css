@@ -1,0 +1,325 @@
+/* ==========================================================================
+   CELESTIAL ATLAS (art/briefs/atlas.md): enamel plates in frames of
+   engraved, gilded brass over a great engraved star chart, buttons of the
+   plates' enamel in slim gilt bezels, crimson enamel the one accent, jewels
+   in brass, gilt label strips, ivory enamel slips. The kit is built by
+   `node scripts/build-kit.mjs atlas` to the same source geometry as the
+   Paper Diorama, so only the art, the inks and the mounts' slices change.
+   Night (the dark rices: the gilt chart under the lamp) first, then day
+   (the light rice: the daylight plate).
+   ========================================================================== */
+
+:root[data-style="atlas"] {
+  --font-display: var(--font-fell);
+
+  --signal: #e06a6e; /* crimson, lifted to read on the navy enamel (4.8:1) */
+  --signal-ink: #f0a0a2;
+  --signal-rule: #c8404a; /* the links' rule: crimson itself (3.3:1 on the navy) */
+  --print: #f1e8d2; /* ivory on navy enamel */
+  --print-soft: #e4dac3;
+  --print-faint: #d7cdb4;
+  --engrave-lo: rgba(0, 0, 0, 0.45);
+  --engrave-hi: rgba(241, 232, 210, 0.1);
+  --scene-ground: #101d38;
+  --k-scene-flat: url(/kit/atlas/scene-night.webp);
+  --k-sky: url(/kit/atlas/scene/night/sky.webp); /* the chart, gold on navy */
+  --k-sun: none;
+  --sun-cx: 0;
+  --sun-cy: 0;
+  --sun-r: 1;
+  --k-far: none;
+  --k-mid: none;
+  --k-near: url(/kit/atlas/scene/night/near.webp); /* the atlas's rolled charts */
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/atlas/scene/night/left.webp); /* the astrolabe */
+  --k-right: url(/kit/atlas/scene/night/right.webp); /* the orrery */
+  --k-plate: url(/kit/atlas/sheet-night-normal.webp);
+  --k-plate-hover: url(/kit/atlas/sheet-night-hover.webp);
+  --k-plate-pressed: url(/kit/atlas/sheet-night-pressed.webp);
+  --k-plate-focus: url(/kit/atlas/sheet-night-focus.webp);
+  --k-plate-flat: url(/kit/atlas/sheet-night-flat.webp);
+  /* the plates are gilt frames with their field cleared (scripts/
+     framed-pane.mjs): the enamel is painted here, tiled, so its fine surface
+     keeps its scale at any size */
+  --plate-slice: var(--slice-plate);
+  --plate-fill: url(/kit/atlas/enamel-night.webp);
+  --plate-fill-size: 640px;
+  --plate-fill-repeat: repeat;
+  /* the enamel starts under the gilt (20 of the art's px in from its edge),
+     clear of the frame's soft outer edge */
+  --plate-fill-in: 20px;
+  --strip-fill-in: 20px;
+  /* the strips are the plates' frame, its rails smoothed: they stretch
+     clean, as the plates' do */
+  --strip-repeat: stretch;
+  /* pressed: only the gilt drops out of the light (the sheets' pressedFlags);
+     enamel is fired colour, and holds it */
+  --plate-press-dim: 1;
+  --plate-backdrop: none;
+  --plate-round: 0px;
+  --plate-light: url(/kit/atlas/sheet-night-light.webp);
+  --plate-light-in: 0px; /* a framed pane: the pool's edge lies under the frame (kit.css) */
+  --plate-sheen: url(/kit/atlas/sheet-night-sheen.webp);
+  /* content clears the gilt and the crimson band laid inside it */
+  --plate-inset: 6px;
+  /* the strips are the frame without screws or arcs */
+  --k-strip: url(/kit/atlas/sheet-strip-night-normal.webp);
+  /* a plate is screwed to its place: the screws are its frame's */
+  --k-pin-hold: none;
+  --k-pin-hold-signal: none;
+  /* plates in a row are set level */
+  --shelf-stagger: 0px;
+  --shelf-align: stretch;
+  --hero-stagger: 0px;
+  /* the opening pair set level, top and foot: each plate as tall as its
+     contents (a frame round a field of empty enamel says nothing), and
+     under the shorter a plate of the chart itself, framed as a plate is
+     (kit.css .tier-cut): a closer cut, on the Lion. Where the two plates
+     come out within a hand of each other (the home page's) there is no room
+     for a plate between, and the shorter is only drawn level */
+  --hero-align: stretch;
+  --tier-cut: block;
+  --tier-cut-at: 16% 78%;
+  --tier-cut-size: 300% auto;
+  /* small labels are engraved through the enamel: a dark cut */
+  --silk-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  --k-bezel: url(/kit/atlas/mat-night.webp); /* a slim gilt bezel */
+  --mat-t: 85;
+  --mat-r: 84;
+  --mat-b: 86;
+  --mat-l: 84;
+  --k-key: url(/kit/atlas/tile-night-normal.webp);
+  --k-key-hover: url(/kit/atlas/tile-night-hover.webp);
+  --k-key-pressed: url(/kit/atlas/tile-night-pressed.webp);
+  --k-key-focus: url(/kit/atlas/tile-night-focus.webp);
+  --key-inset: 7px; /* the legend clears the slim bezel */
+  --key-lift: 0px;
+  /* a label engraved on a gilt strip, filled with navy */
+  --k-tape: url(/kit/atlas/tape-night.webp);
+  --tape-ink: #13213f;
+  /* inline code: a slip of ivory enamel */
+  --k-chip: url(/kit/atlas/chip-night.webp);
+  --chip-ink: #13213f;
+  --chip-pad: 0.35em;
+  --k-drift-cloud: none;
+  --motes: #e9c97a;
+  --motes-kind: dust;
+  --plate-under: #13213f;
+  --bezel-under: #6e5020;
+  /* a button is the plate's enamel in a slim gilt bezel: navy by night,
+     lettered in ivory */
+  --key-under: #0b1a2b;
+  --key-ink: #f1e8d2;
+  --key-ink-soft: #d7cdb4;
+  --k-key-signal: url(/kit/atlas/tile-signal-night-normal.webp);
+  --k-key-signal-hover: url(/kit/atlas/tile-signal-night-hover.webp);
+  --k-key-signal-pressed: url(/kit/atlas/tile-signal-night-pressed.webp);
+  --k-key-signal-focus: url(/kit/atlas/tile-signal-night-focus.webp);
+  --key-signal-ink: #f1e8d2; /* ivory on crimson enamel */
+  --key-signal-under: #6a1013;
+  --k-pin-brass: url(/kit/atlas/pin-brass-night.webp); /* a clear jewel */
+  --k-pin-green: url(/kit/atlas/pin-green-night.webp); /* emerald */
+  --k-pin-amber: url(/kit/atlas/pin-amber-night.webp); /* amber */
+  --k-pin-signal: url(/kit/atlas/pin-signal-night.webp); /* crimson */
+  --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+}
+
+/* day: the daylight plate, ivory enamel, the same gilt */
+:root[data-style="atlas"][data-rice="paper"] {
+  --signal: #9e2b2f;
+  --signal-ink: #7e1f23;
+  --signal-rule: #9e2b2f;
+  --print: #13213f; /* navy on ivory enamel */
+  --print-soft: #1d2b4d;
+  --print-faint: #2a3757;
+  --engrave-lo: rgba(19, 33, 63, 0.25);
+  --engrave-hi: rgba(255, 250, 235, 0.5);
+  --scene-ground: #e6dcc6;
+  --k-scene-flat: url(/kit/atlas/scene-day.webp);
+  --k-sky: url(/kit/atlas/scene/day/sky.webp);
+  --k-sun: none;
+  --sun-cx: 0;
+  --sun-cy: 0;
+  --sun-r: 1;
+  --k-far: none;
+  --k-mid: none;
+  --k-near: url(/kit/atlas/scene/day/near.webp);
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/atlas/scene/day/left.webp);
+  --k-right: url(/kit/atlas/scene/day/right.webp);
+  --k-plate: url(/kit/atlas/sheet-day-normal.webp);
+  --k-plate-hover: url(/kit/atlas/sheet-day-hover.webp);
+  --k-plate-pressed: url(/kit/atlas/sheet-day-pressed.webp);
+  --k-plate-focus: url(/kit/atlas/sheet-day-focus.webp);
+  --k-plate-flat: url(/kit/atlas/sheet-day-flat.webp);
+  --plate-fill: url(/kit/atlas/enamel-day.webp);
+  --plate-light: url(/kit/atlas/sheet-day-light.webp);
+  --plate-sheen: url(/kit/atlas/sheet-day-sheen.webp);
+  --k-strip: url(/kit/atlas/sheet-strip-day-normal.webp);
+  /* engraved through the ivory: the cut's lower lip catches the light */
+  --silk-shadow: 0 1px 0 rgba(255, 250, 235, 0.6);
+  --k-bezel: url(/kit/atlas/mat-day.webp);
+  --mat-t: 85;
+  --mat-r: 84;
+  --mat-b: 86;
+  --mat-l: 84;
+  --k-key: url(/kit/atlas/tile-day-normal.webp);
+  --k-key-hover: url(/kit/atlas/tile-day-hover.webp);
+  --k-key-pressed: url(/kit/atlas/tile-day-pressed.webp);
+  --k-key-focus: url(/kit/atlas/tile-day-focus.webp);
+  --k-key-signal: url(/kit/atlas/tile-signal-normal.webp);
+  --k-key-signal-hover: url(/kit/atlas/tile-signal-hover.webp);
+  --k-key-signal-pressed: url(/kit/atlas/tile-signal-pressed.webp);
+  --k-key-signal-focus: url(/kit/atlas/tile-signal-focus.webp);
+  --k-tape: url(/kit/atlas/tape-day.webp);
+  --tape-ink: #13213f;
+  --k-chip: url(/kit/atlas/chip-day.webp);
+  --k-drift-cloud: none;
+  --motes: #fff3d0;
+  --motes-kind: dust;
+  --plate-under: #f1e8d2;
+  --bezel-under: #8a6528;
+  /* ivory by day, lettered in navy */
+  --key-under: #efe6cf;
+  --key-ink: #13213f;
+  --key-ink-soft: #2a3757;
+  --key-signal-under: #7a1418;
+  --k-pin-brass: url(/kit/atlas/pin-brass.webp);
+  --k-pin-green: url(/kit/atlas/pin-green.webp);
+  --k-pin-amber: url(/kit/atlas/pin-amber.webp);
+  --k-pin-signal: url(/kit/atlas/pin-signal.webp);
+}
+
+/* The plates print a size up, so the gilt reads as a frame's moulding, its
+   engraving at the scale it was cut, not a trim; the strips are the same
+   frame, at the same scale, kept to their two corners' height inside the
+   box. */
+:root[data-style="atlas"] {
+  --plate-k: 0.62;
+}
+
+@media (max-width: 720px) {
+  :root[data-style="atlas"] {
+    --plate-k: 0.5;
+  }
+}
+
+:root[data-style="atlas"] :is(.running-head, .divider, .folio, .statusline, .look) {
+  --plate-k: 0.62;
+  min-height: calc(2 * 56px * var(--plate-k) + 8px);
+}
+
+@media (max-width: 720px) {
+  :root[data-style="atlas"] :is(.running-head, .divider, .folio, .statusline, .look) {
+    --plate-k: 0.5;
+  }
+}
+
+/* the masthead's keys clear the gilt (its rails up to 36 of the art's px
+   deep) by a margin of enamel, not by the slice's share of it */
+:root[data-style="atlas"] .running-head {
+  padding-block: calc(36px * var(--plate-k) + 8px);
+}
+
+/* On a phone the masthead's brand and keys share one row (globals.css): its
+   words clear the gilt of its side rails itself (35 of the art's px deep),
+   not the whole corner slice. */
+@media (max-width: 600px) {
+  :root[data-style="atlas"] .running-head {
+    padding-inline: calc(35px * var(--plate-k) + 3px);
+  }
+}
+
+/* the narrowest phones: the bezelled keys are wider than a flat slip, and
+   the row keeps them only with a hair less margin (the brand and the keys
+   stand apart anyway: the gap is only the least between them) */
+@media (max-width: 400px) {
+  :root[data-style="atlas"] .running-head {
+    padding-inline: calc(35px * var(--plate-k) + 2px);
+    column-gap: 6px;
+  }
+}
+
+/* The Fell types were cut in one weight: a heavier one asked for is the
+   roman as cut, never a smeared synthetic bold. */
+:root[data-style="atlas"] body {
+  font-synthesis-weight: none;
+}
+
+/* A label is engraved on a gilt strip: the strip's rails stay their own
+   height (a 9-slice, not stretched with the strip) when a long label wraps
+   to a second line, and the lines stand clear of them. */
+:root[data-style="atlas"] :is(.tape, .kicker) {
+  padding: 6px 16px 5px;
+  line-height: 1.45;
+  border-image: var(--k-tape) 14 48 fill / calc(14px * 0.3) calc(48px * 0.3) / calc(8px * 0.3) 2px stretch;
+}
+
+/* Inline code is a slip of ivory enamel round the whole of its text, its
+   ascenders and descenders inside the gilt, not over its rails. */
+:root[data-style="atlas"] :not(pre) > code {
+  border-image: var(--k-chip) 8 48 fill / 0 calc(48px * 0.16) / 0.22em 1px stretch;
+}
+
+/* A shortcut named on the page (the foot, the launch page) is a keycap
+   engraved on a slip of ivory enamel, the inline code's: named, never
+   pressed, so not a button. */
+:root[data-style="atlas"] .key.cap {
+  --ki: var(--chip-ink);
+}
+
+:root[data-style="atlas"] .key.cap::before {
+  border-image: var(--k-chip) 8 48 fill / 0 calc(48px * 0.2) / 0 stretch;
+  background: none;
+}
+
+:root[data-style="atlas"] .key.cap::after {
+  content: none;
+}
+
+/* held (the page echoes the visitor's keys): the slip sinks out of the light
+   with its legend */
+:root[data-style="atlas"] .key.cap[data-down="true"]::before {
+  filter: brightness(0.86);
+}
+
+/* a cap printed in a line of text: the slip's ends at the inline code's
+   scale, tall enough that a capital clears its gilt edge top and foot, the
+   legend set on the capitals' middle, not the line box's (which keeps room
+   for descenders a key's letter never has) */
+:root[data-style="atlas"] .key.cap-inline {
+  height: 1.8em;
+  padding: 0.14em 0.55em 0;
+}
+
+:root[data-style="atlas"] .key.cap-inline::before {
+  border-image-width: 0 calc(48px * 0.14);
+}
+
+/* the home page's pair: drawn level, no plate of the chart between (the
+   tokens on :root) */
+:root[data-style="atlas"] .hero {
+  --tier-cut: none;
+}
+
+/* the screen sits under the gilt bezel: its shade is the bezel's, warm */
+:root[data-style="atlas"] .screen-edge {
+  --panel-edge: rgba(42, 29, 8, 0.5);
+  box-shadow:
+    inset 0 0 0 1px var(--panel-edge),
+    inset 2px 3px 0 rgba(42, 29, 8, 0.18),
+    inset 6px 9px 10px -2px rgba(42, 29, 8, 0.32);
+}
+
+/* On a phone, a prose sheet's words run from just inside its frame (the
+   gilt frame is 18px deep at a phone's scale), not at the tablet's inset: a
+   column of 26 letters breaks every few words.
+   (The flagship and the cards keep theirs: their status and focus band sit
+   at it.) */
+@media (max-width: 720px) {
+  :root[data-style="atlas"] :is(.hero-copy.faceplate, .detail-hero, .section, .launch-copy.faceplate, .colophon) {
+    padding-inline: calc(var(--plate-w) + 6px);
+  }
+}

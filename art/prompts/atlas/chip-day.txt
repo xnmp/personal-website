@@ -1,0 +1,5 @@
+A single long narrow slip of ivory enamel (#f1e8d2) with a hair-thin gilded brass edge, seen perfectly straight-on and horizontal, centred, about eight times as long as it is tall, square ends. Empty. Uniform along its length so it can be stretched. No shadow, no text. Wide 8:1 image.
+
+Style: a great engraved celestial atlas and the brass instruments that read it, seen straight-on in warm lamplight from the upper left. Real materials: gilded brass with fine engraved line-work, deep vitreous enamel, cut glass jewels. Palette: navy #13213f, deep navy #0b1428, gold #c9a35a, brass #b8893f, ivory #f1e8d2, crimson #9e2b2f. Precise and precious. Match the materials, colours and lighting of the attached reference image (ref.png) exactly; use it for style only, not composition.
+
+Background: if your image tool supports a transparent background, use a fully transparent background. Otherwise use a perfectly flat, pure magenta #FF00FF background with no gradient, texture, vignette or cast shadow on it. No text anywhere.
