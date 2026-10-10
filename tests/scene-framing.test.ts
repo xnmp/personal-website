@@ -1,6 +1,7 @@
 import { test, expect, describe } from "bun:test";
 import {
   layoutPlane,
+  casterMap,
   placedScale,
   COVER,
   project,
@@ -129,6 +130,35 @@ describe("layoutPlane: at rest the 3D scene is the CSS scene", () => {
       const p = layoutPlane(view, ART, 5, FOV, { top: 0.1, bottom: 0.1, side: 0.1 });
       for (const v of [p.width, p.height, p.hinge.x, p.hinge.y, p.hinge.z]) expect(Number.isFinite(v)).toBe(true);
     }
+  });
+});
+
+describe("casterMap: a shadow falls where its caster is drawn", () => {
+  const over: Overscan = { top: 0.2, bottom: 0.1, side: 0.05 };
+  const PLACES = [COVER, { anchor: 1, span: Infinity }, { anchor: 0, span: 1.6 }, { anchor: 0.3, span: 1.2 }];
+
+  test("layers placed alike map 1:1", () => {
+    for (const view of Object.values(VIEWS)) for (const p of PLACES) expect(casterMap(view, ART, p, p)).toEqual([1, 1, 0, 0]);
+  });
+
+  for (const [name, view] of Object.entries(VIEWS))
+    test(`${name}: the receiver's art point and the caster's point it maps to land on the same pixel`, () => {
+      for (const receiver of PLACES)
+        for (const caster of PLACES) {
+          const r = layoutPlane(view, ART, 6.5, FOV, over, receiver);
+          const c = layoutPlane(view, ART, 4.3, FOV, over, caster);
+          const [sx, sy, tx, ty] = casterMap(view, ART, receiver, caster);
+          for (const [u, v] of [[0.1, 0.2], [0.5, 0.5], [0.9, 0.8]]) {
+            const here = project(view, FOV, REST, artPoint(r, u, v));
+            const there = project(view, FOV, REST, artPoint(c, u * sx + tx, v * sy + ty));
+            close(there.x, here.x);
+            close(there.y, here.y);
+          }
+        }
+    });
+
+  test("a degenerate 1px viewport still maps to finite numbers", () => {
+    for (const m of casterMap({ w: 1, h: 1 }, ART, COVER, { anchor: 1, span: 1.6 })) expect(Number.isFinite(m)).toBe(true);
   });
 });
 

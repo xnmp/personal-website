@@ -10,7 +10,8 @@
     "test": "bun test tests/",
     "e2e": "playwright test",
     "og": "node scripts/render-og.mjs",
-    "kit:check": "node scripts/check-kit.mjs"
+    "kit:check": "node scripts/check-kit.mjs",
+    "screens:bounds": "bun scripts/screen-bounds.ts"
   },
   "dependencies": {
     "echarts": "^6.0.0",

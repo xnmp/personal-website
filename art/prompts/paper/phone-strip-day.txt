@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png): a mock-up of a website's phone home screen painted as a cut-paper diorama, tall portrait (927x1697, about 9:16). Produce only the long torn cream paper strip across the very top, cut out on transparency.
+
+Keep only that strip (the one that held the word "chong" and the hamburger icon): a long cream paper strip with softly torn, fibrous edges all round and a soft shadow under it. Remove its word and its icon, and continue the strip's plain cream paper seamlessly across where they were, so it is one whole, plain strip. Everything else is fully transparent (use a transparent background with real alpha): the sky, the sun, the clouds, the mountains, the hills, the pines, the hiker, the card, the buttons, the window and the dock, and every other part of the page.
+
+Keep what stays exactly where and as it is in ref.png: the same position, size, outline, colours, paper texture and torn edges. Same framing and the same tall portrait aspect as the reference (927x1697), at the highest resolution available, so the kept piece can be laid back over the page in exactly the same place. No lettering anywhere.

@@ -1,0 +1,7 @@
+Edit the attached reference image (ref.png): a cut-paper diorama landscape, 16:9. It is being split into depth layers for a parallax pop-up scene. Produce its back layer, the sky, as a complete opaque picture.
+
+Keep: the dusty-blue sky paper with its fibrous texture; the terracotta paper sun at the upper right (whole: complete its disc where the clouds overlap it); every cream paper cloud floating in the sky (top left, top right and the small ones by the sun).
+
+Remove: everything that is not sky: the mountains, hills, pines, lake, rocks, the hiker and the dog. In their place continue the dusty-blue sky paper down to the bottom edge, the blue deepening a little toward the horizon, so the whole frame is sky.
+
+Keep what stays exactly where and as it is in ref.png: the same position, size, outline, colours, paper texture and soft light from the upper left. Same framing and the same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available. Opaque, no transparency. No lettering anywhere.

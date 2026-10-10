@@ -745,8 +745,10 @@ if (kit.glass && has(kit.glass)) {
    Full frames, never trimmed: every layer keeps the same 16:9 canvas so they
    register under the same `cover` fit. A layer that came back reframed is
    corrected by scripts/register-layer.mjs into registered.png beside it,
-   which is preferred. The flat scene (for the social cards) is the layers
-   composited. The sun (moon), if the style hangs one, is lifted out of the
+   which is preferred. The flat scene (scene-<finish>.webp, the page's
+   --k-scene-flat) is the layers composited, for the finishes listed in
+   `flat` (every finish when it is absent): a finish only the page's layers
+   read (a print's ground, an inner page's plate) writes none. The sun (moon), if the style hangs one, is lifted out of the
    sky (scripts/lift-sun.mjs) into scene/<finish>/sun.webp; `sun.at` is the
    disc's centre in the 1920x1080 frame per finish, and kit.css carries the
    sprite's geometry (--sun-*), which follows from it and the pad. A sky the
@@ -755,6 +757,15 @@ if (kit.glass && has(kit.glass)) {
    clear sky) and the disc generated on its own (`sun.sprites`), sized to
    `sun.size` px across its trimmed art. */
 const sc = kit.scene;
+/* A plate painted on past the mock's edges (`bleed`, in mock px: `x` on each
+   side, `bottom` below; the style's --sky-bleed-x and --sky-bleed-bottom,
+   kit.css) has a frame that is the core's 1920x1080 grown by as much.
+   Everything a recipe places in the frame (overlays, the falloff) is still
+   placed in the core's, and the flat scene is the core alone. */
+const BX = Math.round((sc?.bleed?.x ?? 0) * (1920 / 1672));
+const BB = Math.round((sc?.bleed?.bottom ?? 0) * (1080 / 941));
+const [FW, FH] = [1920 + 2 * BX, 1080 + BB];
+if ((BX || BB) && sc.sun?.at) throw new Error("scene: a sun lifted from the sky is placed in a 1920x1080 frame; a plate with a bleed hangs its sun as a sprite");
 /** the paper's tooth (a fill tile's grain, grainOf), once */
 let tooth0 = null;
 const paperTooth = async ({ tile, size }) => (tooth0 ??= await grainOf(tile, size));
@@ -816,7 +827,7 @@ for (const finish of sc?.finishes ?? []) {
     if (!src) continue;
     // one size for every screen: a phone's `cover` crop zooms into the
     // middle of the frame, so it needs the full width as much as a desktop
-    const sized = await sharp(src).resize({ width: 1920, height: 1080, fit: "fill" }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const sized = await sharp(src).resize({ width: FW, height: FH, fit: "fill" }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     // a gain keyed by layer grades it in every finish; by layer-finish, in
     // one; one number for all three channels, or one per channel
     const gain = sc.gain?.[`${layer}-${finish}`] ?? sc.gain?.[layer] ?? 1;
@@ -908,7 +919,7 @@ for (const finish of sc?.finishes ?? []) {
       let [f, lit] = [1, 0];
       if (fo) {
         const q = i >> 2;
-        const [u, v] = [((q % SW) / SW - fo.at[0]) / fo.reach[0], (Math.floor(q / SW) / SH - fo.at[1]) / fo.reach[1]];
+        const [u, v] = [((q % SW) - BX) / 1920 - fo.at[0], Math.floor(q / SW) / 1080 - fo.at[1]].map((d, k) => d / fo.reach[k]);
         lit = 1 - smoothstep(0, 1, Math.hypot(u, v));
         f = fo.floor + (1 - fo.floor) * lit;
       }
@@ -951,22 +962,29 @@ for (const finish of sc?.finishes ?? []) {
         const g = o.mist.grow ?? 30;
         const [mw, mh] = [iw + 2 * g, ih + 2 * g];
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${mw}" height="${mh}"><defs><radialGradient id="m"><stop offset="0" stop-color="#${o.mist.color[finish]}" stop-opacity="${o.mist.alpha}"/><stop offset="0.55" stop-color="#${o.mist.color[finish]}" stop-opacity="${o.mist.alpha * 0.8}"/><stop offset="1" stop-color="#${o.mist.color[finish]}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${mw / 2}" cy="${mh / 2}" rx="${mw / 2}" ry="${mh / 2}" fill="url(#m)"/></svg>`;
-        const [left, top] = [o.at[0] - g, o.at[1] - g];
+        const [left, top] = [BX + o.at[0] - g, o.at[1] - g];
         // cropped to the frame where the wash would run off it
         const [cl, ct] = [Math.max(0, -left), Math.max(0, -top)];
         const [cw, ch] = [Math.min(mw - cl, SW - Math.max(0, left)), Math.min(mh - ct, SH - Math.max(0, top))];
         const wash = await sharp(Buffer.from(svg)).png().extract({ left: cl, top: ct, width: cw, height: ch }).toBuffer();
         layers.push({ input: wash, left: Math.max(0, left), top: Math.max(0, top) });
       }
-      layers.push({ input: ink, left: o.at[0], top: o.at[1] });
+      layers.push({ input: ink, left: BX + o.at[0], top: o.at[1] });
     }
     const frame = layers.length ? await sharp(flat).composite(layers).png().toBuffer() : flat;
     await sharp(frame).webp({ quality: 78, alphaQuality: 90 }).toFile(`${dir}/${layer}.webp`);
     frames.push(frame);
   }
   if (frames.length !== sc.layers.length) continue;
+  // a finish that is not flattened leaves no flat from an earlier build
+  if (!(sc.flat ?? sc.finishes).includes(finish)) {
+    rmSync(`${OUT}/scene-${finish}.webp`, { force: true });
+    continue;
+  }
   const [sky, ...rest] = frames;
-  await sharp(sky).composite(rest.map((input) => ({ input }))).webp({ quality: 80 }).toFile(`${OUT}/scene-${finish}.webp`);
+  // composited first: sharp crops a pipeline's input before it composites
+  const flat = await sharp(sky).composite(rest.map((input) => ({ input }))).png().toBuffer();
+  await sharp(flat).extract({ left: BX, top: 0, width: 1920, height: 1080 }).webp({ quality: 80 }).toFile(`${OUT}/scene-${finish}.webp`);
   report.push(`scene/${finish}: ${sc.layers.length} layers at 1920w, flattened to scene-${finish}.webp`);
 }
 

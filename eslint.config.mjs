@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // isolated dev servers' build dirs (NEXT_DIST_DIR, next.config.ts)
+    ".next-*/**",
+    // generation scratch beside the raw art (gitignored)
+    "art/raw/**",
+    "art/raw/**/.*/**", // the passes' capture dirs (.pass): ** skips dot-dirs
   ]),
 ]);
 

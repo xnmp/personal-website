@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png), a painted glasshouse desk scene by day, into the same scene by night: exactly the same composition and framing, every prop, plant, the mug, the notebook and pen, the books, the armillary sphere, in exactly the same place and shape, the same painterly rendering. Only the light changes.
+
+Through the glass the sky is a deep blue night with a few stars, and the distant towers, the wind turbine and the solar panels are dim blue shapes with small warm lit windows; pale moonlight falls through the glass from the upper left. Inside, warm lamplight: small brass lanterns hang from the glazing bars at the top corners and strings of tiny warm lights wind through the ivy and plants, casting soft pools of honey-coloured light on the desk, and a few fireflies drift among the plants at the edges. The wooden desk, its front and the tiled ledge are lit softly by the lamps and the moon: darker than by day, calm and even, still readable as wood and tile. Add no new objects and no lettering anywhere.
+
+Same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available.

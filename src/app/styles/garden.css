@@ -1,101 +1,89 @@
 /* ==========================================================================
-   NATURAL GARDEN (art/briefs/garden.md): tablets of honey limestone with a
-   chiselled bevel set into a walled cottage garden, glazed tiles and beads,
-   copper plant labels, slate slips. The kit is built by `node scripts/build-kit.mjs garden` to the same
-   source geometry as the Paper Diorama, so only the art, the inks and the
-   mounts' slices change. Night (the dark rices: the same garden under a full
-   moon) first, then day (the light rice).
+   NATURAL GARDEN (art/briefs/garden.md): a cottage garden in soft daylight,
+   painted as a botanical watercolour; the page is set on cream cards stood
+   against a low stone wall, its buttons painted moss green and cream, its
+   names in a sturdy book serif with a sprig beside them, a row named on a
+   lettered stone. The kit is built by `node scripts/build-kit.mjs garden`.
+   Night (the dark rices: the same garden under a full moon) first, then day
+   (the light rice, the original mock's finish).
    ========================================================================== */
 
 :root[data-style="garden"] {
-  --font-display: var(--font-garamond);
+  /* the headlines' face is the site's own book serif (Newsreader), whose
+     large x-height is the mock's; the garden's labels are lettered by hand */
+  --garden-hand: var(--font-caveat);
 
-  --signal: #d9825a; /* terracotta glaze: the primary tile, the active bead, focus */
-  --signal-ink: #fbd3bd; /* on the moonlit stone */
-  --print: #f6f1e4; /* cream on the stone in moonlight */
-  --print-soft: #efe9da;
-  --print-faint: #ebe5d5;
-  --engrave-lo: rgba(0, 0, 0, 0.4);
-  --engrave-hi: rgba(239, 232, 214, 0.12);
-  --scene-ground: #505458;
+  --signal: #a9c79a; /* sage, lit by the moon: focus on the scene, the active bead */
+  --signal-ink: #2a4424; /* moss as text on the moonlit card (4.9:1) */
+  /* The cards are the day's board by moonlight, a pale blue-grey parchment
+     (#aaafbc at its middle): its ink is a deep night blue (7.3:1, the
+     faintest 4.6:1). */
+  --print: #1a2130;
+  --print-soft: #2b3343;
+  --print-faint: #394152;
+  --engrave-lo: rgba(26, 33, 48, 0.22);
+  --engrave-hi: transparent;
+  --scene-ground: #2f4056;
   --k-scene-flat: url(/kit/garden/scene-night.webp);
+  /* the plate is the whole scene: the moon is painted in its sky */
   --k-sky: url(/kit/garden/scene/night/sky.webp);
-  --k-sun: url(/kit/garden/scene/night/sun.webp); /* the moon (see .scene-sun) */
-  --sun-sw: 182;
-  --sun-sh: 182;
-  --sun-cx: 91;
-  --sun-cy: 90;
-  --sun-r: 66;
-  --k-far: url(/kit/garden/scene/night/far.webp);
-  --k-mid: url(/kit/garden/scene/night/mid.webp);
-  --k-near: url(/kit/garden/scene/night/near.webp);
+  /* the painting runs on 320 mock px past the mock's sides and foot, for the
+     frame round the stage (kit.css: registered to it on a desktop), its
+     lettered props whole in it at any aspect */
+  --sky-bleed-x: 320;
+  --sky-bleed-bottom: 320;
+  --k-sun: none;
+  --sun-cx: 0;
+  --sun-cy: 0;
+  --sun-r: 0;
+  --k-far: none;
+  --k-mid: none;
+  --k-near: none;
   --k-left-back: none;
   --k-right-back: none;
-  --k-left: url(/kit/garden/scene/night/left.webp);
-  --k-right: url(/kit/garden/scene/night/right.webp);
+  --k-left: none;
+  --k-right: none;
   --k-plate: url(/kit/garden/sheet-night-normal.webp);
   --k-plate-hover: url(/kit/garden/sheet-night-hover.webp);
   --k-plate-pressed: url(/kit/garden/sheet-night-pressed.webp);
   --k-plate-focus: url(/kit/garden/sheet-night-focus.webp);
   --k-plate-flat: url(/kit/garden/sheet-night-flat.webp);
-  /* the second slab, set in turn with the first (below) */
-  --k-plate-b: url(/kit/garden/sheet-night-b-normal.webp);
-  --k-plate-b-hover: url(/kit/garden/sheet-night-b-hover.webp);
-  --k-plate-b-pressed: url(/kit/garden/sheet-night-b-pressed.webp);
-  --k-plate-b-focus: url(/kit/garden/sheet-night-b-focus.webp);
-  --k-plate-b-flat: url(/kit/garden/sheet-night-b-flat.webp);
-  /* the tablets' face is cleared from the art (scripts/framed-pane.mjs) and
-     painted here, tiled, so the stone's grain keeps its scale at any size;
-     the art keeps the chiselled bevel, which hands over to this stone */
-  --plate-slice: var(--slice-plate);
-  --plate-fill: url(/kit/garden/stone-night.webp);
-  --plate-fill-size: 640px;
-  --plate-fill-repeat: repeat;
-  /* the stone starts under the bevel (16 of the art's px in from its edge),
-     clear of the tablet's soft outer edge */
-  --plate-fill-in: 16px;
-  --strip-fill-in: 16px;
-  /* the slab's long edges tile between its corners, rebuilt long from
-     pieces of themselves (scripts/kits/garden.mjs): stretched, a chip in
-     the arris smears into a streak */
-  --plate-repeat: round;
-  --strip-repeat: round;
-  /* pressed: the slab is set down into its bed (it lifts 3px on hover) and
-     the face dims with its frame (the sheets' pressedFlags --dim): the
-     moonlit stone further than the sunlit, or on its dark face it barely
-     changes */
-  --plate-press-shift: translateY(2px);
-  --plate-press-dim: 0.84;
+  /* a card is its own board, the centre slice and all */
+  --plate-slice: var(--slice-plate) fill;
+  --plate-fill: linear-gradient(var(--plate-under), var(--plate-under));
   --plate-backdrop: none;
-  --plate-round: 0px;
-  --plate-light: url(/kit/garden/sheet-night-light.webp);
-  --plate-light-in: 0px; /* a framed pane: the pool's edge lies under the frame (kit.css) */
-  --plate-sheen: url(/kit/garden/sheet-night-sheen.webp);
-  /* content clears the bevel and the glaze laid in along it */
-  --plate-inset: 4px; /* the slabs print a size up (below): their corner is wider */
-  --k-strip: url(/kit/garden/sheet-strip-night-normal.webp); /* a plain tablet */
-  /* a tablet is set, not pinned */
+  --plate-fill-in: 0px;
+  --strip-fill-in: 0px;
+  --strip-repeat: stretch;
+  --plate-sheen: none;
+  --plate-light: none;
+  --plate-inset: 0px; /* a card has no frame: content is set in from its corner */
+  /* the strips (masthead, shelf heads, feet) are the same card */
+  --k-strip: url(/kit/garden/sheet-night-normal.webp);
+  /* a card stands against the wall, it is not pinned */
   --k-pin-hold: none;
   --k-pin-hold-signal: none;
-  /* tablets in a row are set level */
+  --silk-shadow: none;
+  /* cards in a row stand level, as on the mock's wall */
   --shelf-stagger: 0px;
   --shelf-align: stretch;
   --hero-stagger: 0px;
-  --hero-align: start; /* the opening pair set level along their tops, each as tall as it holds */
-  /* small labels are cut into the stone: a dark cut */
-  --silk-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
-  --k-bezel: url(/kit/garden/mat-night.webp);
-  --mat-t: 84;
-  --mat-r: 81;
-  --mat-b: 82;
-  --mat-l: 83;
+  --hero-align: start;
+  /* A screen is set flush in the card, as the mock's screenshots are: no
+     mat and no bevel (the face meets the box: 40, the mat's own pad, is
+     zero), only a hairline edge (.screen-edge below). */
+  --k-bezel: none;
+  --mat-t: 40;
+  --mat-r: 40;
+  --mat-b: 40;
+  --mat-l: 40;
+  --bezel-under: #1b1e21;
   --k-key: url(/kit/garden/tile-night-normal.webp);
   --k-key-hover: url(/kit/garden/tile-night-hover.webp);
   --k-key-pressed: url(/kit/garden/tile-night-pressed.webp);
   --k-key-focus: url(/kit/garden/tile-night-focus.webp);
-  --key-inset: 3px; /* the legend clears the glaze's rim */
-  --key-repeat: round stretch; /* the glaze repeats along a tile, never smears */
-  --key-lift: 0px;
+  --key-inset: 0px;
+  --key-lift: 1px;
   --k-tape: url(/kit/garden/tape-night.webp); /* copper plant label */
   --tape-ink: #efe8d6;
   --k-chip: url(/kit/garden/chip-night.webp); /* inline code: a slip of slate */
@@ -104,74 +92,72 @@
   --k-drift-cloud: none;
   --motes: #f2e7a0;
   --motes-kind: fireflies;
-  --plate-under: #565964;
-  --bezel-under: #463a2a;
-  --key-under: #445342;
-  --key-ink: #efe8d6;
-  --key-ink-soft: #d0cab8;
+  --plate-under: #aaafbc;
+  --key-under: #a8a9af;
+  --key-ink: #1d2433;
+  --key-ink-soft: #343c4c;
   --k-key-signal: url(/kit/garden/tile-signal-night-normal.webp);
   --k-key-signal-hover: url(/kit/garden/tile-signal-night-hover.webp);
   --k-key-signal-pressed: url(/kit/garden/tile-signal-night-pressed.webp);
   --k-key-signal-focus: url(/kit/garden/tile-signal-night-focus.webp);
-  --key-signal-ink: #fbf3e4; /* cream on terracotta glaze */
-  --key-signal-under: #75371d;
+  --key-signal-ink: #f4ecd9; /* cream on the moss */
+  --key-signal-under: #2e3c2e;
   --k-pin-brass: url(/kit/garden/pin-brass-night.webp); /* a cream glazed bead, by moonlight */
-  --k-pin-green: url(/kit/garden/pin-green-night.webp); /* sage */
-  --k-pin-amber: url(/kit/garden/pin-amber-night.webp); /* ochre */
-  --k-pin-signal: url(/kit/garden/pin-signal-night.webp); /* terracotta */
+  --k-pin-green: url(/kit/garden/pin-green-night.webp);
+  --k-pin-amber: url(/kit/garden/pin-amber-night.webp);
+  --k-pin-signal: url(/kit/garden/pin-signal-night.webp);
   --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+
+  /* the garden's own art: the sprig beside a name, the stone a row is named
+     on, the wall the first screen's cards stand against (kit: props) */
+  --k-sprig: url(/kit/garden/sprig-night.webp);
+  --k-spray: url(/kit/garden/spray-night.webp);
+  --k-label: url(/kit/garden/label-night.webp);
+  --label-ink: #1a2130;
+  --k-wall: url(/kit/garden/wall-night.webp);
+  --k-mug-front: url(/kit/garden/mug-front-night.webp);
+  /* the wall's art in the plate's frame (mock px): trimmed from y 187, 680
+     tall, the whole 1672 across (scripts/kits/garden.mjs) */
+  --wall-top: 187;
+  --wall-h: 680;
 }
 
-/* day: late-morning sun on honey limestone */
+/* day: soft late-morning sun, the original mock */
 :root[data-style="garden"][data-rice="paper"] {
-  --k-pin-brass: url(/kit/garden/pin-brass.webp);
-  --k-pin-green: url(/kit/garden/pin-green.webp);
-  --k-pin-amber: url(/kit/garden/pin-amber.webp);
-  --k-pin-signal: url(/kit/garden/pin-signal.webp);
-  --plate-press-dim: 0.93;
-  --signal: #c46a43;
-  --signal-ink: #8f4526;
-  --print: #2d3328; /* moss-black ink on the stone */
-  --print-soft: #3f4637;
-  --print-faint: #4d5444;
-  --engrave-lo: rgba(45, 51, 40, 0.28);
-  --engrave-hi: rgba(255, 250, 235, 0.5);
-  --scene-ground: #9f8a52;
+  --k-tape: url(/kit/garden/tape-day.webp);
+  --tape-ink: #2a1d12; /* stamped into the copper */
+  --signal: #4a6140; /* moss: the primary button, focus */
+  --signal-ink: #3e5535;
+  --print: #1f2719; /* moss-black ink on the cream */
+  --print-soft: #3b4433;
+  --print-faint: #4a5341;
+  --engrave-lo: rgba(31, 39, 25, 0.24);
+  --scene-ground: #9a8c62;
   --k-scene-flat: url(/kit/garden/scene-day.webp);
   --k-sky: url(/kit/garden/scene/day/sky.webp);
-  --k-far: url(/kit/garden/scene/day/far.webp);
-  --k-mid: url(/kit/garden/scene/day/mid.webp);
-  --k-near: url(/kit/garden/scene/day/near.webp);
-  --k-left-back: none;
-  --k-right-back: none;
-  --k-left: url(/kit/garden/scene/day/left.webp);
-  --k-right: url(/kit/garden/scene/day/right.webp);
-  --k-sun: none; /* the sun's glow is painted in the sky */
+  --k-sun: none;
   --sun-cx: 0;
   --sun-cy: 0;
   --sun-r: 0;
-  --k-drift-cloud: none;
+  --k-far: none;
+  --k-mid: none;
+  --k-near: none;
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: none;
+  --k-right: none;
   --k-plate: url(/kit/garden/sheet-day-normal.webp);
   --k-plate-hover: url(/kit/garden/sheet-day-hover.webp);
   --k-plate-pressed: url(/kit/garden/sheet-day-pressed.webp);
   --k-plate-focus: url(/kit/garden/sheet-day-focus.webp);
   --k-plate-flat: url(/kit/garden/sheet-day-flat.webp);
-  --k-plate-b: url(/kit/garden/sheet-day-b-normal.webp);
-  --k-plate-b-hover: url(/kit/garden/sheet-day-b-hover.webp);
-  --k-plate-b-pressed: url(/kit/garden/sheet-day-b-pressed.webp);
-  --k-plate-b-focus: url(/kit/garden/sheet-day-b-focus.webp);
-  --k-plate-b-flat: url(/kit/garden/sheet-day-b-flat.webp);
-  --plate-fill: url(/kit/garden/stone-day.webp);
-  --plate-light: url(/kit/garden/sheet-day-light.webp);
-  --plate-sheen: url(/kit/garden/sheet-day-sheen.webp);
-  --k-strip: url(/kit/garden/sheet-strip-day-normal.webp);
-  /* small labels cut into the sunlit stone: the cut's lower lip catches the light */
-  --silk-shadow: 0 1px 0 rgba(255, 250, 235, 0.55);
-  --k-bezel: url(/kit/garden/mat-day.webp);
-  --mat-t: 84;
-  --mat-r: 81;
-  --mat-b: 82;
-  --mat-l: 83;
+  --k-strip: url(/kit/garden/sheet-day-normal.webp);
+  --k-bezel: none;
+  --mat-t: 40;
+  --mat-r: 40;
+  --mat-b: 40;
+  --mat-l: 40;
+  --bezel-under: #3a3f42;
   --k-key: url(/kit/garden/tile-day-normal.webp);
   --k-key-hover: url(/kit/garden/tile-day-hover.webp);
   --k-key-pressed: url(/kit/garden/tile-day-pressed.webp);
@@ -180,113 +166,861 @@
   --k-key-signal-hover: url(/kit/garden/tile-signal-hover.webp);
   --k-key-signal-pressed: url(/kit/garden/tile-signal-pressed.webp);
   --k-key-signal-focus: url(/kit/garden/tile-signal-focus.webp);
-  --k-tape: url(/kit/garden/tape-day.webp);
-  --tape-ink: #2a1d12; /* stamped into the copper */
   --k-chip: url(/kit/garden/chip-day.webp);
   --chip-ink: #efe8d6; /* chalk on slate */
+  --k-drift-cloud: none;
   --motes: #fff3c8;
   --motes-kind: dust;
-  --plate-under: #e7d8bd;
-  --bezel-under: #87663e;
-  --key-under: #839261;
-  --key-ink: #161b12;
-  --key-ink-soft: #2a3124;
-  --key-signal-under: #ad5127;
+  --plate-under: #f5ead6;
+  --key-under: #f1e1c8;
+  --key-ink: #1f2815;
+  --key-ink-soft: #3b4433;
+  --key-signal-ink: #fbf8f0; /* cream on the moss */
+  --key-signal-under: #4b5b3a;
+  --k-pin-brass: url(/kit/garden/pin-brass.webp);
+  --k-pin-green: url(/kit/garden/pin-green.webp);
+  --k-pin-amber: url(/kit/garden/pin-amber.webp);
+  --k-pin-signal: url(/kit/garden/pin-signal.webp);
+  --k-sprig: url(/kit/garden/sprig-day.webp);
+  --k-spray: url(/kit/garden/spray-day.webp);
+  --k-label: url(/kit/garden/label-day.webp);
+  --label-ink: #1c1a12;
+  --k-wall: url(/kit/garden/wall-day.webp);
+  --k-mug-front: url(/kit/garden/mug-front-day.webp);
+  --wall-top: 193;
+  --wall-h: 670;
 }
 
-/* A row of tablets is named by a copper plant label hung before it, sized to
-   its name, not by one more tablet: the stone is every surface's, the
-   label marks where a row begins. The label is the kicker's art (3-slice:
-   its weathered ends never stretch), its type stamped into the copper. */
-/* The slabs are printed a size up, so their dressed edge and rounded corner
-   read as a slab's thickness, not a trim; the strips likewise, their sides
-   (never lengthened) kept to their two corners' height inside the box. */
+/* ---------- the first screen, laid out on the mock (mock px, --u) ---------- */
+
 :root[data-style="garden"] {
-  --plate-k: 0.625;
+  --l-left: calc(293 * var(--u)); /* the pitch's and the tiles' left edge: the mock's ink at 294, the tiles' at 293 */
+  --l-right: calc(348 * var(--u));
+  --l-head-top: calc(15 * var(--u));
+  --l-brand: calc(54 * var(--u));
+  --l-brand-weight: 540; /* the mock's name is inked a little heavier than its stem width alone says: its ink mass (dark px over the word) is 12% over a weight 500's, its ascender 2 px taller */
+  --l-tagline: calc(19.4 * var(--u));
+  --l-tagline-track: -0.003em;
+  --l-nav: calc(19.5 * var(--u));
+  --l-nav-weight: 500;
+  --l-launch-top: 0px;
+  --l-launch-align: start;
+  /* the window: its bottom edge sits on the books on the wall's ledge */
+  --l-win-x: calc(691 * var(--u)); /* the monitor's outer edge in the mock: x 691-1340.5, y 71-421.5 */
+  --l-win-w: calc(649.5 * var(--u)); /* its pale rim included, to the mock's 1340.5 (the dark body ends 3 px short of it) */
+  --l-title: calc(51 * var(--u));
+  --l-title-weight: 470; /* stems 4.7 and the T's 5.3 px at 51 px against the mock's 4.6 and 5.4 (measured) */
+  --l-pitch: calc(26.1 * var(--u));
+  --l-cards-l: calc(180 * var(--u));
+  --l-cards-r: calc(168.5 * var(--u)); /* the row ends at the mock's 1503.5 */
+  --l-cards-gap: calc(17 * var(--u));
+  --l-foot: 0px;
+  --l-heading: calc(26.5 * var(--u));
+  --l-heading-font: var(--garden-hand);
+  --l-heading-weight: 400;
+  --l-heading-rule: none; /* the row is named on its stone, no rule */
+  --l-card-title: calc(22.5 * var(--u));
+  --l-card-weight: 540;
+  /* the words stand on the pale plastered wall: dark moss ink by day */
+  --l-ink: #1f2a19;
+  --l-ink-soft: #343e2b;
+  --l-call: #343e2b;
+  /* a soft glow of the plaster behind them, where a rose or a leaf runs
+     under a word (the keys at the top right) */
+  --l-halo: 0 0 calc(3 * var(--u)) rgba(248, 239, 224, 0.9), 0 0 calc(10 * var(--u)) rgba(248, 239, 224, 0.7);
+  /* the masthead's height, in mock px: the first screen fills the window */
+  --masthead-h: calc(95 * var(--u));
+  --xw-round: calc(12 * var(--u));
+  /* the mock's monitor casts a soft shadow on the plaster at its left (a fifth
+     darker over 40 mock px) and a dark line under its foot, which the scene it
+     stands in already holds (the mock's own pixels beside and under it, kit
+     EXCLUDED), so the window's own shadow is a contact line: a wide one would
+     darken the wall, the mug beside it and the books under it twice */
+  --xw-shadow: 0 calc(1 * var(--u)) calc(2.5 * var(--u)) rgba(20, 24, 16, 0.3);
+}
+
+/* the mock's name and headline are set in a near-black moss, darker than
+   the body copy's ink (measured on their heaviest strokes) */
+:root[data-style="garden"][data-rice="paper"] :is(.masthead .brand a, .launchpad-title) {
+  color: #0e1808;
+}
+
+/* The tagline is inked as the mock's is, measured on its strokes: a warm
+   olive-brown that reaches #292f1e on the thinnest of them (the body's ink,
+   #343e2b, was greyer and lighter), cut finer so its ink mass stays the
+   mock's (the mean of its darkest fifth, 128 against 119 at weight 400). */
+:root[data-style="garden"][data-rice="paper"] .masthead .tagline {
+  color: #262c1a;
+  font-weight: 370;
+}
+
+/* by moonlight the same words are pale on the blue plaster, a shade of the
+   night behind them where the flowers are busy */
+:root[data-style="garden"]:not([data-rice="paper"]) {
+  --l-ink: #f1ead8;
+  --l-ink-soft: #e2dccb;
+  --l-call: #e2dccb;
+  --l-halo: 0 0 calc(6 * var(--u)) rgba(22, 30, 46, 0.8), 0 0 calc(18 * var(--u)) rgba(22, 30, 46, 0.55);
+}
+
+/* the brand's mark is the mock's own leaf after the name (cut from it,
+   scripts/kits/garden.mjs): 43 x 44.3 mock px, its left edge 9 px after the
+   word's, its top 3 px under the masthead's */
+:root[data-style="garden"] .brand .led {
+  order: 1;
+  width: calc(43 * var(--u));
+  height: calc(44.3 * var(--u));
+  margin: calc(3 * var(--u)) 0 0 calc(-2.8 * var(--u)); /* the brand's flex gap (12) apart */
+  align-self: flex-start;
+}
+
+:root[data-style="garden"] .brand .led::before {
+  inset: 0;
+  background: var(--k-spray) center / contain no-repeat;
+}
+
+/* the masthead is the mock's 95 px tall whatever its words do, so the
+   flagship under it keeps the mock's place (a phone stacks it naturally) */
+@media (min-width: 900px) {
+  :root[data-style="garden"] .masthead {
+    height: var(--masthead-h);
+  }
+}
+
+:root[data-style="garden"] .masthead .brand {
+  letter-spacing: 0.006em;
+}
+
+:root[data-style="garden"] .masthead .tagline {
+  margin: calc(-6 * var(--u)) 0 0 calc(2 * var(--u)); /* the mock's baseline and first letter */
+  font-weight: 400;
+}
+
+/* the keys at the top right are lettered on the bare plaster between the
+   roses and the ivy pillar, as the mock's three words are: its muted moss
+   green by day, its spacing (35 mock px between words) */
+:root[data-style="garden"] .masthead .instruments {
+  gap: calc(31 * var(--u));
+  margin-top: calc(5.5 * var(--u)); /* the words' baseline at the mock's, 40.5 mock px down */
+}
+
+:root[data-style="garden"] .masthead .key:not(.cap) {
+  font-size: max(15px, var(--l-nav)); /* the words, not the buttons' size */
+  letter-spacing: -0.008em; /* as tight as the mock's words (it read "Gar den") */
+  text-shadow: var(--l-halo); /* a key's own rule drops the strip's glow */
+}
+
+/* the style key's caret as full as the words beside it, and as big as a
+   letter's x-height, not a speck */
+:root[data-style="garden"] .masthead .style-caret {
+  font-size: 0.9em;
+  opacity: 1;
+}
+
+:root[data-style="garden"][data-rice="paper"] .masthead .key {
+  --ki: #34432b;
+}
+
+/* The flagship's name, pitch and keys stand on the plaster beside its
+   window, the window raised over the wall behind it. */
+:root[data-style="garden"] .launchpad {
+  margin-top: calc(-24 * var(--u)); /* the window's top at the mock's 71 */
+}
+
+:root[data-style="garden"] .launchpad-copy {
+  padding: calc(80 * var(--u)) calc(16 * var(--u)) 0 0;
+}
+
+/* The flagship's name in the book serif at a medium weight, tracked as
+   set, at a text optical size (the display cut's hairlines are finer and
+   its letters wider than the mock's); its sprig 12 mock px after the r,
+   across the cap height. */
+:root[data-style="garden"] .launchpad-title {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(10 * var(--u));
+  margin-left: 0; /* its T's serif at the mock's 294 */
+  letter-spacing: -0.02em;
+  font-variation-settings: "opsz" 36;
+}
+
+:root[data-style="garden"] .launchpad-title::after {
+  content: "";
+  flex: none;
+  width: calc(37 * var(--u));
+  height: calc(45 * var(--u));
+  background: var(--k-sprig) center / contain no-repeat;
+}
+
+:root[data-style="garden"] .launchpad-pitch {
+  margin-top: calc(6 * var(--u));
+  line-height: 1.2;
+}
+
+:root[data-style="garden"] .launchpad-call {
+  line-height: 1.2;
+}
+
+:root[data-style="garden"] .launchpad-keys {
+  gap: calc(20 * var(--u));
+  margin: calc(17 * var(--u)) 0 0; /* the tiles' edges, not their words, on the copy's line */
+}
+
+/* the words a little under the tile's middle, as the mock's sit; the tile's
+   art is set (measured) so its board is the mock's 194 x 50 and 135 x 50 */
+:root[data-style="garden"] .launchpad-keys .key[data-size="lg"] {
+  min-height: max(40px, calc(50 * var(--u)));
+  padding: calc(4 * var(--u)) calc(22.6 * var(--u)) 0;
+  font-size: max(15px, calc(21 * var(--u)));
+}
+
+:root[data-style="garden"] .launchpad-keys .key[data-size="lg"]::before,
+:root[data-style="garden"] .launchpad-keys .key[data-size="lg"]::after {
+  inset: calc(-2 * var(--u)) 0 0;
+}
+
+:root[data-style="garden"] .launchpad-keys .key[data-size="lg"]:not([data-tone="signal"]) {
+  padding-inline: calc(25.1 * var(--u));
+}
+
+/* The arrow as the mock letters it (15 x 11 mock px, from the baseline up,
+   12 px after the word): an open arrow with a full head. No face's arrow
+   has its head (the serif's, and every fallback's, is half as tall), so it
+   is drawn, its glyph kept for the text but not shown. */
+:root[data-style="garden"] .launchpad-keys .key-arrow {
+  display: inline-block;
+  width: 0.74em;
+  height: 0.54em;
+  margin-left: 0.32em;
+  overflow: hidden;
+  text-indent: 2em;
+  white-space: nowrap;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 11' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M0.9 5.5h13.1M9.2 0.9l4.7 4.6-4.7 4.6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 11' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M0.9 5.5h13.1M9.2 0.9l4.7 4.6-4.7 4.6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+:root[data-style="garden"] .launchpad-window {
+  z-index: 1; /* over the wall and the things on its ledge */
+}
+
+/* In the mock the mug stands in front of the monitor: its handle loops over
+   the window's lower left corner. The window is a layer over the wall, so the
+   mug's rim and handle are a sprite of their own over the window (the mock's
+   own pixels, scripts/kits/garden.mjs mugFront), 42 x 28 mock px from the
+   mock's (686, 396), the window's corner at (691, 71). A phone stacks the
+   window, with no wall behind it. */
+@media (min-width: 900px) {
+  :root[data-style="garden"] .launchpad-window::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    left: calc((686 - 691) * var(--u));
+    top: calc((396 - 71) * var(--u));
+    width: calc(42 * var(--u));
+    height: calc(28 * var(--u));
+    background: var(--k-mug-front) 0 0 / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+}
+
+/* The window is the mock's: a charcoal bezel, a dark outline round a pale
+   metal rim (measured on the mock: 2 px of light grey along the top where it
+   catches the light, 3 to 4 px of mid grey down the sides and along the foot),
+   its lights and a sprig before the name in the bar (the name in a plain
+   sans), and in it ONE screen, the two panes flush with a hairline between
+   them, set in the bezel with rounded corners and no gutters: each pane's path
+   bar, its list under a column head, the status line under both. The screen is
+   lit in the visitor's rice (light by day). */
+:root[data-style="garden"] .xw {
+  --xw-r: 1.1cqw;
+  --xw-hair: color-mix(in srgb, var(--ink) 20%, var(--paper));
+  gap: 0;
+  padding: 0 1.5cqw 1.5cqw;
+  border: max(1px, calc(1.5 * var(--u))) solid #2b2e31;
+  background: #202326;
+  box-shadow:
+    inset 0 calc(2.2 * var(--u)) 0 0 #8f9193,
+    inset 0 0 0 calc(4 * var(--u)) #565a5e;
+}
+
+/* The mock's window is wider for its height than the default's (647 x 350.5
+   mock px): it spans from the copy to the vine, its foot on the books. Its
+   rows are the mock's 21 px apart, so every one of the folder's ten shows
+   under the column head and none is cut by the status line. (A phone keeps
+   the default's window and rows, sized to the column.) */
+@media (min-width: 900px) {
+  :root[data-style="garden"] .xw {
+    aspect-ratio: 649.5 / 350.5;
+    font-size: max(8px, 1.8cqw);
+  }
+
+  /* a list ends with its last row, zebra-striped as far as it goes: the
+     shorter folder's pane ends in plain paper (a banded filler ran on past
+     it and was cut through by the status line, a half row) */
+  :root[data-style="garden"] .xw-rows {
+    grid-template-rows: repeat(auto-fill, 3.25cqw);
+    padding: 0.5cqw 0.7cqw;
+  }
+
+  :root[data-style="garden"] .xw-rows li:nth-child(even):not([data-selected]) {
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+  }
+
+  /* the column head: the name over its kind, one grid row as the list's rows
+     are, on the first row's cell (the rows flow past it) */
+  :root[data-style="garden"] .xw-rows::before,
+  :root[data-style="garden"] .xw-rows::after {
+    grid-row: 1;
+    grid-column: 1;
+    align-self: center;
+    padding-inline: 1.2cqw;
+    color: var(--ink-soft);
+    font-size: 0.92em;
+    letter-spacing: 0.02em;
+  }
+
+  :root[data-style="garden"] .xw-rows::before {
+    content: "Name";
+    padding-left: calc(1.2cqw + 3.4cqw); /* over the names, past the icons */
+  }
+
+  :root[data-style="garden"] .xw-rows::after {
+    content: "Kind";
+    justify-self: end;
+  }
+}
+
+:root[data-style="garden"] .xw-bar {
+  height: 5cqw;
+  padding-inline: 1.2cqw 0.7cqw; /* the lights at the mock's 714, 733 and 751 */
+  background: none;
+  border-bottom: 0;
+}
+
+:root[data-style="garden"] .xw-lights {
+  translate: 0 1px;
+}
+
+/* the small control at the bar's right end: a faint ring with a dot in it */
+:root[data-style="garden"] .xw-bar::after {
+  content: "";
+  position: absolute;
+  right: -0.1cqw; /* at the mock's x 1321: the bar ends where the bezel's padding does */
+  top: 50%;
+  width: 1.45cqw;
+  aspect-ratio: 1;
+  translate: 0 -50%;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 255 255 / 0.17) 0 24%, transparent 28%);
+}
+
+:root[data-style="garden"] .xw-lights i {
+  background: #e0544c;
+}
+
+:root[data-style="garden"] .xw-lights i:nth-child(2) {
+  background: #e3b341;
+}
+
+:root[data-style="garden"] .xw-lights i:nth-child(3) {
+  background: #5fae4f;
+}
+
+:root[data-style="garden"] .xw-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1cqw;
+  color: #dcdcd6;
+  font-family: var(--font-print), system-ui, sans-serif;
+  font-size: 1.05em;
+}
+
+:root[data-style="garden"] .xw-title::before {
+  content: "";
+  width: 2.4cqw;
+  height: 2.4cqw;
+  background: var(--k-sprig) center / contain no-repeat;
+}
+
+/* the screen: the panes and the status line are one rounded sheet, the
+   hairline of the sheet round them */
+:root[data-style="garden"] .xw-panes {
+  gap: 0;
+  border: 1px solid var(--xw-hair);
+  border-bottom: 0;
+  border-radius: var(--xw-r) var(--xw-r) 0 0;
+  background: var(--paper);
+}
+
+:root[data-style="garden"] .xw-pane {
+  gap: 0;
+}
+
+:root[data-style="garden"] .xw-pane + .xw-pane {
+  border-left: 1px solid var(--xw-hair);
+}
+
+/* each pane's path bar runs the pane's width, the folder's name in the
+   mock's blue; the left one has the mock's close mark */
+:root[data-style="garden"] .xw-path {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.3cqw 1.6cqw;
+  border-bottom: 1px solid var(--xw-hair);
+  background: var(--paper-warm);
+  color: var(--cyan);
+}
+
+:root[data-style="garden"] .xw-pane:first-child .xw-path::after {
+  content: "\2715";
+  color: var(--ink-soft);
+  font-size: 0.85em;
+}
+
+:root[data-style="garden"] .xw-status {
+  align-items: center;
+  gap: 2cqw;
+  padding: 1.1cqw 1.8cqw;
+  border: 1px solid var(--xw-hair);
+  border-radius: 0 0 var(--xw-r) var(--xw-r);
+  background: var(--paper-warm);
+  font-size: 0.92em;
+}
+
+/* The status line's legend as the mock sets it: each chord a key cap, its
+   action beside it. One line of whole chords: a wrapping row clipped to one
+   line's height, so a chord that does not fit (a phone's width) drops out
+   whole, the first ones kept, never cut through its keys. (The shared rule
+   hides the legend on a phone; this one keeps what fits.) */
+:root[data-style="garden"] .xw-hints {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: flex-end;
+  gap: 1.2em 2.2cqw;
+  height: 1.7em;
+  padding-block: 0.15em;
+  overflow: hidden;
+}
+
+:root[data-style="garden"] .xw-hint {
+  flex: none;
+  white-space: nowrap;
+}
+
+:root[data-style="garden"] .xw-hint + .xw-hint::before {
+  content: none;
+}
+
+:root[data-style="garden"] .xw-hints kbd {
+  padding: 0.1em 0.45em 0.06em;
+  border: 1px solid var(--xw-hair);
+  border-bottom-width: 2px;
+  border-radius: 0.35em;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* The first screen is the whole window: where the stage is shorter than it
+   (a 16:10 screen), the garden shows under the row, and the next sheet
+   starts below the fold, not as a blank slab at the foot of it. */
+@media (min-width: 900px) {
+  :root[data-style="garden"] .landing {
+    margin-bottom: max(0px, calc(100svh - 941 * var(--u)));
+  }
+}
+
+/* ---- the wall, and the row of cards stood against it ---- */
+
+/* The showcase sits a fixed distance under the window (mock px), not at the
+   foot of the screen: the low wall behind it holds the things on its ledge
+   right under the window, so window, ledge and cards keep the mock's
+   relation at every aspect; on a screen taller than the mock the garden's
+   flower bed (the plate, anchored to the foot) shows below the row. */
+:root[data-style="garden"] .showcase {
+  --show-top: 477.5; /* the showcase's top in mock px: the cards' (577.5) less the plaque's and the gap */
+  position: relative;
+  margin-top: calc((var(--show-top) - 421.5) * var(--u)); /* under the window's foot (421.5) */
+  padding-top: calc(30 * var(--u));
+}
+
+/* four cards as wide as the mock's, which are not alike: 324, 317, 311 and
+   322 px, 17 apart (another count takes equal shares) */
+@media (min-width: 900px) {
+  :root[data-style="garden"] .showcase-row:has(> li:nth-child(4):last-child) {
+    grid-template-columns: 324fr 317fr 311fr 322fr;
+  }
+}
+
+/* the wall (with the mug, the books, the sleeping cat and the potted rose
+   on its ledge) as painted in the plate's frame: its top-left at (0,
+   --wall-top) there, the showcase's own top at mock y --show-top */
+:root[data-style="garden"] .showcase::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  top: calc((var(--wall-top) - var(--show-top)) * var(--u));
+  width: calc(1672 * var(--u));
+  height: calc(var(--wall-h) * var(--u));
+  background: var(--k-wall) center / 100% 100% no-repeat;
+  /* the watering can at its left end and the lettered stone at its right
+     stand in front of it (they are the plate's): its fringe of fern and
+     daisies stops at them */
+  --y: calc(var(--wall-top) * var(--u));
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(642 * var(--u) - var(--y)),
+    calc(1538 * var(--u)) calc(646 * var(--u) - var(--y)),
+    calc(1524 * var(--u)) calc(830 * var(--u) - var(--y)),
+    calc(1524 * var(--u)) 100%,
+    calc(178 * var(--u)) 100%,
+    calc(178 * var(--u)) calc(694 * var(--u) - var(--y)),
+    0 calc(694 * var(--u) - var(--y))
+  );
+  pointer-events: none;
+}
+
+/* the row is named on a lettered stone set on the wall's left end, in the
+   garden's hand, with a sprig */
+:root[data-style="garden"] .showcase-title {
+  justify-content: center;
+  gap: calc(14 * var(--u)); /* the mock's word ends at x 254 and its sprig's leaves begin at 269 */
+  /* the mock's board, the stone cut from it (x 117.6-313.6, y 507.4-568), its
+     art's pad and outset in the box's size; the script set to the mock's ink
+     (below) and the lettering right of the board's middle, as the mock's sits */
+  width: calc(198.4 * var(--u));
+  height: calc(63.6 * var(--u));
+  margin: calc(-2.6 * var(--u)) 0 calc(9 * var(--u)) calc(-63.8 * var(--u));
+  padding: 0 calc(10 * var(--u)) calc(3 * var(--u)) calc(28 * var(--u));
+  border: 0 solid transparent;
+  border-image: var(--k-label) 70 fill / calc(22 * var(--u)) / calc(3 * var(--u)) stretch;
+  color: var(--label-ink);
+  font-size: calc(34 * var(--u)); /* Caveat's letters are small for their size: the mock's "Projects" is 90 x 33 mock px of ink, slanted and thin-stroked */
+  letter-spacing: -0.012em;
+  text-shadow: none;
+}
+
+:root[data-style="garden"] .showcase-title::after {
+  content: "";
+  flex: none;
+  height: calc(24 * var(--u)); /* the mock's sprig on the stone is a small one: 17 x 19 mock px of leaf */
+  width: calc(20.5 * var(--u));
+  margin-top: calc(8 * var(--u));
+  border: 0;
+  background: var(--k-sprig) center / contain no-repeat;
+}
+
+/* The card as the mock's: its name's cap top at 597, its screen from 628 to
+   800 (172 tall, 17 px in from the left edge and 15 from the right), the
+   board ending 19 px under it. */
+:root[data-style="garden"] .showcase .card.faceplate {
+  --plate-k: 0.36;
+  gap: calc(8.5 * var(--u));
+  padding: calc(15 * var(--u)) calc(15.5 * var(--u)) calc(19.5 * var(--u)) calc(17 * var(--u));
+}
+
+:root[data-style="garden"] .card-title {
+  padding-left: calc(8 * var(--u));
+  letter-spacing: 0.012em;
+  line-height: 1.2;
+}
+
+/* the screens are as tall as the mock's whatever the card's width */
+@media (min-width: 900px) {
+  :root[data-style="garden"] .card-screen .screen-face.has-art {
+    aspect-ratio: auto;
+    height: calc(172 * var(--u));
+  }
+}
+
+/* a sprig after each card's name, across its cap height */
+:root[data-style="garden"] .card-title::after {
+  content: "";
+  display: inline-block;
+  width: 0.92em;
+  height: 1.1em;
+  margin-left: 0.42em;
+  vertical-align: -0.16em;
+  background: var(--k-sprig) center / contain no-repeat;
+}
+
+/* A screen is set flush in its card, as the mock's screenshots are: a dark
+   rim (a couple of px, with a pale line of the board's light just outside
+   it) and rounded corners, no mat, no bevel and no glare (everywhere on the
+   site, the projects' pages too). */
+:root[data-style="garden"] .screen {
+  border-radius: 5px;
+  background: none;
+  box-shadow: 0 0 0 1px rgb(255 250 238 / 0.7);
+}
+
+:root[data-style="garden"] .screen-face {
+  border-radius: 5px;
+}
+
+:root[data-style="garden"] .screen-face .screen-edge {
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 2px #1d2022,
+    inset 0 0 0 3px rgb(255 255 255 / 0.14);
+}
+
+/* By day a 1-bit panel is a pale print, not a lit display: its face is the
+   plaster's warm off-white rather than pure paper, and its rim a soft
+   brown line with a little shade inside it (the mock's screens sit in the
+   card with a thin dark edge and no frame), not a hard black outline. The
+   dark screens (a live capture) and the night keep the dark rim above. */
+:root[data-style="garden"][data-rice="paper"] .screen-face.has-art {
+  background: color-mix(in srgb, var(--paper) 55%, #efe3c8);
+}
+
+:root[data-style="garden"][data-rice="paper"] .screen-face.has-art .screen-edge {
+  box-shadow:
+    inset 0 0 0 1px rgb(74 56 30 / 0.62),
+    inset 0 0 0 2px rgb(255 250 236 / 0.28),
+    inset 0 0 9px rgb(92 68 34 / 0.2);
+}
+
+:root[data-style="garden"] .screen-glass {
+  display: none;
+}
+
+/* ---------- the rest of the site ---------- */
+
+/* the cards print a little finer than the default sheet: a softer corner */
+:root[data-style="garden"] {
+  --plate-k: 0.42;
 }
 
 @media (max-width: 720px) {
   :root[data-style="garden"] {
-    --plate-k: 0.5;
+    --plate-k: 0.36;
   }
 }
 
-/* No two neighbouring tablets are the same slab: two were generated
-   (scripts/kits/garden.mjs), set in turn among their siblings. */
-:root[data-style="garden"] .faceplate:not(.running-head, .divider, .statusline, .folio):nth-child(2n) {
-  --k-plate: var(--k-plate-b);
-  --k-plate-hover: var(--k-plate-b-hover);
-  --k-plate-pressed: var(--k-plate-b-pressed);
-  --k-plate-focus: var(--k-plate-b-focus);
-  --k-plate-flat: var(--k-plate-b-flat);
+/* The headlines speak the home page's voice (the garden has no inner-page
+   mocks): the flagship's name set at the same light book-serif weight, the
+   text optical size and tracking (the display cut is a heavy modern face
+   beside the mock's Garamond), in the same near-black moss by day. The intro's,
+   a project page's and the launch page's. */
+:root[data-style="garden"] :is(.title, .detail-hero h1, .launch-hero h1) {
+  font-weight: 480;
+  font-variation-settings: "opsz" 36;
+  letter-spacing: -0.02em;
 }
 
-:root[data-style="garden"] :is(.running-head, .folio, .statusline) {
-  --plate-k: 0.36;
-  min-height: calc(2 * 56px * var(--plate-k) + 8px);
+:root[data-style="garden"][data-rice="paper"] :is(.title, .detail-hero h1, .launch-hero h1) {
+  color: #0e1808;
 }
 
+/* The garden's voice is all serif and hand, as the mock's: the body copy in
+   the book serif, and the labels (a kicker, a card's number, state and
+   counts, a shelf's count, the tags, the foot's credits and folio) in its
+   small capitals rather than typed. Only a screen keeps its terminal face,
+   and inline code, which is text to type. */
+:root[data-style="garden"] body {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 17.5px;
+}
+
+:root[data-style="garden"] :is(.silk, .kicker, .section-kicker, .tags, .colophon div, .feat h3, .openq strong, .plate-figure-label, .statusline, .folio, .divider) {
+  font-family: var(--font-display), Georgia, serif;
+  font-variant-caps: all-small-caps;
+  font-weight: 500;
+  font-size: 15.5px;
+  letter-spacing: 0.07em;
+}
+
+:root[data-style="garden"] .module-num {
+  font-weight: 650;
+}
+
+/* a button is lettered in the serif, as the mock's are */
+:root[data-style="garden"] .key:not(.cap) {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 500;
+  font-size: 15.5px;
+  letter-spacing: 0;
+}
+
+/* and so is a key cap, its shortcut legend and a chord's plus (a headline's
+   plus keeps the shared heavier face, to match its bold letters) */
+:root[data-style="garden"] :is(.key.cap, .key-legend, .chord-plus:not(:is(h1, h2) *)) {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+:root[data-style="garden"] .key[data-size="lg"] {
+  font-size: 18px;
+}
+
+/* A row of cards below the first screen is named on the same lettered
+   stone, sized to its name: the stone's riveted corners never stretch. */
 :root[data-style="garden"] .divider.faceplate {
   width: fit-content;
   max-width: 100%;
   min-height: 0;
-  padding: 12px 34px 11px;
-  color: var(--tape-ink);
+  padding: 14px 34px 15px;
+  color: var(--label-ink);
 }
 
 :root[data-style="garden"] .divider.faceplate::before {
   inset: 0;
-  border-image: var(--k-tape) 8 48 fill / 0 calc(48px * 0.5) / 0 4px stretch;
+  border-image: var(--k-label) 70 fill / 24px / 10px stretch;
   background: none;
+}
+
+:root[data-style="garden"] .divider.faceplate::after {
+  content: none;
 }
 
 :root[data-style="garden"] .divider .shelf-label,
 :root[data-style="garden"] .divider .shelf-note,
 :root[data-style="garden"] .divider .shelf-count {
-  color: var(--tape-ink);
+  color: var(--label-ink);
 }
 
-/* A card's words keep clear of the glaze laid in along the inside of its
-   edge when it has focus (about 30px in at the slab's scale), by a margin,
-   so the band never runs against a line of type. Its status bead is set
-   into the face at the end of its label row, just after the status it
-   marks ("active ●"), clear of the band too (the arris is too narrow to
-   hold it): the row keeps room for it, and the bead sits on the row's
-   middle, at the card's own padding (a card's and the flagship's differ). */
-:root[data-style="garden"] .module {
-  --bead-top: calc(var(--plate-w) * 0.75 + 12px);
-  --bead-end: calc(var(--plate-w) * 0.75 + 16px + 6px);
-  padding: calc(var(--plate-w) * 0.75 + 12px) calc(var(--plate-w) * 0.75 + 16px) calc(var(--plate-w) * 0.8 + 12px);
+/* the shelf's name in the garden's hand, as "Projects" is; its note in the
+   serif's italic */
+:root[data-style="garden"] .divider .shelf-label {
+  font-family: var(--garden-hand), cursive;
+  font-variant-caps: normal;
+  font-weight: 400;
+  font-size: 31px;
+  letter-spacing: 0;
 }
 
-:root[data-style="garden"] .flagship {
-  --bead-top: calc(var(--plate-w) + 18px);
-  --bead-end: calc(var(--plate-w) + 18px);
+:root[data-style="garden"] .divider .shelf-note {
+  font-family: var(--font-display), Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
 }
 
-:root[data-style="garden"] .module-top {
-  padding-inline-end: calc(6px + 24px);
-}
+/* ---------- a phone: the first screen stacked ---------- */
 
-:root[data-style="garden"] .flagship .module-top {
-  padding-inline-end: 24px;
-}
+@media (max-width: 899px) {
+  /* The plate is cropped to the phone's width, and its middle (what the
+     kit's cover fit shows) is the rose vine across the top and a window-sized
+     hole in the plaster: the name, the tagline and the headline ran over
+     ivy, and the vine ended in a straight feathered line across the screen.
+     The crop starts instead at the bare plaster's left edge (mock x 290, past
+     the stone edge beside the sign): the masthead and the copy stand on plain
+     wall, as on the desktop, and only a few leaves at the top right reach
+     behind the keys, which sit on their own chips. Registered to the plate's
+     core (the bleed is 320 mock px before it), at the cover scale. */
+  :root[data-style="garden"][data-scene-art="plate"] [data-layer="sky"] {
+    --layer-x: calc(-1 * (var(--sky-bleed-x) + 290) * var(--sky-s));
+  }
 
-:root[data-style="garden"] .led.sheet-pin {
-  /* a 20px bead box on the 15px row's middle */
-  width: 20px;
-  top: calc(var(--bead-top) - 2.5px);
-  left: auto;
-  right: var(--bead-end);
-  translate: none;
-}
+  /* the keys on the chips of the plaster (the mock-px halo is thin at this
+     scale): a fuller glow of the plaster keeps every word clear of what is
+     behind it */
+  :root[data-style="garden"] {
+    --l-halo: 0 0 3px rgba(248, 239, 224, 0.95), 0 0 9px rgba(248, 239, 224, 0.9), 0 0 20px rgba(248, 239, 224, 0.7);
+  }
 
-/* On a phone, a prose sheet's words run from just inside its frame (the dressed edge is 18px deep at a phone's scale),
-   not at the tablet's inset: a column of 26 letters breaks every few words.
-   (The flagship and the cards keep theirs: their status and focus band sit
-   at it.) */
-@media (max-width: 720px) {
-  :root[data-style="garden"] :is(.hero-copy.faceplate, .detail-hero, .section, .launch-copy.faceplate, .colophon) {
-    padding-inline: calc(var(--plate-w) + 4px);
+  :root[data-style="garden"]:not([data-rice="paper"]) {
+    --l-halo: 0 0 4px rgba(22, 30, 46, 0.9), 0 0 11px rgba(22, 30, 46, 0.75), 0 0 22px rgba(22, 30, 46, 0.55);
+  }
+
+  /* The keys (the index, the finish, the style) each on a chip of the
+     board's parchment (dark blue by moonlight): over the roses' bloom the
+     bare icons lost their ink (the palette key vanished into a pink rose). */
+  :root[data-style="garden"] .masthead .instruments .key {
+    border-radius: 10px;
+    background: rgba(247, 238, 218, 0.9);
+    box-shadow:
+      0 0 0 1px rgba(92, 72, 40, 0.28),
+      0 1px 3px rgba(40, 30, 14, 0.3);
+    text-shadow: none;
+  }
+
+  :root[data-style="garden"]:not([data-rice="paper"]) .masthead .instruments .key {
+    background: rgba(26, 34, 54, 0.82);
+    box-shadow:
+      0 0 0 1px rgba(200, 210, 235, 0.22),
+      0 1px 3px rgba(4, 8, 20, 0.5);
+  }
+
+  /* the tagline close under the name, as on the desktop (the shared rows'
+     gap is for the keys' tiles) */
+  :root[data-style="garden"] .masthead {
+    row-gap: 2px;
+  }
+
+  :root[data-style="garden"] .launchpad {
+    margin-top: 0;
+    --xw-shadow: 0 6px 18px rgba(24, 28, 18, 0.3), 0 1px 3px rgba(24, 28, 18, 0.3); /* stacked on the plaster, with no baked shadow behind it */
+  }
+
+  :root[data-style="garden"] .launchpad-copy {
+    padding-top: 0;
+  }
+
+  :root[data-style="garden"] .launchpad-title::after {
+    width: 0.6em;
+    height: 0.75em;
+    margin-bottom: 0;
+  }
+
+  :root[data-style="garden"] .launchpad-keys {
+    gap: 12px;
+    margin: 22px 0 0;
+  }
+
+  :root[data-style="garden"] .launchpad-keys .key[data-size="lg"] {
+    min-height: 48px;
+    padding: 2px 22px 0;
+    font-size: 17px;
+  }
+
+  /* The wall stands across the top of the row, its ledge under the window:
+     drawn wider than the screen (the body clips it), centred on the things
+     on its ledge (mock x 1045), so the cat is not lost on a phone. The row's
+     name is set on the wall's top course, the cards against its face. */
+  :root[data-style="garden"] .showcase {
+    --wall-w: min(184vw, 1100px);
+    margin-top: 8px;
+    padding-top: calc(var(--wall-w) * (500 - var(--wall-top)) / 1672);
+  }
+
+  :root[data-style="garden"] .showcase::before {
+    clip-path: none;
+    left: calc(50% - var(--wall-w) * 1045 / 1672);
+    top: 0;
+    width: var(--wall-w);
+    height: calc(var(--wall-w) * var(--wall-h) / 1672);
+  }
+
+  :root[data-style="garden"] .showcase-title {
+    width: fit-content;
+    height: auto;
+    min-height: 48px;
+    margin: 0 0 12px;
+    padding: 6px 20px 8px 24px;
+    border-image-width: 17px;
+    border-image-outset: 2px;
+    font-size: 31px;
+  }
+
+  :root[data-style="garden"] .showcase-title::after {
+    width: 17px;
+    height: 20px;
+    margin-top: 6px;
+  }
+
+  :root[data-style="garden"] .showcase .card.faceplate {
+    padding: 14px 12px 14px;
+    gap: 8px;
+  }
+
+  :root[data-style="garden"] .card-title {
+    padding-left: 4px;
+    font-size: 16px; /* a two-word name keeps its sprig on its line */
   }
 }

@@ -1,5 +1,18 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { Tone } from "@/data/projects";
+import drawn from "@/data/screen-bounds.json";
+
+const BOUNDS: Record<string, { x: number; y: number; w: number; h: number }> = drawn;
+
+/** The art and where its drawing sits in it (src/lib/drawn-bounds.ts), for a
+ *  style to fit the drawing by its own bounds rather than by its project. */
+function artVars(art: string): CSSProperties {
+  const b = BOUNDS[art];
+  return {
+    "--art": `url(${art})`,
+    ...(b && { "--drawn-x": b.x, "--drawn-y": b.y, "--drawn-w": b.w, "--drawn-h": b.h }),
+  } as CSSProperties;
+}
 
 type Props = {
   /** 1-bit alpha-mask art, recoloured by the active rice */
@@ -24,7 +37,7 @@ export function Screen({ art, tone, label, className, glass = true, children }: 
           <span
             className="screen-art"
             aria-hidden
-            style={{ "--art": `url(${art})` } as CSSProperties}
+            style={artVars(art)}
           />
         ) : null}
         {children}

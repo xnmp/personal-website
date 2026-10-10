@@ -1,3 +1,0 @@
-A seamless, tileable square texture of pale honey limestone seen straight-on (average colour about #e8dcc0): a fine sandy grain, a few tiny darker flecks and faint fossil fragments scattered evenly, lit evenly. No objects, no edges, no frame, no vignette and no gradient across the image: the left edge must continue seamlessly into the right edge and the top into the bottom. Fully opaque, square 1:1 image. No text.
-
-Match the stone of the attached reference image (ref.png) exactly; use it for material only, not composition.

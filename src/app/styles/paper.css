@@ -1,0 +1,2405 @@
+/* ==========================================================================
+   PAPER DIORAMA (art/briefs/paper.md): the default style. Its kit's tokens are
+   the base in kit.css (:root for night, :root[data-rice="paper"] for day),
+   which every other style overrides; what is Paper Diorama's alone, and must
+   not reach the styles built on that base, is set here, under
+   :root[data-style="paper"].
+
+   The home's first screen is its original mock (art/originals/paper.webp):
+   the interface is more paper laid into the diorama, each piece cut from
+   the mock in register with it (scripts/kits/paper-sprites.mjs) and laid on
+   the stage at the mock's own coordinates (--u, one mock px; a piece's box
+   is its place in the mock less the kit's 8px shadow pad).
+   ========================================================================== */
+
+:root[data-style="paper"] {
+  /* one heavy old-style book face for every word set large, as the mock
+     sets them; the body face stays for running text */
+  --font-display: var(--font-crimson);
+  /* the sun is the sky's own paper, behind the far mountains */
+  --k-sun: none;
+  /* under the scene, where a screen runs past it: the foot of the night plate */
+  --scene-ground: #273747;
+  /* the night paper: the torn sheet and the boards in the night sheets'
+     slate-indigo (scripts/kits/paper.mjs SLATE) */
+  --plate-under: #383f57;
+  --key-under: #3b4156;
+  --key-signal-under: #444f45;
+  --key-signal-ink: #f3ead8; /* cream on the sage board, 7:1 */
+  --k-card: url(/kit/paper/sheet-card-night-normal.webp);
+  --k-card-hover: url(/kit/paper/sheet-card-night-hover.webp);
+  --k-card-pressed: url(/kit/paper/sheet-card-night-pressed.webp);
+  --k-card-focus: url(/kit/paper/sheet-card-night-focus.webp);
+  --card-under: #353c52;
+  --k-band: url(/kit/paper/band-night.webp);
+  --k-band-left: url(/kit/paper/band-left-night.webp);
+  --k-strip: url(/kit/paper/strip-night.webp);
+  --k-hero: url(/kit/paper/hero-night.webp);
+  --k-mount: url(/kit/paper/mount-night.webp);
+  --k-label: url(/kit/paper/label-night.webp);
+  --k-ribbon: url(/kit/paper/ribbon-night.webp);
+  --k-ledge: url(/kit/paper/ledge-night.webp);
+  --k-foreground: url(/kit/paper/foreground-night.webp);
+  --k-tips: url(/kit/paper/tips-night.webp);
+  /* the launch page's foreground: pieces of cut paper standing over its ledge (paper-front.mjs) */
+  --k-stage-hiker: url(/kit/paper/launch-stage-hiker-night.webp);
+  --k-stage-pines-left: url(/kit/paper/launch-stage-pines-left-night.webp);
+  --k-stage-pines-right: url(/kit/paper/launch-stage-pines-right-night.webp);
+  /* the ink: the words set large, and the small type (by night both the
+     night sheets' cream; by day the mock's near-black and navy-black) */
+  --paper-ink: var(--print);
+  --paper-ink-small: var(--print);
+  /* the phone's tack: polished copper (scripts/kits/paper-sprites.mjs) */
+  --k-pin-copper: url(/kit/paper/pin-copper.webp);
+  /* the project page's: a polished brass push-pin, as its mock's */
+  --k-pin-push: url(/kit/paper/pin-push.webp);
+  /* the project page's red tape, and the terracotta board (the launch
+     page's call to act, the phone's second key) */
+  --k-tape-red: url(/kit/paper/tape-red-night.webp);
+  --k-key-clay: url(/kit/paper/tile-clay-night-normal.webp);
+  --k-key-clay-hover: url(/kit/paper/tile-clay-night-hover.webp);
+  --k-key-clay-pressed: url(/kit/paper/tile-clay-night-pressed.webp);
+  --k-key-clay-focus: url(/kit/paper/tile-clay-night-focus.webp);
+  --key-clay-under: #7a3d2b;
+  --key-clay-ink: #f6efe4; /* 5.6:1 on the night's clay */
+  /* the launch page's torn keys, and the phone's green one (scripts/kits/paper-sprites.mjs TORN) */
+  --k-torn-clay: url(/kit/paper/torn-clay-night-normal.webp);
+  --k-torn-clay-hover: url(/kit/paper/torn-clay-night-hover.webp);
+  --k-torn-clay-pressed: url(/kit/paper/torn-clay-night-pressed.webp);
+  --k-torn-clay-focus: url(/kit/paper/torn-clay-night-focus.webp);
+  --k-torn-green: url(/kit/paper/torn-green-night-normal.webp);
+  --k-torn-green-hover: url(/kit/paper/torn-green-night-hover.webp);
+  --k-torn-green-pressed: url(/kit/paper/torn-green-night-pressed.webp);
+  --k-torn-green-focus: url(/kit/paper/torn-green-night-focus.webp);
+  --k-torn-cream: url(/kit/paper/torn-cream-night-normal.webp);
+  --k-torn-cream-hover: url(/kit/paper/torn-cream-night-hover.webp);
+  --k-torn-cream-pressed: url(/kit/paper/torn-cream-night-pressed.webp);
+  --k-torn-cream-focus: url(/kit/paper/torn-cream-night-focus.webp);
+
+  /* ---- the first screen, at the mock's coordinates ---- */
+  --masthead-h: calc(108 * var(--u));
+  --l-left: calc(288 * var(--u)); /* the hero's sheets */
+  --l-win-x: calc(788 * var(--u));
+  --l-win-w: calc(665 * var(--u));
+  --l-brand: calc(50 * var(--u));
+  --l-brand-weight: 700;
+  --l-tagline: calc(20.7 * var(--u)); /* (the mock's line measures 359.5 wide) */
+  --l-nav: calc(20 * var(--u));
+  --l-nav-weight: 400;
+  --l-title: calc(66 * var(--u));
+  --l-title-weight: 700;
+  --l-pitch: calc(29.1 * var(--u));
+  --l-heading: calc(45 * var(--u));
+  --l-heading-weight: 700;
+  --l-heading-rule: none;
+  --l-cards-l: calc(66 * var(--u));
+  --l-cards-r: calc(66 * var(--u));
+  --l-cards-gap: calc(20 * var(--u));
+  --l-card-title: calc(29.5 * var(--u));
+  --l-card-weight: 600;
+  --l-foot: calc(81 * var(--u));
+  /* the words on the scene stand on paper, so they need no halo */
+  --l-halo: none;
+  --xw-round: calc(14 * var(--u));
+  /* the window stands off its mat: a deep shadow, close and long */
+  --xw-shadow: 0 calc(3 * var(--u)) calc(6 * var(--u)) rgba(42, 30, 18, 0.34), 0 calc(14 * var(--u)) calc(30 * var(--u)) rgba(42, 30, 18, 0.4);
+}
+
+:root[data-style="paper"][data-rice="paper"] {
+  --plate-under: #d9c3ab;
+  --key-under: #dac6ae;
+  --k-card: url(/kit/paper/sheet-card-alpenglow-normal.webp);
+  --k-card-hover: url(/kit/paper/sheet-card-alpenglow-hover.webp);
+  --k-card-pressed: url(/kit/paper/sheet-card-alpenglow-pressed.webp);
+  --k-card-focus: url(/kit/paper/sheet-card-alpenglow-focus.webp);
+  --card-under: #dfcdb6;
+  --bezel-under: #d0c1ad;
+  --scene-ground: #63604e;
+  --k-band: url(/kit/paper/band-day.webp);
+  --k-band-left: url(/kit/paper/band-left-day.webp);
+  --k-strip: url(/kit/paper/strip-day.webp);
+  --k-hero: url(/kit/paper/hero-day.webp);
+  --k-mount: url(/kit/paper/mount-day.webp);
+  --k-label: url(/kit/paper/label-day.webp);
+  --k-ribbon: url(/kit/paper/ribbon-day.webp);
+  --k-ledge: url(/kit/paper/ledge-day.webp);
+  --k-foreground: url(/kit/paper/foreground-day.webp);
+  --k-tips: url(/kit/paper/tips-day.webp);
+  --k-stage-hiker: url(/kit/paper/launch-stage-hiker-day.webp);
+  --k-stage-pines-left: url(/kit/paper/launch-stage-pines-left-day.webp);
+  --k-stage-pines-right: url(/kit/paper/launch-stage-pines-right-day.webp);
+  /* the mock's clouds are white paper; one drifts across the 3D scene */
+  --motes: #fff6e0;
+  --paper-ink: #0d0b0a;
+  --paper-ink-small: #10161f;
+  /* the boards' legends: white on the green (8:1) and the clay (4.7:1),
+     near-black on the cream (12:1) */
+  --key-ink: #0c0a09;
+  --key-signal-ink: #fff;
+  --k-tape-red: url(/kit/paper/tape-red.webp);
+  --k-key-clay: url(/kit/paper/tile-clay-normal.webp);
+  --k-key-clay-hover: url(/kit/paper/tile-clay-hover.webp);
+  --k-key-clay-pressed: url(/kit/paper/tile-clay-pressed.webp);
+  --k-key-clay-focus: url(/kit/paper/tile-clay-focus.webp);
+  --key-clay-under: #b45c39;
+  --key-clay-ink: #fff;
+  /* the launch page's torn keys (scripts/kits/paper-sprites.mjs TORN) */
+  --k-torn-clay: url(/kit/paper/torn-clay-normal.webp);
+  --k-torn-clay-hover: url(/kit/paper/torn-clay-hover.webp);
+  --k-torn-clay-pressed: url(/kit/paper/torn-clay-pressed.webp);
+  --k-torn-clay-focus: url(/kit/paper/torn-clay-focus.webp);
+  --k-torn-green: url(/kit/paper/torn-green-normal.webp);
+  --k-torn-green-hover: url(/kit/paper/torn-green-hover.webp);
+  --k-torn-green-pressed: url(/kit/paper/torn-green-pressed.webp);
+  --k-torn-green-focus: url(/kit/paper/torn-green-focus.webp);
+  --k-torn-cream: url(/kit/paper/torn-cream-normal.webp);
+  --k-torn-cream-hover: url(/kit/paper/torn-cream-hover.webp);
+  --k-torn-cream-pressed: url(/kit/paper/torn-cream-pressed.webp);
+  --k-torn-cream-focus: url(/kit/paper/torn-cream-focus.webp);
+}
+
+/* ---------- the two further pages' scenes ----------
+   A project's page and the launch page each have a scene of their own, cut
+   from their mocks (scripts/kits/paper-pages.mjs): the sky, the land, and a
+   cut-out at each side; the kit's other slots stay empty. The 3D scene
+   re-reads these tokens when the page changes. The cut-outs hold to their
+   side (the right one already does, below), so a screen less wide than 16:9
+   crops the land, never the cathedral or the hiker. */
+
+:root[data-style="paper"]:has(.detail-hero) {
+  --k-sky: url(/kit/paper/scene/project-night/sky.webp);
+  --k-far: none;
+  --k-mid: url(/kit/paper/scene/project-night/hills-far.webp);
+  --k-near: none;
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/paper/scene/project-night/pines-left.webp);
+  --k-right: url(/kit/paper/scene/project-night/pines-right.webp);
+  --left-anchor: 0;
+}
+
+:root[data-style="paper"]:has(.launch-hero) {
+  --k-sky: url(/kit/paper/scene/launch-night/sky.webp);
+  --k-far: none;
+  --k-mid: url(/kit/paper/scene/launch-night/hills-far.webp);
+  --k-near: none;
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: url(/kit/paper/scene/launch-night/pines-left.webp);
+  --k-right: url(/kit/paper/scene/launch-night/pines-right.webp);
+  --left-anchor: 0;
+}
+
+:root[data-style="paper"][data-rice="paper"]:has(.detail-hero) {
+  --k-sky: url(/kit/paper/scene/project-day/sky.webp);
+  --k-mid: url(/kit/paper/scene/project-day/hills-far.webp);
+  --k-left: url(/kit/paper/scene/project-day/pines-left.webp);
+  --k-right: url(/kit/paper/scene/project-day/pines-right.webp);
+}
+
+:root[data-style="paper"][data-rice="paper"]:has(.launch-hero) {
+  --k-sky: url(/kit/paper/scene/launch-day/sky.webp);
+  --k-mid: url(/kit/paper/scene/launch-day/hills-far.webp);
+  --k-left: url(/kit/paper/scene/launch-day/pines-left.webp);
+  --k-right: url(/kit/paper/scene/launch-day/pines-right.webp);
+}
+
+/* ---------- the interface's paper, at every width ---------- */
+
+/* each piece is a sprite on a hook of its own, under (or, the foreground,
+   over) what it carries, never catching the pointer */
+:root[data-style="paper"] :is(.masthead, .launchpad-copy, .launchpad-window, .showcase, .showcase-title) {
+  position: relative;
+  isolation: isolate;
+}
+
+:root[data-style="paper"] :is(.masthead, .launchpad-copy, .launchpad-window, .showcase, .showcase-title)::before,
+:root[data-style="paper"] .showcase::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* the band, as its art's middle: its shadow pad either side hangs past the
+   screen's edges as the border image's outset (ink overflow: never a
+   sideways scroll) */
+:root[data-style="paper"] .masthead::before {
+  border: 0 solid transparent;
+  border-image: var(--k-band) 0 fill / 0 / 0 calc(8 * var(--u)) stretch;
+}
+
+:root[data-style="paper"] .launchpad-copy::before {
+  background: var(--k-hero) 0 0 / 100% 100% no-repeat;
+}
+
+:root[data-style="paper"] .launchpad-window::before {
+  background: var(--k-mount) 0 0 / 100% 100% no-repeat;
+}
+
+:root[data-style="paper"] .showcase-title::before {
+  background: var(--k-label) 0 0 / 100% 100% no-repeat;
+}
+
+/* the cards' band, stretched through its middle (its torn edges kept) to
+   the height the row needs, its shadow pad either side an outset as the
+   top band's */
+:root[data-style="paper"] .showcase::before {
+  border: 0 solid transparent;
+  border-image: var(--k-ribbon) 70 0 70 0 fill / calc(70 * var(--u)) 0 / 0 calc(8 * var(--u)) stretch;
+}
+
+/* leaves, ferns, flowers and the lettered stone, in front of the band and
+   the cards' lower corners */
+:root[data-style="paper"] .showcase::after {
+  z-index: 2;
+  background: var(--k-foreground) 0 0 / 100% 100% no-repeat;
+}
+
+/* The kit lays a plain box of the sheet's colour under every 9-slice, so a
+   seam between slices at a fractional pixel ratio shows paper, not the scene.
+   It stands in from the box's edge by 0.6 of the sheet's margin; the torn
+   outline of the paper sheet retreats from that edge by up to 52 of the
+   sprite's 56 art px (measured on sheet-day), so the box showed outside the
+   tear as a square corner and a straight sliver (round 7, M1). Here it stands
+   in by 54 art px: clear of the deepest tear, and still over the slice seams
+   (which lie at 56). The reduced-transparency fill is a box of the same
+   kind, and goes. The cards' stock (smooth to its corners: its tear retreats
+   12 art px, not 52) and the strips (the running head, which wears the
+   strip's art; the shelves' heads, below) keep the kit's. The shelf's modules
+   are torn sheets as the rest, and take it. */
+:root[data-style="paper"] :is(.faceplate, .detail-hero, .section, .colophon, .blank-leaf):not(.card, .running-head, .divider)::before {
+  --under-in: calc(54px * var(--plate-k));
+  background-color: transparent;
+}
+
+/* no mark before the name */
+:root[data-style="paper"] .masthead .brand .led {
+  display: none;
+}
+
+:root[data-style="paper"] .masthead .brand {
+  translate: 0 calc(-4 * var(--u)); /* (the mock's wordmark stands 4px higher) */
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* the name, on every page, in the mock's black */
+:root[data-style="paper"] .brand a {
+  color: var(--paper-ink);
+}
+
+/* the masthead's wordmark: the mock's stems measure 6.75px mean (dark runs
+   through the x-height's rows at 1672x941), the book face at 700 gave 6.98,
+   at 660 6.71 (round 8) */
+:root[data-style="paper"] .masthead .brand a {
+  font-weight: 660;
+}
+
+:root[data-style="paper"] .tagline {
+  font-weight: 450;
+  letter-spacing: 0;
+  color: var(--paper-ink-small);
+}
+
+/* the links: words in the book face, untracked, in the small type's ink */
+:root[data-style="paper"] .masthead .key {
+  --ki: var(--paper-ink-small);
+  letter-spacing: 0;
+}
+
+/* the words set large are the mock's black; the hero's two lines its
+   navy-black, a weight up from the book face's regular */
+:root[data-style="paper"] :is(.launchpad-title, .showcase-title, .showcase .card-title) {
+  color: var(--paper-ink);
+}
+
+:root[data-style="paper"] :is(.launchpad-pitch, .launchpad-call) {
+  font-weight: 500;
+  color: var(--paper-ink-small);
+}
+
+/* the name and the line centred on the upper sheet */
+:root[data-style="paper"] :is(.launchpad-title, .launchpad-pitch) {
+  text-align: center;
+}
+
+:root[data-style="paper"] .launchpad-title {
+  letter-spacing: -0.01em;
+}
+
+:root[data-style="paper"] .launchpad-pitch {
+  line-height: 1.1;
+}
+
+/* paper boards, the words in the book face at a medium weight, no arrow */
+:root[data-style="paper"] .launchpad-keys .key {
+  --key-k: 0.5;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 520;
+  letter-spacing: 0;
+}
+
+:root[data-style="paper"] .launchpad-keys .key-arrow {
+  display: none;
+}
+
+/* the window's shape in the mock, its middle light amber */
+:root[data-style="paper"] .xw {
+  aspect-ratio: 665 / 360;
+}
+
+:root[data-style="paper"] .xw-lights i:nth-child(2) {
+  background: #e2a63b;
+}
+
+/* the window's interior as the mock's app: a sans face (the screen stays
+   the theme's: light by day, but in the mat's own warm cream, not the page's
+   brightest white), two rounded panes set into the window's frame, each head
+   between chevrons, the selected row a pill in the scene's own slate with a
+   chevron either side, the status line's chords as keycaps */
+:root[data-style="paper"] .xw {
+  --xw-select: #4a62ab;
+  --xw-frame: var(--paper-warm);
+  --xw-pane: var(--paper);
+  font-family: var(--font-ui), system-ui, sans-serif;
+  background: var(--xw-frame);
+  /* The window's bezel line and its drop shadow on the mat. The shadow is the
+     window's own, not its link's: the link is an isolated stack whose mat
+     (a negative-z pseudo) paints over the link's box-shadow. */
+  border-color: rgba(34, 27, 22, 0.58);
+  box-shadow: var(--xw-shadow);
+}
+
+:root[data-style="paper"] .launchpad-window {
+  box-shadow: none;
+}
+
+:root[data-style="paper"][data-rice="paper"] .xw {
+  --xw-select: #4c6a91; /* the mountains' slate: white on it 5.6:1 */
+  /* the frame a deeper warm tan than the mount's cream it stands on (it was
+     the mount's own, #e8dcc7: cream on cream, the window's edge lost, round 9),
+     the panes the lighter cream, and a firmer rim */
+  --xw-frame: #d6c8ae;
+  --xw-pane: #f4ecdc;
+  border-color: rgba(34, 27, 22, 0.78);
+}
+
+:root[data-style="paper"] .xw-bar {
+  background: none;
+  border-bottom: 0;
+}
+
+:root[data-style="paper"] .xw-panes {
+  gap: 1.2cqw;
+  padding: 0 1.2cqw 1.2cqw;
+}
+
+/* the panes stand in the frame, rounded, a hairline round each (the shared
+   divider between them gives way) */
+:root[data-style="paper"] .xw-pane {
+  border: 1px solid var(--rule);
+  border-radius: 1.6cqw;
+  background: var(--xw-pane);
+  overflow: hidden;
+}
+
+:root[data-style="paper"] .xw-pane + .xw-pane {
+  border-left: 1px solid var(--rule);
+}
+
+:root[data-style="paper"] .xw-status {
+  background: none;
+  border-top: 0;
+}
+
+/* each head between chevrons, as the mock's (back at the left, on into the
+   folder at the right of the first) */
+:root[data-style="paper"] .xw-path::before,
+:root[data-style="paper"] .xw-pane:first-child .xw-path::after {
+  font-size: 1.5em;
+  line-height: 0;
+  opacity: 0.8;
+}
+
+:root[data-style="paper"] .xw-path::before {
+  content: "\2039";
+  margin-right: 0.7em;
+}
+
+:root[data-style="paper"] .xw-pane:first-child .xw-path::after {
+  content: "\203A";
+  margin-left: 0.7em;
+}
+
+/* folders in the mock's bright blue (its folders measure (119, 169, 239) on the
+   dark app; by day, on the cream pane, the same blue a step deeper, 3.2:1),
+   not the product's teal or a slate (round 9) */
+:root[data-style="paper"] .xw {
+  --xw-folder: #77a9ef;
+}
+
+:root[data-style="paper"][data-rice="paper"] .xw {
+  --xw-folder: #4f87d6;
+}
+
+:root[data-style="paper"] .xw-icon[data-kind="dir"] {
+  background: var(--xw-folder);
+}
+
+:root[data-style="paper"] .xw-rows li {
+  position: relative;
+  padding-inline: 3.4cqw 1.6cqw;
+  border-radius: 1.4cqw;
+}
+
+:root[data-style="paper"] .xw-rows li[data-selected] {
+  background: var(--xw-select);
+  color: #fff;
+}
+
+:root[data-style="paper"] .xw-rows li[data-selected] .xw-icon {
+  background: #fff;
+}
+
+:root[data-style="paper"] .xw-rows li[data-selected]::before,
+:root[data-style="paper"] .xw-rows li[data-selected]::after {
+  position: absolute;
+  top: 50%;
+  translate: 0 -54%;
+  font-size: 1.3em;
+  line-height: 1;
+}
+
+:root[data-style="paper"] .xw-rows li[data-selected]::before {
+  content: "\203A";
+  left: 1.3cqw;
+}
+
+:root[data-style="paper"] .xw-rows li[data-selected]::after {
+  content: "\203A";
+  right: 1.4cqw;
+  opacity: 0.65;
+}
+
+/* (the kind of each row is not in the mock's list) */
+:root[data-style="paper"] .xw-kind {
+  display: none;
+}
+
+:root[data-style="paper"] .xw-status {
+  align-items: center;
+}
+
+/* the chords are whole or not shown: a hint that does not fit wraps to a
+   second line, which the one-line height (a cap's own: its line, padding and
+   border) clips, instead of the shared row cutting it mid-word */
+:root[data-style="paper"] .xw-hints {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  align-items: center;
+  gap: 0 2.6cqw;
+  height: calc(1.104em + 1.2cqw + 2px);
+}
+
+:root[data-style="paper"] .xw-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9cqw;
+}
+
+:root[data-style="paper"] .xw-hint + .xw-hint::before {
+  content: none;
+}
+
+:root[data-style="paper"] .xw-hints kbd {
+  padding: 0.55cqw 1.2cqw 0.65cqw;
+  border: 1px solid var(--rule);
+  border-radius: 0.8cqw;
+  background: color-mix(in srgb, var(--ink) 7%, var(--paper));
+  box-shadow: 0 1px 0 var(--rule);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.92em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+/* (the shared plus is a fixed 13px with its own padding: it would hold the cap
+   to a height that does not scale with the window) */
+:root[data-style="paper"] .xw-hints kbd .chord-plus {
+  margin-inline: 0.15em;
+  padding: 0;
+  font-size: 1em;
+  line-height: 1;
+  opacity: 0.55;
+}
+
+/* each pane's count of what it holds at its head's right, as the mock's
+   window has: a counter run over its rows (the count follows them in the
+   document, so it reads their total) */
+:root[data-style="paper"] .xw-pane {
+  position: relative;
+  counter-reset: xw-items;
+}
+
+:root[data-style="paper"] .xw-rows li {
+  counter-increment: xw-items;
+}
+
+:root[data-style="paper"] .xw-pane::after {
+  content: counter(xw-items) " items";
+  position: absolute;
+  top: 0;
+  right: 2.4cqw;
+  /* (on the head's line: the count's box is 1em of its own, its top padded
+     by the difference of the two faces' centres, so the two read as one line) */
+  padding: calc(1.7cqw + 0.07em) 0 1.7cqw;
+  font-size: 0.86em;
+  line-height: 1;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* the cards: cream card stock, each pinned at its top centre, its title at
+   its top left over its screen */
+:root[data-style="paper"] .showcase .card.faceplate {
+  --k-plate: var(--k-card);
+  --k-plate-hover: var(--k-card-hover);
+  --k-plate-pressed: var(--k-card-pressed);
+  --k-plate-focus: var(--k-card-focus);
+  --plate-under: var(--card-under);
+  --plate-k: 0.37;
+}
+
+/* the lead card a little larger in its title, and pinned by hand, a
+   touch off level (half a degree: its box still keeps to the row) */
+:root[data-style="paper"] .showcase-row > li:first-child .card.faceplate {
+  rotate: -0.5deg;
+}
+
+/* (on the desktop's row the lead card is larger and tilted as the mock's;
+   stacked two to a row, level with its neighbour) */
+@media (min-width: 900px) {
+  :root[data-style="paper"] .showcase-row > li:first-child .card.faceplate {
+    /* (the mock's lead card is hardly larger than the others, 375 against
+       370 wide, and stands where they do) */
+    rotate: -1.1deg;
+    scale: 1.012;
+    translate: calc(5 * var(--u)) calc(2 * var(--u));
+  }
+}
+
+/* the titles at the mock's sizes: the lead's the largest */
+:root[data-style="paper"] .showcase .card-title {
+  font-weight: 650;
+}
+
+:root[data-style="paper"] .showcase-row > li:first-child .card-title {
+  /* (cap height 25 rows against the mock's 25 at 1672x941: 40u read 28, ~10% large) */
+  font-size: max(18px, calc(36 * var(--u)));
+  translate: calc(-3 * var(--u)) calc(-1.5 * var(--u)); /* (the mock's: ink x 96, y 628-650 at 1672x941) */
+  /* (a line as tall as the others' titles: the larger name must not push its
+     screen down past theirs, as the mock's lead card holds its screen at
+     the same height) */
+  line-height: 0.88;
+}
+
+:root[data-style="paper"] .showcase .card-mark {
+  display: block;
+  position: absolute;
+  top: calc(-11 * var(--u));
+  left: 50%;
+  width: calc(23 * var(--u));
+  height: calc(23 * var(--u));
+  translate: -50% 0;
+  background: var(--k-pin-brass) center / contain no-repeat;
+}
+
+/* One screen treatment for every card, the home's row and the shelves
+   below it, by day and by night, and the project page's print: a printed
+   sheet pasted flush into the card (round 9, the lead's ruling on rev 5's
+   pressed-in well, which rev 9 read as a generic UI inset: a flat, grainless
+   box with an outline and an inner shadow, the art floating in empty tan).
+   The sheet lies level with the stock: no outline, no inset shade, no glare.
+   It is a second paper, a little apart from the stock's tone, and carries the
+   stock's own tooth and fibre (well-grain.webp, lifted off the card's
+   generation by scripts/kits/paper-well.mjs and laid over the face and the
+   drawing in `overlay`, as a print takes the paper's grain; one file serves
+   the day's light sheet and the night's dark one). Light by day (the screen
+   is light by day), the rice's own dark by night; crisp ~7px corners as the
+   mock's screens have, and a faint contact shade under its foot and right
+   edge, where a sheet's thickness stands off the stock (the light is from the
+   upper left, as the kit's). The drawing stands whole on it (never cropped),
+   at ~87% of the well's height unless that passes 88% of its width, centred
+   by where it lies in its own mask, so it reads as the card's picture. */
+:root[data-style="paper"] {
+  --screen-face: var(--paper);
+  --screen-round: max(4px, calc(7 * var(--u)));
+  /* (the face's width over its height: the drawing must also fit its width) */
+  --face-ar: 1.825;
+  --well-grain: url(/kit/paper/well-grain.webp);
+  /* (the grain's tile is cut from the card at 0.495 of its art pixels: the
+     card stock's own scale on the page) */
+  --well-grain-size: max(220px, calc(445 * var(--u)));
+}
+
+:root[data-style="paper"][data-rice="paper"] {
+  /* the card stock's mean is #ddc8b0: the sheet a paler, greyer cream, as a
+     print on its own paper stands against the stock it is laid on */
+  --screen-face: #e8dcc7;
+}
+
+:root[data-style="paper"] :is(.showcase .card-screen, .module .screen) {
+  padding: 0;
+  background: none;
+  border-radius: var(--screen-round);
+  box-shadow: 0.5px 1px 1.5px rgba(52, 36, 22, 0.3);
+}
+
+:root[data-style="paper"] :is(.showcase .card-screen, .module .screen)::after {
+  content: none;
+}
+
+:root[data-style="paper"] :is(.showcase .card-screen, .module .screen, .detail-hero .screen) :is(.screen-face, .screen-edge) {
+  border-radius: var(--screen-round);
+}
+
+:root[data-style="paper"] :is(.showcase .card-screen, .module .screen, .detail-hero .screen) .screen-face.has-art {
+  background: var(--screen-face);
+}
+
+/* the paper's tooth and fibre over the face and the drawing both */
+:root[data-style="paper"] :is(.showcase .card-screen, .module .screen, .detail-hero .screen) .screen-face.has-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--well-grain) 0 0 / var(--well-grain-size) auto;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+:root[data-style="paper"] .showcase .card-screen .screen-face.has-art {
+  aspect-ratio: 334 / 183;
+}
+
+:root[data-style="paper"] .module .screen {
+  --face-ar: 1.5;
+}
+
+/* matte, as the mock's: no glare map over it */
+:root[data-style="paper"] :is(.showcase .card-screen, .module .screen, .detail-hero .screen) .screen-glass {
+  display: none;
+}
+
+/* no hairline, no shade pressed in: the sheet is flush (the kit's edge, a
+   panel's dark rim and the mat's shade, belongs to a screen behind glass) */
+:root[data-style="paper"] :is(.showcase .card-screen, .module .screen, .detail-hero .screen) .screen-edge {
+  box-shadow: none;
+}
+
+/* The drawing, fitted by its own bounds (--drawn-x/-y/-w/-h: its centre and
+   size as shares of its 3:2 mask, from the art's opaque pixels, Screen.tsx):
+   its height 87.5% of the well's, unless that would run past 88% of the
+   well's width (a wide drawing in a squarer well stands smaller: the
+   58.7% is 88% over the mask's 1.5), and shifted to put its own centre in the
+   middle of the well. The mask's box is then larger than the well where the
+   drawing does not fill its canvas, and the well clips the empty canvas,
+   never the drawing. */
+:root[data-style="paper"] :is(.showcase .card-screen, .module .screen, .detail-hero .screen) .screen-art {
+  --art-h: min(calc(87.5% / var(--drawn-h, 1)), calc(58.7% * var(--face-ar) / var(--drawn-w, 1)));
+  inset: auto;
+  top: 50%;
+  left: 50%;
+  height: var(--art-h);
+  aspect-ratio: 3 / 2;
+  transform: translate(
+    calc(-50% - (var(--drawn-x, 0.5) - 0.5) * 100%),
+    calc(-50% - (var(--drawn-y, 0.5) - 0.5) * 100%)
+  );
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* (the print is square on the stage's page, 3:2 stacked) */
+:root[data-style="paper"] .detail-hero .screen {
+  --face-ar: 1.5;
+}
+
+/* ---------- the shelves' heads (below the first screen) ----------
+   On the stage (900px and over) a shelf's head is a strip of the set's
+   torn ribbon (the paper the cards' band is cut from, torn along both its
+   edges at the stage's own scale, its ends cut square), stretched along its
+   length: any name, note and count sits on it, however long. (Round 7: the
+   phone mock's strip, below, a smooth run with rounded ends and a fine
+   deckle, read on the stage as a rounded rectangle; the kit's sheet at the
+   strip's height stretched its grain four to one, like a plank.) A hair off
+   level, as pinned paper is. */
+:root[data-style="paper"] .divider.faceplate {
+  rotate: -0.3deg;
+}
+
+@media (min-width: 900px) {
+  /* The ribbon's shadow pad lies outside the box (8px, top and bottom), its
+     torn edges retreat 4-19px from the box's top and 3-8px from its foot
+     (measured on ribbon-day: 9-47 and 13-39 of its 270 art px, at 0.4); its
+     slices lie at 70 art px, 28px in. The paper under them stands in 12px
+     from the box's edge: clear of the tear's deepest reach, over the seams. */
+  :root[data-style="paper"] .divider::before {
+    border-image: var(--k-ribbon) 70 0 70 0 fill / calc(70px * 0.4) 0 / 8px 0 stretch;
+    background: linear-gradient(var(--divider-under), var(--divider-under)) center / 100% calc(100% - 24px) no-repeat;
+    backdrop-filter: none;
+  }
+
+  :root[data-style="paper"] .divider {
+    --divider-under: #363a4d;
+  }
+
+  :root[data-style="paper"][data-rice="paper"] .divider {
+    --divider-under: #d4bca3;
+  }
+}
+
+/* Stacked, the head, and an inner page's running head over its sheets, are
+   the phone mock's own torn strip, its two ends and its torn edges kept at
+   their own size and only its middle run along. The sprite's shadow lies
+   outside the box as the border image's outset (paper x 23-876, y 11-91 of
+   its 889 x 118). (The kit's 9-slice cuts the strip at 152px, more than it
+   is tall: a square tan box between two pale bars, round 7 M1.) */
+@media (max-width: 899px) {
+  :root[data-style="paper"] :is(.divider, .running-head)::before {
+    inset: 0;
+    border: 0 solid transparent;
+    border-image: var(--k-strip) 30 60 36 60 fill / 30px 60px 36px 60px / 11px 23px 27px 23px stretch;
+    /* the strip's own paper under its slices, so a seam between them (at a
+       fractional pixel ratio) shows paper, not the scene */
+    background: linear-gradient(var(--divider-under), var(--divider-under)) center / calc(100% - 24px) calc(100% - 16px) no-repeat;
+    backdrop-filter: none;
+  }
+
+  :root[data-style="paper"] :is(.divider, .running-head) {
+    --divider-under: #3b445f;
+  }
+
+  :root[data-style="paper"][data-rice="paper"] :is(.divider, .running-head) {
+    --divider-under: #e4d6c3;
+  }
+
+  /* (the label's tan, a little below the strip's pale cream) */
+  :root[data-style="paper"][data-rice="paper"] :is(.divider, .running-head)::before {
+    filter: brightness(0.95) saturate(1.12);
+  }
+}
+
+:root[data-style="paper"] .divider {
+  color: var(--paper-ink);
+}
+
+/* the first head is tucked up under the intro sheet's torn foot: no gap of
+   scene between the two sheets for a figure standing behind them to peek
+   through */
+:root[data-style="paper"] .hero-copy + .shelf-group {
+  margin-top: calc(-1 * var(--rack-gap) - 4px);
+}
+
+/* (and the cards close under their head, the tab's shadow falling on them) */
+:root[data-style="paper"] .divider + .shelf {
+  margin-top: -20px;
+}
+
+/* the shelf cards' two meta lines (the number and status over the screen, the
+   stats under it), in the mono face, are 12px at the least: the kit's 11px read
+   small on the card stock (round 9) */
+:root[data-style="paper"] .module :is(.module-top, .module-stats) {
+  font-size: 12px;
+}
+
+:root[data-style="paper"] .divider .shelf-label {
+  font-weight: 650;
+}
+
+:root[data-style="paper"] .divider .shelf-note,
+:root[data-style="paper"] .divider .shelf-count {
+  color: var(--paper-ink-small);
+}
+
+/* ---------- the first screen, composed as the mock ---------- */
+
+@media (min-width: 900px) {
+  /* The signpost at the scene's right edge stays whole on a screen less wide
+     than the mock's 16:9 (1440x900, where cover would crop it): the right
+     cut-outs, and the grove behind them, are anchored to the right
+     (kit.css --right-anchor, read by the 3D scene too). Not on a phone,
+     where it would carry them half a frame off the valley. */
+  :root[data-style="paper"] {
+    --right-anchor: 1;
+  }
+
+  /* the band across the top, torn along its foot, the brand and the keys
+     standing on it (the mock's y 0-124). It runs to the screen's edges,
+     past the stage's gutters as the scene does: wider than the stage, it
+     stretches a little along its length. */
+  :root[data-style="paper"] .masthead {
+    height: var(--masthead-h);
+    align-items: center;
+    /* (the wordmark's left edge at the mock's x: 4.6px right of where 198 put it) */
+    padding: 0 calc(166 * var(--u)) calc(30 * var(--u)) calc(202.6 * var(--u));
+  }
+
+  :root[data-style="paper"] .masthead::before {
+    left: calc(50% - 50vw);
+    top: calc(-8 * var(--u));
+    width: 100vw;
+    height: calc(140 * var(--u));
+  }
+
+  /* the pine's and the peak's tips, which rise in front of the strip in the
+     mock (cut from it, scripts/kits/paper-sprites.mjs tips: x 1524-1672, y
+     30-112, right of the links). They are stage art, so they lie over the
+     scene only where the scene and the stage register: at 16:9. A screen of
+     another shape keeps the strip over them (a known gap, the brief). */
+  @media (min-aspect-ratio: 174/100) and (max-aspect-ratio: 182/100) {
+    :root[data-style="paper"] .masthead::after {
+      content: "";
+      position: absolute;
+      z-index: 2;
+      left: calc(1520 * var(--u));
+      top: calc(26 * var(--u));
+      /* the box ends at the stage's right edge (1672u), so it adds no sideways
+         scroll; the sprite's 4px pad on that side falls outside it */
+      width: calc(152 * var(--u));
+      height: calc(90 * var(--u));
+      background: var(--k-tips) 0 0 / calc(100% * 156 / 152) 100% no-repeat;
+      pointer-events: none;
+    }
+  }
+
+  /* the name, a thin rule, the line: all on one line */
+  :root[data-style="paper"] .masthead-brand {
+    display: flex;
+    align-items: center;
+  }
+
+  :root[data-style="paper"] .tagline {
+    /* (the rule at the mock's x: 2.6px right of where 34 put it, the wordmark 4.6 right) */
+    margin: calc(4 * var(--u)) 0 0 calc(32 * var(--u));
+    padding-left: calc(30 * var(--u));
+    border-left: max(1px, calc(1.5 * var(--u))) solid var(--l-ink);
+    line-height: calc(31 * var(--u));
+  }
+
+  /* the links set from the right, at the mock's spacing, the last ending
+     where the mock's does (x 1497); the band's right strip runs on under
+     the longest rice's name (scripts/kits/paper-sprites.mjs widen) */
+  :root[data-style="paper"] .masthead .instruments {
+    gap: calc(30 * var(--u));
+    margin-top: calc(4 * var(--u));
+  }
+
+  :root[data-style="paper"] .launchpad {
+    align-items: start;
+    padding-top: calc(4 * var(--u));
+  }
+
+  /* the copy's box is the upper sheet's span (the mock's x 288-738), from
+     the window's top (y 112); the two torn sheets lie under it */
+  :root[data-style="paper"] .launchpad-copy {
+    padding: calc(44 * var(--u)) calc(50 * var(--u)) 0 0;
+  }
+
+  /* the sheets as cut (the mock's x 264, y 123, less the shadow pad), the
+     lower one's middle stretched so its torn foot lies ~20px under the
+     keys, whatever their size: rows 157-227 of the sprite are that sheet
+     alone, below the upper one's shadow and above its own torn foot */
+  :root[data-style="paper"] .launchpad-copy::before {
+    left: calc(-24 * var(--u));
+    top: calc(11 * var(--u));
+    width: calc(491 * var(--u));
+    bottom: calc(-40 * var(--u)); /* (the mock's foot lies at y ~410 at 1672x941; it was 415; the keys' lower edge fell 2) */
+    border: 0 solid transparent;
+    border-image: var(--k-hero) 157 0 58 0 fill / calc(157 * var(--u)) 0 calc(58 * var(--u)) 0 stretch;
+    background: none;
+  }
+
+  /* (the mock's headline stands ~3px right of the centre of its sheet, and
+     its line close under it: 50px from the headline's ink to the line's) */
+  :root[data-style="paper"] :is(.launchpad-title, .launchpad-pitch) {
+    translate: calc(3 * var(--u)) 0;
+  }
+
+  :root[data-style="paper"] .launchpad-pitch {
+    margin-top: calc(0.5 * var(--u));
+  }
+
+  /* the call and the keys set in on the lower sheet */
+  :root[data-style="paper"] :is(.launchpad-call, .launchpad-keys) {
+    margin-left: calc(72 * var(--u));
+  }
+
+  :root[data-style="paper"] .launchpad-call {
+    margin: calc(36.5 * var(--u)) 0 0 calc(76 * var(--u));
+    font-size: max(15px, calc(23 * var(--u)));
+  }
+
+  :root[data-style="paper"] .launchpad-keys {
+    gap: calc(15.75 * var(--u)); /* (the second board's left edge at the mock's, its width having grown to the right of it) */
+    margin-top: calc(12.9 * var(--u));
+  }
+
+  :root[data-style="paper"] .launchpad-keys .key {
+    min-height: max(40px, calc(62.6 * var(--u)));
+    padding: 0 calc(27 * var(--u)) calc(3 * var(--u));
+    font-size: max(15px, calc(23 * var(--u)));
+  }
+
+  /* (the mock's second board is wider: 153px, on a shorter line) */
+  :root[data-style="paper"] .launchpad-keys .key:not([data-tone="signal"]) {
+    padding-inline: calc(32.5 * var(--u));
+    min-height: max(40px, calc(58 * var(--u)));
+    /* (the mock's board and its words are 4% larger than the first key's:
+       155.8 across its paper where 23u gave 151.5) */
+    font-size: max(15px, calc(24 * var(--u)));
+  }
+
+  /* the window on its cream mat, which stands ~14px proud of it all round */
+  :root[data-style="paper"] .launchpad-window::before {
+    left: calc(-37 * var(--u));
+    top: calc(-25 * var(--u));
+    width: calc(729 * var(--u));
+    height: calc(428 * var(--u));
+  }
+
+  /* the showcase's box runs from just over the label (y ~508) to the
+     cards' foot (y 862): the band and the foreground lie on it */
+  :root[data-style="paper"] .showcase {
+    padding-top: calc(29 * var(--u));
+  }
+
+  /* the cards' feet: the mock's cream edge ends at y 861.5 (3.5px lower than
+     a foot of 81 gave), its sheet 20.5px under the screen's foot (the card
+     below) */
+  :root[data-style="paper"] .landing {
+    padding-bottom: calc(77.5 * var(--u));
+  }
+
+  /* the band (y 557-811 as cut) runs on under the cards' foot (y ~885),
+     to the screen's edges as the top band does */
+  :root[data-style="paper"] .showcase::before {
+    left: calc(50% - 50vw);
+    top: calc(37.6 * var(--u)); /* (35, and the 2.6 the row's foot rose) */
+    width: 100vw;
+    height: calc(345 * var(--u));
+  }
+
+  /* the foreground runs on 420px under the stage's foot (the art is quilted
+     foliage there, ending in leaf tips): a screen taller than 16:9 shows
+     leaves to its foot, never the scene's own foreground at its own scale.
+     Its box is the stage's width and no more (a box carrying the sprite's
+     8px shadow pad either side would run the page sideways at 16:9): the
+     art is drawn a pad wider than the box, centred, and the box clips it. */
+  :root[data-style="paper"] .showcase::after {
+    left: 0;
+    top: calc(158.6 * var(--u)); /* (156, and the 2.6 the row's foot rose) */
+    width: calc(1672 * var(--u));
+    height: calc(699 * var(--u));
+    background-size: calc(100% * 1688 / 1672) 100%;
+    background-position: 50% 0;
+  }
+
+  /* "Projects" on its scrap (the scrap's tilt is its own) */
+  :root[data-style="paper"] .showcase-title {
+    margin: 0 0 calc(7 * var(--u)) calc(40.3 * var(--u));
+    font-size: max(22px, calc(44.3 * var(--u)));
+    /* (the scrap stands 6.4px above where its row's flow puts it: its lower
+       edge ends on the lead card's top, the lead card's tack on that edge,
+       as the mock's. The tab stood 6px low with 3, and the row has since
+       risen 2.6 and taken it along: 3 + 6 - 2.6) */
+    translate: 0 calc(-6.4 * var(--u));
+  }
+
+  :root[data-style="paper"] .showcase-title::before {
+    left: calc(-75.3 * var(--u));
+    top: calc(-21 * var(--u));
+    width: calc(321 * var(--u));
+    height: calc(105 * var(--u));
+  }
+
+  /* the title's centre 33px under the card's edge (the mock's), the screen
+     under it (y 659-842 in the mock); the row stands on the band's foot, so
+     the card grows upward with what it holds */
+  :root[data-style="paper"] .showcase .card.faceplate {
+    gap: calc(6.5 * var(--u));
+    padding: calc(18.6 * var(--u)) calc(18 * var(--u)) calc(22 * var(--u));
+  }
+
+  :root[data-style="paper"] .showcase .card-title {
+    padding-left: calc(12 * var(--u));
+  }
+}
+
+/* ---------- the other pages ---------- */
+
+/* The masthead's keys and a page's way back are the home's links: words in
+   the book face on the strip, underlined in the signal when pointed at,
+   their keyboard legends left to the foot. */
+:root[data-style="paper"] .running-head .key {
+  --kn: none;
+  --kh: none;
+  --kp: none;
+  --kf: none;
+  --ki: var(--paper-ink-small);
+  --ku: transparent;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 2px;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1.5px;
+}
+
+:root[data-style="paper"] .running-head :is(a.key, button.key):hover,
+:root[data-style="paper"] .running-head .key[aria-expanded="true"] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--signal);
+}
+
+:root[data-style="paper"] .running-head .key:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+:root[data-style="paper"] .running-head .key-legend {
+  display: none;
+}
+
+/* in the style menu, words too: the current style's set a weight up and
+   underlined in the signal, where the tiles would light it */
+:root[data-style="paper"] :is(.masthead, .running-head) .style-opt[aria-checked="true"] {
+  font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-color: var(--signal);
+}
+
+:root[data-style="paper"] .running-head :is(.instruments, .head-nav) {
+  gap: 4px 26px;
+}
+
+:root[data-style="paper"] .running-head .brand {
+  font-weight: 700;
+}
+
+/* the calls to act on a page are the home's paper boards, their words in
+   the book face; the call to act on the launch page is the terracotta one
+   (paper-launch.webp) */
+:root[data-style="paper"] :is(.launch-keys, .alpha-keys) .key {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 560;
+  font-size: 21px;
+  letter-spacing: 0;
+}
+
+:root[data-style="paper"] .launch-keys .key[data-tone="signal"] {
+  --kn: var(--k-key-clay);
+  --kh: var(--k-key-clay-hover);
+  --kp: var(--k-key-clay-pressed);
+  --kf: var(--k-key-clay-focus);
+  --ki: var(--key-clay-ink);
+  --ku: var(--key-clay-under);
+}
+
+/* the launch page's promise, on two lines, in the project page's face (the
+   mock sets both alike) and the mock's dark blue-green ink (#1d2829). Weight
+   and tracking are measured on the mock's headline at 1672x941: ink (dark
+   pixels in its box) within 0.2% and the first line's width equal. */
+:root[data-style="paper"] .launch-hero h1 {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-weight: 560;
+  letter-spacing: -0.0175em;
+  line-height: 1.02;
+  color: var(--paper-ink);
+}
+
+:root[data-style="paper"][data-rice="paper"] .launch-hero h1 {
+  color: #1d2829;
+}
+
+:root[data-style="paper"] .launch-hero .launch-sub {
+  color: var(--paper-ink-small);
+  font-weight: 500;
+}
+
+/* the sub line is the project page's lede again: a light, airy grotesque */
+:root[data-style="paper"] .launch-hero .launch-sub {
+  font-family: var(--font-inter), var(--font-print), system-ui, sans-serif;
+  font-weight: 330;
+}
+
+/* The mock's lower sheet carries no pin: here the first section's would
+   straddle its torn top edge (the sheet's own, not the section box's), over
+   the scene. (The page's later sheets keep theirs.) */
+:root[data-style="paper"] .rack-main > .section:has(> .reflexes)::after {
+  display: none;
+}
+
+/* its label typed on the tape in the mock's mixed case, on one line */
+:root[data-style="paper"] .launch-kicker {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 13px;
+}
+
+:root[data-style="paper"] .launch-kicker > .seplist {
+  max-width: none;
+}
+
+/* A project's page (paper-project.webp): its label on red tape held by a
+   tack, the promise in the book face's regular over a short rule, the tags
+   on chips of the cream board, and its picture a photo print, tilted and
+   pinned at its top, captioned in type. */
+:root[data-style="paper"] .detail-hero .kicker {
+  --k-tape: var(--k-tape-red);
+  position: relative;
+  margin-left: 12px;
+  padding: 6px 18px 5px 26px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+:root[data-style="paper"][data-rice="paper"] .detail-hero .kicker,
+:root[data-style="paper"][data-rice="paper"] .detail-hero .kicker * {
+  color: #0c0a09; /* 5:1 on the red tape */
+}
+
+:root[data-style="paper"] .detail-hero .kicker::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  translate: 0 -62%;
+  background: var(--k-pin-push) center / contain no-repeat;
+}
+
+/* The promise is set as the project mock sets it (art/originals/paper-project.webp):
+   a tight, heavy transitional serif, Newsreader at a medium weight (the
+   mock's 'A gothic dungeon crawler' is 647px across at 1672, its x-height
+   31px: this face at 57.6px, by the same width), and the paragraphs under it
+   in a light, airy sans (Inter, 24px, the mock's lede 599px across for 'An
+   original first-person game for Unreal Engine 5.8.2,'). */
+:root[data-style="paper"] .detail-hero h1 {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-weight: 520;
+  letter-spacing: -0.012em;
+  color: var(--paper-ink);
+}
+
+:root[data-style="paper"] .detail-hero p {
+  font-family: var(--font-inter), var(--font-print), system-ui, sans-serif;
+  font-weight: 310;
+}
+
+:root[data-style="paper"] .detail-hero h1::after {
+  content: "";
+  display: block;
+  width: min(200px, 50%);
+  height: 1px;
+  margin-top: 0.42em;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+:root[data-style="paper"] .detail-hero .tags {
+  gap: 10px 24px;
+  margin-top: 30px;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--paper-ink-small);
+}
+
+:root[data-style="paper"] .detail-hero .tag {
+  position: relative;
+  padding: 5px 12px 6px;
+  border: 0 solid transparent;
+  border-image: var(--k-key) var(--slice-key) fill / calc(60px * 0.24) / calc(20px * 0.24) stretch;
+}
+
+:root[data-style="paper"] .detail-hero .tag + .tag::before {
+  content: "\2022" / "";
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  translate: 0 -50%;
+  opacity: 0.7;
+}
+
+/* the print: the cream card stock round the picture, wider at its foot for
+   the caption, a couple of degrees off level, its tack at its top centre */
+:root[data-style="paper"] .detail-hero .screen {
+  isolation: isolate;
+  padding: 20px 20px 48px;
+  background: none;
+  rotate: -3.4deg;
+}
+
+/* (torn at a fifth of the sheet's scale: a fine deckle all round) */
+:root[data-style="paper"] .detail-hero .screen::after {
+  z-index: -1;
+  border-image: var(--k-plate) var(--slice-plate) fill / calc(152px * 0.2) / calc(96px * 0.2) stretch;
+}
+
+/* the day's stock for a project's sheets and its print: the mock's paler,
+   greyer cream, not the card sprites' warm tan (the speckle kept) */
+:root[data-style="paper"][data-rice="paper"] .detail-hero::before,
+:root[data-style="paper"][data-rice="paper"] .detail-hero .screen::after,
+:root[data-style="paper"][data-rice="paper"]:has(.detail-hero) .section::before {
+  filter: saturate(0.65) brightness(1.06);
+}
+
+:root[data-style="paper"] .detail-hero .screen::before {
+  content: "Fig. 1";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 12px;
+  overflow: hidden;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--paper-ink-small);
+}
+
+/* (only with a label to follow: no separator on a bare "Fig. 1") */
+:root[data-style="paper"] .detail-hero .screen[aria-label]:not([aria-label=""], [aria-label=" "])::before {
+  content: "Fig. 1 \00b7\20 " attr(aria-label); /* (\20: a hex escape swallows the space after it) */
+}
+
+/* stacked (the stage's layout, below, tacks the print by the hero), the print
+   is tacked at its own top centre */
+@media (max-width: 899px) {
+  :root[data-style="paper"] .detail-hero > :has(> .screen) {
+    position: relative;
+  }
+
+  :root[data-style="paper"] .detail-hero > :has(> .screen)::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: -18px;
+    left: calc(50% + 12px);
+    width: 44px;
+    height: 44px;
+    translate: -50% 0;
+    background: var(--k-pin-push) center / contain no-repeat;
+  }
+}
+
+/* ---------- the other pages, on the stage (900px and wider) ----------
+   As the home's first screen is laid on the mock's 1672 x 941 (--u, one mock
+   px), so are these pages': a running head on the band's left piece (the
+   right of the scene left clear), and each page's first screen at its own
+   mock's coordinates (art/originals/paper-project.webp, paper-launch.webp).
+   What lies below the first screen keeps the column. */
+@media (min-width: 900px) {
+  /* the running head: the page's name and the links in one row, its line
+     under the name, on the band's left piece (the piece cut out of the band, scripts/kits/
+     paper-sprites.mjs band-left; drawn from the screen's left edge to where
+     the piece ends, x 1040 of the stage, its torn end slanting in to ~x 950
+     at the links' height: they end by there) */
+  :root[data-style="paper"] .rack:has(> .rack-inner > .running-head) {
+    padding-top: 0;
+  }
+
+  :root[data-style="paper"] .rack-inner:has(> .running-head) {
+    row-gap: 0;
+  }
+
+  :root[data-style="paper"] .running-head {
+    align-self: center;
+    flex-wrap: wrap;
+    align-content: center;
+    gap: calc(2 * var(--u)) calc(24 * var(--u));
+    width: var(--stage-w);
+    height: var(--masthead-h);
+    min-height: 0;
+    padding: 0 calc(722 * var(--u)) calc(30 * var(--u)) calc(198 * var(--u));
+  }
+
+  :root[data-style="paper"] .running-head::before {
+    inset: auto;
+    left: calc(50% - 50vw);
+    top: calc(-8 * var(--u));
+    width: calc(50vw + 204 * var(--u));
+    height: calc(140 * var(--u));
+    border: 0 solid transparent;
+    border-image: var(--k-band-left) 0 fill / 0 / 0 calc(8 * var(--u)) stretch;
+    background: none;
+    backdrop-filter: none;
+  }
+
+  :root[data-style="paper"] .running-head::after {
+    content: none;
+  }
+
+  /* below ~1240px the strip's paper would end under the links (the stage
+     shrinks, the links' type does not): it runs the screen's width instead,
+     stretched along its length as the home's band is */
+  @media (max-width: 1239px) {
+    /* (its torn end slants in over the last ~7% of the width: the links end before it) */
+    :root[data-style="paper"] .running-head {
+      padding-right: 9vw;
+    }
+
+    :root[data-style="paper"] .running-head::before {
+      width: 100vw;
+    }
+  }
+
+  :root[data-style="paper"] .running-head .brand {
+    font-size: max(26px, calc(42 * var(--u)));
+    letter-spacing: -0.01em;
+  }
+
+  /* The page's line has a row of its own under the name and the links, on
+     the strip, wrapping if it is long: it is never cut short, and the links
+     keep the room they need (the name, the style's links and the way back
+     are one row). */
+  :root[data-style="paper"] .running-head .brand {
+    order: 0;
+  }
+
+  :root[data-style="paper"] .running-head .instruments {
+    order: 1;
+  }
+
+  :root[data-style="paper"] .running-head .head-nav {
+    order: 2;
+  }
+
+  :root[data-style="paper"] .running-head .meta {
+    order: 3;
+    flex: 0 0 100%;
+    padding: 0;
+    color: var(--paper-ink-small);
+  }
+
+  :root[data-style="paper"] .running-head .key {
+    font-size: max(15px, calc(19 * var(--u)));
+  }
+
+  :root[data-style="paper"] .running-head :is(.instruments, .head-nav) {
+    gap: 0 max(14px, calc(24 * var(--u)));
+  }
+
+  :root[data-style="paper"] .running-head .instruments {
+    margin-left: auto;
+  }
+
+  /* ---- a project's page ---- */
+
+  /* the first screen: a narrow card at the left (x 100-860, its sheet the
+     hero's own, drawn over the copy's column and the tags under it), and the
+     print beside it, tilted, tacked at its top centre. The tags are in the
+     print's column in the page's markup; the column is unwrapped, so they
+     take their place in the card's. */
+  :root[data-style="paper"] .detail-hero {
+    align-self: center;
+    align-items: start;
+    justify-content: start;
+    grid-template-columns: calc(760 * var(--u)) calc(460 * var(--u));
+    gap: 0 calc(30 * var(--u));
+    width: var(--stage-w);
+    margin-top: calc(-6 * var(--u));
+    padding: 0 0 0 calc(100 * var(--u));
+  }
+
+  :root[data-style="paper"] .detail-hero::before {
+    inset: auto;
+    left: calc(100 * var(--u));
+    top: 0;
+    bottom: 0;
+    width: calc(760 * var(--u));
+  }
+
+  :root[data-style="paper"] .detail-hero > div:first-child {
+    grid-area: 1 / 1;
+    min-width: 0;
+    padding: calc(38 * var(--u)) calc(45 * var(--u)) 0 calc(65 * var(--u));
+  }
+
+  :root[data-style="paper"] .detail-hero > div:first-child:last-child {
+    padding-bottom: calc(46 * var(--u));
+  }
+
+  :root[data-style="paper"] .detail-hero > div:nth-child(2) {
+    display: contents;
+  }
+
+  :root[data-style="paper"] .detail-hero .tags {
+    grid-area: 2 / 1;
+    gap: calc(10 * var(--u)) calc(26 * var(--u));
+    margin: 0;
+    padding: calc(30 * var(--u)) calc(45 * var(--u)) calc(30 * var(--u)) calc(65 * var(--u));
+    font-size: max(11px, calc(17 * var(--u)));
+  }
+
+  :root[data-style="paper"] .detail-hero .kicker {
+    width: fit-content;
+    margin: 0 0 calc(33 * var(--u));
+    padding: calc(11 * var(--u)) calc(24 * var(--u)) calc(10 * var(--u)) calc(34 * var(--u));
+    font-size: max(11px, calc(21 * var(--u)));
+  }
+
+  /* (the mock's pin, 35px across, stands left of the tape's end and above its
+     middle, where it holds the card's corner too) */
+  :root[data-style="paper"] .detail-hero .kicker::before {
+    left: calc(-35 * var(--u));
+    width: calc(46 * var(--u));
+    height: calc(46 * var(--u));
+    translate: 0 calc(-50% - 16 * var(--u));
+  }
+
+  :root[data-style="paper"] .detail-hero h1 {
+    max-width: none;
+    margin: 0;
+    font-size: max(28px, calc(57.6 * var(--u)));
+    line-height: calc(66 / 57.6);
+    text-wrap: wrap;
+  }
+
+  :root[data-style="paper"] .detail-hero h1::after {
+    width: calc(200 * var(--u));
+    margin-top: 0.22em;
+  }
+
+  :root[data-style="paper"] .detail-hero p {
+    max-width: none;
+    /* (inset a few px from the headline's edge, as the mock's lede is) */
+    padding-left: calc(5 * var(--u));
+    font-size: max(14px, calc(24.3 * var(--u)));
+    line-height: calc(33.5 / 24.3);
+    color: var(--paper-ink-small);
+  }
+
+  :root[data-style="paper"] .detail-hero h1 + p {
+    margin-top: calc(28 * var(--u));
+  }
+
+  :root[data-style="paper"] .detail-hero p + p {
+    margin-top: calc(6 * var(--u));
+  }
+
+  /* the print: a near-square picture on its card stock, tacked */
+  :root[data-style="paper"] .detail-hero .screen {
+    --face-ar: 1;
+    grid-area: 1 / 2 / span 2;
+    margin-top: calc(78 * var(--u));
+    /* the mock's mat is thick: 26px at the sides and over the picture, 60
+       under it for the caption */
+    padding: calc(26 * var(--u)) calc(26 * var(--u)) calc(60 * var(--u));
+  }
+
+  :root[data-style="paper"] .detail-hero .screen-face.has-art {
+    aspect-ratio: 1;
+  }
+
+  :root[data-style="paper"] .detail-hero .screen::before {
+    left: calc(30 * var(--u));
+    right: calc(30 * var(--u));
+    /* (round 10: the caption sits just under the picture, ~5u clear of it, as
+       the mock's does, with the stock's deep foot below it; it stood 20u from
+       the foot, a wide empty band above) */
+    bottom: calc(38 * var(--u));
+    /* (the mock's caption is set a weight up and in the black, its strokes ~2px
+       where the regular's are ~1.3) */
+    font-size: max(10px, calc(15.5 * var(--u)));
+    font-weight: 600;
+    color: var(--paper-ink);
+  }
+
+  :root[data-style="paper"] .detail-hero::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    /* (at the top centre of the tilted print: the mock's pin, 35px across, is at
+       (1133, 193), 13px in from its mat's edge) */
+    left: calc(1135 * var(--u));
+    top: calc(68 * var(--u));
+    width: calc(46 * var(--u));
+    height: calc(46 * var(--u));
+    background: var(--k-pin-push) center / contain no-repeat;
+    pointer-events: none;
+  }
+
+  /* (a page with no figure has no print to pin) */
+  :root[data-style="paper"] .detail-hero.solo::after {
+    display: none;
+  }
+
+  /* the card beneath, the first section: its head across the top of a
+     sheet that lies to the right, as the mock's (x 470-1560) */
+  :root[data-style="paper"] .detail-hero + .section {
+    align-self: center;
+    grid-template-columns: minmax(0, 1fr);
+    gap: calc(18 * var(--u));
+    width: calc(1090 * var(--u));
+    margin-top: calc(70 * var(--u));
+    translate: calc(179 * var(--u)) 0;
+  }
+
+  :root[data-style="paper"] .detail-hero + .section > :first-child {
+    position: static;
+    max-width: none;
+  }
+
+  :root[data-style="paper"] .detail-hero + .section h2 {
+    padding-bottom: calc(14 * var(--u));
+    font-size: max(24px, calc(46 * var(--u)));
+    font-weight: 500;
+    background: linear-gradient(var(--engrave-lo), var(--engrave-lo)) bottom / 100% 1px no-repeat;
+  }
+
+  /* ---- the launch page ---- */
+
+  /* the first screen: the promise on a big sheet flush left (x 90-760) and
+     the product on its mat beside it (x 790-1550), the scene between them and
+     below, where the hiker and his dog stand. The sheet's neighbour in the
+     page's markup is the live demo; the shortcuts section is brought up under
+     the first screen, as the mock's ledge, by order. */
+  :root[data-style="paper"] .rack-main:has(> .launch-hero) {
+    gap: 0;
+  }
+
+  /* (:where, so the two named below outrank it) */
+  :root[data-style="paper"] :where(.rack-main:has(> .launch-hero)) > * {
+    order: 3;
+  }
+
+  :root[data-style="paper"] .launch-hero {
+    order: 1;
+    align-self: center;
+    align-items: start;
+    justify-content: start;
+    grid-template-columns: calc(670 * var(--u)) calc(776 * var(--u));
+    column-gap: calc(30 * var(--u));
+    width: var(--stage-w);
+    min-height: calc(576 * var(--u));
+    margin-top: 0;
+    padding: 0 0 0 calc(90 * var(--u));
+  }
+
+  /* neither the sheet nor the mat is pinned in the mock */
+  :root[data-style="paper"] .launch-hero .prop {
+    display: none;
+  }
+
+  /* The promise stands on the torn sheet of the project page's card (the
+     mock's, a strongly torn silhouette with a calm paper); the window on its
+     mat, which is the home's (torn the same way, the sprite's 8px shadow pad
+     outside the box). */
+  :root[data-style="paper"] .launch-shot.faceplate::before {
+    /* (the mat's sprite: its torn edge lies 20-25u inside its box on the
+       left, 11 on the right and 20 above and below, so the box is set out to
+       put the paper's visible edge ~20u round the window, the mock's mat:
+       x 792-1568, y 68-635) */
+    inset: calc(-21 * var(--u)) calc(-13.3 * var(--u)) calc(-21 * var(--u)) calc(-23.7 * var(--u));
+    border: 0;
+    border-image-source: none;
+    border-radius: 0;
+    background: var(--k-mount) 0 0 / 100% 100% no-repeat;
+    backdrop-filter: none;
+  }
+
+  /* (this mock's cream is lighter than the home window mat's; and the sheet,
+     the day's stock for a project's sheets: the mock's paler, greyer cream) */
+  :root[data-style="paper"][data-rice="paper"] .launch-shot.faceplate::before {
+    filter: brightness(1.07);
+  }
+
+  :root[data-style="paper"] .launch-copy.faceplate::before {
+    /* (the mock's sheet: x 88-750, y 98-568 against the copy's box) */
+    inset: calc(-20 * var(--u)) calc(-3 * var(--u)) calc(-25 * var(--u)) calc(-18 * var(--u));
+  }
+
+  :root[data-style="paper"][data-rice="paper"] .launch-copy.faceplate::before {
+    filter: saturate(0.65) brightness(1.06);
+  }
+
+  :root[data-style="paper"] .launch-shot.faceplate::after {
+    content: none;
+  }
+
+  :root[data-style="paper"] .launch-copy.faceplate {
+    padding: calc(30 * var(--u)) calc(40 * var(--u)) calc(30 * var(--u)) calc(73 * var(--u));
+  }
+
+  :root[data-style="paper"] .launch-hero .launch-kicker {
+    width: fit-content;
+    margin-bottom: calc(26 * var(--u));
+    font-size: max(10px, calc(17 * var(--u)));
+  }
+
+  :root[data-style="paper"] .launch-hero .launch-kicker .led {
+    display: none;
+  }
+
+  :root[data-style="paper"] .launch-hero h1 {
+    max-width: none;
+    margin: 0 0 calc(8 * var(--u));
+    font-size: max(34px, calc(64.7 * var(--u)));
+    line-height: calc(66 / 64.7);
+    text-wrap: wrap;
+  }
+
+  /* (the book face's own plus, in the letters' ink and a notch over their
+     weight, so it carries as their stems do: the shared mono one is a bold beside
+     the regular letters, the book face's regular a hairline) */
+  :root[data-style="paper"] .launch-hero h1 .chord-plus {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1em;
+    color: inherit;
+  }
+
+  :root[data-style="paper"] .launch-hero .launch-sub {
+    max-width: none;
+    margin: 0 0 calc(4 * var(--u));
+    /* (the mock's line is 537 wide: Inter light at 18.7; its pitch as it was) */
+    font-size: max(14px, calc(18.7 * var(--u)));
+    line-height: calc(31.775 / 18.7);
+    font-weight: 330;
+  }
+
+  /* the explanation gives way, as the product's own css lets it on a short
+     laptop screen (the shortcuts below say it next): the mock's sheet holds
+     the promise, the two calls to action and the facts, and the hiker stands
+     below it */
+  :root[data-style="paper"] .launch-hero .launch-lede {
+    display: none;
+  }
+
+  :root[data-style="paper"] .launch-hero .launch-keys-note {
+    flex-wrap: nowrap;
+    gap: calc(12 * var(--u));
+    white-space: nowrap;
+  }
+
+  :root[data-style="paper"] .launch-hero .launch-keys {
+    flex-wrap: nowrap;
+    gap: calc(27 * var(--u));
+    margin-top: calc(16.5 * var(--u));
+  }
+
+  /* The mock's keys are hand-cut torn boards a degree or so off level, the
+     terracotta one lying on a cream under-sheet (234 x 62 and 179 x 63 as
+     drawn): the kit's two torn boards (scripts/kits/paper-sprites.mjs
+     TORN), their art at twice the page's px (so a 68px slice is 34u), the
+     key's box the art's less its 14u shadow. */
+  :root[data-style="paper"] .launch-hero .launch-keys .key {
+    flex: none;
+    min-width: calc(236.5 * var(--u));
+    min-height: max(40px, calc(76 * var(--u)));
+    padding: 0 calc(17 * var(--u)) calc(12 * var(--u)) calc(17 * var(--u));
+    font-size: max(15px, calc(26 * var(--u)));
+    font-weight: 480;
+    --kn: var(--k-torn-clay);
+    --kh: var(--k-torn-clay-hover);
+    --kp: var(--k-torn-clay-pressed);
+    --kf: var(--k-torn-clay-focus);
+    --ku: transparent;
+  }
+
+  :root[data-style="paper"] .launch-hero .launch-keys .key:not([data-tone="signal"]) {
+    min-width: calc(180 * var(--u));
+    min-height: max(40px, calc(72 * var(--u))); /* (the board's 68u, its tear included, and the card-stock edge under it, ~4u) */
+    padding: 0 calc(10 * var(--u)) calc(4 * var(--u));
+    --kn: var(--k-torn-cream);
+    --kh: var(--k-torn-cream-hover);
+    --kp: var(--k-torn-cream-pressed);
+    --kf: var(--k-torn-cream-focus);
+    align-self: center;
+    font-weight: 480;
+  }
+
+  /* (by day its words are the headline's dark blue-green, as the mock's) */
+  :root[data-style="paper"][data-rice="paper"] .launch-hero .launch-keys .key:not([data-tone="signal"]) {
+    --ki: #1d2829;
+  }
+
+  :root[data-style="paper"] .launch-hero .launch-keys .key::before,
+  :root[data-style="paper"] .launch-hero .launch-keys .key::after {
+    border-image-slice: 68 fill;
+    border-image-width: calc(34 * var(--u));
+    border-image-outset: calc(14 * var(--u));
+  }
+
+  /* The page's two extra lines, the email note and the fifth fact, are set
+     compactly so the sheet ends near where the mock's does (y ~568): the note
+     in the gap under the keys, where the mock has only paper (round 10: clear
+     of the boards' foot, in the body face's regular, its rules a hairline, so
+     the keys, the note, the rule and the facts keep the mock's rhythm), and the
+     facts (two lines with the extra fact, which a line of the sheet's width
+     cannot hold at a legible size: it is the page's own) close under their
+     rule. */
+  :root[data-style="paper"] .launch-hero .launch-keys-note {
+    margin-top: calc(10 * var(--u));
+    font-size: max(11px, calc(14 * var(--u)));
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--paper-ink-small);
+  }
+
+  :root[data-style="paper"] .launch-hero .launch-keys-note :is(b, .text-action) {
+    font-weight: 500;
+  }
+
+  :root[data-style="paper"] .launch-hero .launch-keys-note .text-action {
+    text-decoration-thickness: max(1px, calc(1 * var(--u)));
+    text-underline-offset: calc(3 * var(--u));
+  }
+
+  :root[data-style="paper"] .launch-hero .launch-proof {
+    row-gap: calc(1 * var(--u));
+    margin-top: calc(1 * var(--u));
+    padding-top: calc(7 * var(--u));
+    font-size: max(10px, calc(12.5 * var(--u)));
+    line-height: 1.25;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--paper-ink-small);
+  }
+
+  /* The product on its mat, the mock's (x 792-1568, y 68-635 at 1672x941): the
+     window 736 wide and ~528 high (1.39:1) in it, a hair under 20 of paper on
+     every side. The mock has no running head, so the mat comes up over the
+     head's row (the page's first row stands at y 108): the head's links end
+     at x ~950 and the sun is the only thing it covers. The caption (the keys
+     to press) is not on the mat, so the mat is one framed object: it hangs
+     under it, below. */
+  :root[data-style="paper"] .launch-shot.faceplate {
+    margin: calc(-40 * var(--u)) 0 0;
+    padding: calc(20 * var(--u)) calc(18 * var(--u)) calc(18 * var(--u)) calc(22 * var(--u));
+  }
+
+  /* the window in its bezel: the dark rim of the mock's laptop round the
+     live screen, whose own colours stay the theme's. By day the screen is
+     light and a dark rim is a black outline the mock's dark window never
+     had: the window stands on the mat bare, with the paper's own soft shadow
+     and a brown hairline for its edge (below). */
+  :root[data-style="paper"] .launch-shot .screen {
+    padding: calc(1.8 * var(--u));
+    background: #2a2f3d;
+    border-radius: calc(10 * var(--u));
+    box-shadow: 0 calc(2 * var(--u)) calc(6 * var(--u)) rgba(30, 24, 18, 0.3);
+  }
+
+  :root[data-style="paper"][data-rice="paper"] .launch-shot .screen {
+    padding: 0;
+    background: none;
+    box-shadow:
+      0 0 0 max(1px, calc(1 * var(--u))) rgba(72, 50, 30, 0.38),
+      0 calc(2 * var(--u)) calc(7 * var(--u)) rgba(50, 34, 20, 0.42);
+  }
+
+  :root[data-style="paper"] .launch-shot .screen::after {
+    content: none;
+  }
+
+  /* the frame adds no veil over the app (no glare map, no shade across its
+     top and left), only its thin edge */
+  :root[data-style="paper"] .launch-shot .screen-glass {
+    display: none;
+  }
+
+  :root[data-style="paper"] .launch-shot .screen-edge {
+    box-shadow: inset 0 0 0 1px rgba(10, 10, 14, 0.4);
+  }
+
+  :root[data-style="paper"][data-rice="paper"] .launch-shot .screen-edge {
+    box-shadow: none;
+  }
+
+  /* The window is the live app with its quick open over it, as the mock's
+     is: the app legible round a palette of about half its width. The product's
+     own still (public/tauri/hero-quick-open-*, shared by every style) is a
+     720px window in which the 600px palette fills 86% of the width and the app
+     is a blurred margin, and a style cannot resize a palette inside a picture;
+     so the face carries the shared pipeline's wide cut of the same app, at
+     the mock's scale and proportions (public/tauri/hero-quick-open-wide-*,
+     the scene quick-open-full of scripts/capture-tauri-shots.mjs cut by
+     scripts/shot-crops.mjs: the web build in the theme that wears the rice,
+     zoomed so its type stands at the mock's, a light dim and no blur over it
+     as a real palette's backdrop), laid on the face, and the
+     product's picture, still in the page for its text alternative, is not
+     shown. The themes are appTheme.ts's: solarized for paper, dracula for
+     horizon, tokyo-night for cosmic dusk, aurora for rapture. */
+  :root[data-style="paper"] {
+    --k-app: url(/tauri/hero-quick-open-wide-tokyo-night.webp);
+  }
+
+  :root[data-style="paper"][data-rice="paper"] {
+    --k-app: url(/tauri/hero-quick-open-wide-solarized.webp);
+  }
+
+  :root[data-style="paper"][data-rice="horizon"] {
+    --k-app: url(/tauri/hero-quick-open-wide-dracula.webp);
+  }
+
+  :root[data-style="paper"][data-rice="rapture"] {
+    --k-app: url(/tauri/hero-quick-open-wide-aurora.webp);
+  }
+
+  /* (the cut's own shape: the mock's window, 1.39:1; the shared 1396 x 876 is
+     the product's still) */
+  :root[data-style="paper"] .launch-shot .screen-face {
+    aspect-ratio: 2480 / 1775;
+    background: var(--k-app) center / cover no-repeat #1b1d27;
+  }
+
+  :root[data-style="paper"] .launch-shot .screen-face img {
+    opacity: 0;
+  }
+
+  :root[data-style="paper"] .launch-shot .screen :is(.screen-face, .screen-edge) {
+    border-radius: calc(8.2 * var(--u));
+  }
+
+  :root[data-style="paper"][data-rice="paper"] .launch-shot .screen :is(.screen-face, .screen-edge) {
+    border-radius: calc(10 * var(--u));
+  }
+
+  /* The keys to press are a slip of the cards' ribbon paper tucked under the
+     mat, not a strip of it, so the window stays one framed object (the shelf
+     heads' recipe, at 0.3: slices 21px, the tear 4-14px in at the top and
+     2-6 at the foot, the shadow pad 8 outside the box). It centres under the
+     mat, a hair off level as pinned paper is. */
+  :root[data-style="paper"] .launch-shot-cap {
+    position: absolute;
+    top: calc(100% + 2 * var(--u));
+    left: 50%;
+    translate: -50% 0;
+    rotate: 0.3deg;
+    isolation: isolate;
+    justify-content: center;
+    flex-wrap: nowrap;
+    width: max-content;
+    max-width: 100%;
+    min-height: calc(50 * var(--u));
+    margin: 0;
+    padding: calc(6 * var(--u)) calc(44 * var(--u)) calc(4 * var(--u));
+    gap: 0 calc(10 * var(--u));
+    font-size: max(11px, calc(14.5 * var(--u)));
+    white-space: nowrap;
+    color: var(--paper-ink-small);
+  }
+
+  :root[data-style="paper"] .launch-shot-cap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border: 0 solid transparent;
+    border-image: var(--k-ribbon) 70 0 70 0 fill / calc(70px * 0.3) 0 / 8px 0 stretch;
+    background: linear-gradient(var(--divider-under), var(--divider-under)) center / 100% calc(100% - 16px) no-repeat;
+    pointer-events: none;
+  }
+
+  /* (the slip's keys: the ledge's caps, a third their size) */
+  :root[data-style="paper"] .launch-shot-cap .key.cap {
+    --key-k: 0.3;
+    min-width: max(26px, calc(40 * var(--u)));
+    min-height: max(24px, calc(32 * var(--u)));
+    padding: 0 calc(10 * var(--u)) calc(2 * var(--u));
+    font-family: var(--font-display), Georgia, serif;
+    font-size: max(12px, calc(16 * var(--u)));
+    font-weight: 400;
+  }
+
+  :root[data-style="paper"] .launch-shot-cap {
+    --divider-under: #363a4d;
+  }
+
+  :root[data-style="paper"][data-rice="paper"] .launch-shot-cap {
+    --divider-under: #d4bca3;
+  }
+
+  /* the shortcuts, up under the first screen: a torn ledge across the screen
+     (the cards' band of the home), the heading centred on it and the first
+     chords in a row with their meanings under, as the mock's */
+  :root[data-style="paper"] .rack-main > .section:has(> .reflexes) {
+    order: 2;
+    align-self: center;
+    width: var(--stage-w);
+    margin-top: calc(8 * var(--u));
+    padding: calc(58 * var(--u)) calc(286 * var(--u)) calc(60 * var(--u));
+    row-gap: calc(8 * var(--u));
+    text-align: center;
+  }
+
+  :root[data-style="paper"] .rack-main > .section:has(> .reflexes)::before {
+    inset: calc(-6 * var(--u)) auto calc(-26 * var(--u)) calc(50% - 50vw);
+    width: 100vw;
+    border-image: var(--k-ledge) 70 0 70 0 fill / calc(70 * var(--u)) 0 / 0 calc(8 * var(--u)) stretch;
+    background: none;
+    backdrop-filter: none;
+  }
+
+  :root[data-style="paper"] .rack-main > .section:has(> .reflexes) > :first-child {
+    display: contents;
+  }
+
+  /* (the mock's ledge carries the heading alone) */
+  :root[data-style="paper"] .rack-main > .section:has(> .reflexes) .section-kicker {
+    display: none;
+  }
+
+  :root[data-style="paper"] .reflexes .chord-plus {
+    display: none;
+  }
+
+  :root[data-style="paper"] .rack-main > .section:has(> .reflexes) h2 {
+    order: 2;
+    margin: 0 0 calc(2 * var(--u));
+    font-size: max(24px, calc(44 * var(--u)));
+    font-weight: 400;
+    color: var(--paper-ink);
+  }
+
+  :root[data-style="paper"] .rack-main > .section:has(> .reflexes) .reflexes {
+    order: 3;
+  }
+
+  :root[data-style="paper"] .rack-main > .section:has(> .reflexes) .aside-note {
+    order: 4;
+    max-width: none;
+    margin: calc(14 * var(--u)) 0 0;
+    font-size: max(12px, calc(15 * var(--u)));
+    color: var(--paper-ink-small);
+  }
+
+  :root[data-style="paper"] .section.stack .reflexes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 0;
+  }
+
+  :root[data-style="paper"] .section.stack .reflexes li {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: calc(14 * var(--u));
+    padding: calc(10 * var(--u)) calc(30 * var(--u));
+    background: none;
+    color: var(--paper-ink-small);
+    font-size: max(12px, calc(17 * var(--u)));
+    line-height: 1.35;
+  }
+
+  /* the vertical rules between the groups */
+  :root[data-style="paper"] .section.stack .reflexes li:not(:nth-child(3n + 1)) {
+    border-left: max(1px, calc(1.5 * var(--u))) solid var(--engrave-lo);
+  }
+
+  /* The launch page's foreground. In the mock the hiker on his rock and the
+     pines at both edges stand in front of its paper: the hiker over the foot
+     of the hero's sheet, the pines over the ledge's ends. They are pieces of
+     cut paper of the page's stage (scripts/kits/paper-front.mjs), each its own
+     silhouette with its own cast shadow, laid in the page's px (--u) on the
+     ledge's box: the ledge's top is the mock's y 692 at any screen, so they
+     stand where the mock has them against the sheets, scroll with them, and
+     need no register with the scene, whose layers slide on behind them (the
+     hiker and the pines are cut out of them, paper-pages.mjs). Their sprites
+     carry a shadow pad (20-22px); the box is the sprites' (the mock's y 513
+     to 1114) and the stage's width (so it adds no sideways scroll). The pines
+     end in their trunks' flat cut bases, below the mock's frame. */
+  :root[data-style="paper"] .rack-main > .section:has(> .reflexes)::after {
+    display: block;
+    content: "";
+    position: absolute;
+    z-index: 3;
+    inset: calc((513 - 692) * var(--u)) 0 auto 0;
+    width: auto;
+    height: calc(601 * var(--u));
+    aspect-ratio: auto;
+    translate: none;
+    background:
+      var(--k-stage-pines-left) calc(-22 * var(--u)) calc(90 * var(--u)) / calc(340 * var(--u)) calc(489 * var(--u)) no-repeat,
+      var(--k-stage-hiker) calc(-20 * var(--u)) 0 / calc(408 * var(--u)) calc(257 * var(--u)) no-repeat,
+      var(--k-stage-pines-right) calc(1398 * var(--u)) calc(208 * var(--u)) / calc(296 * var(--u)) calc(393 * var(--u)) no-repeat;
+    pointer-events: none;
+  }
+
+  /* Narrower than ~1240px the copy's own minimum type sizes (set in px, not
+     in --u) make its column taller than the mock's, and its last lines come
+     down to where the hiker's head stands: he is not shown there rather than
+     laid over them (known gap; the scene has no hiker either). */
+  @media (max-width: 1239px) {
+    :root[data-style="paper"] .rack-main > .section:has(> .reflexes)::after {
+      --k-stage-hiker: none;
+    }
+  }
+
+  :root[data-style="paper"] .reflexes .key.cap {
+    --key-k: 0.4;
+    min-width: max(34px, calc(78 * var(--u)));
+    min-height: max(30px, calc(60 * var(--u)));
+    padding: 0 calc(20 * var(--u)) calc(3 * var(--u));
+    font-family: var(--font-display), Georgia, serif;
+    font-size: max(14px, calc(26.5 * var(--u)));
+    font-weight: 400; /* (the mock's caps are the book face in its regular, "Ctrl" 38px across) */
+  }
+}
+
+/* ---------- stacked, below 900px ---------- */
+
+/* The phone mock (paper-phone.webp), in the page's own order, at its own
+   positions (px at its 390 width, the margins in vw): a torn strip across the
+   top with the name and the links (no tagline: the strip is as tall as the
+   mock's, 32px, and leaves the sun clear), the hero on its card held by a
+   tack (its call typed on tape over the name, all set from the left), the two
+   calls to act full width on the scene under it, green then terracotta, each
+   with its arrow; the window on its mat; "Projects" where the mock has its
+   dock. Its scene is its own (below): a clear sun, the hiker on the hill, the
+   pines flanking both edges, the layered hills. The strip is the mock's own
+   (a sprite scaled to its box); the card is the kit's torn sheet (9-slice),
+   as it must grow with its words; the foreground, which would cover the
+   stacked cards, stays in the desktop's composition. */
+@media (max-width: 899px) {
+  /* the phone's scene, swapped for the home's (the 3D scene re-reads these
+     tokens on a resize): the sky, the land, and a cut-out at each side, held
+     to its side (the pines and the hiker keep to their edges on a screen of
+     any shape). The two further pages keep their own, above. */
+  :root[data-style="paper"]:not(:has(.detail-hero, .launch-hero)) {
+    --k-sky: url(/kit/paper/scene/phone-night/sky.webp);
+    --k-far: none;
+    --k-mid: url(/kit/paper/scene/phone-night/hills-far.webp);
+    --k-near: none;
+    --k-left-back: none;
+    --k-right-back: none;
+    --k-left: url(/kit/paper/scene/phone-night/pines-left.webp);
+    --k-right: url(/kit/paper/scene/phone-night/pines-right.webp);
+    --left-anchor: 0;
+    --right-anchor: 1;
+  }
+
+  :root[data-style="paper"][data-rice="paper"]:not(:has(.detail-hero, .launch-hero)) {
+    --k-sky: url(/kit/paper/scene/phone-day/sky.webp);
+    --k-mid: url(/kit/paper/scene/phone-day/hills-far.webp);
+    --k-left: url(/kit/paper/scene/phone-day/pines-left.webp);
+    --k-right: url(/kit/paper/scene/phone-day/pines-right.webp);
+  }
+
+  /* the strip: the name at the left, the links at the right, one row */
+  :root[data-style="paper"] .masthead {
+    height: 32px;
+    margin: 9px 3px 0 2px;
+    padding: 0 6px 0 16px;
+  }
+
+  /* (the mock's strip is 858 of its sprite's 889px across, 86 of its 118
+     tall: the paper, then its soft shadow) */
+  :root[data-style="paper"] .masthead::before {
+    inset: -4px -5px auto -8px;
+    height: 45px;
+    border: 0;
+    border-image-source: none;
+    background: var(--k-strip) 0 0 / 100% 100% no-repeat;
+  }
+
+  :root[data-style="paper"] .masthead .brand {
+    font-size: 19px;
+    translate: 0;
+  }
+
+  :root[data-style="paper"] .masthead .tagline {
+    display: none;
+  }
+
+  :root[data-style="paper"] .masthead .key {
+    min-height: 32px;
+  }
+
+  /* the hero card: x 52-332 of the mock's 390, y 122-276; its sheet
+     covers the words alone, the calls to act below it stand on the scene */
+  :root[data-style="paper"] .launchpad {
+    gap: 19px;
+    padding-top: 81px;
+  }
+
+  :root[data-style="paper"] .launchpad-copy {
+    --keys-block: 101px; /* what lies below the card: the gap to the keys (12px), and the keys */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-inline: 38px 44px;
+    padding: 26px 14px 0 27px;
+  }
+
+  :root[data-style="paper"] .launchpad-copy::before {
+    inset: 0 0 var(--keys-block) 0;
+    border: 0 solid transparent;
+    border-image: var(--k-card) var(--slice-plate) fill / calc(152px * 0.3) / calc(96px * 0.3) stretch;
+    /* the card's own stock under its slices, 9px in from its box (the slice
+       lines lie 17px in, the tear at most 4): at a fractional pixel ratio the
+       slices snap separately, and with nothing under them the scene shows
+       through the seams as a hairline frame the mock's card has not (round 8) */
+    --plate-under: var(--card-under);
+    background: var(--plate-fill) center / calc(100% - 18px) calc(100% - 18px) no-repeat;
+    /* (the mock's card is cut by hand and lies ~1deg clockwise: its top edge
+       falls 1.0-1.3deg to the right, its foot 0.4-0.6, its sides lean in) */
+    rotate: 0.9deg;
+  }
+
+  /* (the mock's card is a paler, greyer cream than the kit's card stock) */
+  :root[data-style="paper"][data-rice="paper"] .launchpad-copy::before {
+    filter: saturate(0.7) brightness(1.04);
+  }
+
+  /* the tack at the card's top centre */
+  :root[data-style="paper"] .launchpad-copy::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    translate: -50% 0;
+    background: var(--k-pin-copper) center / contain no-repeat;
+    pointer-events: none;
+  }
+
+  :root[data-style="paper"] :is(.launchpad-title, .launchpad-pitch) {
+    text-align: left;
+  }
+
+  :root[data-style="paper"] .launchpad-title {
+    font-size: clamp(30px, 9.4vw, 38px);
+    line-height: 1.05;
+  }
+
+  :root[data-style="paper"] .launchpad-pitch {
+    margin: 8px 0 0;
+    font-size: 15.5px;
+  }
+
+  /* "Alpha testers wanted", typed on sage tape over the name */
+  :root[data-style="paper"] .launchpad-call {
+    order: -1;
+    margin: 4px 0 14px;
+    padding: 3px 12px 2px;
+    border: 0 solid transparent;
+    border-image: var(--k-tape) 8 48 fill / 0 calc(48px * 0.3) / 0 2px stretch;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: lowercase; /* the mock's case */
+    text-rendering: geometricPrecision;
+    color: var(--tape-ink);
+  }
+
+  /* the calls to act: full width (the mock's x 39-350), standing on the
+     scene below the card, green then terracotta, each with its arrow */
+  :root[data-style="paper"] .launchpad-keys {
+    flex-direction: column;
+    align-self: stretch;
+    gap: 5px;
+    margin: 36px -32px 0 -40px; /* 24px of the card's foot, 12px to the scene */
+  }
+
+  :root[data-style="paper"] .launchpad-keys .key {
+    min-height: 42px;
+    padding: 0 22px 2px;
+    font-size: 20px;
+  }
+
+  /* "Join the alpha" is the mock's mid-green paper strip, hand-cut as the
+     terracotta one below it: the kit's torn green board (scripts/kits/
+     paper-sprites.mjs TORN, in the phone key's own long shape), its art at
+     twice the page's px, so a 44px slice is 22px and its 28px shadow pad 14px
+     (round 9: it was the home's dark felt tile, a flat desaturated slate with
+     smooth rounded corners that all but vanished against the dark hills) */
+  :root[data-style="paper"] .launchpad-keys .key[data-tone="signal"] {
+    --kn: var(--k-torn-green);
+    --kh: var(--k-torn-green-hover);
+    --kp: var(--k-torn-green-pressed);
+    --kf: var(--k-torn-green-focus);
+    --ku: transparent;
+  }
+
+  :root[data-style="paper"] .launchpad-keys .key[data-tone="signal"]::before,
+  :root[data-style="paper"] .launchpad-keys .key[data-tone="signal"]::after {
+    border-image-slice: 44 fill;
+    border-image-width: 22px;
+    border-image-outset: 14px;
+  }
+
+  /* the legend centred, its arrow at the right */
+  :root[data-style="paper"] .launchpad-keys .key > span {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :root[data-style="paper"] .launchpad-keys .key-arrow,
+  :root[data-style="paper"] .launchpad-keys .key:not([data-tone="signal"]) > span::after {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    translate: 0 -50%;
+  }
+
+  :root[data-style="paper"] .launchpad-keys .key-arrow {
+    display: inline;
+  }
+
+  :root[data-style="paper"] .launchpad-keys .key:not([data-tone="signal"]) {
+    --kn: var(--k-key-clay);
+    --kh: var(--k-key-clay-hover);
+    --kp: var(--k-key-clay-pressed);
+    --kf: var(--k-key-clay-focus);
+    --ki: var(--key-clay-ink);
+    --ku: var(--key-clay-under);
+  }
+
+  :root[data-style="paper"] .launchpad-keys .key:not([data-tone="signal"]) > span::after {
+    content: "\2192" / "";
+  }
+
+  /* (the window's footer has no room for its chords on a narrow phone, as
+     the shared window's own rule says) */
+  @media (max-width: 480px) {
+    :root[data-style="paper"] .xw-hints {
+      display: none;
+    }
+  }
+
+  /* the window on its mat: x 27-363 of the mock's 390, y 397-622, the
+     mat ~7px proud of it; its text large enough to read */
+  :root[data-style="paper"] .xw {
+    aspect-ratio: 3 / 2;
+    font-size: max(12.5px, 3.4cqw);
+  }
+
+  /* (a wider screen's window has two panes, and the desktop's proportion of
+     text to window: at the phone's 3.4cqw the second head's path ran under
+     its count at 700px) */
+  @media (min-width: 481px) {
+    :root[data-style="paper"] .xw {
+      font-size: max(11px, 2.4cqw);
+    }
+  }
+
+  /* (on a narrow phone the window is one pane, sized to its rows as the
+     shared rule has it: the fixed shape above would leave an empty band under
+     a short list, or cut a row of a long one) */
+  @media (max-width: 480px) {
+    :root[data-style="paper"] .xw {
+      aspect-ratio: auto;
+    }
+
+    /* Phone-sized rows (round 9: the desktop list shrunk, its rows ~13px
+       apart under 12.5px text, the selected row's words riding above its
+       highlight and its chevron on the folder). A row is 22px with the words
+       centred in it, the pane with room round the list, the chevron and the
+       folder each their own place on the selected row. */
+    :root[data-style="paper"] .xw-rows {
+      grid-auto-rows: 22px;
+      padding: 7px 8px 9px;
+    }
+
+    :root[data-style="paper"] .xw-rows li {
+      gap: 8px;
+      padding-inline: 25px 10px;
+      border-radius: 7px;
+    }
+
+    :root[data-style="paper"] .xw-icon[data-kind="dir"] {
+      width: 14px;
+      height: 11px;
+    }
+
+    :root[data-style="paper"] .xw-rows li[data-selected]::before {
+      left: 9px;
+      font-size: 15px;
+    }
+
+    :root[data-style="paper"] .xw-rows li[data-selected]::after {
+      right: 9px;
+      font-size: 15px;
+    }
+
+    /* (on the mount's ~7px of paper the window's deep stage shadow would
+       tint it all: the shadow is a phone's, close) */
+    :root[data-style="paper"] {
+      --xw-shadow: 0 1px 2px rgba(42, 30, 18, 0.34), 0 3px 6px rgba(42, 30, 18, 0.22);
+    }
+  }
+
+  :root[data-style="paper"] .launchpad-window {
+    margin: 0 13px;
+  }
+
+  /* The mount is the style's own torn cream paper (the desktop's sprite), cut
+     as a 9-slice so its deckle keeps its scale round a window of any shape:
+     laid stretched to this window's box (taller than the desktop's, a third as
+     wide) it read as a thin straight tan edge. The sprite's own margins (its
+     shadow pad is 20, 11, 12 and 25 art px at its left, right, top and foot;
+     the tear reaches ~16 in) are the slices, drawn at 0.6 of their art px, and
+     the box is set so the paper stands 7px proud of the window all round. */
+  :root[data-style="paper"] .launchpad-window::before {
+    inset: -14px -14px -22px -19px;
+    border: 0 solid transparent;
+    border-image: var(--k-mount) 28 27 41 36 fill / 17px 16px 25px 22px stretch;
+    background: none;
+  }
+
+  /* the band runs from behind the heading's scrap to under the last row */
+  :root[data-style="paper"] .showcase::before {
+    left: calc(50% - 50vw);
+    right: calc(50% - 50vw);
+    top: 56px;
+    bottom: -22px;
+    border-image-width: 44px 0;
+  }
+
+  :root[data-style="paper"] .showcase::after {
+    content: none;
+  }
+
+  :root[data-style="paper"] .showcase-title {
+    align-self: start;
+    width: max-content;
+    margin: 0 0 22px 22px;
+    padding: 8px 4px;
+  }
+
+  :root[data-style="paper"] .showcase-title::before {
+    inset: -6px -26px -8px -26px;
+  }
+
+  :root[data-style="paper"] .showcase .card.faceplate {
+    --plate-k: 0.3;
+    gap: 8px;
+    padding: 16px 10px 12px;
+  }
+
+  :root[data-style="paper"] .showcase .card-title {
+    padding-left: 4px;
+  }
+
+  /* a page's way back: words in a row, set from the left */
+  :root[data-style="paper"] .running-head .head-nav > .key {
+    flex: none;
+    justify-content: flex-start;
+  }
+}

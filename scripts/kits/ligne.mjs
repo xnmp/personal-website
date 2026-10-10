@@ -1,7 +1,8 @@
-// Ligne Claire (art/briefs/ligne.md): panels of a European science-fiction
-// comic album in the clear line, caption boxes, powder-blue inset frames,
-// flat lamps, mint caption tags, powder-blue code boxes, over the album's
-// establishing shot of a desert outpost. Raws in art/raw/ligne; prompts in
+// Ligne Claire (art/briefs/ligne.md): a page of a European science-fiction
+// comic album in the clear line, its panels laid on the album's cream paper:
+// caption boxes, powder-blue inset frames, flat lamps, mint caption tags,
+// powder-blue code boxes, and the desert establishing shot as the home
+// page's hero panel (hero-*, cuts below). Raws in art/raw/ligne; prompts in
 // art/prompts/ligne.
 //
 // The surfaces are drawn flat (scripts/ink.mjs) in the raws' shapes and
@@ -13,72 +14,69 @@
 // about 0.24). The line is the scene's own ink, and a pen's: a panel's
 // gives a little of its width along its sides and is full at the corners
 // (`hand`); the fittings' small lines are drawn true (at 2px a line that
-// gives reads as a dry, broken stroke, not a pen's). A panel is
-// inset over the establishing shot as an album's inset panels are, in a
-// narrow margin of white paper outside its line, and its field is the
-// album's paper (`fills`), painted by the page. The scene is the generated
-// art, retouched to the clear line (art/prompts/ligne/layer-*), its night
-// ground laid a tone down.
+// gives reads as a dry, broken stroke, not a pen's). A panel lies on the
+// album's page as its panels do, its line straight on the paper, and its
+// field is the album's paper (`fills`), painted by the page. The scene
+// behind the page is that paper alone (scene, below).
 //
 // Night is the same album's night pages: a panel's cream turned to the
 // night blue a colourist lays under a black line, light enough that the
-// line still draws it (as by day: a field in one black line over the
-// scene); the captions, tags and lamps are printed colours and keep them, a
-// shade dimmed. One focus language: a coral band laid inside the ink border
-// (a panel's, a caption's) with an ink line inside it; cream on the coral
-// caption.
+// line still draws it, on a page of the night's deepest blue; the captions,
+// tags and lamps are printed colours and keep them, a shade dimmed. One
+// focus language: a coral band laid inside the ink border (a panel's, a
+// caption's) with an ink line inside it.
 //
 // Nothing is modelled: the album's sun is in the upper right, as on every
-// rock, the arch, the planet and the outpost in the establishing shot (its
-// rocket and dome relit to it: art/prompts/ligne/layer-right-*-relight), so
-// shadows are flat cut shapes offset to the lower left; hover lifts a
+// rock and the planet in the establishing shot, so shadows are flat cut
+// shapes offset to the lower left; hover lifts a
 // surface up and to the right as its shadow steps out (the shadow stays
 // where it lay), pressed sets it down onto its shadow (ligne.css), and no
 // state catches a light.
 
 // the line: a panel's border is the page's heaviest line, as an album's
-// panel borders are, a bold inked edge, twice the fittings'; what is drawn
-// inside a panel (captions, tags, lamps, a screen's frame) takes a finer
-// one, so a fitting never outweighs the panel it sits in
-const LINE = 4; // page px
+// panel borders are (the original mock's, 3px at its size); what is drawn
+// inside a panel (tags, lamps, a screen's frame) takes a finer one, so a
+// fitting never outweighs the panel it sits in. A button is a caption box
+// lettered over the picture, drawn in the panel's line, as the mock's are.
+// (A card prints its sheet a little over a panel's scale, ligne.css, so its
+// hand-thinned line averages the panels' 3px.)
+const LINE = 3; // page px
 const FINE = 2; // page px
-// the scene's ink: the core of its line, sampled from the layers (warm black)
-const INK = "1c1414";
+// the mock's ink, sampled from its type and lines: a true black (about 3,3,3),
+// not the warm near-black (28,20,20) the first rounds took from the layers
+const INK = "040404";
 // a pen's line: it gives up to a quarter of its width along a side, slowly
 const HAND = (seed) => ({ hand: { thin: 0.25, seed } });
-// an inset panel's margin of white paper, outside its line (page px)
-const MARGIN = 4;
-const PAPER = "fffdf6";
-// the panel's outer corner: its line's, 6px round, and the margin's round it
+// the panel's outer corner, 6px round
 const PANEL_ROUND = 6;
-// sampled from the raws (art/raw/ligne): the panel's cream, the captions'
-// pale yellow and coral, the frame's powder blue, the tag's mint, the code
-// box's blue
-const CREAM = "f5ebd8";
+// sampled from the original mock (art/originals/ligne.webp): the page's
+// cream, which a panel's field is too; from the raws (art/raw/ligne): the
+// captions' pale yellow and coral, the frame's powder blue, the tag's mint,
+// the code box's blue
+const CREAM = "f9f3e2";
 const YELLOW = "fce89e";
 const CORAL = "e25d42";
 const POWDER = "b9d4e9";
 const MINT = "cee5d1";
 const CODE = "b5d3e7";
-// a button is a white caption, as a balloon is: pale yellow is the album's
+// a keycap is a white caption, as a balloon is: pale yellow is the album's
 // narration, the shelves' headings, and never what you press
 const WHITE = "fffaf0";
-// by night the neutral caption is the night's deep blue, lettered in cream,
-// below the panel's blue, so the coral primary (lifted) is what calls
-const NIGHT_CAPTION = "2b3577";
-const NIGHT_CORAL = "ee6448";
-// the night page: cream to the night's blue (the panel's own colour by
-// night, ligne.css --plate-field), in the hue of the night sky behind it,
-// lighter than the moonlit ground (laid a tone down: `scene.gain`) and the
-// sky, so a panel parts from the desert as the day's cream does and the
-// black line draws it plainly (2.8:1); cream type 5.9:1, the faintest 4.6:1
+// the mock's buttons: the call a bright sky blue, the other the page's
+// cream a shade deeper, both lettered in ink, by night too (a shade
+// dimmed: NIGHT), so they read on the night's picture as by day's
+const CALL = "67c1fc";
+const BUTTON = "f9f5e6"; // (249,245,230), sampled from the mock's "Try it live"
+// the night page: cream to the night's blue (a panel's field by night,
+// ligne.css --ligne-field), in the hue of the night sky in the hero's
+// picture, lighter than the page's deepest blue it lies on, so the black
+// line draws it plainly (2.8:1); cream type 5.9:1, the faintest 4.6:1
 const FIELD_NIGHT = "4757a6";
 // printed colours by night: each a shade dimmed (x 0.95, 0.94, 0.92); the
 // narration's yellow further, so a shelf's caption never outshines the
 // panels and the coral primary, but deepened toward gold rather than
-// greyed (dimmed evenly, a pale yellow goes khaki); the paper margin as the
-// night's lamp leaves it, below the cream type
-const NIGHT = { [YELLOW]: "dcbf5c", [CORAL]: "d7573d", [POWDER]: "b0c7d6", [MINT]: "c4d7c0", [CODE]: "acc6d5", [WHITE]: "eee8da", fbf3e1: "eee4cf", [PAPER]: "d9d3c4" };
+// greyed (dimmed evenly, a pale yellow goes khaki)
+const NIGHT = { [YELLOW]: "dcbf5c", [CORAL]: "d7573d", [POWDER]: "b0c7d6", [MINT]: "c4d7c0", [CODE]: "acc6d5", [WHITE]: "eee8da", [CALL]: "5fb3ea", [BUTTON]: "ede6d4" };
 // a flat shadow, `d` page px down and left of the surface, at its scale:
 // a flat shape a shade deeper than what it falls on (`tint` at `a`), never
 // the ink's black, or along a panel's foot it reads as the line thickened.
@@ -87,24 +85,20 @@ const FLAT = (d, k, a, tint = "2a2418") => [`${-d / k}:${d / k}:0.6:${a}`, "0:0:
 const NIGHT_SHADE = "0e1440";
 const NONE = ["0:0:0.6:0", "0:0:0.6:0"];
 
-// Panels: the paper margin, the ink line, then the field, which the page
-// paints (framed-pane.mjs clears it; ligne.css --plate-fill, the album's
+// Panels: the ink line, then the field, which the page paints (framed-pane.mjs clears it; ligne.css --plate-fill, the album's
 // paper). `frame` is where the field begins, inside the line at its
 // fullest: where the pen gives, the art keeps the field's colour up to it.
 // Focus: a coral band (4px) inside the ink line, following it, an ink line
 // inside that, drawn whole (scripts/ink.mjs `keep`).
 const panel = (k, finish, seed) => {
-  const [margin, field] = finish === "day" ? [PAPER, CREAM] : [NIGHT[PAPER], FIELD_NIGHT];
-  const outside = [
-    [MARGIN / k, margin],
-    [LINE / k, INK, HAND(seed)],
-  ];
-  const radius = (PANEL_ROUND + MARGIN) / k;
+  const field = finish === "day" ? CREAM : FIELD_NIGHT;
+  const outside = [[LINE / k, INK, HAND(seed)]];
+  const radius = PANEL_ROUND / k;
   return {
     rivets: false,
     glass: { dx: 0, dy: 0, soft: 1, shadeColor: "000000", shadeAlpha: 0, glintAlpha: 0 },
     feather: 1,
-    frame: Object.fromEntries(["t", "r", "b", "l"].map((s) => [s, (MARGIN + LINE) / k])),
+    frame: Object.fromEntries(["t", "r", "b", "l"].map((s) => [s, LINE / k])),
     ink: { radius, bands: outside, fill: field },
     focusInk: {
       radius,
@@ -115,11 +109,11 @@ const panel = (k, finish, seed) => {
 };
 const SHEET_K = 0.5;
 const STRIP_K = 0.25;
-// a panel you can open stands off the page on a flat shadow: it lifts 3px
-// on hover (its shadow 6 -> 9px) and sets down 4px pressed (6 -> 2px); a
-// shadow on the night sky is near black, to be seen at all. A panel that
-// only holds its content is printed flat on the page (`flat`, no shadow;
-// ligne.css), so the two never read alike.
+// every panel rests printed flat on the page, as the mock's do (`flat`,
+// no shadow; ligne.css lays it at rest); one you can open stands off it on
+// a flat shadow while the pointer is on it (`hover`, 9px) and sets down
+// onto it pressed (2px); a shadow by night is the night's deepest blue, to
+// be seen at all. (`normal` is the kit's required resting art, unused.)
 const sheetShadows = (a, tint) => ({
   normal: FLAT(6, SHEET_K, a, tint),
   hover: FLAT(9, SHEET_K, a, tint),
@@ -127,17 +121,18 @@ const sheetShadows = (a, tint) => ({
   flat: NONE,
 });
 
-// Captions: the ink line round a flat face, corners 3px round.
-// Focus: the ink line, a band of the focus colour (3px), an ink line, the
-// face.
+// Captions: the ink line round a flat face, corners 8px round (the mock's
+// buttons). Focus: the ink line, a band of the focus colour (3px), an ink
+// line, the face.
 const KEY_K = 0.5;
 const caption = (face, focus) => ({
   catch: 0,
-  ink: { radius: 3 / KEY_K, bands: [[FINE / KEY_K, INK]], fill: face },
-  focusInk: { radius: 3 / KEY_K, bands: [[FINE / KEY_K, INK], [3 / KEY_K, focus], [FINE / KEY_K, INK]], fill: face },
+  ink: { radius: 8 / KEY_K, bands: [[LINE / KEY_K, INK]], fill: face },
+  focusInk: { radius: 8 / KEY_K, bands: [[LINE / KEY_K, INK], [3 / KEY_K, focus], [FINE / KEY_K, INK]], fill: face },
 });
-// captions lift 2px on hover (shadow 3 -> 5px) and set down flat pressed
-const captionShadows = (a, tint) => ({ normal: FLAT(3, KEY_K, a, tint), hover: FLAT(5, KEY_K, a, tint), pressed: NONE });
+// a caption is lettered flat on the page, as the mock's are; hover lifts it
+// 2px off a flat shadow (0 -> 3px) and pressed sets it down flat again
+const captionShadows = (a, tint) => ({ normal: NONE, hover: FLAT(3, KEY_K, a, tint), pressed: NONE });
 
 // the screens' powder-blue frame: a flat band of blue, inked only round the
 // window (an ink line round its outside too stacks a third and fourth line
@@ -195,13 +190,14 @@ const kit = {
     hoverFlags: ["--catch-width=5", "--sheen=0"],
     pressedFlags: ["--catch=0", "--dim=1"],
   },
-  // caption boxes: white the neutral (the night's deep blue by night),
-  // coral the primary
+  // caption boxes: cream the neutral, sky blue the call, the focus band
+  // coral on both; their fills flat colour, no paper grain, as the album
+  // fills its boxes
   tiles: [
-    { name: "tile-day", src: "tile-day", ...caption(WHITE, "e2553f"), ...FIBRE("day", KEY_K) },
-    { name: "tile-night", src: "tile-day", ...caption(NIGHT_CAPTION, "ee6448"), shadow: captionShadows(0.8, NIGHT_SHADE), ...FIBRE("night", KEY_K) },
-    { name: "tile-signal", src: "tile-signal", ...caption(CORAL, "fbf3e1"), ...FIBRE("day", KEY_K) },
-    { name: "tile-signal-night", src: "tile-signal", ...caption(NIGHT_CORAL, NIGHT.fbf3e1), shadow: captionShadows(0.8, NIGHT_SHADE), ...FIBRE("night", KEY_K) },
+    { name: "tile-day", src: "tile-day", ...caption(BUTTON, CORAL) },
+    { name: "tile-night", src: "tile-day", ...caption(NIGHT[BUTTON], CORAL), shadow: captionShadows(0.8, NIGHT_SHADE) },
+    { name: "tile-signal", src: "tile-signal", ...caption(CALL, CORAL) },
+    { name: "tile-signal-night", src: "tile-signal", ...caption(NIGHT[CALL], CORAL), shadow: captionShadows(0.8, NIGHT_SHADE) },
   ],
   // a screen in a powder-blue inset frame
   mats: [
@@ -251,6 +247,9 @@ const kit = {
     { name: "fibre-day", src: "paper-day", size: 384, highpass: 16, soften: 0.3, mean: CREAM, gain: 1, veil: INK },
     { name: "fibre-night", src: "paper-day", size: 384, highpass: 16, soften: 0.3, mean: CREAM, gain: 0.7, veil: INK },
     { name: "paper-night", src: "paper-day", size: 768, alpha: 1, highpass: 32, soften: 0.4, mean: FIELD_NIGHT, gain: 0.7 },
+    // the page's fibre, fainter than a panel's (the mock's page is all but
+    // flat), laid into the scene's paper (scene.paper)
+    { name: "page-grain", src: "paper-day", size: 768, alpha: 1, highpass: 32, soften: 0.4, mean: CREAM, gain: 0.5 },
   ],
   // the closer cuts (ligne.css .tier-cut): close-ups the album cuts to after
   // its establishing shot, each drawn at its own scale, by day and by night
@@ -258,16 +257,35 @@ const kit = {
   // the opening tier's strip; the butte, the track and the pillar, upright,
   // beside a page's screenshots. None is in the scene's corners, where its
   // landmarks already stand.
-  cuts: ["outpost", "butte", "track", "pillar"].flatMap((n) =>
-    ["day", "night"].map((f) => ({ name: `cut-${n}-${f}`, src: `cut-${n}-${f}`, width: n === "outpost" ? 1600 : 941 })),
-  ),
+  cuts: [
+    ...["outpost", "butte", "track", "pillar"].flatMap((n) =>
+      ["day", "night"].map((f) => ({ name: `cut-${n}-${f}`, src: `cut-${n}-${f}`, width: n === "outpost" ? 1600 : 941 })),
+    ),
+    // the home page's hero panel: the establishing shot of the original
+    // mock, from its plate (art/raw/ligne/plate-day, the mock with its
+    // lettering painted out), extended upward with sky so a taller panel
+    // shows more of it rather than a crop (art/prompts/ligne/hero-day.txt;
+    // the plate's own panel composed back under the generated sky, so it
+    // registers with the mock: scripts/kits/ligne-raws.mjs), and the same
+    // panel by night (an edit of it, art/prompts/ligne/hero-night.txt)
+    ...["day", "night"].map((f) => ({ name: `hero-${f}`, src: `hero-${f}`, width: 1672 })),
+    // and a phone's, its moon painted out from under the stacked buttons
+    // (scripts/kits/ligne-raws.mjs phone)
+    ...["day", "night"].map((f) => ({ name: `hero-${f}-phone`, src: `hero-${f}-phone`, width: 1672 })),
+    // the wordmark: the mock's own brushed "chong", an ink mask the page
+    // fills with its ink (scripts/kits/ligne-raws.mjs wordmark; ligne.css)
+    { name: "wordmark", src: "wordmark", width: 728 },
+  ],
+  // The scene is the album's page: its paper, the page's colour by day and
+  // the night's deepest blue by night (layer-sky-*: flat frames of those
+  // colours, art/prompts/ligne/layer-sky-*.txt), the paper's fibre laid in
+  // at the page's scale. The panels are the page's (ligne.css), the desert
+  // the hero panel's picture.
   scene: {
     finishes: ["day", "night"],
-    layers: ["sky", "far", "mid", "near", "left", "right"],
-    // by night the moonlit desert is laid a tone down, under the panels'
-    // blue, so a panel parts from the ground as it does from the sky; the
-    // outpost keeps more of its light, its windows lit
-    gain: { "mid-night": 0.62, "near-night": 0.62, "left-night": 0.66, "right-night": 0.82 },
+    flat: [], // --k-scene-flat is the hero panel (hero-<finish>.webp)
+    layers: ["sky"],
+    paper: { layers: ["sky"], tile: "page-grain", size: 384, blur: 0.3, amount: 1 },
   },
 };
 

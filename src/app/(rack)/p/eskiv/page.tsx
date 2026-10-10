@@ -1,11 +1,4 @@
-import {
-  RunningHead,
-  Tags,
-  Tag,
-  OpenQuestion,
-  Plate,
-  Folio,
-} from "@/components/notebook";
+import { RunningHead, Tags, Tag, OpenQuestion, Plate, Folio, ProjectMeta, ProjectKicker } from "@/components/notebook";
 import { Screen, Key } from "@/components/rack";
 import { EskivQ1 } from "@/components/charts/EskivQ1";
 import { EskivQ2 } from "@/components/charts/EskivQ2";
@@ -23,11 +16,7 @@ export default function EskivPage() {
     <>
       <RunningHead
         brand="chong"
-        meta={
-          <>
-            11 &nbsp;·&nbsp; Eskiv &nbsp;·&nbsp; <span className="filed">complete</span>
-          </>
-        }
+        meta={<ProjectMeta slug="eskiv" />}
         nav={
           <>
             <Key href="/">← all projects</Key>
@@ -38,7 +27,7 @@ export default function EskivPage() {
 
         <section className="detail-hero">
           <div>
-            <div className="kicker">11 · Eskiv</div>
+            <ProjectKicker slug="eskiv" />
             <h1>A brute-force AI that plays a dodger.</h1>
             <p>
               Eskiv is a 2016 game: you move a square, dodge balls, grab a new
@@ -254,7 +243,7 @@ export default function EskivPage() {
         </section>
 
       </main>
-      <Folio number="11" />
+      <Folio slug="eskiv" />
     </>
   );
 }

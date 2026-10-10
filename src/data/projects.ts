@@ -6,9 +6,13 @@ export type Tone = "cyan" | "rust" | "amber" | "olive";
 
 export type Shelf = "tools" | "games";
 
-export interface Project {
+/** A project as it is written down. Its number is its place in the list
+ *  (see `projects`), so adding or removing one never means renumbering. */
+export interface ProjectEntry {
   slug: string;
-  number: string; // "01", silkscreened on the module
+  /** one character that names the project, for a style that stamps it (a
+   *  seal). Content, not a style's: every style may use it or not. */
+  glyph: string;
   title: string;
   heading: string; // the one-liner
   href: string; // detail page
@@ -26,10 +30,15 @@ export interface Project {
   stats: string[];
 }
 
-export const projects: Project[] = [
+export interface Project extends ProjectEntry {
+  /** "01": the project's place in the list, silkscreened on its module */
+  number: string;
+}
+
+const entries: ProjectEntry[] = [
   {
     slug: "tauri-explorer",
-    number: "01",
+    glyph: "檔",
     title: "Tauri Explorer",
     heading: "A file manager with the soul of an IDE.",
     href: "/p/tauri-explorer",
@@ -44,7 +53,7 @@ export const projects: Project[] = [
   },
   {
     slug: "scrivo",
-    number: "02",
+    glyph: "書",
     title: "Scrivo",
     heading: "A markdown reader that paints first and an editor that never reformats.",
     href: "/p/scrivo",
@@ -59,7 +68,7 @@ export const projects: Project[] = [
   },
   {
     slug: "ballast",
-    number: "03",
+    glyph: "心",
     title: "Ballast",
     heading: "A mood diary that keeps every entry as a plain markdown file.",
     href: "/p/ballast",
@@ -73,7 +82,7 @@ export const projects: Project[] = [
   },
   {
     slug: "quickshell-statusbar",
-    number: "04",
+    glyph: "欄",
     title: "Quickshell bar",
     heading: "A status bar that shows what my coding agents are doing.",
     href: "/p/quickshell-statusbar",
@@ -88,7 +97,7 @@ export const projects: Project[] = [
   },
   {
     slug: "tableau-frog",
-    number: "05",
+    glyph: "蛙",
     title: "Tableau Frog",
     heading: "Point at a difference; it tells you if it’s real.",
     href: "/p/tableau-frog",
@@ -103,7 +112,7 @@ export const projects: Project[] = [
   },
   {
     slug: "lambdaquery",
-    number: "06",
+    glyph: "查",
     title: "LambdaQuery",
     heading: "Python comprehensions, compiled to SQL.",
     href: "/p/lambdaquery",
@@ -118,7 +127,7 @@ export const projects: Project[] = [
   },
   {
     slug: "ashen-cathedral",
-    number: "07",
+    glyph: "燼",
     title: "Ashen Cathedral",
     heading: "A gothic dungeon crawler where nearly every asset comes out of a script.",
     href: "/p/ashen-cathedral",
@@ -132,7 +141,7 @@ export const projects: Project[] = [
   },
   {
     slug: "bwai",
-    number: "08",
+    glyph: "智",
     title: "Brood War",
     heading: "The game that taught me to think, now a machine-learning problem.",
     href: "/p/bwai",
@@ -146,7 +155,7 @@ export const projects: Project[] = [
   },
   {
     slug: "automatedspike",
-    number: "09",
+    glyph: "法",
     title: "AutomatedSpike",
     heading: "Looking for Magic decks nobody has built yet, and agents that can pilot them.",
     href: "/p/automatedspike",
@@ -160,7 +169,7 @@ export const projects: Project[] = [
   },
   {
     slug: "zheng-shang-you",
-    number: "10",
+    glyph: "遊",
     title: "Zheng Shang You",
     heading: "Teaching a network the family card game.",
     href: "/p/zheng-shang-you",
@@ -175,7 +184,7 @@ export const projects: Project[] = [
   },
   {
     slug: "eskiv",
-    number: "11",
+    glyph: "避",
     title: "Eskiv",
     heading: "A brute-force AI that plays a dodger.",
     href: "/p/eskiv",
@@ -190,7 +199,18 @@ export const projects: Project[] = [
   },
 ];
 
+/** The projects in order, each numbered by its place. */
+export const projects: Project[] = entries.map((p, i) => ({ ...p, number: String(i + 1).padStart(2, "0") }));
+
 export const bySlug = new Map(projects.map((p) => [p.slug, p]));
+
+/** A project by its slug; throws on one that isn't in the list, so a stale
+ *  reference fails the build with its name rather than as `undefined`. */
+export function project(slug: string): Project {
+  const p = bySlug.get(slug);
+  if (!p) throw new Error(`no project "${slug}" in src/data/projects.ts`);
+  return p;
+}
 
 /** The flagship: the home page opens on it, its name the first screen's headline. */
 export const FLAGSHIP = "tauri-explorer";

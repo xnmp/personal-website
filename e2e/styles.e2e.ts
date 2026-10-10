@@ -41,6 +41,36 @@ test("picking a style from the masthead's menu dresses the page in its kit and s
   await expect(styleMenu(page).getByRole("menuitemradio", { name: "Solarpunk" })).toHaveAttribute("aria-checked", "true");
 });
 
+// A plate style's scene is its mock's one painting, which the CSS registers to
+// the page; the 3D scene, which frames its art to cover, never starts for it.
+// The diorama still asks for it where WebGL is there to run it.
+test("a plate style's scene is left to the CSS, drawn from the top of the page", async ({ page }) => {
+  // watched on the document, not its root: the root may not exist yet here
+  await page.addInitScript(() => {
+    new MutationObserver(() => {
+      if (document.documentElement.dataset.sceneMode === "3d") sessionStorage.setItem("went-3d", "1");
+    }).observe(document, { attributes: true, subtree: true, attributeFilter: ["data-scene-mode"] });
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const went3d = () => page.evaluate(() => sessionStorage.getItem("went-3d") === "1");
+  const clear = () => page.evaluate(() => sessionStorage.removeItem("went-3d"));
+  await asStyle(page, "garden");
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-scene-art", "plate");
+  expect(await went3d()).toBe(false);
+  const sky = page.locator('[data-layer="sky"]');
+  expect(await sky.evaluate((e) => getComputedStyle(e).backgroundPositionY)).toBe("0%");
+  // the diorama, picked from the menu and reloaded, is offered the 3D scene
+  await styleKey(page).click();
+  await styleMenu(page).getByRole("menuitemradio", { name: "Paper Diorama" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-scene-art", "diorama");
+  await clear();
+  await page.reload();
+  const webgl = await page.evaluate(() => "WebGL2RenderingContext" in window);
+  expect(await went3d()).toBe(webgl);
+  expect(await sky.evaluate((e) => getComputedStyle(e).backgroundPositionY)).toBe("100%");
+});
+
 test("the art-direction menu is a menu button the keyboard can drive", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard");
   await page.goto("/");
@@ -123,13 +153,14 @@ for (const s of STYLES) {
     const seen = kitRequests(page);
     await asStyle(page, s.id);
     await page.goto("/", { waitUntil: "networkidle" });
-    // a tile, a mount and a status marker are on the first screen
+    // a tile and a mount are on every style's first screen (a status pin is
+    // not: a style may fasten its sheets with tape instead)
     expect(seen.length).toBeGreaterThan(5);
     for (const r of seen) expect(r.status, r.url).toBeLessThan(400);
     // the screens' glare map is one neutral bitmap every style shares
     const foreign = seen.filter((r) => !r.url.startsWith(`/kit/${s.id}/`) && r.url !== "/kit/paper/glass-glare.webp");
     expect(foreign.map((r) => r.url)).toEqual([]);
-    for (const part of ["sheet-", "tile-", "pin-"]) {
+    for (const part of ["sheet-", "tile-"]) {
       expect(seen.some((r) => r.url.includes(`/${part}`)), part).toBe(true);
     }
   });
@@ -158,6 +189,11 @@ test("a glass style's panes frost the scene behind them, after a change of finis
   const rice = await page.locator("html").getAttribute("data-rice");
   await page.keyboard.press("t");
   await expect(page.locator("html")).not.toHaveAttribute("data-rice", rice!);
+  // measured over stripes, not the art: where a sample falls on a calm patch
+  // of a plate, a working blur has nothing to soften
+  await page.addStyleTag({
+    content: `.scene-layer[data-layer="sky"] { background: repeating-linear-gradient(90deg, #000 0 3px, #fff 3px 6px) !important; }`,
+  });
   for (const sel of ["a.module", ".divider"]) {
     const el = page.locator(sel).first();
     await el.scrollIntoViewIfNeeded();
@@ -186,4 +222,25 @@ async function meanDiff(a: Buffer, b: Buffer) {
   let d = 0;
   for (let i = 0; i < x.length; i++) d += Math.abs(x[i] - y[i]);
   return d / x.length;
+}
+
+// Every screen on the site is lit in the visitor's theme, whatever the art
+// direction: the window on the home page is light under the day theme and
+// dark under a night one, though a style's mock may paint it otherwise.
+for (const s of STYLES) {
+  test(`${s.name}: the home window is lit in the visitor's theme, light by day and dark by night`, async ({ page }) => {
+    await asStyle(page, s.id);
+    const lum: Record<string, number> = {};
+    for (const rice of ["paper", "cosmic-dusk"]) {
+      await page.addInitScript((r) => localStorage.setItem("nb-rice", r), rice);
+      await page.goto("/", { waitUntil: "networkidle" });
+      await expect(page.locator("html")).toHaveAttribute("data-rice", rice);
+      const rows = page.locator(".xw-rows").first();
+      await rows.scrollIntoViewIfNeeded();
+      const { channels } = await sharp(await rows.screenshot({ animations: "disabled" })).stats();
+      lum[rice] = (channels[0].mean + channels[1].mean + channels[2].mean) / 3;
+    }
+    expect(lum.paper, "by day").toBeGreaterThan(150);
+    expect(lum["cosmic-dusk"], "by night").toBeLessThan(110);
+  });
 }

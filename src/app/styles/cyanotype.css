@@ -1,45 +1,60 @@
 /* ==========================================================================
-   CYANOTYPE (art/briefs/cyanotype.md): prints brushed in Prussian blue on
-   white watercolour paper, taped at their top corners, paper labels and a
-   white card window mount, before a photogram. The kit is built by
-   `node scripts/build-kit.mjs cyanotype` to the same source geometry as the
-   Paper Diorama, so only the art, the inks and the mounts' slices change.
+   CYANOTYPE (art/briefs/cyanotype.md; the target is art/originals/
+   cyanotype.webp): the whole page is one cyanotype print, Prussian blue
+   inside a torn white paper edge, its photograms and white notes at the
+   margins, and on it cards of off-white cotton paper, taped down. The type
+   on the print is white; the type on the paper is Prussian ink. The kit is
+   built by `node scripts/build-kit.mjs cyanotype`.
    Night (the dark rices: the studio after dark, under a desk lamp) first,
    then day (the light rice).
    ========================================================================== */
 
 :root[data-style="cyanotype"] {
-  --font-display: var(--font-bodoni);
+  /* the type is Newsreader's (the display face), set sturdy at a text
+     optical size (below); the running copy is in it too, a serif on the
+     print and on the paper alike */
+  --font-print: var(--font-display);
+  /* the print is painted on 320 mock px past its core on each side and
+     below (scripts/kits/cyanotype.mjs BLEED; kit.css registers it) */
+  --sky-bleed-x: 320;
+  --sky-bleed-bottom: 320;
 
-  --signal: #f2c14e; /* sun yellow: the primary label, the active dot, focus */
-  --signal-ink: #f2c14e; /* on the blue print */
-  --print: #ede2c8; /* the stencil's white, warmed by the lamp */
-  --print-soft: #c9c0ab;
-  --print-faint: #a9a291;
-  --engrave-lo: rgba(237, 226, 200, 0.2);
+  --signal: #f2c14e; /* sun yellow: focus, the active dot */
+  --signal-ink: #1f4e8c; /* the accent on paper is the print's own blue */
+  /* a link is ruled in its own ink, never the sun yellow (which is the
+     focus ring's) */
+  --signal-rule: currentColor;
+  --print: #1a2236; /* ink on the lamplit paper */
+  --print-soft: #3a3f52;
+  --print-faint: #4a4c5a; /* >= 4.5:1 on the lamplit paper */
+  --engrave-lo: rgba(26, 34, 54, 0.18);
   --engrave-hi: transparent;
-  --scene-ground: #041f4a;
+  --scene-ground: #041a33;
   --k-scene-flat: url(/kit/cyanotype/scene-night.webp);
   --k-sky: url(/kit/cyanotype/scene/night/sky.webp);
-  --k-sun: none; /* a photogram has no sky */
+  /* the same print with everything drawn on it taken out, registered to it
+     (the type's knock-out, below) */
+  --k-ground: url(/kit/cyanotype/scene/ground-night/sky.webp);
+  /* the print is the whole scene: one layer, its photograms printed in it */
+  --k-sun: none;
   --sun-sw: 1;
   --sun-sh: 1;
   --sun-cx: 0;
   --sun-cy: 0;
   --sun-r: 0;
-  --k-far: url(/kit/cyanotype/scene/night/far.webp);
-  --k-mid: url(/kit/cyanotype/scene/night/mid.webp);
-  --k-near: url(/kit/cyanotype/scene/night/near.webp);
+  --k-far: none;
+  --k-mid: none;
+  --k-near: none;
   --k-left-back: none;
   --k-right-back: none;
-  --k-left: url(/kit/cyanotype/scene/night/left.webp);
-  --k-right: url(/kit/cyanotype/scene/night/right.webp);
+  --k-left: none;
+  --k-right: none;
   --k-plate: url(/kit/cyanotype/sheet-night-normal.webp);
   --k-plate-hover: url(/kit/cyanotype/sheet-night-hover.webp);
   --k-plate-pressed: url(/kit/cyanotype/sheet-night-pressed.webp);
   --k-plate-focus: url(/kit/cyanotype/sheet-night-focus.webp);
   --k-plate-flat: url(/kit/cyanotype/sheet-night-flat.webp);
-  /* the other three prints, hung in turn with the first (below) */
+  /* the other three sheets, hung in turn with the first (below) */
   --k-plate-b: url(/kit/cyanotype/sheet-night-b-normal.webp);
   --k-plate-b-hover: url(/kit/cyanotype/sheet-night-b-hover.webp);
   --k-plate-b-pressed: url(/kit/cyanotype/sheet-night-b-pressed.webp);
@@ -55,52 +70,71 @@
   --k-plate-d-pressed: url(/kit/cyanotype/sheet-night-d-pressed.webp);
   --k-plate-d-focus: url(/kit/cyanotype/sheet-night-d-focus.webp);
   --k-plate-d-flat: url(/kit/cyanotype/sheet-night-d-flat.webp);
-  /* the prints' blue is cleared from the art (scripts/framed-pane.mjs) and
-     painted here, tiled, so its tooth and brush marks keep their scale at
-     any size; the art keeps the paper margin and the brushed edge, which
-     hands over to this blue */
+  /* the home page's cards: the same sheets untaped (each card is taped
+     once, at a corner of its own: .card-mark below) */
+  --k-card: url(/kit/cyanotype/sheet-night-card-normal.webp);
+  --k-card-hover: url(/kit/cyanotype/sheet-night-card-hover.webp);
+  --k-card-pressed: url(/kit/cyanotype/sheet-night-card-pressed.webp);
+  --k-card-focus: url(/kit/cyanotype/sheet-night-card-focus.webp);
+  --k-card-b: url(/kit/cyanotype/sheet-night-card-b-normal.webp);
+  --k-card-b-hover: url(/kit/cyanotype/sheet-night-card-b-hover.webp);
+  --k-card-b-pressed: url(/kit/cyanotype/sheet-night-card-b-pressed.webp);
+  --k-card-b-focus: url(/kit/cyanotype/sheet-night-card-b-focus.webp);
+  --k-card-c: url(/kit/cyanotype/sheet-night-card-c-normal.webp);
+  --k-card-c-hover: url(/kit/cyanotype/sheet-night-card-c-hover.webp);
+  --k-card-c-pressed: url(/kit/cyanotype/sheet-night-card-c-pressed.webp);
+  --k-card-c-focus: url(/kit/cyanotype/sheet-night-card-c-focus.webp);
+  --k-card-d: url(/kit/cyanotype/sheet-night-card-d-normal.webp);
+  --k-card-d-hover: url(/kit/cyanotype/sheet-night-card-d-hover.webp);
+  --k-card-d-pressed: url(/kit/cyanotype/sheet-night-card-d-pressed.webp);
+  --k-card-d-focus: url(/kit/cyanotype/sheet-night-card-d-focus.webp);
+  /* The paper inside a sheet's deckle is the page's own tile
+     (scripts/kits/cyanotype.mjs fills), so its fibres keep their scale on a
+     card and on a page-wide sheet alike: the tile is 640 of the generated
+     paper's px, the sheet art 410 of its ~1380, at the sheet's scale. The
+     art keeps the deckle, and hands over to this paper inside it. */
   --plate-slice: var(--slice-plate);
-  --plate-fill: url(/kit/cyanotype/print-night.webp);
-  --plate-fill-size: 640px;
+  --print-ground: rgb(5 21 38); /* the print's blue where nothing is drawn, for what must cover a mark under it */
+  --plate-fill: url(/kit/cyanotype/paper-night.webp);
+  --plate-fill-warm: var(--plate-fill); /* (the lamp warms it already) */
+  --plate-fill-size: calc(190px * var(--plate-k));
   --plate-fill-repeat: repeat;
-  /* the blue starts under the white margin (24 of the art's px in from its
-     edge), clear of the deckle and the tape's overhang */
-  --plate-fill-in: 24px;
-  --strip-fill-in: 20px;
-  --strip-repeat: round; /* a strip's rails tile, as a print's do */
+  /* the paper starts under the deckle (16 of the art's px in from its
+     edge, past its deepest bite) */
+  --plate-fill-in: 16px;
+  --strip-fill-in: 11px;
+  --strip-repeat: round; /* a strip's rails tile, as a sheet's do */
   --plate-backdrop: none;
   --plate-round: 0px;
-  /* the prints are hung near their own size, a size up from the other
-     styles' sheets: their margin and brushed edge are the only ornament they
-     have, and the edge's bites must read as a brush's, not a trim */
-  --plate-k: 0.95;
-  /* pressed: a print is pressed flat to the wall, set down a hair as its
-     shadow closes; it keeps its light (the sheets' pressedFlags --dim 1), as
-     the mount on it does */
+  /* the sheets hang near their art's own size (based at 410: a card about
+     340 wide), so their deckle is a few px deep, as the original's */
+  --plate-k: 0.8;
+  /* content sits in from the deckle and the focus rule inside it, not the
+     whole corner slice: a thin sheet has no frame to clear */
+  --plate-inset: -18px;
+  /* pressed: flat to the print, set down a hair as its shadow closes */
   --plate-press-dim: 1;
   --plate-press-shift: translateY(2px);
-  /* a print's rails tile (their dry brush ends run across them, and a
-     stretch smears them into streaks; scripts/mitre.mjs tileRails) */
+  /* a sheet's rails tile (a stretch smears their fibres into streaks;
+     scripts/mitre.mjs tileRails) */
   --plate-repeat: round;
-  --plate-light: url(/kit/cyanotype/sheet-night-light.webp);
-  --plate-light-in: 0px; /* the lamp's pool runs under the margin, edge unseen */
-  /* no sheen the page lays inside its frame: it lights the box the page
-     draws, a rectangle inside the brushed edge the art draws */
+  --k-light: url(/kit/cyanotype/sheet-night-light.webp);
+  --plate-light: var(--k-light);
+  /* the blue of the emulsion washed into a card's margins (--card-wash) */
+  --wash-ink: 74 104 150;
+  --plate-light-in: 0px;
   --plate-sheen: none;
-  /* content clears the brushed edge and the focus rule laid inside it,
-     with room between the rule and what it marks */
-  --plate-inset: 12px;
-  --k-strip: url(/kit/cyanotype/sheet-strip-night-normal.webp); /* a print without tape */
+  --k-strip: url(/kit/cyanotype/sheet-strip-night-normal.webp); /* a sheet without tape */
   --k-strip-d: url(/kit/cyanotype/sheet-strip-night-d-normal.webp);
-  /* a page's own prints, wide (below) */
+  /* a page's own sheets, wide (below) */
   --k-plate-w: url(/kit/cyanotype/sheet-night-w-b-normal.webp);
   --k-plate-w-flat: url(/kit/cyanotype/sheet-night-w-b-flat.webp);
   --k-plate-w-b: url(/kit/cyanotype/sheet-night-w-c-normal.webp);
   --k-plate-w-b-flat: url(/kit/cyanotype/sheet-night-w-c-flat.webp);
-  /* tape holds a print: no pin */
+  /* tape holds a sheet: no pin */
   --k-pin-hold: none;
   --k-pin-hold-signal: none;
-  /* prints in a row hang from one line */
+  /* sheets in a row hang from one line */
   --shelf-stagger: 0px;
   --shelf-align: stretch;
   --hero-stagger: 0px;
@@ -115,8 +149,8 @@
   --k-key-hover: url(/kit/cyanotype/tile-night-hover.webp);
   --k-key-pressed: url(/kit/cyanotype/tile-night-pressed.webp);
   --k-key-focus: url(/kit/cyanotype/tile-night-focus.webp);
-  --key-inset: 4px; /* the legend clears the label's printed rule */
-  --key-lift: 0px; /* a label's edge is a hair: the legend centres in the box */
+  --key-inset: 4px; /* the legend clears the slip's deckle */
+  --key-lift: 0px; /* a slip's edge is a hair: the legend centres in the box */
   --k-tape: url(/kit/cyanotype/tape-night.webp); /* cream paper tape */
   --tape-ink: #1c1a16;
   --k-chip: url(/kit/cyanotype/chip-night.webp); /* inline code: a slip of card */
@@ -125,46 +159,139 @@
   --k-drift-cloud: none;
   --motes: #ffd9a0;
   --motes-kind: dust;
-  --plate-under: #072e52;
+  --plate-under: #d3c5a7;
   --bezel-under: #d1c1a4;
-  --key-under: #d1c0a1;
-  --key-ink: #1a1f2a;
-  --key-ink-soft: #3d3a33;
+  --key-under: #cbbfa6;
+  --key-ink: #1a2236;
+  --key-ink-soft: #3a3f52;
+  /* the call is a slip of the cards' paper, typed in the print's ink */
   --k-key-signal: url(/kit/cyanotype/tile-signal-night-normal.webp);
   --k-key-signal-hover: url(/kit/cyanotype/tile-signal-night-hover.webp);
   --k-key-signal-pressed: url(/kit/cyanotype/tile-signal-night-pressed.webp);
   --k-key-signal-focus: url(/kit/cyanotype/tile-signal-night-focus.webp);
-  --key-signal-ink: #142033; /* ink on sun-yellow card */
-  --key-signal-under: #d09a37;
+  --key-signal-ink: #1a2236;
+  --key-signal-under: #cbbfa6;
   --k-pin-brass: url(/kit/cyanotype/pin-brass.webp); /* a white paper dot */
   --k-pin-green: url(/kit/cyanotype/pin-green.webp);
   --k-pin-amber: url(/kit/cyanotype/pin-amber.webp); /* coral */
   --k-pin-signal: url(/kit/cyanotype/pin-signal.webp); /* sun yellow */
   --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+  /* the white of the type on the print, as the sun printed it: a little of
+     the blue showing through (scripts/kits/cyanotype.mjs typeTile) */
+  --k-type: url(/kit/cyanotype/type-night.webp);
+  --k-type-clean: url(/kit/cyanotype/type-clean-night.webp);
+
+  /* the print's own fittings (below): its torn edge, a piece of tape */
+  --k-frame: url(/kit/cyanotype/frame-night.webp);
+  --k-tape-bit: url(/kit/cyanotype/tape-bit-night.webp);
+  /* the project print's brushed inner edge, both finishes' (kit.cuts print-edge) */
+  --k-print-edge: url(/kit/cyanotype/print-edge.webp);
+  /* the print's generic ornaments for the blue beside the home page's intro sheet */
+  --k-ornaments: url(/kit/cyanotype/ornaments.webp);
+  /* the cards' screens: their printed bezel and the grain of their paper
+     (scripts/kits/cyanotype-screen.mjs); dark by night, the rice's own */
+  --k-screen-bezel: url(/kit/cyanotype/screen-bezel-night.webp);
+  --k-screen-grain: url(/kit/cyanotype/screen-grain-night.webp);
+  --screen-shade: inset 2px 3px 9px rgb(0 0 0 / 0.5);
+  /* the mounts the project page's figure and the launch page's window lie
+     on, taped (below) */
+  --k-mount-project: url(/kit/cyanotype/mount-project-night.webp);
+  --k-mount-launch: url(/kit/cyanotype/mount-launch-night.webp);
+  /* the same mounts' tape, a sheet of its own the page lays over the print */
+  --k-mount-tape-project: url(/kit/cyanotype/mount-tape-project-night.webp);
+  --k-mount-tape-launch: url(/kit/cyanotype/mount-tape-launch-night.webp);
+  --k-fern-band: url(/kit/cyanotype/fern-band.webp);
+  /* the phone's own print, and its cream strip (below) */
+  --k-phone-sky: url(/kit/cyanotype/plate-phone-night.webp);
+  /* the print with everything drawn on it taken out, under the phone's
+     outlined call (below) */
+  --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-night.webp);
+  --k-strip-phone: url(/kit/cyanotype/strip-phone-night.webp);
+  /* the print's chalk: the white of its type, and of its notes, which are
+     printed in it and dim with it after dark */
+  --l-ink: #e7ddc9;
+  --l-ink-soft: #cfc4ad;
+  --l-chalk: rgb(214 204 184 / 0.9);
+  --card-ink: #0e2249; /* the cards' titles: Prussian ink */
+
+  /* ---- the first screen, at the original's coordinates (mock px) ---- */
+  --l-left: calc(245 * var(--u));
+  --l-right: calc(287 * var(--u));
+  --l-head-top: calc(23 * var(--u));
+  --l-brand: calc(70 * var(--u));
+  --l-brand-weight: 560;
+  --l-tagline: calc(22 * var(--u));
+  --l-tagline-font: var(--font-typewriter);
+  --l-tagline-track: calc(0.9 * var(--u)); /* the mock's line is typed wide, mostly between its words: 553px for 43 characters at 22px */
+  --l-nav: calc(18.5 * var(--u));
+  --l-nav-font: var(--font-typewriter);
+  --l-nav-weight: 400;
+  --l-launch-align: start;
+  --l-launch-top: calc(6 * var(--u));
+  --l-win-x: calc(718 * var(--u));
+  --l-win-w: calc(759 * var(--u));
+  --l-title: calc(66 * var(--u));
+  --l-title-weight: 680;
+  --l-pitch: calc(33 * var(--u));
+  --l-pitch-font: var(--font-display);
+  --l-cards-l: calc(130 * var(--u));
+  --l-cards-r: calc(144 * var(--u));
+  --l-cards-gap: calc(14 * var(--u));
+  --l-foot: calc(57 * var(--u));
+  --l-heading: calc(31.2 * var(--u));
+  --l-heading-weight: 400;
+  --l-card-title: calc(21.5 * var(--u));
+  --l-card-font: var(--font-typewriter);
+  --l-card-weight: 400;
+  --l-call: var(--l-ink);
+  --l-halo: none; /* the print is calm behind the words (but .showcase-title) */
+  --l-rule: color-mix(in srgb, var(--l-ink) 72%, transparent);
+  --xw-round: calc(8 * var(--u));
+  /* The window's rim: a hair of pale light on its edge (the original's
+     window is rimmed so), the faintest glow past it, and a short soft shadow.
+     The frame ring round it (.launchpad-window::before) and the print's
+     process over its face (.xw::after) are below. By night the window is dark
+     and its glaze is the print's grain alone. */
+  --xw-edge: rgb(10 20 40 / 0.4);
+  --xw-shadow:
+    0 0 0 1px rgb(222 232 245 / 0.66),
+    0 0 calc(22 * var(--u)) calc(4 * var(--u)) rgb(150 192 236 / 0.16),
+    0 calc(14 * var(--u)) calc(34 * var(--u)) rgb(1 9 26 / 0.4);
+  --xw-frame: rgb(66 112 172 / 0.34);
+  --xw-glaze:
+    var(--k-screen-grain) 0 0 / 256px 256px,
+    radial-gradient(ellipse 125% 115% at 50% 42%, transparent 60%, rgb(30 62 120 / 0.34));
+  --xw-blend: normal;
+  /* the masthead's height (the landing below it fills the rest of the
+     screen): its top, the wordmark's line, the tagline's margin and line */
+  --masthead-h: calc(var(--l-head-top) + var(--l-brand) - 3 * var(--u) + 1.2 * var(--l-tagline));
 }
 
-/* day: soft daylight on white paper and Prussian blue */
+/* day: daylight on the print and the white paper */
 :root[data-style="cyanotype"][data-rice="paper"] {
+  --k-tape: url(/kit/cyanotype/tape-day.webp);
+  --tape-ink: #142033;
   --signal: #f2c14e;
-  --signal-ink: #f2c14e;
-  --print: #f6f4ee;
-  --print-soft: #cfd8e6;
-  --print-faint: #aebcd2;
-  --engrave-lo: rgba(246, 244, 238, 0.22);
-  --scene-ground: #0a3b78;
+  --signal-ink: #1f4e8c;
+  --print: #15284a; /* Prussian ink on the off-white paper */
+  --print-soft: #34466a;
+  --print-faint: #4d5c78; /* >= 4.5:1 on the paper */
+  --engrave-lo: rgba(21, 40, 74, 0.18);
+  --scene-ground: #0b3768;
   --k-scene-flat: url(/kit/cyanotype/scene-day.webp);
   --k-sky: url(/kit/cyanotype/scene/day/sky.webp);
-  --k-far: url(/kit/cyanotype/scene/day/far.webp);
-  --k-mid: url(/kit/cyanotype/scene/day/mid.webp);
-  --k-near: url(/kit/cyanotype/scene/day/near.webp);
-  --k-left-back: none;
-  --k-right-back: none;
-  --k-left: url(/kit/cyanotype/scene/day/left.webp);
-  --k-right: url(/kit/cyanotype/scene/day/right.webp);
+  --k-ground: url(/kit/cyanotype/scene/ground-day/sky.webp);
   --k-sun: none;
   --sun-cx: 0;
   --sun-cy: 0;
   --sun-r: 0;
+  --k-far: none;
+  --k-mid: none;
+  --k-near: none;
+  --k-left-back: none;
+  --k-right-back: none;
+  --k-left: none;
+  --k-right: none;
   --k-drift-cloud: none;
   --k-plate: url(/kit/cyanotype/sheet-day-normal.webp);
   --k-plate-hover: url(/kit/cyanotype/sheet-day-hover.webp);
@@ -186,8 +313,31 @@
   --k-plate-d-pressed: url(/kit/cyanotype/sheet-day-d-pressed.webp);
   --k-plate-d-focus: url(/kit/cyanotype/sheet-day-d-focus.webp);
   --k-plate-d-flat: url(/kit/cyanotype/sheet-day-d-flat.webp);
-  --plate-fill: url(/kit/cyanotype/print-day.webp);
-  --plate-light: url(/kit/cyanotype/sheet-day-light.webp);
+  --k-card: url(/kit/cyanotype/sheet-day-card-normal.webp);
+  --k-card-hover: url(/kit/cyanotype/sheet-day-card-hover.webp);
+  --k-card-pressed: url(/kit/cyanotype/sheet-day-card-pressed.webp);
+  --k-card-focus: url(/kit/cyanotype/sheet-day-card-focus.webp);
+  --k-card-b: url(/kit/cyanotype/sheet-day-card-b-normal.webp);
+  --k-card-b-hover: url(/kit/cyanotype/sheet-day-card-b-hover.webp);
+  --k-card-b-pressed: url(/kit/cyanotype/sheet-day-card-b-pressed.webp);
+  --k-card-b-focus: url(/kit/cyanotype/sheet-day-card-b-focus.webp);
+  --k-card-c: url(/kit/cyanotype/sheet-day-card-c-normal.webp);
+  --k-card-c-hover: url(/kit/cyanotype/sheet-day-card-c-hover.webp);
+  --k-card-c-pressed: url(/kit/cyanotype/sheet-day-card-c-pressed.webp);
+  --k-card-c-focus: url(/kit/cyanotype/sheet-day-card-c-focus.webp);
+  --k-card-d: url(/kit/cyanotype/sheet-day-card-d-normal.webp);
+  --k-card-d-hover: url(/kit/cyanotype/sheet-day-card-d-hover.webp);
+  --k-card-d-pressed: url(/kit/cyanotype/sheet-day-card-d-pressed.webp);
+  --k-card-d-focus: url(/kit/cyanotype/sheet-day-card-d-focus.webp);
+  --print-ground: rgb(12 53 90);
+  --plate-fill: url(/kit/cyanotype/paper-day.webp);
+  /* the other pages' sheets are a warmer cream than the cards' (the original's
+     project and launch panels measure 231, 225, 212 and 224, 219, 209 against
+     the cards' 234, 232, 225): the same paper, its mean warmed */
+  --plate-fill-warm: url(/kit/cyanotype/paper-warm-day.webp);
+  --k-light: url(/kit/cyanotype/sheet-day-light.webp);
+  --plate-light: var(--k-light);
+  --wash-ink: 96 132 176;
   --k-strip: url(/kit/cyanotype/sheet-strip-day-normal.webp);
   --k-strip-d: url(/kit/cyanotype/sheet-strip-day-d-normal.webp);
   --k-plate-w: url(/kit/cyanotype/sheet-day-w-b-normal.webp);
@@ -207,33 +357,85 @@
   --k-key-signal-hover: url(/kit/cyanotype/tile-signal-hover.webp);
   --k-key-signal-pressed: url(/kit/cyanotype/tile-signal-pressed.webp);
   --k-key-signal-focus: url(/kit/cyanotype/tile-signal-focus.webp);
-  --k-tape: url(/kit/cyanotype/tape-day.webp);
-  --tape-ink: #142033;
   --k-chip: url(/kit/cyanotype/chip-day.webp);
   --chip-ink: #142033;
   --motes: #f6f4ee;
   --motes-kind: dust;
-  --plate-under: #083975;
+  --plate-under: #e3e1db;
   --bezel-under: #f3f1ea;
-  --key-under: #f3f0e6;
-  --key-ink: #142033;
-  --key-ink-soft: #33435c;
-  --key-signal-under: #f2c14e;
+  --key-under: #d6d3cc;
+  --key-ink: #15284a;
+  --key-ink-soft: #34466a;
+  --key-signal-ink: #15284a;
+  --key-signal-under: #d6d3cc;
+  --k-frame: url(/kit/cyanotype/frame-day.webp);
+  --k-tape-bit: url(/kit/cyanotype/tape-bit-day.webp);
+  /* light by day: the print's paper, not white */
+  --k-screen-bezel: url(/kit/cyanotype/screen-bezel-day.webp);
+  --k-screen-grain: url(/kit/cyanotype/screen-grain-day.webp);
+  --screen-paper: #ebe7dc;
+  --screen-shade: inset 3px 4px 10px rgb(8 24 52 / 0.42);
+  /* the window by day is light (the product), but it is a print: laid on the
+     blue as the cards' paper is, a cool cast over the whole of it, its edge
+     taken deeper into the emulsion's blue, the paper's fibre in it
+     (multiplied: the white of the page is what it is multiplied into) */
+  --xw-frame: rgb(96 146 206 / 0.4);
+  /* (the grain under the cast is veiled in white and drawn small: at the
+     cards' scale and strength it read as dirt on a pane this large) */
+  --xw-glaze:
+    radial-gradient(ellipse 125% 115% at 50% 42%, transparent 56%, rgb(84 128 188 / 0.55)),
+    linear-gradient(rgb(214 227 243 / 0.5), rgb(214 227 243 / 0.5)),
+    linear-gradient(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.6)),
+    var(--k-screen-grain) 0 0 / 160px 160px;
+  --xw-blend: multiply;
+  --k-mount-project: url(/kit/cyanotype/mount-project-day.webp);
+  --k-mount-launch: url(/kit/cyanotype/mount-launch-day.webp);
+  --k-mount-tape-project: url(/kit/cyanotype/mount-tape-project-day.webp);
+  --k-mount-tape-launch: url(/kit/cyanotype/mount-tape-launch-day.webp);
+  --k-phone-sky: url(/kit/cyanotype/plate-phone-day.webp);
+  --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-day.webp);
+  --k-strip-phone: url(/kit/cyanotype/strip-phone-day.webp);
+  --k-type: url(/kit/cyanotype/type-day.webp);
+  --k-type-clean: url(/kit/cyanotype/type-clean-day.webp);
+  --l-ink: #e0e1dc;
+  --l-ink-soft: #d3d8da;
+  --l-chalk: rgb(236 234 228 / 0.92);
+  --card-ink: #0c2552;
 }
 
 @media (max-width: 720px) {
   :root[data-style="cyanotype"] {
-    --plate-k: 0.73;
-    /* a phone's prints are a column's width: the focus rule keeps a
-       narrower berth, so the copy keeps its measure */
-    --plate-inset: 6px;
+    --plate-k: 0.62;
+    --plate-inset: -12px;
   }
 }
 
-/* No two neighbouring prints are the same print: four (two generated, each
-   also hung turned end for end; scripts/kits/cyanotype.mjs) hang in turn,
-   and the strips alternate two. Counted among a print's own siblings, so a
-   row of three starts each row on a different print. */
+/* ---------- the print's torn edge, round the whole page ----------
+   The original is a sheet with a torn white paper edge on all four sides.
+   The scene is cropped to cover the screen, so the edge is laid round the
+   viewport itself, at the print's scale on a 16:9 screen (where it meets
+   the scene's exactly), thinning with a narrow screen so that on a phone it
+   stays a deckle outside the page's 16px gutter: the edge
+   lifted off the empty print (scripts/kits/cyanotype.mjs FRAME, its slices
+   in the print's px), its sides stretched to the screen's. It lies on the
+   print, under the page: what scrolls passes over it. */
+:root[data-style="cyanotype"] body::before {
+  --fu: min(100vw / 1672, 100svh / 941);
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+  border-width: calc(40 * var(--fu)) calc(60 * var(--fu)) calc(100 * var(--fu)) calc(60 * var(--fu));
+  border-image: var(--k-frame) 40 60 100 60 stretch;
+}
+
+/* No two neighbouring sheets are the same sheet: four (one paper, four
+   deckles: scripts/kits/cyanotype.mjs) hang in turn, and the strips
+   alternate two. Counted among a sheet's own siblings, so a row of three
+   starts each row on a different sheet. */
 :root[data-style="cyanotype"] .faceplate:not(.running-head, .divider, .statusline, .folio):nth-child(4n + 2) {
   --k-plate: var(--k-plate-b);
   --k-plate-hover: var(--k-plate-b-hover);
@@ -262,10 +464,10 @@
   --k-plate: var(--k-strip-d);
 }
 
-/* A page's own prints (its sections, a detail page's opening, its foot)
+/* A page's own sheets (its sections, a detail page's opening, its foot)
    hang in turn as the cards do; they are not cards (.faceplate), so they
    are counted here. From 900px they run the column's width, and hang the
-   two wide prints in turn, whose rails are a page's width long
+   two wide sheets in turn, whose rails are a page's width long
    (scripts/kits/cyanotype.mjs WIDE): a card's would come round twice on
    one edge. */
 :root[data-style="cyanotype"] :is(.section, .detail-hero, .colophon, .blank-leaf):nth-child(4n + 2) {
@@ -287,125 +489,2167 @@
   :root[data-style="cyanotype"] :is(.section, .detail-hero, .colophon, .blank-leaf):nth-child(2n + 1) {
     --k-plate: var(--k-plate-w);
     --k-plate-flat: var(--k-plate-w-flat);
+    --plate-fill: var(--plate-fill-warm);
   }
 
   :root[data-style="cyanotype"] :is(.section, .detail-hero, .colophon, .blank-leaf):nth-child(2n) {
     --k-plate: var(--k-plate-w-b);
     --k-plate-flat: var(--k-plate-w-b-flat);
+    --plate-fill: var(--plate-fill-warm);
   }
 }
 
-/* The strips are the prints' paper at the prints' scale, near enough that
-   their margin and brushed edge read as one material with the cards' (at
-   the other styles' 0.24 they are a fine stamp border). Their rails are
-   rebuilt from the prints' shallower stretches (scripts/kits/cyanotype.mjs
-   STRIP, `quiet`), so the brushed edge leaves a strip room for its line.
-   Their art's sides are cut down to a strip's height, so a strip need only
-   be as tall as its two corners inside the box (2 x 56 of the art's px),
-   not the full slices the shared rule keeps clear (globals.css). */
+/* Every sheet is its own sheet: the paper is one tile the page lays in
+   each, and laid from the same place in every card of a size it would put
+   its fibres at the same place in each. Each card in a run of four is cut
+   from its own place in the tile. */
+:root[data-style="cyanotype"] :is(.module, .showcase-row > li):nth-child(4n + 2) {
+  --plate-fill-at: calc(50% + 61px) calc(50% + 97px);
+}
+
+:root[data-style="cyanotype"] :is(.module, .showcase-row > li):nth-child(4n + 3) {
+  --plate-fill-at: calc(50% + 121px) calc(50% + 29px);
+}
+
+:root[data-style="cyanotype"] :is(.module, .showcase-row > li):nth-child(4n) {
+  --plate-fill-at: calc(50% + 43px) calc(50% + 143px);
+}
+
+/* The strips are the sheets' paper at a smaller scale, their sides cut
+   down to a strip's height, so a strip need only be as tall as its two
+   corners inside the box (2 x 56 of the art's px). */
 :root[data-style="cyanotype"] :is(.running-head, .divider, .folio, .statusline) {
-  --plate-k: 0.66;
+  --plate-k: 0.5;
+  --plate-inset: 0px;
   min-height: calc(2 * 56px * var(--plate-k) + 8px);
 }
 
-@media (max-width: 720px) {
-  :root[data-style="cyanotype"] :is(.running-head, .divider, .folio, .statusline) {
-    --plate-k: 0.52;
+/* The original's serif is a sturdy book face, its serifs bracketed and its
+   hairlines firm: Newsreader at a text optical size, at every size (its
+   display cuts' hairlines would drop out over the print's mottle). */
+:root[data-style="cyanotype"] body {
+  font-variation-settings: "opsz" 16;
+}
+
+/* ---------- keys ----------
+   The call is a slip of the cards' paper typed in Prussian ink (the
+   original's "Join the alpha"); every other key is ruled round in the ink
+   of what it stands on, white on the print ("Try it live"), ink on paper.
+   The keyboard's caps keep their slips. All are typed. */
+:root[data-style="cyanotype"] .key {
+  font-family: var(--font-typewriter), ui-monospace, monospace;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+:root[data-style="cyanotype"] .key:not([data-tone="signal"], .cap, .masthead .key, .running-head .key) {
+  --kn: none;
+  --kh: none;
+  --kp: none;
+  --kf: none;
+  --ku: transparent;
+  font-weight: 400;
+  border: 1.5px solid var(--ki);
+  border-radius: 1px;
+  transition:
+    translate 140ms ease-out,
+    background-color 140ms ease-out;
+}
+
+:root[data-style="cyanotype"] :is(a, button).key:not([data-tone="signal"], .cap, .masthead .key, .running-head .key):hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ki) 10%, transparent);
+}
+
+:root[data-style="cyanotype"] :is(a, button).key:not([data-tone="signal"], .cap, .masthead .key, .running-head .key):active:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ki) 18%, transparent);
+}
+
+/* focus: the contact sheet's grease-pencil rule, sun yellow, with a keyline
+   of ink so it holds on the white paper as on the blue */
+:root[data-style="cyanotype"] .key:not([data-tone="signal"], .cap, .masthead .key, .running-head .key):focus-visible {
+  outline: 2.5px solid var(--signal);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1.5px #142033;
+}
+
+/* ---------- the first screen (globals.css: home landing) ---------- */
+
+/* the masthead: "chong" in bold white serif, its line typed under it; no
+   mark */
+:root[data-style="cyanotype"] .masthead .brand {
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* The type on the print is printed in it: a flat chalk off-white, as the
+   original's letters are, eroded by letterpress (--k-type, a seamless tile
+   laid at the print's scale: small bites of the blue inside the strokes and
+   along their edges, no tonal drift across a letter). Clipped to the letters,
+   so a focus ring or underline is drawn as ever. */
+:root[data-style="cyanotype"] :is(:where(.masthead .brand a), .launchpad-title, .launchpad-pitch, .launchpad-call, .showcase-title) {
+  background: var(--k-type) 0 0 / calc(384 * var(--u)) repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* the flagship's name, the line under it and the heading are set clean, as
+   the original sets them (the wordmark keeps the chipped letterpress): the
+   tile with only a few fine bites. (The first rule's `:where` keeps the
+   wordmark's longer selector from outranking this one.) */
+:root[data-style="cyanotype"] :is(.launchpad-title, .launchpad-call, .showcase-title) {
+  background-image: var(--k-type-clean);
+}
+
+/* the eyebrow over the name is small typewriter, 14 px: a bite there takes a
+   letter, so it is set in flat chalk */
+:root[data-style="cyanotype"] .launchpad-pitch {
+  background: none;
+  color: var(--l-chalk);
+}
+
+/* The two big serif lines are set in the display cut of the face (Newsreader's
+   optical size, which tightens its hairlines and its contrast): measured on
+   the original's "Tauri Explorer" (the width along the letters' medial axis,
+   thick strokes over thin) the original's ratio is 5.9; the text cut the
+   page's body is set in (opsz 16, so a hairline survives a mottled print)
+   gives 3.1, and opsz 36 gives 5.0, within 15% of the original's, at the
+   same measure (432 px for the original's 431). The fill is flat now, so
+   the hairlines are no longer eaten by a mottle. (The phone's name is
+   measured at the text cut, its own comment below.) */
+@media (min-width: 721px) {
+  :root[data-style="cyanotype"] :is(.masthead .brand a, .launchpad-title) {
+    font-variation-settings: "opsz" 36;
   }
 }
 
-/* On a phone the masthead's brand and keys share one row (globals.css): its
-   words clear the brushed edge itself, the deepest bite 40 of the art's px
-   in from the paper's edge, not the whole corner slice, by as much again as
-   a label's own margin (a label against the blue's ragged end reads as
-   pressed into it); on the narrowest phones, where the brand and both keys
-   only just share the row, that margin goes, and the wordmark takes a size
-   down (Bodoni sets wide). */
-@media (max-width: 600px) {
-  :root[data-style="cyanotype"] .running-head {
-    padding: calc(40px * var(--plate-k) + 2px) calc(40px * var(--plate-k) + 10px);
+:root[data-style="cyanotype"] .brand .led {
+  display: none;
+}
+
+:root[data-style="cyanotype"] .tagline {
+  margin-top: calc(-3 * var(--u));
+  line-height: 1.2;
+  word-spacing: calc(5.4 * var(--u));
+  /* the original's typed line is dim (its brightest strokes ~175 of 255, ours
+     were 202): the print's ink under it, a sixth of the way in */
+  color: color-mix(in srgb, var(--l-ink-soft) 84%, var(--print-ground));
+}
+
+/* The wordmark's "g" hangs over the tagline's "games,": at the mock's size
+   (and at 1920) the descender's bowl clears the line's x-height by ~3 px;
+   below that the letterpress erosion eats into both and a smaller size
+   closes the gap to touching (round 9 saw it at 1440). The line is set a
+   little lower there, offset rather than moved, so nothing under it moves
+   (and a translate would make the line a stacking context of its own, and
+   its knock-out patch, below, would then lie over the wordmark's descender
+   instead of under it). */
+@media (max-width: 1599px) and (min-width: 721px) {
+  :root[data-style="cyanotype"] .masthead .tagline {
+    position: relative;
+    top: calc(2.2 * var(--u));
   }
 }
 
-@media (max-width: 400px) {
-  :root[data-style="cyanotype"] .running-head {
-    padding-inline: calc(40px * var(--plate-k) + 3px);
+:root[data-style="cyanotype"] .masthead .instruments {
+  gap: calc(46 * var(--u));
+  margin-top: calc(23 * var(--u));
+}
+
+:root[data-style="cyanotype"] .masthead .key {
+  font-weight: var(--l-nav-weight);
+  letter-spacing: 0;
+}
+
+/* the flagship's name, a chalk rule under it, its line, its keys */
+:root[data-style="cyanotype"] .launchpad-copy {
+  position: relative;
+  padding-top: calc(42 * var(--u));
+  padding-right: calc(20 * var(--u));
+}
+
+/* The original's face is taller than Newsreader at the same measure (its
+   x-height runs 33px to ours 29), so its baseline lies 10px under ours with
+   the brush rule 23px below it. The name is set down onto that baseline (the
+   lowercase's middle then agrees within 3px) and the rule stays where the
+   original draws it. */
+:root[data-style="cyanotype"] .launchpad-title {
+  margin-top: calc(1.5 * var(--u));
+  letter-spacing: -0.01em;
+}
+
+/* the rule under it is brushed on in chalk, ragged, dry toward its end
+   (the original's own stroke, inked off it: note rule-title) */
+:root[data-style="cyanotype"] .launchpad-title::after {
+  content: "";
+  display: block;
+  width: min(100%, calc(445 * var(--u)));
+  height: max(6px, calc(16 * var(--u)));
+  margin-top: calc(3.5 * var(--u));
+  background: var(--l-ink);
+  -webkit-mask: url(/kit/cyanotype/rule-title.webp) left center / 100% 100% no-repeat;
+  mask: url(/kit/cyanotype/rule-title.webp) left center / 100% 100% no-repeat;
+}
+
+:root[data-style="cyanotype"] .launchpad-call {
+  margin-top: calc(6 * var(--u));
+  line-height: 1.22;
+  word-spacing: 0.1em; /* the original's words stand a little apart */
+}
+
+/* The original has one line under the flagship's name, "Alpha testers
+   wanted", and the buttons at 324; the page says two ("A keyboard-first file
+   manager." and the call). The call keeps the mock's slot, at the mock's
+   size and measure; the pitch is the eyebrow over the name, typed as the
+   tagline is, in the clear between the masthead and the name. */
+@media (min-width: 900px) {
+  :root[data-style="cyanotype"] .launchpad-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: calc(25 * var(--u));
   }
 
-  :root[data-style="cyanotype"] .running-head .brand {
-    font-size: 19px;
+  :root[data-style="cyanotype"] .launchpad-copy .launchpad-pitch {
+    order: -1;
+    margin: 0 0 calc(8 * var(--u));
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    font-family: var(--font-typewriter), ui-monospace, monospace;
+    font-size: max(11px, calc(14.5 * var(--u)));
+    line-height: 1.3;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--l-ink-soft);
   }
 }
 
-/* The photogram's silhouettes stand at its edges, and every layer is
-   cropped to cover the frame from its middle: narrower than the frame's
-   proportions the crop takes them off the page, leaving prints of blue on a
-   wall of the same blue. So narrower, the ferns keep to their side, the
-   full height of the wall. The keyboard is left off: it stands in the
-   right-hand margin of a desktop, and a tablet's or a phone's is too narrow
-   for it; anywhere it lay it would meet the prints, its white against their
-   white margins and under their tape (the edge between print and wall is
-   only that margin), and cover-scaled it stands twice its size at the top,
-   the brightest thing on the wall. The tools at the foot keep its side. */
-@media (max-width: 1100px) {
-  :root[data-style="cyanotype"] {
-    --left-anchor: 0;
+:root[data-style="cyanotype"] .launchpad-keys {
+  gap: calc(20 * var(--u));
+  margin-top: calc(19 * var(--u));
+}
+
+:root[data-style="cyanotype"] .launchpad-keys .key-arrow {
+  display: none; /* the original's call is the words alone */
+}
+
+:root[data-style="cyanotype"] .launchpad-keys .key {
+  --key-k: 0.45;
+  min-height: max(44px, calc(57 * var(--u)));
+  padding: 0 calc(22 * var(--u));
+  font-size: max(13px, calc(19.2 * var(--u)));
+  -webkit-text-stroke: max(0.3px, calc(0.35 * var(--u))) currentColor;
+}
+
+/* the call is bold in the original (a slab typewriter, a heavy strike) */
+:root[data-style="cyanotype"] .launchpad-keys .key[data-tone="signal"] {
+  -webkit-text-stroke: max(0.5px, calc(0.95 * var(--u))) currentColor;
+}
+
+/* ruled round in a hairline, as the original's */
+:root[data-style="cyanotype"] .launchpad-keys .key:not([data-tone="signal"]) {
+  --ki: var(--l-ink);
+  border-width: 1px;
+  border-radius: calc(2 * var(--u));
+  font-weight: 400;
+  -webkit-text-stroke: 0; /* the original's is a plain regular strike */
+}
+
+/* the original's widths, on a screen wide enough to set them (a phone
+   shares the row out: below) */
+@media (min-width: 601px) {
+  :root[data-style="cyanotype"] .launchpad-keys .key:not([data-tone="signal"]) {
+    min-width: calc(195 * var(--u));
   }
 
-  :root[data-style="cyanotype"] [data-layer="right"] {
+  :root[data-style="cyanotype"] .launchpad-keys .key[data-tone="signal"] {
+    min-width: calc(219 * var(--u));
+  }
+}
+
+/* "Less clicking. More doing.", in chalk under the keys, as the original
+   writes it beside them */
+:root[data-style="cyanotype"] .launchpad-copy::after {
+  content: "";
+  position: absolute;
+  top: calc(100% + 10 * var(--u));
+  left: calc(233 * var(--u));
+  width: calc(176 * var(--u));
+  height: calc(104 * var(--u));
+  background: var(--l-chalk);
+  -webkit-mask: url(/kit/cyanotype/note-doing.webp) center / 100% 100% no-repeat;
+  mask: url(/kit/cyanotype/note-doing.webp) center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+/* The window is a print, as the original's is (a pale rim round it, its
+   panes inside printed with the grain and the blue cast of the emulsion), not
+   a crisp white card laid on the grainy blue: a thin frosted ring of the
+   print's own blue round it (the original's rim is ~1px; 4 of its px of ring
+   keep the soft print edge and leave the tagline above its clear 14), and
+   over its face the print's process (grain, a cool cast, the edge taken
+   deeper into the blue), blended into it so the window keeps its light face
+   by day (and its dark one by night) and its live text.
+   A stacked page (a phone's window has its own mount) goes without. */
+@media (min-width: 721px) {
+  :root[data-style="cyanotype"] .launchpad-window {
+    isolation: isolate;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-window::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: calc(-4 * var(--u));
+    border-radius: calc(var(--xw-round) + 4 * var(--u));
+    background:
+      var(--k-screen-grain) 0 0 / 256px 256px,
+      linear-gradient(var(--xw-frame), var(--xw-frame));
+    box-shadow: inset 0 0 0 1px rgb(200 218 240 / 0.26);
+    pointer-events: none;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-window .xw {
+    position: relative;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-window .xw::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--xw-glaze);
+    mix-blend-mode: var(--xw-blend);
+    pointer-events: none;
+  }
+}
+
+/* the window, taped to the print at its top right corner */
+:root[data-style="cyanotype"] .launchpad-window::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: calc(-12 * var(--u));
+  right: calc(-24 * var(--u));
+  width: calc(76 * var(--u));
+  aspect-ratio: 240 / 120;
+  background: var(--k-tape-bit) center / 100% 100% no-repeat;
+  rotate: 5deg;
+  pointer-events: none;
+}
+
+/* the window is the original's shape, a little wider than the shared one's
+   for its height (759 x 400) */
+@media (min-width: 900px) {
+  :root[data-style="cyanotype"] .launchpad-window .xw {
+    aspect-ratio: 759 / 400;
+    font-size: max(8px, 1.72cqw);
+  }
+
+  /* and finer in its parts, as the original's: a title bar 35px tall, rows
+     23.5px apart where the original's are 24 (the shared ones, 47 and 30, fit
+     a window half the size): at 24 the pane holds eleven of the twelve repos
+     the app lists, its counter says 1/12, and the last stands 2.6px short of
+     the foot; at 23.5 all twelve are shown, whole */
+  :root[data-style="cyanotype"] .launchpad-window .xw-bar {
+    height: 4.6cqw;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-window .xw-path {
+    padding-block: 1.2cqw;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-window .xw-rows {
+    grid-template-rows: repeat(auto-fill, 3.1cqw);
+    padding-block: 0.8cqw;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-window .xw-status {
+    padding-block: 1.2cqw;
+  }
+}
+
+/* the status line's chords are keys: each ruled in the ink of the line, the
+   words after it spaced, no dots between (globals.css .xw-hint) */
+:root[data-style="cyanotype"] .xw-hint + .xw-hint::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em;
+}
+
+:root[data-style="cyanotype"] .xw-hints kbd {
+  padding: 0 0.22em;
+  margin-right: 0.22em;
+  border: 1px solid color-mix(in srgb, currentColor 55%, transparent);
+  border-radius: 3px;
+  background: color-mix(in srgb, currentColor 7%, transparent);
+}
+
+/* the window's lights are the desktop's own, red, amber and green, as the
+   original's */
+:root[data-style="cyanotype"] .xw-lights i {
+  background: #ee5a52;
+}
+
+:root[data-style="cyanotype"] .xw-lights i:nth-child(2) {
+  background: #f2b632;
+}
+
+:root[data-style="cyanotype"] .xw-lights i:nth-child(3) {
+  background: #3cba4c;
+}
+
+/* "Projects" in white serif, its rule, and on the rule the caption in
+   chalk: "Different toys for a more interesting world.." */
+:root[data-style="cyanotype"] .showcase {
+  padding-top: calc(14 * var(--u));
+}
+
+:root[data-style="cyanotype"] .showcase-title {
+  padding-left: calc(26 * var(--u));
+  margin-bottom: calc(8 * var(--u));
+}
+
+/* the heading, its rule and the caption sit where the original's do: the rule
+   and the caption lower than the box centre they hang from (the original's
+   rule runs 5 of its px under the heading's middle, the caption 8) */
+:root[data-style="cyanotype"] .showcase-title {
+  position: relative;
+  top: calc(2 * var(--u));
+}
+
+:root[data-style="cyanotype"] .showcase-title::after {
+  translate: 0 calc(3 * var(--u));
+}
+
+:root[data-style="cyanotype"] .showcase-title::before {
+  content: "";
+  order: 1;
+  flex: none;
+  width: calc(398 * var(--u));
+  height: calc(42 * var(--u));
+  margin-right: calc(58 * var(--u));
+  translate: 0 calc(6 * var(--u));
+  background: var(--l-chalk);
+  -webkit-mask: url(/kit/cyanotype/note-toys.webp) center / 100% 100% no-repeat;
+  mask: url(/kit/cyanotype/note-toys.webp) center / 100% 100% no-repeat;
+}
+
+/* the two notes at the print's foot corners: "Build. Play. Repeat." and the
+   stamp "SAME CURIOSITY DIFFERENT MEDIUM" */
+:root[data-style="cyanotype"] .landing {
+  position: relative;
+}
+
+:root[data-style="cyanotype"] .landing::before,
+:root[data-style="cyanotype"] .landing::after {
+  content: "";
+  position: absolute;
+  background: var(--l-chalk);
+  pointer-events: none;
+}
+
+:root[data-style="cyanotype"] .landing::before {
+  left: calc(28 * var(--u));
+  bottom: calc(35 * var(--u));
+  width: calc(96 * var(--u));
+  height: calc(94 * var(--u));
+  -webkit-mask: url(/kit/cyanotype/note-repeat.webp) center / 100% 100% no-repeat;
+  mask: url(/kit/cyanotype/note-repeat.webp) center / 100% 100% no-repeat;
+}
+
+:root[data-style="cyanotype"] .landing::after {
+  left: calc(1556 * var(--u));
+  bottom: calc(9 * var(--u));
+  width: calc(112 * var(--u));
+  height: calc(106 * var(--u));
+  -webkit-mask: url(/kit/cyanotype/note-medium.webp) center / 100% 100% no-repeat;
+  mask: url(/kit/cyanotype/note-medium.webp) center / 100% 100% no-repeat;
+}
+
+/* the cards: off-white paper, the title typed in Prussian ink, the screen
+   laid straight on the paper (no mount), one piece of tape each */
+/* (The bands ramp in from nothing where the sheet's own art band ends, a few
+   px inside the box: a band that began at full strength drew a hard outline
+   of the box on the paper, and by night a step behind the title; the title
+   strip has none now, below.) */
+/* The original's mats are stained at their margins, where the emulsion was
+   brushed up to the paper: patches of the print's blue washed in, soft, a few
+   tens of its px deep. The sheet's art keeps only the deckle's band (the paper
+   inside it is the page's tile), so the wash is laid in the sheet's own
+   fill, under the deckle and over the paper (--plate-light, kit.css
+   .faceplate::before): blotches and a thinner tint down each edge, all kept
+   to the margin round the screen (the screen covers what is under it). None
+   lies in the strip the title is typed on: the original's paper there is
+   uniform cream, and a tint along the top edge and a blotch at its corner drew
+   a pale-blue rectangle behind each name. */
+:root[data-style="cyanotype"] :is(.card.faceplate, .module.faceplate) {
+  --wash-edge:
+    linear-gradient(to right, transparent 5px, rgb(var(--wash-ink) / 0.1) 14px, rgb(var(--wash-ink) / 0.05) 20px, transparent 34px),
+    linear-gradient(to left, transparent 5px, rgb(var(--wash-ink) / 0.1) 14px, rgb(var(--wash-ink) / 0.05) 20px, transparent 34px),
+    linear-gradient(to top, transparent 5px, rgb(var(--wash-ink) / 0.11) 14px, rgb(var(--wash-ink) / 0.055) 20px, transparent 34px);
+  --card-wash:
+    radial-gradient(ellipse 22px 72px at 100% 58%, rgb(var(--wash-ink) / 0.186), rgb(var(--wash-ink) / 0.062) 55%, transparent),
+    radial-gradient(ellipse 120px 20px at 38% 100%, rgb(var(--wash-ink) / 0.198), rgb(var(--wash-ink) / 0.062) 55%, transparent),
+    radial-gradient(ellipse 20px 64px at 0% 82%, rgb(var(--wash-ink) / 0.161), rgb(var(--wash-ink) / 0.056) 55%, transparent),
+    var(--wash-edge);
+  --plate-light: var(--card-dither), var(--card-wash), var(--k-light);
+}
+
+/* (not among the rice's tokens above: the kit contract reads every url() there
+   as a file of the kit) */
+:root[data-style="cyanotype"] :is(.card.faceplate, .module.faceplate) {
+  /* A hair of fine noise over the cards' wash: an 8-bit gradient this faint is
+     a few levels deep, and each level shows as a hard step on the dark paper
+     (a band behind the title); the noise, a few levels either way, dithers
+     the steps away. (By day the paper is light and the steps do not show.) */
+  --card-dither: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192'%3E%3Cfilter id='n' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1.6 0 0 0 -0.3 1.6 0 0 0 -0.3 1.6 0 0 0 -0.3 0 0 0 0 0.04'/%3E%3C/filter%3E%3Crect width='192' height='192' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+:root[data-style="cyanotype"][data-rice="paper"] :is(.card.faceplate, .module.faceplate) {
+  --card-dither: linear-gradient(transparent, transparent);
+}
+
+:root[data-style="cyanotype"] .showcase-row > li:nth-child(even) .card.faceplate {
+  --card-wash:
+    radial-gradient(ellipse 130px 20px at 64% 100%, rgb(var(--wash-ink) / 0.198), rgb(var(--wash-ink) / 0.062) 55%, transparent),
+    radial-gradient(ellipse 22px 70px at 0% 50%, rgb(var(--wash-ink) / 0.186), rgb(var(--wash-ink) / 0.062) 55%, transparent),
+    radial-gradient(ellipse 20px 60px at 100% 14%, rgb(var(--wash-ink) / 0.161), rgb(var(--wash-ink) / 0.056) 55%, transparent),
+    var(--wash-edge);
+}
+
+:root[data-style="cyanotype"] .card.faceplate {
+  --k-plate: var(--k-card);
+  --k-plate-hover: var(--k-card-hover);
+  --k-plate-pressed: var(--k-card-pressed);
+  --k-plate-focus: var(--k-card-focus);
+  gap: calc(12 * var(--u));
+  padding: calc(14 * var(--u)) calc(16 * var(--u)) calc(18 * var(--u)) calc(18 * var(--u));
+  color: var(--card-ink);
+}
+
+:root[data-style="cyanotype"] .showcase-row > li:nth-child(4n + 2) .card {
+  --k-plate: var(--k-card-b);
+  --k-plate-hover: var(--k-card-b-hover);
+  --k-plate-pressed: var(--k-card-b-pressed);
+  --k-plate-focus: var(--k-card-b-focus);
+}
+
+:root[data-style="cyanotype"] .showcase-row > li:nth-child(4n + 3) .card {
+  --k-plate: var(--k-card-c);
+  --k-plate-hover: var(--k-card-c-hover);
+  --k-plate-pressed: var(--k-card-c-pressed);
+  --k-plate-focus: var(--k-card-c-focus);
+}
+
+:root[data-style="cyanotype"] .showcase-row > li:nth-child(4n) .card {
+  --k-plate: var(--k-card-d);
+  --k-plate-hover: var(--k-card-d-hover);
+  --k-plate-pressed: var(--k-card-d-pressed);
+  --k-plate-focus: var(--k-card-d-focus);
+}
+
+:root[data-style="cyanotype"] .card-title {
+  padding-left: calc(12 * var(--u));
+  letter-spacing: 0;
+  /* the typewriter's strike, a shade firmer than its regular cut (and the
+     original's ink is darker than the page's: --card-ink) */
+  -webkit-text-stroke: calc(0.55 * var(--u)) currentColor;
+}
+
+/* the first card's name is typed a size up, as the original's "Scrivo" */
+@media (min-width: 900px) {
+  :root[data-style="cyanotype"] .showcase-row > li:first-child .card-title {
+    font-size: max(18px, calc(23.5 * var(--u)));
+  }
+}
+
+/* the shelves' cards are titled as the first screen's are: typed in ink */
+:root[data-style="cyanotype"] .module-title {
+  font-family: var(--font-typewriter), ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 23px;
+  letter-spacing: 0;
+  color: var(--card-ink);
+}
+
+/* Every screen on paper (a card's, a shelf's) is a small display set into it,
+   as the original's are: no mat, bevel or glare; a slim bezel of navy ink,
+   printed (scripts/kits/cyanotype-screen.mjs: its edge is not true, and a hair
+   of ink bleeds in past it) rather than ruled; the screen itself the paper's
+   cream by day (the product is light by day: the print's own paper, with its
+   faint grain, not white) and the rice's dark by night, as the original's is;
+   a soft shade under the bezel. The picture is drawn whole inside it. */
+:root[data-style="cyanotype"] :is(.card-screen, .module .screen) {
+  padding: 0;
+  background: none;
+}
+
+:root[data-style="cyanotype"] :is(.card-screen, .module .screen)::after {
+  display: none;
+}
+
+:root[data-style="cyanotype"] :is(.card-screen, .module .screen) .screen-glass {
+  display: none;
+}
+
+:root[data-style="cyanotype"] :is(.card-screen, .module .screen) .screen-face {
+  border-radius: max(4px, calc(7 * var(--u)));
+  background:
+    var(--k-screen-grain) 0 0 / 256px 256px repeat,
+    var(--screen-paper, var(--paper));
+}
+
+/* the bezel is the 9-slice of the printed band: its corner slice (48 of its
+   px) drawn at 5 of the original's, so the band is about 3.5 (3 on a small
+   screen); its sides repeat */
+:root[data-style="cyanotype"] :is(.card-screen, .module .screen) .screen-edge {
+  border: 0 solid transparent;
+  border-image: var(--k-screen-bezel) 48 / max(5px, calc(8 * var(--u))) round;
+  box-shadow: var(--screen-shade);
+  filter: blur(0.35px); /* printed, not ruled: its edge is soft */
+}
+
+/* The pictures are drawn whole, never cropped, but each fills its own canvas
+   differently (a card, a table, a lone figure), so each is brought to much the
+   same size on its screen: its drawing (--drawn-*, the art's own bounding box,
+   src/lib/drawn-bounds.ts) is scaled to three quarters of the glass at its
+   longer side and centred on it (--fit; the canvas round it may run past the
+   glass, where it is clear). Where the bounds are unknown, an even inset. */
+:root[data-style="cyanotype"] :is(.card-screen, .module .screen) .screen-art {
+  --fit: 0.76;
+  --art-inset: 6%;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+/* the project page's figure takes the same fit at every width: from 1100px its
+   own (0.9, below), stacked a little less, on the shared print's paper */
+:root[data-style="cyanotype"] .detail-hero:has(.tags) .screen-art {
+  --fit: 0.86;
+}
+
+:root[data-style="cyanotype"] :is(.card-screen, .module .screen, .detail-hero:has(.tags) .screen) .screen-art[style*="--drawn-w"] {
+  --s: calc(var(--fit) / max(var(--drawn-w), var(--drawn-h)));
+  --art-inset:
+    calc(100% * (0.5 - var(--s) * var(--drawn-y)))
+    calc(100% * (0.5 - var(--s) * (1 - var(--drawn-x))))
+    calc(100% * (0.5 - var(--s) * (1 - var(--drawn-y))))
+    calc(100% * (0.5 - var(--s) * var(--drawn-x)));
+}
+
+/* The original's four screens end level, 211 px tall whatever their
+   card's width (the cards are cut by hand, none the width of another), so
+   they are set by height from the desktop up, not by a ratio. */
+:root[data-style="cyanotype"] .card-screen .screen-face.has-art {
+  aspect-ratio: 313 / 207;
+}
+
+@media (min-width: 900px) {
+  :root[data-style="cyanotype"] .card-screen .screen-face.has-art {
+    aspect-ratio: auto;
+    height: calc(211 * var(--u));
+  }
+}
+
+:root[data-style="cyanotype"] .card-mark {
+  display: block;
+  position: absolute;
+  z-index: 2;
+  width: calc(66 * var(--u));
+  aspect-ratio: 240 / 120;
+  background: var(--k-tape-bit) center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+/* A shelf's sheet is held by its tape, as the home row's cards are (the
+   original's fastener): its status pin (kit.css .led.sheet-pin, worn by every
+   style) would be a second fastener, a blue dot over the tape. The status is
+   still said in words, the sheet's "ACTIVE" at its top right. */
+:root[data-style="cyanotype"] .module .led.sheet-pin {
+  display: none;
+}
+
+/* the original's four cards are cut by hand, none quite the width of
+   another: those widths are for four (any other count shares the row out
+   equally, globals.css) */
+@media (min-width: 900px) {
+  :root[data-style="cyanotype"] .showcase-row:has(> li:nth-child(4):last-child) {
+    grid-template-columns: 345fr 340fr 323fr 345fr;
+  }
+}
+
+/* each card taped at its own corner, as the original's are */
+:root[data-style="cyanotype"] .showcase-row > li:nth-child(4n + 1) .card-mark {
+  right: calc(-6 * var(--u));
+  bottom: calc(-16 * var(--u));
+  rotate: -8deg;
+}
+
+:root[data-style="cyanotype"] .showcase-row > li:nth-child(4n + 2) .card-mark {
+  left: calc(-16 * var(--u));
+  top: calc(-20 * var(--u));
+  rotate: -14deg;
+}
+
+:root[data-style="cyanotype"] .showcase-row > li:nth-child(4n + 3) .card-mark {
+  right: calc(-10 * var(--u));
+  bottom: calc(-14 * var(--u));
+  rotate: 22deg;
+}
+
+:root[data-style="cyanotype"] .showcase-row > li:nth-child(4n) .card-mark {
+  right: calc(-22 * var(--u));
+  top: calc(-24 * var(--u));
+  rotate: 12deg;
+}
+
+/* Narrower than a desktop the first screen stacks (globals.css): the notes
+   tied to the original's coordinates go, the rest keeps its materials. */
+@media (max-width: 899px) {
+  :root[data-style="cyanotype"] .launchpad-copy {
+    padding-top: 0;
+  }
+
+  :root[data-style="cyanotype"] .landing::before,
+  :root[data-style="cyanotype"] .landing::after {
     display: none;
   }
+
+  /* The print's props lie at its margins, and a phone's crop of it is its
+     open middle; so its gears are brought in, beside the flagship's name
+     where the copy leaves the print clear (the original's phone has them
+     there): a window onto the print itself (--k-sky, the same bitmap in
+     either finish), the big gear at canvas (1940, 752) of its 2312 mock px,
+     at 0.62 px each, run off the screen's edge and fading out into the blue
+     round it. */
+  :root[data-style="cyanotype"] .launchpad-copy::after {
+    top: 30px;
+    left: auto;
+    right: calc((100% - 100vw) / 2);
+    width: 112px;
+    height: 104px;
+    background: var(--k-sky) calc(112px - 26px - 1940 * 0.62px) calc(50px - 752 * 0.62px) / calc(2312 * 0.62px) auto no-repeat;
+    -webkit-mask: radial-gradient(farthest-side at 100% 48%, #000 62%, transparent);
+    mask: radial-gradient(farthest-side at 100% 48%, #000 62%, transparent);
+  }
+
+  :root[data-style="cyanotype"] .showcase-title {
+    padding-left: 0;
+  }
+
+  :root[data-style="cyanotype"] .showcase-title::before {
+    display: none;
+  }
+
+  :root[data-style="cyanotype"] .card.faceplate {
+    padding: 10px 12px 14px;
+  }
+
+  :root[data-style="cyanotype"] .card-title {
+    padding-left: 4px;
+  }
+
+  :root[data-style="cyanotype"] .card-mark {
+    width: 52px;
+  }
+
+  /* the gutter is too narrow for a tape to hang past a card's or the
+     window's right edge without crossing the screen's: those come in to
+     the corner */
+  :root[data-style="cyanotype"] .showcase-row > li:is(:nth-child(4n + 1), :nth-child(4n + 3), :nth-child(4n)) .card-mark {
+    right: 4px;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-window::after {
+    right: 4px;
+    width: 52px;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-keys {
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-keys .key {
+    padding: 0 18px;
+    font-size: 15px;
+  }
 }
 
-/* Bodoni's hairlines, at the optical size of its text cuts (its display cuts'
-   hairlines drop out over the brushed emulsion's mottle, and "e" reads "c") */
-:root[data-style="cyanotype"] body {
-  font-variation-settings: "opsz" 11;
+/* On a phone the two calls share the row out, as wide as the original's
+   phone sets them (cyanotype-phone), side by side rather than stacked so
+   the window under them keeps its rows on the first screen. */
+@media (max-width: 600px) {
+  :root[data-style="cyanotype"] .launchpad-keys .key {
+    flex: 1 1 0;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 10px;
+    font-size: 14px;
+    white-space: nowrap; /* a key too long for its half takes a row */
+  }
 }
 
-/* A print changes its light only where its art carries the change: lifted,
-   off the wall on a longer shadow, its margin's lit edges catching the
-   light; pressed, flat to the wall on a closed one. Nothing is laid over
-   the whole print: a brightening clips the white paper and the mount, and
-   with them the screen it carries, whose colours are the app's own. */
-
-/* A print's frame is its paper margin and brushed edge, and both are wide
-   (it hangs near its own size, --plate-k): the copy on a hero print sits
-   just inside the focus rule laid along the edge (--plate-w), not the
-   further inset the other styles' thin frames take, so a half-width print
-   keeps a reading measure. Bodoni Moda sets wide, so its display sizes are
-   a step down, and a long word ("filesystem.") fits the measure. */
-:root[data-style="cyanotype"] :is(.hero-copy, .launch-copy, .detail-hero).faceplate,
-:root[data-style="cyanotype"] .detail-hero {
-  padding-inline: calc(var(--plate-w) + 6px);
+/* Stacked, a page other than the home page reads over the print's calmest
+   piece: the home print drawn up close, the middle of the window the mock's
+   site stood in (its mock px 718-1477 across, 160-525 down, above the
+   brushed seam), where a crop of the whole print would run its seam through
+   the text and show its props at the margins. */
+@media (max-width: 899px) {
+  :root[data-style="cyanotype"]:not(:has(.launchpad)) [data-layer="sky"] {
+    --sky-z: max(100cqw / 700, 100cqh / 365); /* screen px to a mock px */
+    --layer-size: calc(var(--sky-w) * var(--sky-z)) auto;
+    --layer-x: 50%;
+    --layer-y: calc(-160 * var(--sky-z));
+  }
 }
 
-:root[data-style="cyanotype"] .title {
-  font-size: clamp(34px, 3.5vw, 50px);
+/* ---------- the phone ----------
+   (cyanotype-phone) On a phone the home page lies on a print of its own mock
+   (scripts/kits/cyanotype.mjs phone: the original's picture with the site
+   painted out: its keyboard, gear pair, fern and notes), drawn at the
+   screen's width from the page's top edge, as the mock is: the fern runs off
+   the top, and the page's words are set against the print where the mock sets
+   them (measured on the mock, 899 wide; --pu is one px of it). The masthead
+   is the mock's one row, a small name, a hairline rule and the keys, all in
+   the clear to the left of the fern, with the line typed small under it in
+   the same clear; so no word crosses the white of the print. Under it the
+   label on tape, the name in a large serif set at the mock's cap height and
+   stroke, the line under it, both calls stacked and full-width, the window
+   taped on its mount, and under it the strip of cream paper with its three
+   drawings. The rest of the page is as it stacks. From 720px the margins
+   differ, and a tablet has the home print's own crop. */
+@media (max-width: 720px) {
+  :root[data-style="cyanotype"]:has(.launchpad) {
+    --pu: calc(100vw / 899);
+    /* the masthead's height, and the clear to the left of the print's fern
+       (the frond's left edge is at 530 of the mock's px; its hand-written
+       note and the gears are to the right of it) */
+    --head-d: calc(168 * var(--pu));
+    --fern-x: calc(522 * var(--pu));
+    /* where the label's tape begins: under the masthead, so that the line
+       under the name and the calls come where the mock puts them against the
+       print's keyboard, notes and gears (the mock's label is higher, its
+       name two lines; ours is one) */
+    --label-top: calc(209 * var(--pu));
+    --k-sky: var(--k-phone-sky);
+  }
+
+  :root[data-style="cyanotype"]:has(.launchpad) [data-layer="sky"] {
+    --layer-size: 100% auto;
+    --layer-x: center;
+    --layer-y: top;
+  }
+
+  :root[data-style="cyanotype"] .masthead {
+    grid-template-columns: auto minmax(8px, 1fr) auto;
+    align-content: start;
+    align-self: flex-start;
+    width: min(100%, calc(var(--fern-x) - 14px));
+    height: var(--head-d);
+    padding-top: 6px;
+    row-gap: 0;
+  }
+
+  /* the name is small, in the typewriter face, as the mock sets it, and in
+     plain cream: the print's mottle on letters this size would read as dirt */
+  :root[data-style="cyanotype"] .masthead .brand {
+    grid-area: 1 / 1;
+    font-family: var(--font-typewriter), ui-monospace, monospace;
+    font-size: max(13px, calc(31 * var(--pu)));
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+
+  :root[data-style="cyanotype"] .masthead .brand a {
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: var(--l-ink);
+  }
+
+  /* the hairline rule between the name and the keys, as the mock's */
+  :root[data-style="cyanotype"] .masthead::before {
+    content: "";
+    grid-area: 1 / 2;
+    align-self: center;
+    height: 1px;
+    margin: 0 8px;
+    background: var(--l-ink);
+    opacity: 0.55;
+  }
+
+  :root[data-style="cyanotype"] .masthead .instruments {
+    grid-area: 1 / 3;
+    gap: 2px;
+    margin-top: 0;
+  }
+
+  /* a thumb's target (32px) is kept; the word's own sidebearings are not, so
+     the keys leave the hairline its length */
+  :root[data-style="cyanotype"] .masthead .key {
+    min-width: 32px;
+    min-height: 32px;
+    padding-inline: 0;
+    font-size: 13px;
+  }
+
+  :root[data-style="cyanotype"] .masthead .tagline {
+    grid-area: 2 / 1 / 3 / -1;
+    margin-top: 3px;
+    font-size: max(11px, calc(28 * var(--pu)));
+    text-wrap: balance;
+  }
+
+  :root[data-style="cyanotype"] .launchpad {
+    gap: calc(59 * var(--pu));
+    padding: 0;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 8px;
+  }
+
+  /* the call is the label, above the name: a strip of the tape the cards
+     wear, typed in ink, as the mock's "alpha testers wanted" */
+  :root[data-style="cyanotype"] .launchpad .launchpad-copy .launchpad-call {
+    order: -1;
+    margin-top: calc(var(--label-top) - var(--head-d));
+    padding: 0 calc(30 * var(--pu));
+    border: 0 solid transparent;
+    border-image: var(--k-tape) 8 48 fill / 0 calc(34 * var(--pu)) / 0 2px stretch;
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: var(--tape-ink);
+    font-family: var(--font-typewriter), ui-monospace, monospace;
+    font-size: max(12px, calc(28 * var(--pu)));
+    line-height: calc(60 * var(--pu));
+    text-transform: lowercase;
+    rotate: -0.8deg;
+  }
+
+  /* The name is the desktop's display serif, set as the mock sets its
+     headline, which two reviews could not agree on (too bold, then too
+     light) and so is measured: at the mock's 899px the capital P of "Ctrl+P"
+     is 70px tall with a 12px stem (stem over cap height .171); here the
+     capital T of "Tauri" is 70px tall at 106 (the mock's cap height; the
+     face's cap is .66 of its size) and its stem 12px at weight 520. The
+     leading is the mock's 98px pitch. With the soft shade the mock gives
+     it. At this size the printed type's mottle would read as dirt, so it is
+     the plain cream the mock sets it in (the shade is a drop-shadow: the
+     text is not clipped to a texture here, so text-shadow would do, but a
+     drop-shadow keeps it behind the letters' counters too) */
+  :root[data-style="cyanotype"] .launchpad .launchpad-copy .launchpad-title {
+    margin-top: calc(40 * var(--pu));
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: var(--l-ink);
+    font-size: calc(106 * var(--pu));
+    font-weight: 520;
+    line-height: 0.925;
+    letter-spacing: -0.02em;
+    text-shadow: 0 calc(5 * var(--pu)) calc(14 * var(--pu)) rgb(2 14 38 / 0.5);
+  }
+
+  /* the title's rule is the desktop's (the mock's phone has none) */
+  :root[data-style="cyanotype"] .launchpad-title::after {
+    display: none;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-pitch {
+    margin-top: calc(16 * var(--pu));
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-size: max(15px, calc(42 * var(--pu)));
+    font-weight: 300;
+    letter-spacing: 0.005em;
+  }
+
+  /* the gears come with the print: the desktop's window onto it, here, is
+     not wanted (above) */
+  :root[data-style="cyanotype"] .launchpad-copy::after {
+    display: none;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-keys {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-self: center;
+    gap: calc(25 * var(--pu));
+    width: calc(634 * var(--pu));
+    margin-top: calc(168 * var(--pu));
+    margin-bottom: 0;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-keys .key {
+    flex: none;
+    width: 100%;
+    min-height: calc(92 * var(--pu));
+    padding: 0 12px;
+    font-family: var(--font-display), Georgia, serif;
+    font-size: max(17px, calc(50 * var(--pu)));
+    font-weight: 500;
+    letter-spacing: 0;
+    -webkit-text-stroke: 0;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-keys .key[data-tone="signal"] {
+    -webkit-text-stroke: 0;
+  }
+
+  /* the outline call is ruled as the mock's (~2 px) and is open onto the
+     print: the print's keyboard runs behind it, and a key of it showing
+     through the call read as a stray cap in the box, a flat fill of its blue
+     (round 10) as a block. So it lies on the print's clean ground (the print
+     with everything drawn on it taken out, its blue and grain the print's own),
+     fixed and sized as the scene's layer is (100% across, from the top), so it
+     registers with the print under it. A browser that ignores a fixed
+     background (iOS) shows the ground's top, plain blue, a few levels off. */
+  :root[data-style="cyanotype"] .launchpad-keys .key:not([data-tone="signal"]) {
+    border-width: max(2px, calc(4.5 * var(--pu)));
+    background: var(--k-phone-ground) center top / 100% auto no-repeat fixed;
+  }
+
+  /* the window on its mount (the launch page's), its two tapes with it */
+  :root[data-style="cyanotype"] .launchpad-window {
+    margin: 0 calc(12 * var(--pu));
+    padding: calc(20 * var(--pu)) calc(22 * var(--pu)) calc(26 * var(--pu));
+    box-shadow: none;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-window::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    /* its tape and deckle stay inside the page gutter: wider, the page pans */
+    inset: -9.1% -5.1%;
+    background: var(--k-mount-launch) center / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+
+  /* its tapes, over the window as the mock lays them (across its corners) */
+  :root[data-style="cyanotype"] .launchpad-window::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: -9.1% -5.1%;
+    width: auto;
+    aspect-ratio: auto;
+    rotate: none;
+    background: var(--k-mount-tape-launch) center / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+
+  :root[data-style="cyanotype"] .launchpad-window .xw {
+    border-radius: max(3px, calc(10 * var(--pu)));
+    box-shadow: 0 0 0 max(1.5px, calc(4 * var(--pu))) #0b1a33;
+  }
+
+  /* the tape across the window's top left corner (the mount's tape sheet,
+     above) lies over the first light at this width, the red one; the lights
+     start where the tape ends */
+  :root[data-style="cyanotype"] .launchpad-window .xw-bar {
+    padding-left: calc(62 * var(--pu));
+  }
+
+  /* the strip of cream paper under it, full-bleed, with its drawings */
+  :root[data-style="cyanotype"] .showcase {
+    padding-top: calc(65 * var(--pu));
+  }
+
+  /* At 360 the print's fern (the plate is drawn at the screen's width) lies
+     with a leaflet across the right edge of "Try it live": the calls are a
+     tenth narrower, centred, which clears it (at 390 it is clear already) */
+  @media (max-width: 380px) {
+    :root[data-style="cyanotype"]:has(.launchpad) .launchpad-keys {
+      width: calc(560 * var(--pu));
+    }
+  }
+
+  :root[data-style="cyanotype"] .showcase::before {
+    content: "";
+    display: block;
+    height: calc(100vw * 184 / 883);
+    margin: 0 -14px calc(40 * var(--pu));
+    background: var(--k-strip-phone) center / 100% 100% no-repeat;
+  }
 }
 
-:root[data-style="cyanotype"] .launch-hero h1 {
-  font-size: clamp(34px, 3.6vw, 52px);
+/* ---------- the other pages ----------
+   A printed link is ruled in its own ink (--signal-rule, above) and, under
+   the pointer, takes the print's blue on paper, cream on the print. */
+:root[data-style="cyanotype"] :is(.section, .detail-hero, .intro, .colophon, .openq, .blank-leaf, .statusline) a:not(.key):hover,
+:root[data-style="cyanotype"] .text-action:hover {
+  color: var(--signal-ink);
 }
 
-:root[data-style="cyanotype"] .detail-hero h1 {
-  font-size: clamp(32px, 4.6vw, 56px);
+/* The masthead is the home page's: the name in white serif and the keys
+   printed as words on the print, no strip of paper under them. Counted as
+   the strips' rotation counts it (:nth-child(n)), so it comes after it. */
+:root[data-style="cyanotype"] .running-head:nth-child(n) {
+  --k-plate: none;
+  --plate-fill: none;
+  --plate-light: none;
+  --print: var(--l-ink);
+  --print-soft: var(--l-ink-soft);
+  --print-faint: var(--l-ink-soft);
+  --key-ink: var(--l-ink);
+  color: var(--l-ink);
 }
 
-/* Every print is its own print: the brushed emulsion is one tile the page
-   lays in each, and laid from the same place in every card of a size it
-   makes them one print, its marks at the same place in each (a fleck by
-   every title). Each card in a run of four is cut from its own place in
-   the tile (640px), so no two neighbours match, in rows of three, two or
-   one. */
-:root[data-style="cyanotype"] .module:nth-child(4n + 2) {
-  --plate-fill-at: calc(50% + 213px) calc(50% + 347px);
+/* stacked, with no strip to clear, its words take the column's margin, as
+   the page's opening under it does */
+@media (max-width: 899px) {
+  :root[data-style="cyanotype"] .running-head:nth-child(n) {
+    padding-inline: 0;
+  }
 }
 
-:root[data-style="cyanotype"] .module:nth-child(4n + 3) {
-  --plate-fill-at: calc(50% + 427px) calc(50% + 91px);
+/* (the running head's wordmark is small, ~24 px: the worn tile's bites are as
+   big as its hairlines there and took a letter's bowl, so it is set with the
+   clean tile, from the part of it that has no bite wide enough to do that) */
+:root[data-style="cyanotype"] .running-head .brand a {
+  background: var(--k-type-clean) -328px -44px / 384px repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-:root[data-style="cyanotype"] .module:nth-child(4n) {
-  --plate-fill-at: calc(50% + 139px) calc(50% + 503px);
+:root[data-style="cyanotype"] .running-head .meta {
+  color: var(--l-ink-soft);
+  font-size: max(11.5px, calc(14 * var(--u)));
+}
+
+/* the head's links are typed at the size of the home page's (they were a
+   third smaller), and each key's shortcut ("/", "t") is a small keycap
+   ruled in the ink of the link rather than a stray glyph before it */
+:root[data-style="cyanotype"] .running-head .key {
+  font-size: max(14px, calc(17 * var(--u)));
+}
+
+:root[data-style="cyanotype"] .running-head .key-legend {
+  padding: 0 0.36em;
+  /* legible, though quieter than the word beside it: the glyph in the
+     head's own ink at full strength (>= 3:1 on the print) in a keycap ruled
+     at three quarters, a faint fill inside it (round 8: it was a 0.68em glyph
+     at .85 in a half-strength rule) */
+  border: 1px solid color-mix(in srgb, currentColor 78%, transparent);
+  border-radius: 3px;
+  background: color-mix(in srgb, currentColor 11%, transparent);
+  font-size: 0.8em;
+  font-weight: 500;
+  line-height: 1.35;
+  opacity: 0.92;
+}
+
+:root[data-style="cyanotype"] .running-head .key {
+  --kn: none;
+  --kh: none;
+  --kp: none;
+  --kf: none;
+  --ki: var(--l-ink);
+  --ku: transparent;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1.5px;
+  /* the head hangs over the print, whose dimension lines and marks run
+     where its words land: a glow of the print's own blue clears them */
+  text-shadow:
+    0 0 4px var(--print-ground),
+    0 0 9px var(--print-ground);
+}
+
+:root[data-style="cyanotype"] .running-head :is(a.key, button.key):hover,
+:root[data-style="cyanotype"] .running-head .key[aria-expanded="true"] {
+  text-decoration-line: underline;
+}
+
+:root[data-style="cyanotype"] .running-head .key:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* A page's opening (a project's, the about page's, the launch page's
+   promise) stands on the print itself, as the original's project and launch
+   pages set it (cyanotype-project, cyanotype-launch): white type on the
+   blue, its keys ruled in white, its label on tape, its screen a mounted
+   print; the sheets under it are the cards' paper, in ink. Counted as the
+   rotation above counts them (:nth-child(n)), so it comes after it. */
+:root[data-style="cyanotype"] :is(.detail-hero, .launch-copy):nth-child(n) {
+  --k-plate: none;
+  --k-plate-flat: none;
+  --plate-fill: none;
+  --plate-light: none;
+  --print: var(--l-ink);
+  --print-soft: var(--l-ink-soft);
+  --print-faint: var(--l-ink-soft);
+  --signal-ink: #efe4ca;
+  --engrave-lo: color-mix(in srgb, var(--l-ink) 22%, transparent);
+  --key-ink: var(--l-ink);
+  color: var(--l-ink);
+}
+
+/* stacked, it has no sheet to clear: its words take the column's own
+   margin, as the home page's do */
+@media (max-width: 899px) {
+  :root[data-style="cyanotype"] :is(.detail-hero, .launch-copy):nth-child(n) {
+    padding-inline: 0;
+    padding-top: 28px;
+  }
+}
+
+/* The print under a page that opens on its own mock's scene (the project
+   page, the launch page: scripts/kits/cyanotype.mjs PRINTS, each the
+   original's picture with the site painted out, its props where the mock has
+   them), painted on and registered as the home page's. Only where the page
+   is laid out on the stage as well (below), from 1100px: narrower, and on a
+   phone, a page's print is the home page's, its props at the margins. */
+@media (min-width: 1100px) {
+  :root[data-style="cyanotype"]:is(:has(.detail-hero .tags), :has(.detail-hero.solo)) {
+    --k-sky: url(/kit/cyanotype/scene/project-night/sky.webp);
+    --k-ground: url(/kit/cyanotype/scene/ground-project-night/sky.webp);
+  }
+
+  :root[data-style="cyanotype"][data-rice="paper"]:is(:has(.detail-hero .tags), :has(.detail-hero.solo)) {
+    --k-sky: url(/kit/cyanotype/scene/project-day/sky.webp);
+    --k-ground: url(/kit/cyanotype/scene/ground-project-day/sky.webp);
+  }
+
+  :root[data-style="cyanotype"]:has(.launch-hero) {
+    --k-sky: url(/kit/cyanotype/scene/launch-night/sky.webp);
+    --k-ground: url(/kit/cyanotype/scene/ground-launch-night/sky.webp);
+  }
+
+  :root[data-style="cyanotype"][data-rice="paper"]:has(.launch-hero) {
+    --k-sky: url(/kit/cyanotype/scene/launch-day/sky.webp);
+    --k-ground: url(/kit/cyanotype/scene/ground-launch-day/sky.webp);
+  }
+
+  /* ---------- the stage ----------
+     These two pages are set at their mocks' coordinates, as the home page
+     is (globals.css, the stage: --u is one mock px): the column is the
+     stage's width, the masthead hangs from its top, and each page's opening
+     is placed where its mock puts it, clear of the photograms the print
+     keeps there. */
+  :root[data-style="cyanotype"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)) {
+    max-width: var(--stage-w);
+    padding: 0 0 112px;
+  }
+
+  /* the masthead keeps the mocks' empty top margin to itself: the opening
+     starts under it. It stands in the clean blue under the torn edge, as the
+     home page's does (the edge's paper is ~20px deep here and the dry
+     brushwork it dies into another ~14, flecking whatever is set in it: the
+     links' glyphs ran through it when the row sat at 12) */
+  :root[data-style="cyanotype"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)) .running-head:nth-child(n) {
+    position: absolute;
+    z-index: 2;
+    top: calc(31 * var(--u));
+    right: 0;
+    left: 0;
+    min-height: 0;
+    padding: 0 calc(330 * var(--u)) 0 calc(105 * var(--u));
+  }
+
+  /* The head's words stand over the print's registration crosshairs, which
+     the plates keep in fixed places. The links ride a little above the
+     project plate's (840u across, 70u down: their arms reach up under the
+     row); the launch plate's stands in the row itself (686u across, 38u
+     down), so there the links take the print's open top right, which the
+     mock keeps clear out to the note's column (1480u), and none of their
+     words lands on it. */
+  :root[data-style="cyanotype"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)) .running-head :is(.instruments, .head-nav) {
+    /* (offset, not translated: a fixed background, the type's patch, is not
+       held to the viewport inside a transformed ancestor) */
+    position: relative;
+    top: calc(-5 * var(--u));
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.launch-hero .launch-copy) .running-head:nth-child(n) {
+    padding-right: calc(190 * var(--u));
+  }
+
+  /* the links are words, not tiles, on the print: they stand closer than
+     the kit's keys do, so the row is short enough to keep to the right of
+     that crosshair down to a laptop's width */
+  :root[data-style="cyanotype"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)) .running-head :is(.instruments, .head-nav) .key {
+    padding-inline: 12px;
+  }
+
+  /* The head's meta ("01 · TAURI EXPLORER · ALPHA OPEN") is a single line:
+     it has the room for that beside the links, and below that gives way
+     rather than wrap or be cut short. Round 11 measured where (the clear
+     between the end of its words and the first link, every project's page and
+     the about page, 1100 to 1672 across): the tightest titles ("Tableau Frog",
+     "Zheng Shang You") leave 65 and 82px at 1360, 99 and 118 at 1440, 5 and
+     23 at 1280, where the others still leave 90 to 180 (it was hidden below
+     1640, where they leave 140 to 340). */
+  :root[data-style="cyanotype"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)) .running-head .meta {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1359px) {
+    :root[data-style="cyanotype"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)) .running-head .meta {
+      display: none;
+    }
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:is(:has(.tags), .solo):nth-child(n) {
+    min-height: calc(785 * var(--u) - var(--rack-gap));
+  }
+
+  :root[data-style="cyanotype"] .launch-hero:nth-child(n) {
+    min-height: calc(675 * var(--u) - var(--rack-gap));
+    padding: 0;
+  }
+
+  /* the opening's own sheet is gone (--k-plate: none, above), and under
+     reduced transparency its fallback fill would stand where it was */
+  :root[data-style="cyanotype"] :is(.detail-hero, .launch-copy)::before,
+  :root[data-style="cyanotype"] :is(.detail-hero, .launch-copy)::after {
+    display: none;
+  }
+
+  /* ---------- a project page ----------
+     (cyanotype-project) The label on tape, the headline in white serif with a
+     hairline under it, the lead, the tags as ruled pills; and its figure, a
+     print mounted on cream paper and taped, tilted, with its caption on a
+     torn strip. The longer copy of the real page runs a little further down
+     than the mock's two lines. The print under it is the project plate's, the
+     same for every project: its gears, ferns and keycap, the keyboard at its
+     foot, and no marginalia of any one project's (the mock's are the Ashen
+     Cathedral's; art/briefs/cyanotype.md). */
+  :root[data-style="cyanotype"] .detail-hero:is(:has(.tags), .solo):nth-child(n) {
+    display: block;
+    /* (the label hangs from 80, not the mock's 75: the mock has no running
+       head, and the product's row, which ends at 48, wants air under it. The
+       label stands 22 above the headline, not 8: the mock's is 30, and at 8
+       the two read as one block at 1440 and 1280; the headline comes down 8
+       of it, and everything after it with it) */
+    padding: calc(80 * var(--u)) 0 0 calc(115 * var(--u));
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:is(:has(.tags), .solo) > div {
+    display: contents;
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:is(:has(.tags), .solo) .kicker {
+    display: block;
+    width: fit-content;
+    margin: 0 0 calc(22 * var(--u)) calc(-7 * var(--u));
+    padding: calc(12 * var(--u)) calc(38 * var(--u)) calc(11 * var(--u));
+    border-image-width: 0 calc(40 * var(--u));
+    font-family: var(--font-typewriter), ui-monospace, monospace;
+    font-size: max(11px, calc(21 * var(--u)));
+    line-height: calc(27 * var(--u));
+    letter-spacing: 0.015em;
+    text-transform: none;
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:is(:has(.tags), .solo) h1 {
+    max-width: calc(715 * var(--u));
+    margin: 0;
+    font-size: max(30px, calc(64 * var(--u)));
+    font-weight: 520;
+    line-height: 1.04;
+    letter-spacing: -0.012em;
+    text-wrap: pretty;
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:is(:has(.tags), .solo) h1::after {
+    content: "";
+    display: block;
+    width: calc(697 * var(--u));
+    height: 1px;
+    margin: calc(16 * var(--u)) 0 calc(10 * var(--u)) calc(3 * var(--u));
+    background: color-mix(in srgb, var(--l-ink) 70%, transparent);
+  }
+
+  /* the lead is set in the sans at the mock's size, as the mock sets its two
+     lines; the page's longer copy runs on below them. What follows it (a
+     second paragraph) is a size down. */
+  :root[data-style="cyanotype"] .detail-hero:is(:has(.tags), .solo) p {
+    max-width: calc(712 * var(--u));
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-size: max(14px, calc(24 * var(--u)));
+    font-weight: 300;
+    line-height: 1.32;
+    letter-spacing: 0.012em;
+    color: var(--l-ink);
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:is(:has(.tags), .solo) p + p {
+    margin-top: calc(10 * var(--u));
+    font-size: max(13px, calc(19 * var(--u)));
+    line-height: 1.38;
+    color: var(--l-ink-soft);
+  }
+
+  /* (the pitch is two paragraphs here, and the chips under them would run
+     onto the gears in the print: a little less air round them) */
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) p {
+    line-height: 1.28;
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) p + p {
+    margin-top: calc(6 * var(--u));
+    line-height: 1.34;
+  }
+
+  /* the tags: each ruled round in white, a dot between them. The row keeps
+     to the lead's measure (the mock's four chips are narrower than it) and
+     runs to a second line, a dot closing the first, where a page's tags
+     are more or longer than the mock's, rather than into the figure. */
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .tags {
+    flex-wrap: wrap;
+    gap: calc(10 * var(--u)) calc(24 * var(--u));
+    max-width: calc(725 * var(--u));
+    margin-top: calc(11 * var(--u));
+    font-family: var(--font-typewriter), ui-monospace, monospace;
+    font-size: max(11px, calc(19 * var(--u)));
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--l-ink);
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .tag {
+    position: relative;
+    padding: calc(6 * var(--u)) calc(15 * var(--u)) calc(5 * var(--u));
+    border: max(1px, calc(1.5 * var(--u))) solid color-mix(in srgb, var(--l-ink) 82%, transparent);
+    /* the print's rules and props run under the row: the chip covers them
+       with the print's own clean blue (--knock) */
+    background: var(--knock);
+    white-space: nowrap;
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .tag:not(:last-child)::after {
+    content: "\00b7";
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 9 * var(--u));
+    translate: 0 -52%;
+  }
+
+  /* the figure: the mount (kit.cuts mount-project: a straight-cut cream
+     border and a piece of masking tape at three corners) behind the print,
+     which is the project's own 1-bit art in white on the print's blue; "Fig.
+     1" on a strip across its foot. The mount is as wide as the column
+     allows, 560, between the headline's measure (815) and the keycap drawing
+     in the plate (1405); the box is the mount's size (scripts/kits/
+     cyanotype.mjs MOUNTS.project: 560 x 380 around a 531 x 354 print). The
+     border is the mock's, thin and uneven (18 of its px at the sides, 12
+     above and 20 below the print, as measured), the brushed edge of the print
+     (below) taking about 3 of each. */
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .screen {
+    position: absolute;
+    /* (the mock's polaroid stands at 62, its tape from 52; the running head
+       the mock lacks has its links down to 54, and the mount's top tapes
+       reach ~25 above the paper, the turned one at the right under the
+       page's last link (GitHub, where the project has one): 90 keeps them
+       clear by some 12 at 1440, where the tape nearly touched it at 84) */
+    top: calc(90 * var(--u));
+    left: calc(842 * var(--u));
+    width: calc(560 * var(--u));
+    padding: calc(9 * var(--u)) calc(15 * var(--u)) calc(17 * var(--u));
+    background: none;
+    isolation: isolate;
+    rotate: -1.1deg;
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .screen::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: calc(-48 * var(--u));
+    background: var(--k-mount-project) center / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+
+  /* The mount's tape lies over the print, across its corners as well as the
+     paper's border, as the mock lays it: a sheet of its own (kit.cuts
+     mount-tape-project) on the hero, in the figure's place and turn (the
+     figure's own pseudo-elements are the paper behind it and the caption on
+     it), the same size as the mount's sprite, 48 of the mock's px past it. */
+  :root[data-style="cyanotype"] .detail-hero:has(.tags)::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: calc((90 - 48) * var(--u));
+    left: calc((842 - 48) * var(--u));
+    width: calc((560 + 96) * var(--u));
+    aspect-ratio: 656 / 476;
+    /* (kit.css hangs a pushpin from every .detail-hero::after, centred on
+       its left by a translate; this layer is placed by its own left) */
+    translate: none;
+    rotate: -1.1deg;
+    background: var(--k-mount-tape-project) center / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+
+  /* The caption's strip lies across the mount's foot as the mock's does
+     (cyanotype-project.webp: its top 15 above the print's lower edge, over the
+     cream border and the print, its foot 20 under the mount), right of the
+     mount's centre (the mock's runs 53 to 470 of the mount's 505, its centre 9
+     right of the mount's), fitted to its words with a strip's generous margins
+     round them, the tear's width counted in (the mock's are 29 either side of
+     a 358 wide line; "Fig. 1" is 61, so a scrap, which round 10 set ~110 wide
+     at the lower left and read as detached, wants more). The site has no
+     caption text for its hero art: the page's own label where it passes one,
+     "Fig. 1" where not. It is a strip of the cards' paper, torn at both ends
+     (--k-tape), not the masking tape. Anchored by its right end, so a longer
+     caption grows toward the left and stops short of the mount's left. */
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .screen::after {
+    inset: auto calc(135 * var(--u)) calc(-24 * var(--u)) auto;
+    z-index: 4;
+    rotate: 0.6deg;
+    box-sizing: border-box;
+    max-width: calc(100% - 160 * var(--u));
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    padding: calc(14 * var(--u)) calc(62 * var(--u)) calc(13 * var(--u)) calc(60 * var(--u));
+    border: 0 solid transparent;
+    border-image: var(--k-tape) 8 48 fill / 0 calc(26 * var(--u)) / 0 2px stretch;
+    font-family: var(--font-typewriter), ui-monospace, monospace;
+    font-size: max(11px, calc(20 * var(--u)));
+    line-height: calc(26 * var(--u));
+    white-space: nowrap;
+    color: var(--tape-ink);
+    content: "Fig. 1";
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .screen[aria-label]::after {
+    content: "Fig. 1 \00b7  " attr(aria-label);
+  }
+
+  /* The art is the project's own, 3:2, drawn whole: the print is cut to its
+     proportions (the mock's, a portrait, would leave dead blue above and
+     below it), and the drawing is brought up to fill it (--drawn-*, below).
+     It is as large as the column allows, between the headline's measure and
+     the keycap drawing in the plate (the mock's polaroid is 475 x 575 around
+     a 430 x 530 print, which a 3:2 picture cannot be as tall as in a column
+     this wide), and stands from y 84 (the mock's from 62): the first screen's
+     right half is the figure's, as the mock's. */
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .screen-face.has-art {
+    aspect-ratio: 3 / 2;
+    height: auto;
+    border-radius: calc(2 * var(--u));
+    /* its edge brushed on, not ruled (kit.cuts print-edge): the blue
+       feathers out over the mount's paper */
+    -webkit-mask: var(--k-print-edge) center / 100% 100% no-repeat;
+    mask: var(--k-print-edge) center / 100% 100% no-repeat;
+    /* the print's own blue, a shade deeper, as the mock's photograph is */
+    background:
+      linear-gradient(rgb(3 18 46 / 0.32), rgb(3 18 46 / 0.32)),
+      var(--k-sky) calc(-1183 * var(--u)) calc(-105 * var(--u)) / calc(2312 * var(--u)) auto no-repeat;
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .screen-art {
+    --fit: 0.9;
+    background: var(--l-ink);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .screen-glass {
+    display: none;
+  }
+
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) .screen-edge {
+    box-shadow: inset 0 0 0 1px rgb(236 233 226 / 0.16);
+  }
+
+  /* what follows the opening is the mock's cream panel, at the right of the
+     keyboard that lies at the print's left foot: a hairline ruled across it
+     with a tick at each end, and its headline set across the panel under
+     it, the label above and the note and the text in their two columns
+     below */
+  :root[data-style="cyanotype"] .rack:has(.detail-hero .tags) .rack-main > .section:not(.stack) {
+    grid-template-columns: minmax(0, 250px) minmax(0, 1fr);
+    grid-template-areas:
+      "kick kick"
+      "head head"
+      "aside body";
+    column-gap: calc(48 * var(--u));
+    row-gap: calc(10 * var(--u));
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.detail-hero .tags) .rack-main > .section:not(.stack) > :first-child {
+    display: contents;
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.detail-hero .tags) .rack-main > .section:not(.stack) .section-kicker {
+    grid-area: kick;
+    padding-top: calc(14 * var(--u));
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.detail-hero .tags) .rack-main > .section:not(.stack) h2 {
+    grid-area: head;
+    margin: 0 0 calc(8 * var(--u));
+    font-size: max(24px, calc(44 * var(--u)));
+    line-height: 1.12;
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.detail-hero .tags) .rack-main > .section:not(.stack) .aside-note {
+    grid-area: aside;
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.detail-hero .tags) .rack-main > .section:not(.stack) > :last-child {
+    grid-area: body;
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.detail-hero .tags) .rack-main > .section:not(.stack)::after {
+    --rule: color-mix(in srgb, var(--print) 55%, transparent);
+    content: "";
+    position: absolute;
+    top: calc(var(--plate-w) - 4px);
+    right: calc(var(--plate-w) + 8px);
+    left: calc(var(--plate-w) + 8px);
+    /* (the sheet's pin, kit.css, is none here: its box is reset) */
+    width: auto;
+    height: calc(18 * var(--u));
+    aspect-ratio: auto;
+    translate: none;
+    background:
+      linear-gradient(var(--rule), var(--rule)) 0 50% / 100% 1px no-repeat,
+      linear-gradient(var(--rule), var(--rule)) 0 0 / 1px 100% no-repeat,
+      linear-gradient(var(--rule), var(--rule)) 100% 0 / 1px 100% no-repeat;
+    pointer-events: none;
+  }
+
+
+  /* the panels stand at the mock's x from 500 to 1600 */
+  :root[data-style="cyanotype"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo)) .rack-main > :not(.detail-hero) {
+    align-self: flex-end;
+    width: calc(1100 * var(--u));
+    margin-right: calc(72 * var(--u));
+  }
+}
+
+/* ---------- the blue beside the intro sheet ----------
+   Under the first screen the intro sheet runs 74% of the column and the
+   print's blue lies bare to its right. The print's own furniture fills it
+   (scripts/kits/cyanotype-ornaments.mjs: a meshing pair of gears with their
+   centre lines, a dimension, registration marks; no words and nothing of any
+   project's), laid as a mask in the finish's chalk like the notes, hung from
+   the sheet (its link's pseudo-element: the sheet's own are the paper's) a
+   little past its right edge. Where the sheet takes the whole column
+   (below 1000px) there is no blue to fill. */
+@media (min-width: 1000px) {
+  :root[data-style="cyanotype"] .intro .hero-more::after {
+    content: "";
+    position: absolute;
+    top: calc(12 * var(--u));
+    left: calc(100% + 22 * var(--u));
+    width: 30%;
+    aspect-ratio: 3 / 5;
+    background: var(--l-chalk);
+    -webkit-mask: var(--k-ornaments) center / 100% 100% no-repeat;
+    mask: var(--k-ornaments) center / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+}
+
+/* ---------- type knocks out the print ----------
+   The print is a fixed backdrop and the copy flows over it, so where the real
+   copy is longer than the mock's, or the frame another size, a rule or a prop
+   of the print lands under a word. As the mock leaves clear zones of bare
+   blue round its words, every block of type here lays the print's own clean
+   ground under itself (--k-ground: the print with everything drawn on it
+   taken out, scripts/kits/cyanotype-ground.mjs, its blue, mottle and grain
+   the print's own), feathered at its edges: linework fades out before it
+   reaches a glyph, and where nothing is drawn the patch is the print
+   itself, so it does not show. The patch is fixed to the viewport and sized
+   as the scene's layer is (kit.css), so it registers with the print under it
+   wherever the copy has flowed to, and it lies under the type and under
+   every ruled or painted thing the page draws (a chip, a key, a mount).
+   It applies from 900px, where the print is laid on the stage; below that
+   the phone's plate is not registered to the viewport, so there is no patch.
+   A browser that ignores a fixed background shows a patch of the same blue,
+   a few levels off at most. */
+@media (min-width: 900px) {
+  :root[data-style="cyanotype"][data-scene-art="plate"] {
+    --knock-w: calc(1672 + 2 * var(--sky-bleed-x));
+    --knock: var(--k-ground) center top / max(calc(var(--knock-w) * var(--u)), calc(100vh * var(--knock-w) / (941 + var(--sky-bleed-bottom))), var(--page-w)) auto no-repeat fixed;
+    /* the zone's feather, and how far its clear centre reaches past the type's box */
+    --knock-f: max(10px, calc(22 * var(--u)));
+    --knock-pad: max(3px, calc(5 * var(--u)));
+    /* the feather's profile, a smoothstep, one stop list for both axes */
+    --knock-ramp:
+      transparent 0,
+      rgb(0 0 0 / 0.1) calc(0.2 * var(--knock-f)),
+      rgb(0 0 0 / 0.5) calc(0.5 * var(--knock-f)),
+      rgb(0 0 0 / 0.9) calc(0.8 * var(--knock-f)),
+      #000 var(--knock-f),
+      #000 calc(100% - var(--knock-f)),
+      rgb(0 0 0 / 0.9) calc(100% - 0.8 * var(--knock-f)),
+      rgb(0 0 0 / 0.5) calc(100% - 0.5 * var(--knock-f)),
+      rgb(0 0 0 / 0.1) calc(100% - 0.2 * var(--knock-f)),
+      transparent 100%;
+  }
+}
+
+/* the home page: its copy stands in the clean blue the mock leaves for it;
+   only the tagline, set over the print's faint ruling, takes the patch */
+@media (min-width: 900px) {
+  :root[data-style="cyanotype"][data-scene-art="plate"] .masthead .tagline {
+    position: relative;
+  }
+
+  :root[data-style="cyanotype"][data-scene-art="plate"] .masthead .tagline::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: calc(-1 * (var(--knock-pad) + var(--knock-f)));
+    background: var(--knock);
+    -webkit-mask-composite: source-in;
+    mask:
+      linear-gradient(90deg, var(--knock-ramp)),
+      linear-gradient(180deg, var(--knock-ramp));
+    mask-composite: intersect;
+    pointer-events: none;
+  }
+}
+
+@media (min-width: 1100px) {
+  :root[data-style="cyanotype"][data-scene-art="plate"] :is(
+      .detail-hero:is(:has(.tags), .solo) :is(.kicker, h1, p, .tags),
+      .launch-copy :is(.kicker, h1, .launch-sub, .launch-keys, .launch-keys-note, .launch-proof),
+      .launch-shot-cap
+    )::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: calc(-1 * (var(--knock-pad) + var(--knock-f)));
+    background: var(--knock);
+    -webkit-mask-composite: source-in;
+    mask:
+      linear-gradient(90deg, var(--knock-ramp)),
+      linear-gradient(180deg, var(--knock-ramp));
+    mask-composite: intersect;
+    pointer-events: none;
+  }
+
+  /* (a block that is not already positioned is the patch's box) */
+  :root[data-style="cyanotype"][data-scene-art="plate"] :is(
+      .detail-hero:is(:has(.tags), .solo) :is(.kicker, h1, p, .tags),
+      .launch-copy :is(h1, .launch-sub, .launch-keys, .launch-keys-note, .launch-proof)
+    ) {
+    position: relative;
+  }
+
+  /* a ruled frame or box that is hollow on the print is filled with it */
+  :root[data-style="cyanotype"][data-scene-art="plate"] .launch-copy .kicker,
+  :root[data-style="cyanotype"][data-scene-art="plate"] .launch-hero .launch-keys .key:not([data-tone="signal"]) {
+    background: var(--knock);
+  }
+
+  /* The running head hangs over the same print, and over its registration
+     crosshairs: its words take the patch too, a narrower one, since the head
+     lies over the opening's own tapes and label (it is above them, and its
+     feather must stop short of them). A key's own tile layer (.key::before,
+     which the head's keys leave bare) is the patch. */
+  :root[data-style="cyanotype"][data-scene-art="plate"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)) .running-head {
+    --knock-f: max(7px, calc(12 * var(--u)));
+    --knock-pad: max(2px, calc(3 * var(--u)));
+  }
+
+  :root[data-style="cyanotype"][data-scene-art="plate"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)) .running-head :is(.brand, .meta) {
+    position: relative;
+  }
+
+  :root[data-style="cyanotype"][data-scene-art="plate"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)) .running-head :is(.brand, .meta, .key)::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: calc(-1 * (var(--knock-pad) + var(--knock-f)));
+    border: 0;
+    border-image-source: none;
+    background: var(--knock);
+    -webkit-mask-composite: source-in;
+    mask:
+      linear-gradient(90deg, var(--knock-ramp)),
+      linear-gradient(180deg, var(--knock-ramp));
+    mask-composite: intersect;
+    pointer-events: none;
+  }
+}
+
+/* ---------- the launch page ----------
+   (cyanotype-launch) The promise at the left in a ruled frame, a white
+   serif headline on two lines, the lead, both calls side by side, the facts
+   in a line between hairlines; the live window taped to the print at the
+   right in its own mount; and under them the reflexes, torn from the
+   page's foot, as the cream band of three chords. */
+@media (min-width: 1100px) {
+  :root[data-style="cyanotype"] .launch-hero:nth-child(n) {
+    position: relative;
+    display: block;
+    order: -2;
+  }
+
+  :root[data-style="cyanotype"] .launch-copy.faceplate:nth-child(n) {
+    position: absolute;
+    top: calc(88 * var(--u));
+    left: calc(87 * var(--u));
+    width: calc(626 * var(--u));
+    padding: 0;
+    isolation: auto;
+  }
+
+  :root[data-style="cyanotype"] .launch-copy .kicker {
+    position: relative;
+    display: flex;
+    width: fit-content;
+    margin: 0 0 calc(14 * var(--u)) calc(14 * var(--u));
+    padding: calc(10 * var(--u)) calc(26 * var(--u)) calc(9 * var(--u));
+    border: 1px solid color-mix(in srgb, var(--l-ink) 55%, transparent);
+    border-image-source: none;
+    font-family: var(--font-typewriter), ui-monospace, monospace;
+    font-size: max(11px, calc(17.5 * var(--u)));
+    line-height: calc(24 * var(--u));
+    letter-spacing: 0.01em;
+    text-transform: none;
+  }
+
+  :root[data-style="cyanotype"] .launch-copy .kicker,
+  :root[data-style="cyanotype"] .launch-copy .kicker * {
+    color: var(--l-ink);
+  }
+
+  :root[data-style="cyanotype"] .launch-copy .kicker .led {
+    display: none;
+  }
+
+  :root[data-style="cyanotype"] .launch-copy .kicker > .seplist {
+    --sep: calc(26 * var(--u));
+    flex-wrap: nowrap;
+    max-width: none;
+    white-space: nowrap;
+  }
+
+  /* the frame is ruled twice, its lines run past its corners (a drawn
+     border with crop marks, as the mock's) */
+  :root[data-style="cyanotype"] .launch-copy .kicker::after {
+    content: "";
+    position: absolute;
+    inset: calc(-14 * var(--u)) calc(-18 * var(--u));
+    --rule: color-mix(in srgb, var(--l-ink) 38%, transparent);
+    background:
+      linear-gradient(var(--rule), var(--rule)) 0 calc(14 * var(--u)) / 100% 1px no-repeat,
+      linear-gradient(var(--rule), var(--rule)) 0 calc(100% - 14 * var(--u)) / 100% 1px no-repeat,
+      linear-gradient(var(--rule), var(--rule)) calc(18 * var(--u)) 0 / 1px 100% no-repeat,
+      linear-gradient(var(--rule), var(--rule)) calc(100% - 18 * var(--u)) 0 / 1px 100% no-repeat;
+    pointer-events: none;
+  }
+
+  :root[data-style="cyanotype"] .launch-hero h1 {
+    /* (the frame hangs 16 lower, clear of the masthead's row, and the
+       headline 6: it stands where the mock sets it, give or take) */
+    margin: calc(22 * var(--u)) 0 calc(18 * var(--u));
+    font-size: max(40px, calc(82 * var(--u)));
+    font-weight: 700;
+    line-height: 0.93;
+    letter-spacing: -0.016em;
+    text-wrap: wrap;
+    color: var(--l-ink);
+    /* the mock embosses it: a soft shade below the letters */
+    text-shadow: 0 calc(3 * var(--u)) calc(9 * var(--u)) rgb(2 14 38 / 0.5);
+  }
+
+  :root[data-style="cyanotype"] .launch-hero .launch-sub {
+    max-width: none;
+    margin: 0;
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-size: max(13px, calc(19.5 * var(--u)));
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--l-ink);
+  }
+
+  /* the explanation gives way here as on a short laptop screen (globals.css):
+     the reflexes under the window say it, and the lead is in the meta
+     description */
+  :root[data-style="cyanotype"] .launch-hero .launch-lede {
+    display: none;
+  }
+
+  :root[data-style="cyanotype"] .launch-hero .launch-keys {
+    flex-wrap: nowrap;
+    gap: calc(28 * var(--u));
+    /* (the mock's calls stand at y 370; the note below them keeps clear of the
+       ruled box's crop marks, which run 7 past its corners, with the room the
+       calls gave up) */
+    margin-top: calc(16 * var(--u));
+  }
+
+  :root[data-style="cyanotype"] .launch-hero .launch-keys .key[data-size="lg"] {
+    flex: none;
+    min-height: max(40px, calc(63 * var(--u)));
+    padding: 0 calc(24 * var(--u));
+    font-size: max(14px, calc(27 * var(--u)));
+  }
+
+  /* the call is a slab of the cards' paper, typed in bold serif and an
+     arrow; the other a rule of white round "Try it live" */
+  :root[data-style="cyanotype"] .launch-hero .launch-keys .key[data-tone="signal"] {
+    min-width: calc(263 * var(--u));
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  :root[data-style="cyanotype"] .launch-hero .launch-keys .key[data-tone="signal"] > span::after {
+    content: " \2192" / "";
+  }
+
+  :root[data-style="cyanotype"] .launch-hero .launch-keys .key:not([data-tone="signal"]) {
+    --ki: var(--l-ink);
+    --tick: calc(7 * var(--u));
+    --chalk: color-mix(in srgb, var(--l-ink) 92%, transparent);
+    min-width: calc(210 * var(--u));
+    border-width: 1px;
+    font-size: max(13px, calc(24 * var(--u)));
+  }
+
+  /* drawn with a ruling pen, as the mock's: a hairline box whose four sides
+     run a little past its corners */
+  :root[data-style="cyanotype"] .launch-hero .launch-keys .key:not([data-tone="signal"])::before {
+    inset: calc(-1px - var(--tick));
+    background:
+      linear-gradient(var(--chalk), var(--chalk)) 0 var(--tick) / var(--tick) 1px no-repeat,
+      linear-gradient(var(--chalk), var(--chalk)) 100% var(--tick) / var(--tick) 1px no-repeat,
+      linear-gradient(var(--chalk), var(--chalk)) 0 calc(100% - var(--tick)) / var(--tick) 1px no-repeat,
+      linear-gradient(var(--chalk), var(--chalk)) 100% calc(100% - var(--tick)) / var(--tick) 1px no-repeat,
+      linear-gradient(var(--chalk), var(--chalk)) var(--tick) 0 / 1px var(--tick) no-repeat,
+      linear-gradient(var(--chalk), var(--chalk)) calc(100% - var(--tick)) 0 / 1px var(--tick) no-repeat,
+      linear-gradient(var(--chalk), var(--chalk)) var(--tick) 100% / 1px var(--tick) no-repeat,
+      linear-gradient(var(--chalk), var(--chalk)) calc(100% - var(--tick)) 100% / 1px var(--tick) no-repeat;
+  }
+
+  :root[data-style="cyanotype"] .launch-hero .launch-keys-note {
+    margin-top: calc(12 * var(--u));
+    font-size: max(11px, calc(15 * var(--u)));
+    gap: 2px calc(14 * var(--u));
+    color: var(--l-ink-soft);
+  }
+
+  :root[data-style="cyanotype"] .launch-hero .launch-keys-note b,
+  :root[data-style="cyanotype"] .launch-hero .launch-keys-note a {
+    color: var(--l-ink);
+  }
+
+  :root[data-style="cyanotype"] .launch-hero .launch-proof {
+    --sep: calc(18 * var(--u));
+    margin-top: calc(6 * var(--u));
+    padding: calc(7 * var(--u)) 0;
+    font-size: max(10px, calc(13.5 * var(--u)));
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--l-ink);
+    --rule: color-mix(in srgb, var(--l-ink) 42%, transparent);
+    background:
+      linear-gradient(var(--rule), var(--rule)) top / 100% 1px no-repeat,
+      linear-gradient(var(--rule), var(--rule)) bottom / 100% 1px no-repeat;
+  }
+
+  :root[data-style="cyanotype"] .launch-hero .launch-proof li::before {
+    color: var(--l-ink);
+  }
+
+  /* the window: a print on its mount, taped at two corners, tilted a
+     little; the live app's capture in the visitor's own theme. The mock's
+     border is thin (~15 of its px; the mount sprite is 812 x 525 around a
+     782 x 491 screen) */
+  :root[data-style="cyanotype"] .launch-col {
+    position: absolute;
+    top: calc(80 * var(--u));
+    left: calc(700 * var(--u));
+    width: calc(812 * var(--u));
+    display: block;
+  }
+
+  :root[data-style="cyanotype"] .launch-shot.faceplate:nth-child(n) {
+    z-index: 0;
+    margin: 0;
+    padding: 0;
+    isolation: auto;
+  }
+
+  :root[data-style="cyanotype"] .launch-shot .screen {
+    position: relative;
+    /* (the cream band of the mock's print is 11 to 18 of its px wide: 15 at
+       the sides and top and 19 below, round the 782-wide screen) */
+    padding: calc(15 * var(--u)) calc(15 * var(--u)) calc(19 * var(--u));
+    background: none;
+    isolation: isolate;
+    /* the mock's mount is turned a degree and a bit: its top edge -0.5, its
+       foot -1.3, its sides lean +1.5 */
+    rotate: -1.2deg;
+  }
+
+  :root[data-style="cyanotype"] .launch-shot .screen::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: calc(-48 * var(--u));
+    background: var(--k-mount-launch) center / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+
+  /* its two tapes, over the print as the mock lays them: across the corner
+     of the border and of the screen (a sheet of their own, kit.cuts
+     mount-tape-launch) */
+  :root[data-style="cyanotype"] .launch-shot .screen::after {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    inset: calc(-48 * var(--u));
+    /* (kit.css lays the screen's mat on every .screen::after as a border-image;
+       this style draws its mat in the ::before's mount, so none here; the
+       longhand, as the minifier drops `border-image: none` to nothing) */
+    border-image-source: none;
+    background: var(--k-mount-tape-launch) center / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+
+  :root[data-style="cyanotype"] .launch-shot .screen-face {
+    border-radius: max(2px, calc(5 * var(--u)));
+  }
+
+  /* The capture of the app carries the app's own dim behind its palette
+     (a scrim of the light theme's, a grey-green); the page lays no glare on
+     it, but the print's blue as a colour wash: the hue and strength of the
+     blue over the capture's own luminosity (blend mode color), so the dim
+     goes blue and the text, the cream palette and the selected row keep
+     their contrast and stay the theme's lights and darks. */
+  :root[data-style="cyanotype"][data-rice] .launch-shot .screen-face .screen-glass {
+    background: rgb(36 96 178);
+    mix-blend-mode: color;
+    opacity: 0.4;
+  }
+
+  :root[data-style="cyanotype"] .launch-shot .screen-edge {
+    box-shadow: inset 0 0 0 max(1.5px, calc(2.5 * var(--u))) #0b1a33;
+  }
+
+  /* the keys that hand it the keyboard, under the window on the print */
+  :root[data-style="cyanotype"] .launch-shot-cap {
+    position: absolute;
+    top: calc(100% + 24 * var(--u));
+    left: calc(20 * var(--u));
+    right: 0;
+    color: var(--l-ink);
+  }
+
+  :root[data-style="cyanotype"] .launch-shot-cap > span {
+    color: var(--l-ink);
+  }
+
+  /* ---------- the reflexes, the cream band ----------
+     Torn from the page's foot, from the print's left edge to the keycap's
+     drawing: the headline across it, three chords in their columns, ruled
+     apart, with what each does under it, and the fern on the paper at its
+     left. It is the page's own section, brought up under the opening. */
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .rack-main > .section:has(.reflexes) {
+    order: -1;
+    align-self: flex-start;
+    width: calc(1415 * var(--u));
+    padding: calc(var(--plate-w) + 16 * var(--u)) calc(30 * var(--u)) calc(var(--plate-w) + 20 * var(--u)) calc(232 * var(--u));
+    row-gap: calc(14 * var(--u));
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .rack-main > .section:has(.reflexes) > :first-child {
+    display: contents;
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .section:has(.reflexes) .section-kicker {
+    text-align: center;
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .section:has(.reflexes) h2 {
+    margin: 0;
+    text-align: center;
+    font-size: max(24px, calc(46 * var(--u)));
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .section:has(.reflexes) .aside-note {
+    order: 2;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .section:has(.reflexes) .reflexes {
+    order: 1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 0;
+    margin-top: calc(8 * var(--u));
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .section:has(.reflexes) .reflexes li {
+    justify-items: center;
+    gap: calc(16 * var(--u));
+    padding: calc(6 * var(--u)) calc(20 * var(--u)) calc(14 * var(--u));
+    background: none;
+    font-size: max(14px, calc(21 * var(--u)));
+    text-align: center;
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .section:has(.reflexes) .reflexes li + li {
+    border-left: 1px solid color-mix(in srgb, var(--print) 38%, transparent);
+  }
+
+  /* the mock's chords have no plus between the caps, only a gap (the plus
+     is aria-hidden; the chord's name is read out whole) */
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .section:has(.reflexes) .reflexes .chord {
+    gap: calc(18 * var(--u));
+  }
+
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .section:has(.reflexes) .reflexes .chord-plus {
+    display: none;
+  }
+
+  /* a cap of the mock's band: cream, ruled in the print's blue, a soft glow
+     inside and a hair of shade under (the slip tile is off; the cap is drawn
+     on the key itself, as the other keys here are) */
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .section:has(.reflexes) .reflexes .key.cap {
+    --kn: none;
+    --kh: none;
+    --kp: none;
+    --kf: none;
+    --ku: transparent;
+    border: max(1.5px, calc(2 * var(--u))) solid color-mix(in srgb, var(--print) 78%, #3a70ae);
+    border-radius: calc(7 * var(--u));
+    background: color-mix(in srgb, var(--key-under) 55%, #fff);
+    box-shadow:
+      inset 0 0 calc(10 * var(--u)) rgb(60 100 160 / 0.3),
+      0 0 calc(4 * var(--u)) rgb(40 90 160 / 0.3),
+      0 calc(2 * var(--u)) calc(5 * var(--u)) rgb(10 30 70 / 0.22);
+    min-height: max(30px, calc(50 * var(--u)));
+    min-width: calc(76 * var(--u));
+    padding: 0 calc(16 * var(--u)) 2px;
+    font-family: var(--font-display), Georgia, serif;
+    font-size: max(13px, calc(24 * var(--u)));
+    font-weight: 600;
+  }
+
+  /* the fern (kit.cuts fern-band) lies on the paper at the band's left; the
+     sheet's pin box (kit.css) is reset for it */
+  :root[data-style="cyanotype"] .rack:has(.launch-hero) .rack-main > .section:has(.reflexes)::after {
+    top: calc(var(--plate-w) + 14 * var(--u));
+    left: 0;
+    width: calc(236 * var(--u));
+    height: auto;
+    aspect-ratio: 236 / 241;
+    translate: none;
+    background: var(--k-fern-band) center / 100% 100% no-repeat;
+  }
 }

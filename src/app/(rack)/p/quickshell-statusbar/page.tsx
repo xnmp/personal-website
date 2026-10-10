@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature } from "@/components/notebook";
-import { Screen, Cap, Key } from "@/components/rack";
+import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature, ProjectMeta, ProjectKicker, Folio } from "@/components/notebook";
+import { Screen, Key } from "@/components/rack";
 
 const REPO = "https://github.com/xnmp-setup/quickshell-statusbar";
 
@@ -15,11 +15,7 @@ export default function Page() {
     <>
       <RunningHead
         brand="chong"
-        meta={
-          <>
-            04 &nbsp;·&nbsp; Quickshell bar &nbsp;·&nbsp; <span className="filed">active</span>
-          </>
-        }
+        meta={<ProjectMeta slug="quickshell-statusbar" />}
         nav={
           <>
             <Key href="/">← all projects</Key>
@@ -31,7 +27,7 @@ export default function Page() {
 
         <section className="detail-hero">
           <div>
-            <div className="kicker">04 · Quickshell bar</div>
+            <ProjectKicker slug="quickshell-statusbar" />
             <h1>A status bar that shows what my coding agents are doing.</h1>
             <p>
               I usually have several terminals running Claude Code or Codex at once. The bar puts
@@ -259,12 +255,7 @@ export default function Page() {
         </section>
 
       </main>
-      <footer className="folio">
-        <span className="fine-only">
-          Press <Cap>/</Cap> for the other projects
-        </span>
-        <span>04 / 11</span>
-      </footer>
+      <Folio slug="quickshell-statusbar" />
     </>
   );
 }

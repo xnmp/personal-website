@@ -91,6 +91,25 @@ components never fork per style.
   may leave any but the sky as `none`; the CSS layer then paints nothing and
   the 3D diorama hides that plane. The diorama maps its mountains, hills and
   groves onto them. A style with no lifted sun sets `--k-sun: none`.
+- **Scene art** (`scene` in `lib/styles.ts`): a `diorama` (Paper) is
+  layered cut-outs, which the 3D scene stands in depth. A `plate` (every
+  other style) is one painting: the style's original mock with the page
+  painted out (`art/raw/<style>/plate-*`), painted on past the mock's edges.
+  The head script sets `<html data-scene-art>` and offers the 3D scene only
+  to a diorama; a switch to a plate style stands a running 3D scene down
+  (its framing covers the frame, which would undo the registration below).
+- **Plate registration** (kit.css): on a desktop a plate's sky layer is
+  drawn at the home stage's scale (`--u`), its core (the mock's 1672x941)
+  centred across and its top on the stage's, so the props the page stands
+  against stay where the mock has them at any aspect; the page's own
+  sprites (a ledge, a monitor, a cat) are anchored to the stage the same
+  way. The bleed it is painted to (`--sky-bleed-x` each side,
+  `--sky-bleed-bottom` below, mock px; the recipe's `scene.bleed`) fills the
+  frame round the stage from 4:3 to 21:9 (`tests/styles.test.ts`); past
+  that the plate scales up to cover. Below 900px there is no stage, and the
+  core covers the frame from its foot. Lengths are in the scene's container
+  units (`.scene` is a size container), so a classic scrollbar doesn't
+  shift it.
 - **Type**: the three roles stay; a style may re-point `--font-display` at its
   own face, declared in `app/fonts.ts` with `preload: false`, so its file is
   only fetched when that style is worn.
@@ -156,6 +175,62 @@ components never fork per style.
   inside a sheet. A style whose material is one large print (cyanotype's
   emulsion) sets it per card in a row, so neighbours are never cut from the
   same place in it.
+
+## Content is data
+
+The projects are a list (`src/data/projects.ts`). Adding one, removing one,
+reordering them or featuring another on the home row is an edit to that list
+and never to a stylesheet. Each style holds to the following, and the tests
+enforce it.
+
+- **Adding a project** takes three things: an entry in `entries`, its page
+  `src/app/(rack)/p/<slug>/page.tsx`, and its 1-bit art in
+  `public/screens/`, after which you run `bun run screens:bounds`.
+  - Its number is its place in the list.
+  - The page's meta, kicker and folio (`ProjectMeta`, `ProjectKicker`,
+    `Folio`) read the number from the data, so nothing is renumbered by
+    hand.
+  - It lands on its shelf, in the index and in the Explorer window's
+    `~/Repos` by itself.
+  - `tests/projects.test.ts` fails by name if any part is missing.
+- **A style dresses an item by what it is, never by which project it is.**
+  No selector names a project by its link, slug or title. Per-item
+  variation comes from the item's data, which the shared markup passes on:
+  - `data-shelf` ("tools" or "games") on cards and modules: an app's card
+    may wear an app window.
+  - `data-tone`.
+  - `--glyph`, the project's one character, as a CSS string, for a seal
+    (`content: var(--glyph)`).
+  - `--drawn-x/-y/-w/-h`: where the art's drawing sits in its mask, as
+    shares of it (centre and size, from `src/data/screen-bounds.json`).
+    Fit a drawing by these (centre it, stand every card's at one height)
+    instead of measuring each project's art by hand.
+- **Repeated items take cycles, not places.**
+  - A decoration that varies along a list uses `:nth-child(4n+k)`, so a
+    fifth card is dressed like the first.
+  - `:first-child` is a role (the lead card) and is fine.
+  - A fixed `:nth-child(3)` on a card, module or fact is not.
+- **Layouts take any count.**
+  - The home row is one row of as many cards as `FEATURED` holds (globals:
+    `grid-auto-flow: column`, equal shares).
+  - A style may set the mock's own column proportions for four, under the
+    quantity query `.showcase-row:has(> li:nth-child(4):last-child)`, and
+    leaves any other count to the equal shares.
+  - Card heights must not grow with a wider card: three cards stay on the
+    first screen.
+  - Shelves wrap.
+- **The flagship is the one bespoke slot.** Its window is the app's own
+  UI (`ExplorerWindow`), so changing `FLAGSHIP` means designing that
+  window. Its name, links and labels come from the data. Lettering art that
+  paints a word (Sumi's brushed title) is keyed to the word it paints, and
+  live type stands in for any other.
+- **The tests.**
+  - `tests/style-contract.test.ts` reads every stylesheet's selectors for
+    the first two rules.
+  - `e2e/content.e2e.ts` gives every style's home row three and five
+    cards and its shelf one module more and one fewer, and checks the
+    layout holds: one row of whole cards on the first screen, no overlap,
+    no sideways scroll.
 
 ## Components
 
@@ -265,9 +340,18 @@ components never fork per style.
   glued to the end of an inline element in the served HTML.
 - `VideoScreen` (Eskiv) shows 1-bit art of the video with a tile that opens it
   on YouTube in a new tab; nothing loads from YouTube on the page.
-- The home page's first screen shows the flagship's window as
-  `ExplorerWindow` (components/landing): the app's two panes as live text in
-  the rice, not a bitmap.
+- The home page's first screen is composed as every style's mock is
+  (components/landing, page.tsx): `Masthead` (the brand, the tagline, and
+  the keys printed as words), the flagship's name, pitch and keys beside
+  its window, and the row of four `ShowcaseCard`s (`FEATURED`,
+  `data/projects.ts`) under them; the rest of the projects are on the
+  shelves below. It is laid out on a stage of the mocks' proportions
+  (globals.css "home landing"): `--u` is one mock pixel, so a style places
+  each piece at its mock's coordinates with the `--l-*` tokens and hangs its
+  ornaments on the free hooks there; below 900px it stacks. The window is
+  `ExplorerWindow`: the app's two panes as live text in the rice, not a
+  bitmap, sized to its container (cqw) and holding as many whole rows as
+  fit.
 - Screenshots swap to tighter phone crops below 600px (`<picture>`), so the
   text in them stays near its real size. Scripted scrolls go through
   `lib/motion.ts`, which honours `prefers-reduced-motion`.
@@ -296,9 +380,10 @@ lives in `public/kit/paper/`: `sheet-*`, `tile-*`, `mat-*`, `pin-*`,
   `--right-anchor`, 0 to 1 as background-position-x) and hold them to
   `--side-span` frame widths (drawn at `--side-size`), so on a narrow
   screen each landmark keeps to its side, smaller, rather than being cropped
-  away; the 3D scene reads the same tokens (`framing.ts` `Placement`). Such a
-  layer is out of register with the rest, so only side layers outside the
-  shadow chain (no `left-back`/`right-back` behind them) are anchored. The art has a calm centre and its
+  away; the 3D scene reads the same tokens (`framing.ts` `Placement`). Each
+  side's back row (`left-back`, `right-back`) goes with it, and a shadow
+  between layers placed apart is mapped across (`framing.ts` `casterMap`),
+  so it falls where its caster is drawn. The art has a calm centre and its
   incident at the edges and foot. One cloud (`.scene::after`) drifts across in
   150s, in the alpenglow finish only. `scripts/register-layer.mjs` corrects a
   generated layer's vertical drift or scale and can mirror-fill below its

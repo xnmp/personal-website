@@ -2,7 +2,7 @@
 
 import { useId, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { menuPlacement, nextItem } from "@/lib/menu";
-import { DEFAULT_STYLE, STYLE_EVENT, STYLE_KEY, STYLES, styleName, type StyleId } from "@/lib/styles";
+import { DEFAULT_STYLE, STYLE_EVENT, STYLE_KEY, STYLES, sceneArt, styleName, type StyleId } from "@/lib/styles";
 
 function subscribe(cb: () => void) {
   window.addEventListener(STYLE_EVENT, cb);
@@ -13,7 +13,9 @@ const readStyle = () => document.documentElement.dataset.style ?? DEFAULT_STYLE;
 /** Dress the page in a style and remember it (the head script reapplies it
  *  before paint on the next load, see app/layout.tsx). */
 export function applyStyle(id: StyleId) {
-  document.documentElement.dataset.style = id;
+  const root = document.documentElement;
+  root.dataset.sceneArt = sceneArt(id);
+  root.dataset.style = id;
   try {
     localStorage.setItem(STYLE_KEY, id);
   } catch {

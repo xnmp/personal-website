@@ -1,0 +1,5 @@
+Four flat-headed thumbtacks (drawing pins) seen from straight above, arranged in a single horizontal row with wide even spacing, matching the matte, dull bronze tacks that pin the cream cards in the attached reference image (ref.png): one in that dull dark bronze, one painted a muted sage green, one painted a warm ochre-amber, one painted a terracotta red. All four are the same material and finish: a slightly domed, matte head of aged, oiled metal or matte enamel with a soft, broad sheen at the upper left and no bright specular highlight, no gloss and no mirror reflection; a thin darker rim. Only the heads are visible. Identical size and lighting. No shadows on the background. Wide 16:9 image.
+
+Style: a handmade cut-paper diorama, photographed straight-on in soft studio light from the upper left, as in ref.png; use it for style only, not composition.
+
+Background: if your image tool supports a transparent background, use a fully transparent background. Otherwise use a perfectly flat, pure magenta #FF00FF background with no gradient, texture, vignette or cast shadow on it. No text anywhere.

@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
-import {
-  RunningHead,
-  Tags,
-  Tag,
-  OpenQuestion,
-  Plate,
-} from "@/components/notebook";
-import { Cap, Screen, Key } from "@/components/rack";
+import { RunningHead, Tags, Tag, OpenQuestion, Plate, ProjectMeta, ProjectKicker, Folio } from "@/components/notebook";
+import { Screen, Key } from "@/components/rack";
 import { BwaiBench } from "@/components/charts/BwaiBench";
 
 export const metadata: Metadata = {
@@ -32,11 +26,7 @@ export default function BwaiPage() {
     <>
       <RunningHead
         brand="chong"
-        meta={
-          <>
-            08 &nbsp;·&nbsp; Brood War &nbsp;·&nbsp; <span className="filed">active</span>
-          </>
-        }
+        meta={<ProjectMeta slug="bwai" />}
         nav={
           <>
             <Key href="/">← all projects</Key>
@@ -47,7 +37,7 @@ export default function BwaiPage() {
 
         <section className="detail-hero">
           <div>
-            <div className="kicker">08 · Brood War</div>
+            <ProjectKicker slug="bwai" />
             <h1>The game that taught me to think, now a machine-learning problem.</h1>
             <p>
               I played Brood War competitively once. Twenty years later the
@@ -245,12 +235,7 @@ export default function BwaiPage() {
         </section>
 
       </main>
-      <footer className="folio">
-        <span className="fine-only">
-          Press <Cap>/</Cap> for the other projects
-        </span>
-        <span>08 / 11</span>
-      </footer>
+      <Folio slug="bwai" />
     </>
   );
 }

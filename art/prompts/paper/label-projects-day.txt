@@ -1,0 +1,7 @@
+Edit the attached reference image (ref.png): a mock-up of a website's home page painted as a cut-paper diorama, 16:9. Produce only the torn-paper label that carries the heading "Projects", cut out on transparency.
+
+Keep only the small torn scrap of cream paper at the left, above the row of project cards, that the heading "Projects" is printed on, with its torn fibrous edge all the way round and its slight tilt. Remove the word "Projects", continuing the plain paper where it was, and remove the round pin below it. Continue the scrap's paper where the cards' band overlaps it, so the scrap is whole.
+
+Keep what stays exactly where and as it is in ref.png: the same position, size, outline, colours, paper texture, torn fibrous edges and soft light from the upper left. Everything else is fully transparent (use a transparent background with real alpha): the landscape, the sky and every other part of the page. Same framing and the same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available, so the kept piece can be laid back over the page in exactly the same place. No lettering anywhere.
+
+FRAMING, the most important requirement: the output is the whole of ref.png's frame at exactly the same scale, never a close-up. Do not zoom in, crop, enlarge, shrink or re-centre anything: the kept piece sits at exactly the same pixel position, size and shape as in ref.png, so it lies exactly over the original when laid back on it; most of the frame is empty transparency.

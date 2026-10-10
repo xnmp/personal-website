@@ -1,11 +1,4 @@
-import {
-  RunningHead,
-  Tags,
-  Tag,
-  OpenQuestion,
-  Plate,
-  Folio,
-} from "@/components/notebook";
+import { RunningHead, Tags, Tag, OpenQuestion, Plate, Folio, ProjectMeta, ProjectKicker } from "@/components/notebook";
 import { Screen, Key } from "@/components/rack";
 import { ZsyLadder } from "@/components/charts/ZsyLadder";
 import { ZsyRuns } from "@/components/charts/ZsyRuns";
@@ -21,11 +14,7 @@ export default function ZsyPage() {
     <>
       <RunningHead
         brand="chong"
-        meta={
-          <>
-            10 &nbsp;·&nbsp; Zheng Shang You &nbsp;·&nbsp; <span className="filed">active</span>
-          </>
-        }
+        meta={<ProjectMeta slug="zheng-shang-you" />}
         nav={
           <>
             <Key href="/">← all projects</Key>
@@ -37,7 +26,7 @@ export default function ZsyPage() {
 
         <section className="detail-hero">
           <div>
-            <div className="kicker">10 · Zheng Shang You</div>
+            <ProjectKicker slug="zheng-shang-you" />
             <h1>Teaching a network the family card game.</h1>
             <p>
               Zheng Shang You is a 4-player climbing game: shed your hand
@@ -195,7 +184,7 @@ export default function ZsyPage() {
         </section>
 
       </main>
-      <Folio number="10" />
+      <Folio slug="zheng-shang-you" />
     </>
   );
 }

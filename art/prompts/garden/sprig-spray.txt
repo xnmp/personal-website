@@ -1,0 +1,5 @@
+One small sprig, exactly the one in the attached reference (ref.png, the sprig after a name, enlarged): a thin dark-green stem rising from the lower left diagonally up to the upper right, with four broad, pointed elliptical leaves set alternately along it, two on each side, the topmost the largest and leaning along the stem's line, the lowest the smallest. Soft sage-to-moss green watercolour, each leaf a little darker along its edge and lighter at its middle, with a pale fine midrib; a fine darker green outline; a little watercolour granulation. Seen flat, on its own. No text, no shadow, nothing else. Centred, filling about 80% of the frame. Square 1:1 image.
+
+Style: a cottage garden painted as a soft, detailed botanical watercolour with fine ink line, in warm late-morning daylight from the upper left: creamy plaster, honey and grey limestone, pink roses, foxgloves, daisies, lavender, ferns and ivy in moss green and soft sage.
+
+Background: if your image tool supports a transparent background, use a fully transparent background. Otherwise use a perfectly flat, pure magenta #FF00FF background with no gradient, texture, vignette or cast shadow on it.

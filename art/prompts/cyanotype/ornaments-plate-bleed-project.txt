@@ -1,0 +1,9 @@
+Edit the attached reference image (ref.png): the clean background plate of a website's project page, a cyanotype print: a deep Prussian-blue sun-print with brush marks, mottling, fine white blueprint grid lines, white blueprint line-drawings and photogram silhouettes laid on it. Produce the same picture with exactly one addition and nothing else:
+
+In the open, empty deep-blue ground at the right of the picture's middle, in a band that runs from about 51% to 84% of the width and from about 57% to 72% of the height (just right of the two gear drawings, with the white fern photograms and the boxed keycap drawing further right, well clear of it), add a few more generic ornaments in exactly the same hand, line weight, tone and texture as the ones already on the print:
+1. one white fern frond photogram, soft-edged like the other fern photograms, lying nearly horizontal in the band, about 20% of the picture's width long;
+2. one small pair of meshing gears drawn as thin white blueprint linework with fine dimension lines and tick marks, in the manner of the two gear drawings already there, about 7% of the picture's width across;
+3. two or three small registration crosses and a short run of fine white hairline grid rule with tick marks, as the print already has.
+Space them out with plenty of empty ground between them, nothing overlapping anything else, nothing touching the edge of the band. No text, no handwriting, no numbers, no arrows, no labels anywhere.
+
+Keep everything else exactly where and as it is in the reference, untouched: the two gear drawings with their dimension lines and tick marks, the keycap drawing in its box with its small note and its piece of tape, the fern photograms, every grid line and registration cross, the palette, the texture and the brushwork. Same framing and the same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available.

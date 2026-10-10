@@ -1,8 +1,10 @@
 import { ForOS } from "@/components/launch/ForOS";
+import { FLAGSHIP, projects } from "@/data/projects";
 
-/** ~/Repos as the app lists it: the projects on this site, and the dotfiles
- *  that colour its screens. */
-const REPOS = ["tauri-explorer", "scrivo", "ballast", "ashen-cathedral", "zheng-shang-you", "bwai", "dotfiles"];
+/** ~/Repos as the app lists it: the app's own folder first (selected), then
+ *  the other projects on this site, and the dotfiles that colour its
+ *  screens. From the data, so a new project is in the list. */
+const REPOS = [FLAGSHIP, ...projects.map((p) => p.slug).filter((s) => s !== FLAGSHIP), "dotfiles"];
 
 /** The app's own folder, its top level as the repository has it. */
 const FILES: { name: string; kind: string }[] = [
@@ -16,6 +18,14 @@ const FILES: { name: string; kind: string }[] = [
   { name: "README.md", kind: "md" },
   { name: "package.json", kind: "json" },
   { name: "svelte.config.js", kind: "js" },
+];
+
+/** The status line's legend: the chords the app is driven by, and what each
+ *  does. Each key is its own element, so a style may set them as keycaps. */
+const HINTS = [
+  { keys: "Ctrl+P", does: "open anything" },
+  { keys: "Ctrl+Shift+F", does: "find in files" },
+  { keys: "Ctrl+Shift+P", does: "commands" },
 ];
 
 function Pane({ path, rows, selected }: { path: string; rows: { name: string; kind: string }[]; selected?: number }) {
@@ -60,7 +70,14 @@ export function ExplorerWindow() {
       <div className="xw-status">
         <span className="xw-mode">1/{REPOS.length}</span>
         <span className="xw-hints">
-          <ForOS>Ctrl+P open anything · Ctrl+Shift+F find in files · Ctrl+Shift+P commands</ForOS>
+          {HINTS.map((h) => (
+            <span key={h.keys} className="xw-hint">
+              <kbd>
+                <ForOS>{h.keys}</ForOS>
+              </kbd>{" "}
+              {h.does}
+            </span>
+          ))}
         </span>
         <span className="xw-branch">main</span>
       </div>

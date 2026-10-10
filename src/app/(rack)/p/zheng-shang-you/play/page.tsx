@@ -1,8 +1,4 @@
-import {
-  RunningHead,
-  Plate,
-  Folio,
-} from "@/components/notebook";
+import { RunningHead, Plate, Folio, ProjectMeta, ProjectKicker } from "@/components/notebook";
 import { ZsyGame } from "@/components/zsy/ZsyGame";
 import { Key } from "@/components/rack";
 
@@ -17,11 +13,7 @@ export default function ZsyPlayPage() {
     <>
       <RunningHead
         brand="chong"
-        meta={
-          <>
-            10 &nbsp;·&nbsp; Zheng Shang You &nbsp;·&nbsp; <span className="filed">playable</span>
-          </>
-        }
+        meta={<ProjectMeta slug="zheng-shang-you" />}
         nav={
           <>
             <Key href="/p/zheng-shang-you">← the project</Key>
@@ -33,7 +25,7 @@ export default function ZsyPlayPage() {
 
         <section className="detail-hero">
           <div>
-            <div className="kicker">10 · Zheng Shang You · playable appendix</div>
+            <ProjectKicker slug="zheng-shang-you" />
             <h1>Shed your hand first.</h1>
             <p>
               Three opponents, each running the scripted strategist: the same
@@ -79,7 +71,7 @@ export default function ZsyPlayPage() {
         </section>
 
       </main>
-      <Folio number="10" />
+      <Folio slug="zheng-shang-you" />
     </>
   );
 }

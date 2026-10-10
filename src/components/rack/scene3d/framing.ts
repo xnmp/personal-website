@@ -84,6 +84,21 @@ export function layoutPlane(view: Size, art: Size, depth: number, fov: number, o
   };
 }
 
+/**
+ * Where a caster's art lies under a receiver's, for a shadow: the receiver's
+ * art UV (x right, y up from the foot) maps to the caster's as
+ * `uv * [sx, sy] + [tx, ty]`, so a shadow falls where the caster is drawn
+ * even when the two are placed apart (a side layer anchored, the layer
+ * behind it covering). Registered layers (the same placement) map 1:1.
+ */
+export function casterMap(view: Size, art: Size, receiver: Placement, caster: Placement): [number, number, number, number] {
+  const sr = placedScale(view, art, receiver);
+  const sc = placedScale(view, art, caster);
+  const left = (p: Placement, s: number) => p.anchor * (view.w - art.w * s);
+  // both feet stand on the frame's foot, so only x shifts
+  return [sr / sc, sr / sc, (left(receiver, sr) - left(caster, sc)) / (art.w * sc), 0];
+}
+
 /** The sun (or moon) sprite: its size, and where its disc sits in it, in
  *  sprite px (scene/<finish>/sun.webp; kit.css --sun-sw/sh/cx/cy/r). */
 export type SunSprite = { w: number; h: number; cx: number; cy: number; r: number };

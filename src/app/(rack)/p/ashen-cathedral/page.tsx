@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature } from "@/components/notebook";
-import { Screen, Cap, Key } from "@/components/rack";
+import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature, ProjectMeta, ProjectKicker, Folio } from "@/components/notebook";
+import { Screen, Key } from "@/components/rack";
 
 export const metadata: Metadata = {
   title: "Ashen Cathedral: a dungeon crawler built from scripts",
@@ -18,11 +18,7 @@ export default function AshenCathedralPage() {
     <>
       <RunningHead
         brand="chong"
-        meta={
-          <>
-            07 &nbsp;·&nbsp; Ashen Cathedral &nbsp;·&nbsp; <span className="filed">paused</span>
-          </>
-        }
+        meta={<ProjectMeta slug="ashen-cathedral" />}
         nav={
           <>
             <Key href="/">← all projects</Key>
@@ -33,7 +29,7 @@ export default function AshenCathedralPage() {
 
         <section className="detail-hero">
           <div>
-            <div className="kicker">07 · Ashen Cathedral</div>
+            <ProjectKicker slug="ashen-cathedral" />
             <h1>A gothic dungeon crawler where nearly every asset comes out of a script.</h1>
             <p>
               An original first-person game for Unreal Engine 5.8.2, inspired by the
@@ -269,12 +265,7 @@ export default function AshenCathedralPage() {
         </section>
 
       </main>
-      <footer className="folio">
-        <span className="fine-only">
-          Press <Cap>/</Cap> for the other projects
-        </span>
-        <span>07 / 11</span>
-      </footer>
+      <Folio slug="ashen-cathedral" />
     </>
   );
 }

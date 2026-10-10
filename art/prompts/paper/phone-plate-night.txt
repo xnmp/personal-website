@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png): a cut-paper diorama landscape, tall portrait (927x1697, about 9:16). Produce the same picture by night, as the same diorama lit by moonlight, so the two can be swapped one for the other.
+
+Change only the light and the colours: the sky becomes a deep indigo-blue night sky paper, with a few tiny cut-paper stars in its open areas; the peach-yellow paper sun becomes a pale cream paper moon of exactly the same size in exactly the same place; the cream clouds turn a cool moonlit grey-blue; the layered mountains turn deep slate blue; the layered green hills, the pines and the leafy plants turn deep blue-green; the terracotta leaf is dimmed to a muted brick; the hiker stays a small dark silhouette. Light from the moon at the upper right.
+
+Keep everything else exactly where and as it is in ref.png: the composition, every shape, outline, position and size, every prop, the cut-paper construction and the paper texture. Same framing and the same tall portrait aspect as the reference (927x1697), at the highest resolution available. Opaque. No lettering anywhere.

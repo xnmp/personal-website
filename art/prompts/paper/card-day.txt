@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png): a mock-up of a website's home page painted as a cut-paper diorama, 16:9. Produce only the first project card, cut out on transparency.
+
+Keep only the first project card at the lower left (the one titled "Scrivo"): a card of cream paper with softly rounded corners and a slightly deckled, fibrous edge. Remove its title, its dark screen and the round pin at its top, and continue the card's plain cream paper seamlessly across where they were, so it is one whole, plain card. Remove the leaves that overlap its lower left corner and continue the card's edge there.
+
+Keep what stays exactly where and as it is in ref.png: the same position, size, outline, colours, paper texture, torn fibrous edges and soft light from the upper left. Everything else is fully transparent (use a transparent background with real alpha): the landscape, the sky and every other part of the page. Same framing and the same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available, so the kept piece can be laid back over the page in exactly the same place. No lettering anywhere.

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Cap, Led, Screen } from "@/components/rack";
-import { bySlug } from "@/data/projects";
+import { project, projects } from "@/data/projects";
 
 /**
  * Social cards, drawn with the real kit and captured to PNG by
@@ -14,10 +14,9 @@ export function generateStaticParams() {
   return [{ card: "home" }, { card: "tauri-explorer" }];
 }
 
-const art = (slug: string) => bySlug.get(slug)!;
-
 function HomeCard() {
-  const tiles = ["tauri-explorer", "bwai", "ashen-cathedral", "scrivo"].map(art);
+  // the four the alt text describes (opengraph-image.alt.txt)
+  const tiles = ["tauri-explorer", "bwai", "ashen-cathedral", "scrivo"].map(project);
   return (
     <div className="og-plate faceplate og-home">
       <div className="og-copy">
@@ -27,7 +26,7 @@ function HomeCard() {
         <h1 className="og-title">
           Tools I use every day, <span className="soft">and agents for the games I grew up on.</span>
         </h1>
-        <span className="silk">11 projects &nbsp;·&nbsp; chong.md</span>
+        <span className="silk">{projects.length} projects &nbsp;·&nbsp; chong.md</span>
       </div>
       <div className="og-tiles">
         {tiles.map((p) => (

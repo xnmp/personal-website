@@ -1,0 +1,1 @@
+(not generated: scripts/kits/solarpunk-lacquer.mjs builds art/raw/solarpunk/lacquer-enamel from art/raw/solarpunk/lacquer, whose prompt is lacquer.txt: pulled toward grey, darkened, its sun compressed to a faint catch at the upper right, moss mottled along the foot, laid at 0.96 alpha, so the cards' face is the mock's dark near-opaque mossy enamel.)

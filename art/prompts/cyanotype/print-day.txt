@@ -1,3 +1,0 @@
-A seamless, tileable square texture of Prussian-blue cyanotype emulsion brushed on white cold-pressed watercolour paper, seen straight-on (average colour about #1f4e8c): the paper's tooth showing as a fine paler grain, faint long brush marks running horizontally, a few tiny pale specks where the brush skipped, lit evenly. No objects, no edges, no frame, no vignette and no gradient across the image: the left edge must continue seamlessly into the right edge and the top into the bottom. Fully opaque, square 1:1 image. No text.
-
-Match the blue and the paper of the attached reference image (ref.png) exactly; use it for material only, not composition.

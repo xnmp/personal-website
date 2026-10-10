@@ -4,6 +4,7 @@
 //   node scripts/check-kit.mjs [dir]      (default: every kit in public/kit; exit 1 on any drift)
 import sharp from "sharp";
 import { readdirSync } from "node:fs";
+import { webpOptions } from "./webp.mjs";
 
 const DIRS = process.argv[2] ? [process.argv[2]] : readdirSync("public/kit").map((d) => `public/kit/${d}`);
 let DIR = DIRS[0]; // the kit being checked
@@ -21,9 +22,16 @@ const LIGHT_ONLY = new Set(["hover", "focus", "flat"]);
 const ADDS = (family, state, grown) => family.startsWith("sheet-") && state === "focus" && grown > MAX_DRIFT;
 // mean per-channel difference over the paper. Two states are encoded apart,
 // and lossy WebP spends its bits by the whole image, so even unchanged pixels
-// jitter: about 1 on matte paper, about 2 on brushed brass. A relit or moved
-// surface differs by tens.
+// jitter: about 1 on matte paper, about 2 on brushed brass, more on a grained
+// enamel. So the allowance is the material's own: the codec's jitter on the
+// normal state's paper (it decoded and encoded again as the build encodes a
+// state), times JITTER, and never under MAX_PAPER_DELTA. Two independent
+// encodes of the same paper differ by about √2 of one encode's error, so 1.5
+// leaves the codec its room. A relit or recoloured surface differs by more
+// than that, and a moved one by tens.
 const MAX_PAPER_DELTA = 2.5;
+const JITTER = 1.5;
+const STATE_WEBP = webpOptions(88); // scripts/build-kit.mjs, a derived state
 const SEARCH = 28; // px searched each way; must exceed any plausible drift
 // slice insets from kit.css; the corners are the part a 9-slice never stretches
 const SLICE = { sheet: 152, tile: 60 };
@@ -118,6 +126,24 @@ const paperDelta = async (a, b, opaque) => {
   return sum / Math.max(1, n);
 };
 
+/** the codec's own jitter on a state's paper: its decoded pixels encoded
+ *  again as the build encodes a state, against themselves */
+const noiseFloor = async (file, opaque) => {
+  const { data, info } = await sharp(`${DIR}/${file}`).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const again = await sharp(await sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).webp(STATE_WEBP).toBuffer())
+    .ensureAlpha()
+    .raw()
+    .toBuffer();
+  let sum = 0;
+  let n = 0;
+  for (let i = 0; i < opaque.length; i++)
+    if (opaque[i]) {
+      for (let k = 0; k < 3; k++) sum += Math.abs(data[i * 4 + k] - again[i * 4 + k]);
+      n += 3;
+    }
+  return sum / Math.max(1, n);
+};
+
 let failed = false;
 for (DIR of DIRS) {
   const families = new Map();
@@ -143,9 +169,11 @@ for (DIR of DIRS) {
         let lost = 0;
         for (let i = 0; i < ref.opaque.length; i++) lost += ref.opaque[i] & (1 - m.opaque[i]);
         const delta = await paperDelta(normal.file, s.file, ref.solid);
-        const ok = lost / ref.opaque.length <= MAX_DRIFT && delta <= MAX_PAPER_DELTA;
+        const floor = await noiseFloor(normal.file, ref.solid);
+        const allowed = Math.max(MAX_PAPER_DELTA, JITTER * floor);
+        const ok = lost / ref.opaque.length <= MAX_DRIFT && delta <= allowed;
         failed ||= !ok;
-        console.log(`${ok ? "ok  " : "FAIL"} ${DIR.split("/").pop()}/${family}-${s.state}: adds to the sheet, paper lost ${((lost / ref.opaque.length) * 100).toFixed(2)}%, paper delta ${delta.toFixed(2)}`);
+        console.log(`${ok ? "ok  " : "FAIL"} ${DIR.split("/").pop()}/${family}-${s.state}: adds to the sheet, paper lost ${((lost / ref.opaque.length) * 100).toFixed(2)}%, paper delta ${delta.toFixed(2)} (allowed ${allowed.toFixed(2)}, codec ${floor.toFixed(2)})`);
         continue;
       }
       let diff = 0;

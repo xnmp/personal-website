@@ -155,6 +155,7 @@ test("prose keeps its spaces around inline elements", async ({ page }) => {
 // with its own insets and its own wordmark face
 for (const style of STYLES) {
   test(`on a narrow phone the masthead keeps the brand and its keys on one row (${style.id})`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" }); // the sheets' drop would move the boxes between reads
     await page.addInitScript((s) => localStorage.setItem("nb-style", s), style.id);
     for (const width of [320, 360]) {
       await page.setViewportSize({ width, height: 700 });

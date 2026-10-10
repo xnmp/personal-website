@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png), a cut-paper diorama landscape, 16:9.
+
+Remove the green forested ridges and the river valley: the green paper mountains in front of the blue ones, the stone bridge, the village with its church tower, the river with its banks and the small trees along the valley floor. Where they were, continue what lies behind them seamlessly, in exactly the same rendering: the blue-grey paper mountains, their slopes running on down to the top of the rolling foreground hills (and the sky where no mountain stands).
+
+Keep everything else exactly where and as it is in ref.png, pixel for pixel: the composition, every other element, the light, the palette, the cut-paper construction and the paper texture. FRAMING, the most important requirement: the output is the whole of ref.png's frame at exactly the same scale; do not zoom, crop, shift or re-centre anything, so the result lies exactly over ref.png. Same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available. Opaque. No lettering anywhere but the signpost's three words, where the signpost stays.

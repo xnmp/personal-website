@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png): a mock-up of a website's launch page painted as a cut-paper diorama, 16:9. Produce only its terracotta "Join the alpha" button, as a blank board cut out on transparency, drawn large.
+
+Draw only that button's board, large and centred in the frame: a thick board of terracotta (burnt orange-red) handmade paper with softly rounded corners, a slightly deckled, fibrous edge and the paper's fine fibres and mottle, lit softly from the upper left, as in ref.png. Remove its lettering and continue the plain terracotta paper where the words were. No shadow under it (the board alone).
+
+The board fills most of the frame's width (a long, low rounded rectangle about three times as wide as it is tall), centred. Everything else is fully transparent (use a transparent background with real alpha). 16:9 landscape, at the highest resolution available. No lettering anywhere.

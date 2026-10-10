@@ -1,99 +1,133 @@
 /* ==========================================================================
-   CELESTIAL ATLAS (art/briefs/atlas.md): enamel plates in frames of
-   engraved, gilded brass over a great engraved star chart, buttons of the
-   plates' enamel in slim gilt bezels, crimson enamel the one accent, jewels
-   in brass, gilt label strips, ivory enamel slips. The kit is built by
-   `node scripts/build-kit.mjs atlas` to the same source geometry as the
-   Paper Diorama, so only the art, the inks and the mounts' slices change.
-   Night (the dark rices: the gilt chart under the lamp) first, then day
-   (the light rice: the daylight plate).
+   CELESTIAL ATLAS (art/briefs/atlas.md): a plate of an antique celestial
+   atlas. By night the sky is gold engraved on deep navy over a lake, its
+   constellations gilt figures, a full moon and an observatory on a cliff.
+   The whole page sits in a fine gilt double border. Every card and window
+   is in a thinner gilt double rule with a scroll flourish in each corner,
+   round a field of the navy. The type is an old-style roman in cream and
+   gold, and a motto in spaced gilt capitals sits at the foot. By day it is
+   the same plate under a pale sky, its engraving a deeper gilt, its fields
+   ivory. The kit is built by `node scripts/build-kit.mjs atlas` to the
+   shared source geometry. Night (the dark rices: the original mock's
+   finish) first, then day (the light rice).
    ========================================================================== */
 
 :root[data-style="atlas"] {
-  --font-display: var(--font-fell);
+  /* every word in the old-style roman, as the mock's are (the mono keeps
+     the data and the code) */
+  --font-display: var(--font-garamond);
+  --font-print: var(--font-garamond);
 
-  --signal: #e06a6e; /* crimson, lifted to read on the navy enamel (4.8:1) */
-  --signal-ink: #f0a0a2;
-  --signal-rule: #c8404a; /* the links' rule: crimson itself (3.3:1 on the navy) */
-  --print: #f1e8d2; /* ivory on navy enamel */
-  --print-soft: #e4dac3;
-  --print-faint: #d7cdb4;
-  --engrave-lo: rgba(0, 0, 0, 0.45);
-  --engrave-hi: rgba(241, 232, 210, 0.1);
-  --scene-ground: #101d38;
+  /* the gilt of the rules and the words set in gold */
+  --a-gilt: #e2bb6a;
+  --a-gilt-hi: #f6dc9c;
+  /* the words set in gold (the heading, the motto) */
+  --a-gold-ink: var(--a-gilt-hi);
+  /* the headline in pale gold leaf (its mottle, the gold button's face),
+     lit from above, embossed: a crisp shade along its lower right edges and
+     a soft shadow of the night under it */
+  --a-foil: url(/kit/atlas/foil-night.webp);
+  --a-title-light: linear-gradient(180deg, rgb(255 246 222 / 0.22), transparent 42%, rgb(60 38 8 / 0.07));
+  --a-title-shadow: drop-shadow(0 0 calc(0.7 * var(--u)) rgb(14 9 2 / 0.9)) drop-shadow(calc(0.5 * var(--u)) calc(1 * var(--u)) calc(0.6 * var(--u)) rgb(20 12 2 / 0.75)) drop-shadow(0 calc(3 * var(--u)) calc(5 * var(--u)) rgb(4 10 22 / 0.5));
+  --a-frame: url(/kit/atlas/page-frame.webp);
+  --a-dial-bl: url(/kit/atlas/dial-bl.webp);
+  --a-dial-br: url(/kit/atlas/dial-br.webp);
+  --a-compass: url(/kit/atlas/compass.webp);
+  /* the sky with its glints and lines taken out, behind the words on it */
+  --a-quiet: url(/kit/atlas/sky-quiet-night.webp);
+
+  /* gold: the primary button, the links, focus */
+  --signal: #e9c578;
+  --signal-ink: #f0d48c;
+  --signal-rule: #c9a35a;
+  --print: #f1e3bd; /* cream on the navy field */
+  --print-soft: #e1d2aa;
+  --print-faint: #d2c39b;
+  --engrave-lo: rgba(226, 187, 106, 0.32);
+  --engrave-hi: transparent;
+  --scene-ground: #0b1a2b;
   --k-scene-flat: url(/kit/atlas/scene-night.webp);
-  --k-sky: url(/kit/atlas/scene/night/sky.webp); /* the chart, gold on navy */
-  --k-sun: none;
-  --sun-cx: 0;
-  --sun-cy: 0;
-  --sun-r: 1;
+  /* the scene is the plate, and the moon hung on its own (scripts/kits/
+     atlas.mjs), so it keeps to its place by the nav at any aspect. The
+     plate is painted on 320 mock px past the mock's sides and its foot
+     (derive.mjs bleed), so kit.css can register it to the stage */
+  --sky-bleed-x: 320;
+  --sky-bleed-bottom: 320;
+  --k-sky: url(/kit/atlas/sky-plate-night.webp);
+  --k-sun: url(/kit/atlas/scene/night/sun.webp);
+  --sun-sw: 392;
+  --sun-sh: 392;
+  --sun-cx: 196;
+  --sun-cy: 198;
+  --sun-r: 83;
+  /* the moon's disc across, in the mock's px (2 x the sprite's --sun-r over
+     its 2 px to a mock px): the mock's own, measured on its limb */
+  --a-moon-d: 83;
   --k-far: none;
   --k-mid: none;
-  --k-near: url(/kit/atlas/scene/night/near.webp); /* the atlas's rolled charts */
+  --k-near: none;
   --k-left-back: none;
   --k-right-back: none;
-  --k-left: url(/kit/atlas/scene/night/left.webp); /* the astrolabe */
-  --k-right: url(/kit/atlas/scene/night/right.webp); /* the orrery */
+  --k-left: none;
+  --k-right: none;
   --k-plate: url(/kit/atlas/sheet-night-normal.webp);
   --k-plate-hover: url(/kit/atlas/sheet-night-hover.webp);
   --k-plate-pressed: url(/kit/atlas/sheet-night-pressed.webp);
   --k-plate-focus: url(/kit/atlas/sheet-night-focus.webp);
   --k-plate-flat: url(/kit/atlas/sheet-night-flat.webp);
-  /* the plates are gilt frames with their field cleared (scripts/
-     framed-pane.mjs): the enamel is painted here, tiled, so its fine surface
-     keeps its scale at any size */
+  /* the frames are rules with their field cleared (scripts/framed-pane.mjs):
+     the field is painted here, tiled, so its fine surface keeps its scale
+     at any size */
   --plate-slice: var(--slice-plate);
   --plate-fill: url(/kit/atlas/enamel-night.webp);
   --plate-fill-size: 640px;
   --plate-fill-repeat: repeat;
-  /* the enamel starts under the gilt (20 of the art's px in from its edge),
-     clear of the frame's soft outer edge */
-  --plate-fill-in: 20px;
-  --strip-fill-in: 20px;
-  /* the strips are the plates' frame, its rails smoothed: they stretch
-     clean, as the plates' do */
+  /* the field starts under the outer rule (3 of the art's px in), clear of
+     the rule's soft outer edge */
+  --plate-fill-in: 3px;
+  --strip-fill-in: 3px;
   --strip-repeat: stretch;
-  /* pressed: only the gilt drops out of the light (the sheets' pressedFlags);
-     enamel is fired colour, and holds it */
+  /* pressed: only the gilt drops out of the light (the sheets'
+     pressedFlags); the field holds */
   --plate-press-dim: 1;
   --plate-backdrop: none;
   --plate-round: 0px;
   --plate-light: url(/kit/atlas/sheet-night-light.webp);
   --plate-light-in: 0px; /* a framed pane: the pool's edge lies under the frame (kit.css) */
   --plate-sheen: url(/kit/atlas/sheet-night-sheen.webp);
-  /* content clears the gilt and the crimson band laid inside it */
-  --plate-inset: 6px;
-  /* the strips are the frame without screws or arcs */
+  --plate-inset: 0px;
+  /* the strips are the frame without its flourishes */
   --k-strip: url(/kit/atlas/sheet-strip-night-normal.webp);
-  /* a plate is screwed to its place: the screws are its frame's */
+  /* a framed card stands on the plate: nothing pins it */
   --k-pin-hold: none;
   --k-pin-hold-signal: none;
   /* plates in a row are set level */
   --shelf-stagger: 0px;
   --shelf-align: stretch;
   --hero-stagger: 0px;
-  /* the opening pair set level, top and foot: each plate as tall as its
-     contents (a frame round a field of empty enamel says nothing), and
-     under the shorter a plate of the chart itself, framed as a plate is
-     (kit.css .tier-cut): a closer cut, on the Lion. Where the two plates
-     come out within a hand of each other (the home page's) there is no room
-     for a plate between, and the shorter is only drawn level */
+  /* a launch page's opening pair set level, top and foot. Under the shorter
+     one is a framed window onto the plate itself (kit.css .tier-cut): the
+     plate as the page has it, fixed to the viewport at the page plate's own
+     size and place (a cut enlarged from the flattened scene showed the
+     observatory a second time, at three times its scale), so there is one
+     observatory, at one scale. */
   --hero-align: stretch;
   --tier-cut: block;
-  --tier-cut-at: 16% 78%;
-  --tier-cut-size: 300% auto;
-  /* small labels are engraved through the enamel: a dark cut */
+  --tier-cut-art: var(--k-sky);
+  --tier-cut-at: center top;
+  --tier-cut-size: max(calc((1672 + 2 * var(--sky-bleed-x)) * var(--u)), 100vh * (1672 + 2 * var(--sky-bleed-x)) / (941 + var(--sky-bleed-bottom)), 100vw) auto;
+  /* small labels are engraved: a dark cut */
   --silk-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
-  --k-bezel: url(/kit/atlas/mat-night.webp); /* a slim gilt bezel */
-  --mat-t: 85;
-  --mat-r: 84;
-  --mat-b: 86;
-  --mat-l: 84;
+  --k-bezel: url(/kit/atlas/mat-night.webp); /* a fine gilt rule round a screen */
+  --mat-t: 67;
+  --mat-r: 65;
+  --mat-b: 65;
+  --mat-l: 66;
   --k-key: url(/kit/atlas/tile-night-normal.webp);
   --k-key-hover: url(/kit/atlas/tile-night-hover.webp);
   --k-key-pressed: url(/kit/atlas/tile-night-pressed.webp);
   --k-key-focus: url(/kit/atlas/tile-night-focus.webp);
-  --key-inset: 7px; /* the legend clears the slim bezel */
+  --key-inset: 4px; /* the legend clears the double rule */
   --key-lift: 0px;
   /* a label engraved on a gilt strip, filled with navy */
   --k-tape: url(/kit/atlas/tape-night.webp);
@@ -105,50 +139,127 @@
   --k-drift-cloud: none;
   --motes: #e9c97a;
   --motes-kind: dust;
-  --plate-under: #13213f;
-  --bezel-under: #6e5020;
-  /* a button is the plate's enamel in a slim gilt bezel: navy by night,
-     lettered in ivory */
-  --key-under: #0b1a2b;
-  --key-ink: #f1e8d2;
-  --key-ink-soft: #d7cdb4;
+  --plate-under: #0a1727;
+  --bezel-under: #0a1727;
+  /* a button is the navy field in a gold double rule, lettered in cream */
+  --key-under: #0d1a2c;
+  --key-ink: #f1e3bd;
+  --key-ink-soft: #d2c39b;
+  /* the primary is a plate of gold leaf, lettered in near-black */
   --k-key-signal: url(/kit/atlas/tile-signal-night-normal.webp);
   --k-key-signal-hover: url(/kit/atlas/tile-signal-night-hover.webp);
   --k-key-signal-pressed: url(/kit/atlas/tile-signal-night-pressed.webp);
   --k-key-signal-focus: url(/kit/atlas/tile-signal-night-focus.webp);
-  --key-signal-ink: #f1e8d2; /* ivory on crimson enamel */
-  --key-signal-under: #6a1013;
-  --k-pin-brass: url(/kit/atlas/pin-brass-night.webp); /* a clear jewel */
-  --k-pin-green: url(/kit/atlas/pin-green-night.webp); /* emerald */
-  --k-pin-amber: url(/kit/atlas/pin-amber-night.webp); /* amber */
-  --k-pin-signal: url(/kit/atlas/pin-signal-night.webp); /* crimson */
+  --key-signal-ink: #15130f;
+  --key-signal-under: #dcb767;
+  /* the status markers: the chart's stars, unlit pale gilt, live bright
+     leaf, amber and copper */
+  --k-pin-brass: url(/kit/atlas/pin-brass-night.webp);
+  --k-pin-green: url(/kit/atlas/pin-green-night.webp);
+  --k-pin-amber: url(/kit/atlas/pin-amber-night.webp);
+  --k-pin-signal: url(/kit/atlas/pin-signal-night.webp);
   --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+
+  /* the first screen, placed at the mock's coordinates (globals.css: home
+     landing) */
+  --l-left: calc(164.4 * var(--u));
+  --l-right: calc(72 * var(--u));
+  --l-head-top: calc(30.7 * var(--u));
+  --l-brand: calc(44.5 * var(--u));
+  --l-brand-weight: 450;
+  --l-tagline: calc(20.3 * var(--u));
+  --l-tagline-font: var(--font-garamond);
+  --l-tagline-track: 0.038em;
+  --l-nav: calc(28.7 * var(--u));
+  --l-nav-font: var(--font-garamond);
+  --l-nav-weight: 400;
+  --l-launch-top: calc(7.9 * var(--u));
+  --l-launch-align: start;
+  --l-win-x: calc(781 * var(--u));
+  --l-win-w: calc(496 * var(--u));
+  --l-title: calc(89.1 * var(--u));
+  --l-title-font: var(--font-garamond);
+  --l-title-weight: 520;
+  --l-pitch: calc(43.6 * var(--u));
+  --l-pitch-font: var(--font-garamond);
+  /* the mock's row, measured at 1672x941 (its frames' outer rules: 78 to 1593,
+     four cards of 371, 358, 355 and 374px, 18-20px apart); the cards' boxes
+     are a px out from their rules */
+  --l-cards-l: calc(78.2 * var(--u));
+  --l-cards-r: calc(77.9 * var(--u));
+  --l-cards-gap: calc(18.5 * var(--u));
+  --l-foot: calc(90.6 * var(--u));
+  --l-heading: calc(46.8 * var(--u));
+  --l-heading-font: var(--font-garamond);
+  --l-heading-weight: 500;
+  --l-card-title: calc(29.7 * var(--u));
+  --l-card-font: var(--font-garamond);
+  --l-card-weight: 500;
+  --card-title-order: 1; /* under its screen, as the mock's */
+  --l-ink: #fbe8a8;
+  --l-ink-soft: #f7e2a2;
+  --l-call: var(--l-ink);
+  /* the words lie on a busy chart: a soft shadow of the night behind them */
+  --l-halo: 0 1px 2px rgb(4 10 22 / 0.85), 0 0 14px rgb(4 10 22 / 0.65);
+  --l-rule: var(--a-gilt);
+  --xw-round: calc(3 * var(--u));
+  --xw-shadow: 0 calc(9.9 * var(--u)) calc(27.7 * var(--u)) rgb(2 6 14 / 0.55);
+  --xw-edge: rgb(0 0 0 / 0.5);
+  /* the window's open row and its folders: the mock's blues */
+  --a-select: #244a77;
+  --a-folder: linear-gradient(#6fb2fa, #5a98df);
+  /* the mat under a card's picture: the field strewn with gold dust and
+     small marks (derive.mjs mat) */
+  --a-mat: url(/kit/atlas/card-mat-night.webp);
+  --a-recess: rgb(6 23 37 / 0.95);
+  --a-recess-line: rgb(39 83 137 / 0.2);
+  /* the window's panes: a thin lighter border, a dark shade round them, the
+     hairlines between its bars and panes (measured on the mock) */
+  --a-pane-line: #1b2a3b;
+  --a-pane-shade: rgb(2 9 20 / 0.7);
+  --a-hair: #25364a;
 }
 
-/* day: the daylight plate, ivory enamel, the same gilt */
+/* day: the same plate under a pale sky, the engraving a deeper gilt, the
+   fields ivory */
 :root[data-style="atlas"][data-rice="paper"] {
-  --signal: #9e2b2f;
-  --signal-ink: #7e1f23;
-  --signal-rule: #9e2b2f;
-  --print: #13213f; /* navy on ivory enamel */
-  --print-soft: #1d2b4d;
-  --print-faint: #2a3757;
-  --engrave-lo: rgba(19, 33, 63, 0.25);
-  --engrave-hi: rgba(255, 250, 235, 0.5);
-  --scene-ground: #e6dcc6;
+  --a-gilt: #9a7430;
+  /* gold words on the pale sky: the gilt's shade, so they hold on it */
+  --a-gold-ink: #6e4f1c;
+  /* the headline's leaf a deep gilt (about 5:1 on the palest sky), its
+     emboss the light's side, lifted off the engraving by a wash of the sky */
+  --a-foil: url(/kit/atlas/foil-day.webp);
+  --a-title-light: linear-gradient(180deg, rgb(255 240 200 / 0.14), transparent 50%, rgb(30 20 4 / 0.2));
+  --a-title-shadow: drop-shadow(calc(0.6 * var(--u)) calc(1 * var(--u)) 0 rgb(255 250 235 / 0.7)) drop-shadow(0 0 calc(4 * var(--u)) rgb(240 244 246 / 0.9));
+  --a-frame: url(/kit/atlas/page-frame-day.webp);
+  --a-dial-bl: url(/kit/atlas/dial-bl-day.webp);
+  --a-dial-br: url(/kit/atlas/dial-br-day.webp);
+  --a-compass: url(/kit/atlas/compass-day.webp);
+  --a-quiet: url(/kit/atlas/sky-quiet-day.webp);
+  --signal: #7a5718;
+  --signal-ink: #6e4c12;
+  --signal-rule: #9a7430;
+  --print: #13213f; /* navy on the ivory field */
+  --print-soft: #24345a;
+  --print-faint: #33426a;
+  --engrave-lo: rgba(122, 87, 24, 0.3);
+  --scene-ground: #dfe6ea;
   --k-scene-flat: url(/kit/atlas/scene-day.webp);
-  --k-sky: url(/kit/atlas/scene/day/sky.webp);
-  --k-sun: none;
-  --sun-cx: 0;
-  --sun-cy: 0;
-  --sun-r: 1;
+  --k-sky: url(/kit/atlas/sky-plate-day.webp);
+  --k-sun: url(/kit/atlas/scene/day/sun.webp);
+  --sun-sw: 392;
+  --sun-sh: 392;
+  --sun-cx: 195;
+  --sun-cy: 195;
+  --sun-r: 190;
+  --a-moon-d: 80;
   --k-far: none;
   --k-mid: none;
-  --k-near: url(/kit/atlas/scene/day/near.webp);
+  --k-near: none;
   --k-left-back: none;
   --k-right-back: none;
-  --k-left: url(/kit/atlas/scene/day/left.webp);
-  --k-right: url(/kit/atlas/scene/day/right.webp);
+  --k-left: none;
+  --k-right: none;
   --k-plate: url(/kit/atlas/sheet-day-normal.webp);
   --k-plate-hover: url(/kit/atlas/sheet-day-hover.webp);
   --k-plate-pressed: url(/kit/atlas/sheet-day-pressed.webp);
@@ -161,10 +272,10 @@
   /* engraved through the ivory: the cut's lower lip catches the light */
   --silk-shadow: 0 1px 0 rgba(255, 250, 235, 0.6);
   --k-bezel: url(/kit/atlas/mat-day.webp);
-  --mat-t: 85;
-  --mat-r: 84;
-  --mat-b: 86;
-  --mat-l: 84;
+  --mat-t: 67;
+  --mat-r: 65;
+  --mat-b: 65;
+  --mat-l: 66;
   --k-key: url(/kit/atlas/tile-day-normal.webp);
   --k-key-hover: url(/kit/atlas/tile-day-hover.webp);
   --k-key-pressed: url(/kit/atlas/tile-day-pressed.webp);
@@ -179,72 +290,1054 @@
   --k-drift-cloud: none;
   --motes: #fff3d0;
   --motes-kind: dust;
-  --plate-under: #f1e8d2;
-  --bezel-under: #8a6528;
+  --plate-under: #f3ead6;
+  --bezel-under: #f3ead6;
   /* ivory by day, lettered in navy */
-  --key-under: #efe6cf;
+  --key-under: #f3ead6;
   --key-ink: #13213f;
-  --key-ink-soft: #2a3757;
-  --key-signal-under: #7a1418;
+  --key-ink-soft: #33426a;
+  --key-signal-under: #dcb767;
   --k-pin-brass: url(/kit/atlas/pin-brass.webp);
   --k-pin-green: url(/kit/atlas/pin-green.webp);
   --k-pin-amber: url(/kit/atlas/pin-amber.webp);
   --k-pin-signal: url(/kit/atlas/pin-signal.webp);
+
+  --l-ink: #13213f;
+  --l-ink-soft: #24345a;
+  /* the pale sky behind the words: a soft wash of it */
+  --l-halo: 0 0 10px rgb(240 244 246 / 0.9), 0 0 3px rgb(240 244 246 / 0.9);
+  --xw-shadow: 0 calc(9.9 * var(--u)) calc(25.7 * var(--u)) rgb(40 50 70 / 0.28);
+  --xw-edge: rgb(19 33 63 / 0.4);
+  --a-select: #bcd3ee;
+  --a-folder: linear-gradient(#4f8fd6, #3f7ac0);
+  --a-mat: url(/kit/atlas/card-mat-day.webp);
+  --a-recess: rgb(205 190 150 / 0.55);
+  --a-recess-line: rgb(122 87 24 / 0.25);
+  --a-pane-line: rgb(122 87 24 / 0.32);
+  --a-pane-shade: rgb(122 87 24 / 0.16);
+  --a-hair: rgb(122 87 24 / 0.28);
 }
 
-/* The plates print a size up, so the gilt reads as a frame's moulding, its
-   engraving at the scale it was cut, not a trim; the strips are the same
-   frame, at the same scale, kept to their two corners' height inside the
-   box. */
+/* The engraver's small marks, the four-point star and the diamond the
+   rules carry (the masthead's, the heading's, the foot's): drawn here, inline
+   vectors in the gilt of each finish, as they are too small and too many to
+   be kit art. They are kept out of the kit's token blocks above, which name
+   only the kit's bitmaps. */
 :root[data-style="atlas"] {
-  --plate-k: 0.62;
+  --a-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 0 11.3 8.7 20 10 11.3 11.3 10 20 8.7 11.3 0 10 8.7 8.7Z' fill='%23f0cf86'/%3E%3C/svg%3E");
+  --a-diamond: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 10 5 5 10 0 5Z' fill='%23e2bb6a'/%3E%3C/svg%3E");  /* the stars set on the heading's rule: an asterisk of eight rays, the rule
+     cut away round it (by night: the sky behind is plain navy there) */
+  --a-star8: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cdefs%3E%3CradialGradient%20id='k'%3E%3Cstop%20offset='.6'%20stop-color='%23071a2d'/%3E%3Cstop%20offset='1'%20stop-color='%23071a2d'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse%20cx='12'%20cy='12'%20rx='12'%20ry='6.5'%20fill='url(%23k)'/%3E%3Cg%20fill='%23f0cf86'%20stroke='%23f0cf86'%20stroke-linecap='round'%3E%3Cpath%20d='M12%20.8V23.2'%20stroke-width='1.8'/%3E%3Cpath%20d='M7%2012H17'%20stroke-width='1.6'/%3E%3Cpath%20d='M8.2%208.2%2015.8%2015.8M15.8%208.2%208.2%2015.8'%20stroke-width='1.4'/%3E%3Ccircle%20cx='12'%20cy='12'%20r='2.6'%20stroke='none'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+:root[data-style="atlas"][data-rice="paper"] {
+  --a-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 0 11.3 8.7 20 10 11.3 11.3 10 20 8.7 11.3 0 10 8.7 8.7Z' fill='%239a7430'/%3E%3C/svg%3E");
+  --a-diamond: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 10 5 5 10 0 5Z' fill='%239a7430'/%3E%3C/svg%3E");  --a-star8: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cg%20fill='%239a7430'%20stroke='%239a7430'%20stroke-linecap='round'%3E%3Cpath%20d='M12%20.8V23.2'%20stroke-width='1.8'/%3E%3Cpath%20d='M7%2012H17'%20stroke-width='1.6'/%3E%3Cpath%20d='M8.2%208.2%2015.8%2015.8M15.8%208.2%208.2%2015.8'%20stroke-width='1.4'/%3E%3Ccircle%20cx='12'%20cy='12'%20r='2.6'%20stroke='none'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* The frames print at the scale that sets their flourish beside a card's
+   corner as the mock's (about 30px), the rules at a fine double weight. */
+:root[data-style="atlas"] {
+  --plate-k: 0.56;
+  /* the page's border: the mock's own, at the mock's size on the first
+     screen (its hairlines 2px there), and on a phone a little over half
+     that, where its rules still hold a whole px */
+  --frame-k: var(--u);
 }
 
 @media (max-width: 720px) {
   :root[data-style="atlas"] {
-    --plate-k: 0.5;
+    --plate-k: 0.48;
+    --frame-k: 0.6px;
+  }
+}
+
+/* On a desktop the plate hangs from the page's top, centred, at the
+   stage's scale, or larger where its bleed can't cover the frame (kit.css,
+   a plate's sky): --a-sky-k is its scale, screen px per mock px, for what
+   registers with it (the moon, the quiet field). */
+@media (min-width: 900px) {
+  :root[data-style="atlas"] {
+    --a-sky-k: max(var(--u), 100vh / (941 + var(--sky-bleed-bottom)), var(--page-w) / (1672 + 2 * var(--sky-bleed-x)));
+  }
+
+  /* The moon. On the home page's first screen it hangs where the mock has
+     it on the plate (its centre at mock 1499.7, 186.4): right of the window,
+     under the nav, over the dome; the plate's core is centred on the
+     page, so it is placed from the page's middle. */
+  :root[data-style="atlas"]:has(.masthead) {
+    --sun-x: calc(var(--page-w) / 2 + 664.2 * var(--a-sky-k));
+    --sun-y: calc(186.9 * var(--a-sky-k));
+    --sun-d: calc(var(--a-moon-d) * var(--a-sky-k));
+  }
+}
+
+/* On the other pages there is no stage: it hangs in the sky beside the
+   column, upper right over the observatory (kit.css's placement, mirrored),
+   clear of the border's corner; narrower, in the corner above the running
+   head the column keeps clear (kit.css .rack). */
+:root[data-style="atlas"]:not(:has(.masthead)) {
+  --sun-d: clamp(64px, 5vw, 90px);
+  --sun-x: calc(100vw - clamp(48px, (100vw - 1180px) * 0.225, 160px));
+  --sun-y: 130px;
+}
+
+@media (max-width: 1399px) {
+  :root[data-style="atlas"]:not(:has(.masthead)) {
+    --sun-d: 44px;
+    --sun-x: calc(100vw - 120px);
+    --sun-y: 40px;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1399px) and (max-height: 860px) {
+  :root[data-style="atlas"]:not(:has(.masthead)) {
+    --sun-d: 36px;
+    --sun-y: 34px;
+  }
+}
+
+@media (max-width: 720px) {
+  :root[data-style="atlas"]:not(:has(.masthead)) {
+    --sun-d: 30px;
+    --sun-x: calc(100vw - 80px);
+    --sun-y: 28px;
+  }
+}
+
+/* Narrower than a desktop the plate shows a strip of its core, the height
+   of the screen: its right, where the observatory stands on its cliff, not
+   its middle. The core covers the screen (kit.css, a plate's sky: --sky-s,
+   screen px per plate px) and is set 96% of the way to its right; the
+   bitmap starts a bleed further left. On the home page the moon hangs
+   where the plate has it, over the dome (--ps, the same scale). */
+@media (max-width: 899px) {
+  :root[data-style="atlas"] [data-layer="sky"] {
+    --layer-x: calc((100cqw - 1672 * var(--sky-s)) * 0.96 - var(--sky-bleed-x) * var(--sky-s));
+  }
+
+  :root[data-style="atlas"]:has(.masthead) {
+    --ps: max(100vw / 1672, 100vh / 941);
+    --sun-x: calc((100vw - 1672 * var(--ps)) * 0.96 + 1500.2 * var(--ps));
+    --sun-y: calc(100vh - 754.1 * var(--ps));
+    --sun-d: calc(var(--a-moon-d) * var(--ps));
+  }
+}
+
+/* On a phone the headline spans the screen, and the plate's moon would sit
+   on its words: it hangs instead in the sky right of the headline's first
+   line, between the brand's line and the pitch (laid out from the top at
+   fixed px on a phone), a little up and right of the dome. */
+@media (max-width: 599px) {
+  :root[data-style="atlas"]:has(.masthead) {
+    --sun-d: clamp(36px, 12.5vw, 50px);
+    --sun-x: calc(100vw - 12px - 0.75 * var(--sun-d));
+    --sun-y: 124px;
   }
 }
 
 :root[data-style="atlas"] :is(.running-head, .divider, .folio, .statusline) {
-  --plate-k: 0.62;
   min-height: calc(2 * 56px * var(--plate-k) + 8px);
 }
 
-@media (max-width: 720px) {
-  :root[data-style="atlas"] :is(.running-head, .divider, .folio, .statusline) {
-    --plate-k: 0.5;
-  }
-}
-
-/* the masthead's keys clear the gilt (its rails up to 36 of the art's px
-   deep) by a margin of enamel, not by the slice's share of it */
+/* the strips' words clear the double rule by a margin of the field, not by
+   the whole corner slice */
 :root[data-style="atlas"] .running-head {
-  padding-block: calc(36px * var(--plate-k) + 8px);
+  padding-block: calc(12px * var(--plate-k) + 10px);
 }
 
-/* On a phone the masthead's brand and keys share one row (globals.css): its
-   words clear the gilt of its side rails itself (35 of the art's px deep),
-   not the whole corner slice. */
 @media (max-width: 600px) {
   :root[data-style="atlas"] .running-head {
-    padding-inline: calc(35px * var(--plate-k) + 3px);
+    padding-inline: calc(12px * var(--plate-k) + 8px);
   }
 }
 
-/* the narrowest phones: the bezelled keys are wider than a flat slip, and
-   the row keeps them only with a hair less margin */
-@media (max-width: 400px) {
-  :root[data-style="atlas"] .running-head {
-    padding-inline: calc(35px * var(--plate-k) + 2px);
+/* the other pages' running head wears the brand's mark too, small */
+:root[data-style="atlas"] .running-head .brand .led {
+  width: 30px;
+  height: 30px;
+  margin: 0 8px 0 0;
+  background: var(--a-compass) center / contain no-repeat;
+}
+
+:root[data-style="atlas"] .running-head .brand .led::before {
+  content: none;
+}
+
+/* ---------- the page's border ----------
+   The mock's own border round the whole page, cut out of its px (page-frame:
+   derive.mjs frame): its distressed rails, the ladder and cartouches down
+   the sides, the small marks along the top, a scroll in each corner. A
+   9-slice with the corners kept whole (152 of the mock's px: the top left's
+   scroll runs 140 in, the top right's hangs the junction under the nav's
+   rule) and the mock's own run of each edge between them, so at 1672x941 it
+   is the mock's border to the px, and on any other shape the same border
+   lengthened (stretched to a whole number of its runs, and on a phone laid
+   at its own size and cut). Fixed round the viewport on every page, so it
+   holds at any aspect; over the scene, under everything on it. The art
+   starts 4 of the mock's px in. */
+:root[data-style="atlas"] body::before {
+  content: "";
+  position: fixed;
+  inset: calc(4 * var(--frame-k));
+  z-index: -1;
+  border: 0 solid transparent;
+  border-image: var(--a-frame) 152 / calc(152 * var(--frame-k)) round;
+  pointer-events: none;
+}
+
+/* The border's lower corners, the two quarter-dials the mock engraves there
+   (derive.mjs dials), are the frame's too: pinned to the viewport's corners
+   at the frame's scale, so they stand in the corners at any aspect. (Left in
+   the plate they were registered to the stage, whose foot is above the
+   viewport's on a frame taller than 16:9: cut flat there, and the plate went
+   on under them with other arcs.) The plate has none. */
+:root[data-style="atlas"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    var(--a-dial-bl) left bottom / calc(184 * var(--frame-k)) calc(153 * var(--frame-k)) no-repeat,
+    var(--a-dial-br) right bottom / calc(188 * var(--frame-k)) calc(241 * var(--frame-k)) no-repeat;
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  :root[data-style="atlas"] body::before {
+    border-image-repeat: repeat;
+  }
+
+  /* the page's column keeps clear of the border's inner rule (it runs at
+     13px on a phone: the kit's 14px gutter put the first letters on it) */
+  :root[data-style="atlas"] .rack {
+    padding-inline: 24px;
   }
 }
 
-/* The Fell types were cut in one weight: a heavier one asked for is the
-   roman as cut, never a smeared synthetic bold. */
+/* ---------- the first screen ---------- */
+
+/* the masthead stands as tall as the landing below it allows for (globals.css
+   --masthead-h's default, 150 of the mock's px): the mock's brand is set
+   tight, and a shorter masthead would lift the whole first screen off the
+   foot of the window */
+@media (min-width: 900px) {
+  :root[data-style="atlas"] .masthead {
+    min-height: calc(148.5 * var(--u));
+  }
+}
+
+/* the brand's mark is the compass rose, standing beside the name at the
+   mock's place on the stage, so it keeps to the name at any aspect */
+:root[data-style="atlas"] .masthead .brand .led {
+  position: absolute;
+  left: calc(38.7 * var(--u));
+  top: calc(29.7 * var(--u));
+  width: calc(107.9 * var(--u));
+  height: calc(107.9 * var(--u));
+  margin: 0;
+  background: var(--a-compass) center / contain no-repeat;
+}
+
+:root[data-style="atlas"] .masthead .brand .led::before {
+  content: none;
+}
+
+:root[data-style="atlas"] .masthead .brand {
+  line-height: 1;
+  letter-spacing: 0.005em;
+}
+
+/* the name in the mock's warmer gold-cream, a shade yellower than the nav's */
+:root[data-style="atlas"]:not([data-rice="paper"]) .masthead .brand a {
+  color: #fce29a;
+}
+
+:root[data-style="atlas"] .masthead .tagline {
+  margin-top: calc(2 * var(--u));
+  margin-left: calc(2 * var(--u));
+  line-height: 1.15;
+  font-weight: 420;
+}
+
+/* The masthead's rules: a double gilt rule under the brand from the
+   compass's side, a diamond at its end, and the nav's own rule above it at
+   the right, a star at its start, run on into the page's border, where it
+   meets the border's inner rule over the small device the border hangs
+   under it (the border's top right corner holds it). The border is round the
+   viewport and the stage is centred in it, so the rule runs out past the
+   stage by the margin beside it (the viewport's width, the screen's less a
+   classic scrollbar's, less the stage's, halved: none on a screen the stage
+   fills, as the mock's) to the border's inner rule, 14 of the mock's px
+   in. */
+:root[data-style="atlas"] .masthead::after {
+  content: "";
+  position: absolute;
+  left: calc(149.5 * var(--u));
+  right: calc(14 * var(--frame-k) - (var(--page-w) - var(--stage-w)) / 2);
+  top: calc(95.1 * var(--u));
+  height: calc(59.4 * var(--u));
+  background:
+    /* the pendant hung on the double rule at the mock's x1161: a small ring
+       over a stem that crosses both rules, swelling where it meets the upper */
+    radial-gradient(circle closest-side, transparent calc(2.1 * var(--u)), var(--a-gilt) calc(2.5 * var(--u)) calc(3.6 * var(--u)), transparent calc(4 * var(--u))) calc(1007.4 * var(--u)) calc(4.2 * var(--u)) / calc(9 * var(--u)) calc(9 * var(--u)) no-repeat,
+    linear-gradient(var(--a-gilt), var(--a-gilt)) calc(1010.8 * var(--u)) calc(11.6 * var(--u)) / calc(2.2 * var(--u)) calc(16.4 * var(--u)) no-repeat,
+    var(--a-diamond) calc(1008.8 * var(--u)) calc(13.3 * var(--u)) / calc(6.2 * var(--u)) calc(6.2 * var(--u)) no-repeat,
+    var(--a-diamond) calc(1.4 * var(--u)) calc(15.3 * var(--u)) / calc(6.2 * var(--u)) calc(6.2 * var(--u)) no-repeat,
+    /* the end of the double rule, as the mock's: a tick across both rules, the
+       upper one run on a little past it and tipped with a small diamond */
+    linear-gradient(var(--a-gilt), var(--a-gilt)) calc(1254.2 * var(--u)) calc(12.4 * var(--u)) / max(1px, 1.6 * var(--u)) calc(12.2 * var(--u)) no-repeat,
+    linear-gradient(var(--a-gilt), var(--a-gilt)) calc(1255 * var(--u)) calc(15.9 * var(--u)) / calc(12 * var(--u)) max(1px, 1.4 * var(--u)) no-repeat,
+    var(--a-diamond) calc(1264.4 * var(--u)) calc(13.4 * var(--u)) / calc(5 * var(--u)) calc(5 * var(--u)) no-repeat,
+    linear-gradient(var(--a-gilt), var(--a-gilt)) calc(10.9 * var(--u)) calc(15.8 * var(--u)) / calc(1241.5 * var(--u)) max(1px, 1.6 * var(--u)) no-repeat,
+    linear-gradient(var(--a-gilt), var(--a-gilt)) calc(10.9 * var(--u)) calc(21.3 * var(--u)) / calc(1241.5 * var(--u)) max(1px, 1.2 * var(--u)) no-repeat,
+    var(--a-sparkle) calc(1100 * var(--u)) calc(-2 * var(--u)) / calc(12.9 * var(--u)) calc(12.9 * var(--u)) no-repeat,
+    linear-gradient(var(--a-gilt), var(--a-gilt)) calc(1114.9 * var(--u)) calc(3.9 * var(--u)) / calc(100% - 1114.9 * var(--u)) max(1px, 1.6 * var(--u)) no-repeat;
+  pointer-events: none;
+}
+
+/* The quiet field: behind the words that stand on the scene (the brand and
+   its line, the nav, the flagship's copy and keys), the sky with its glints
+   and constellation lines taken out (sky-quiet, the plate star-reduced:
+   art/prompts/atlas/derive.mjs quiet), feathered out at its edges, so no
+   glint lands on a glyph, as none does in the mock. It is the plate's
+   core, fixed to the viewport and hung as the plate's is (centred, from
+   the top, at --a-sky-k), so it registers with the sky round it at any
+   aspect; the words always stand on the core. On a desktop: below it the
+   first screen stacks, and a phone draws a fixed background as a
+   scrolling one. */
+@media (min-width: 900px) {
+  :root[data-style="atlas"] :is(.masthead .tagline, .masthead .instruments, .launchpad-copy) {
+    position: relative;
+  }
+
+  :root[data-style="atlas"] :is(.masthead .tagline, .masthead .instruments, .launchpad-copy)::before {
+    --feather: calc(25.7 * var(--u));
+    content: "";
+    position: absolute;
+    inset: calc(-9.9 * var(--u)) calc(-21.8 * var(--u));
+    z-index: -1;
+    background: var(--a-quiet) center top / calc(1672 * var(--a-sky-k)) auto no-repeat fixed;
+    mask:
+      linear-gradient(90deg, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent),
+      linear-gradient(transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent);
+    mask-composite: intersect;
+    pointer-events: none;
+  }
+
+  /* the brand's field is its line's, reaching up round the name (the name
+     holds the compass, placed on the masthead, so it is not the field's
+     box) */
+  :root[data-style="atlas"] .masthead .tagline::before {
+    inset: calc(-61.4 * var(--u)) calc(-21.8 * var(--u)) calc(-9.9 * var(--u)) calc(-15.8 * var(--u));
+  }
+
+  /* the nav's field stops short of the border's corner device */
+  :root[data-style="atlas"] .masthead .instruments::before {
+    inset: calc(-11.9 * var(--u)) calc(-7.9 * var(--u)) calc(-11.9 * var(--u)) calc(-21.8 * var(--u));
+    --feather: calc(17.8 * var(--u));
+  }
+
+  :root[data-style="atlas"] .launchpad-copy::before {
+    inset: calc(7.9 * var(--u)) calc(-5.9 * var(--u)) calc(-15.8 * var(--u)) calc(4 * var(--u));
+    --feather: calc(39.6 * var(--u));
+  }
+}
+
+/* it fades up with the sky it belongs to (kit.css) */
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  :root[data-style="atlas"] :is(.masthead .tagline, .masthead .instruments, .launchpad-copy)::before {
+    animation: layer-fade 700ms ease-out both;
+  }
+}
+
+/* the style key's caret is as bright as the words beside it */
+:root[data-style="atlas"] .style-caret {
+  opacity: 1;
+}
+
+/* the keys are cream words on the chart */
+:root[data-style="atlas"] .masthead .key {
+  letter-spacing: 0;
+  text-decoration-thickness: 1px;
+}
+
+:root[data-style="atlas"] .launchpad-copy {
+  padding-top: calc(31.7 * var(--u));
+  padding-right: calc(15.8 * var(--u));
+  padding-left: calc(31.7 * var(--u));
+}
+
+/* The headline is gold leaf: the leaf's mottle (foil, tiled at the stage's
+   scale), the lamp along its tops, clipped to the letters, embossed by its
+   shadows (drop shadows: a text shadow would paint over the leaf the text
+   is clipped to). Set as the mock's, by measurement at 1672x941: stems 10px
+   (T, E; the lowercase 8-9), its letters' pitch (E's stem 192px on from T's,
+   the last r's 259px on from E's), its cap 59px tall with its baseline at
+   y261. The roman at that weight is wider than the mock's face, so the
+   tracking is closed a little (-0.016em); the line is the glyphs' height
+   less the leading above them, its foot the pitch's margin takes back. */
+:root[data-style="atlas"] .launchpad-title {
+  margin-left: calc(-2 * var(--u));
+  line-height: 0.96;
+  letter-spacing: -0.016em;
+  background: var(--a-title-light), var(--a-foil) 0 0 / calc(415.8 * var(--u)) auto repeat;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  filter: var(--a-title-shadow);
+}
+
+:root[data-style="atlas"] .launchpad-pitch {
+  margin-top: calc(8.9 * var(--u));
+}
+
+/* the pitch stands a little in from the headline's capital, as the mock's;
+   its two lines are set to the mock's widths (516px and 360px: its face runs
+   wider than the roman on the first, narrower on the second), the tracking
+   alone */
+:root[data-style="atlas"] :is(.launchpad-pitch, .launchpad-call) {
+  padding-left: calc(5.9 * var(--u));
+  font-weight: 500;
+  line-height: 1.09;
+}
+
+:root[data-style="atlas"] .launchpad-pitch {
+  letter-spacing: 0.0028em;
+}
+
+:root[data-style="atlas"] .launchpad-call {
+  letter-spacing: -0.0046em;
+  padding-left: calc(8 * var(--u));
+}
+
+:root[data-style="atlas"] .launchpad-keys {
+  gap: calc(19.8 * var(--u));
+  margin-top: calc(22.8 * var(--u));
+  margin-left: calc(5.9 * var(--u));
+}
+
+/* the mock's buttons: set in the roman at its book weight, a size up, the
+   pair alike */
+:root[data-style="atlas"] .launchpad-keys .key {
+  --key-k: 0.5;
+  min-width: calc(169.3 * var(--u));
+  min-height: calc(52.5 * var(--u));
+  padding-inline: calc(32.7 * var(--u));
+  font-size: max(17px, 25.2 * var(--u));
+  font-weight: 500;
+}
+
+/* the primary's label is semibold on the leaf, as the mock's */
+:root[data-style="atlas"] .launchpad-keys .key[data-tone="signal"] {
+  font-weight: 620;
+  padding-inline: calc(32.7 * var(--u)) calc(24.8 * var(--u)); /* the arrow's side-bearing on its right, taken up: the label centres */
+}
+
+/* the arrow is the mock's: a long one, set close after its word */
+:root[data-style="atlas"] .launchpad-keys .key-arrow {
+  margin-left: -0.1em;
+  font-size: 1.3em;
+  line-height: 0.75;
+}
+
+/* Every button is lettered in the roman, as the mock's are (a key's legend
+   and a printed cap keep the mono); at no more weight than a key's own, so
+   the masthead's words and the first screen's buttons keep their sizes. */
+:root[data-style="atlas"] :where(.key:not(.cap)) {
+  font-family: var(--font-garamond), Georgia, serif;
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: 0;
+}
+
+/* The window in a gilt frame: the cards' double rule, 5px out from its edge
+   (the mock's outer rule runs 776 to 1282 across, 157 to 447 down, round a
+   window of 781 to 1277 by 160 to 442), its flourishes over the window's
+   corners. */
+:root[data-style="atlas"] .launchpad-window {
+  margin-top: calc(3.5 * var(--u));
+}
+
+:root[data-style="atlas"] .launchpad-window::before {
+  --wk: 0.5;
+  content: "";
+  position: absolute;
+  inset: calc(-10.5px * var(--wk));
+  z-index: 1;
+  border: 0 solid transparent;
+  border-image: var(--k-plate) var(--slice-plate) / calc(152px * var(--wk)) / calc(96px * var(--wk)) stretch;
+  pointer-events: none;
+}
+
+/* Inside the gilt the mock's window sits in a recessed band (a few px of the
+   bezel's night, a hairline of the window's own edge at its inner side along
+   the panes: see the window's inside below) before its panes begin: laid
+   over the window's outer edge, under the frame's rules. By day the band is
+   a shade of the ivory. */
+:root[data-style="atlas"] .xw {
+  position: relative;
+}
+
+:root[data-style="atlas"] .xw::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 calc(7.5 * var(--u)) var(--a-recess);
+  pointer-events: none;
+}
+
+/* The window reads as the mock's does, its mono at about 13px on the first
+   screen (globals.css sizes it to the window, cqw): a size up, its rows
+   with it (fewer of them; whole ones still), its title beside the lights
+   in the window's ink. Its status line's hints never fit at that size, so
+   it shows the position and the branch alone, at its two ends. (A narrow
+   phone keeps globals.css's own sizes: one pane, its rows all shown.) */
+@media (min-width: 481px) {
+  :root[data-style="atlas"] .xw {
+    font-size: max(11px, 2.6cqw);
+  }
+
+  :root[data-style="atlas"] .xw-rows {
+    grid-template-rows: repeat(auto-fill, max(17px, 5cqw));
+  }
+}
+
+/* By night the window is the mock's: a deep teal-navy under a darker bar,
+   its words a cool grey, the lights as drawn (vivid: the mock's red,
+   yellow and green measure 251,75,65, 253,190,41 and 70,180,85 at their
+   cores; the rice's own tokens stand
+   by day, on the ivory field). */
+:root[data-style="atlas"]:not([data-rice="paper"]) .xw {
+  --paper: #0e1927;
+  --paper-warm: #051626;
+  --rule: #14212f;
+  --ink: #b9bec9;
+  --ink-soft: #8b98a5;
+  --rust: #fb4b41;
+  --amber: #fdbe29;
+  --olive: #46b455;
+}
+
+:root[data-style="atlas"]:not([data-rice="paper"]) .xw-rows li[data-selected] {
+  color: #b4cee9;
+}
+
+/* the window onto the plate is the plate's own place (see --tier-cut-size) */
+:root[data-style="atlas"] .tier-cut {
+  background-attachment: fixed;
+}
+
+/* The mock's list: a folder is a broad blue tab (about 20px across, not the
+   shared 10), a sheet a dog-eared one, the open row a strong blue band (the
+   mock's accent, not a wash of the rice's cyan). */
+:root[data-style="atlas"] .xw-rows li {
+  gap: 2.4cqw;
+}
+
+:root[data-style="atlas"] .xw-rows li[data-selected] {
+  background: var(--a-select);
+}
+
+:root[data-style="atlas"] .xw-icon {
+  width: 3.9cqw;
+  height: 3.1cqw;
+  background: var(--a-folder);
+}
+
+:root[data-style="atlas"] .xw-icon[data-kind="file"] {
+  width: 3cqw;
+  height: 3.7cqw;
+  margin-inline: 0.45cqw;
+  background: var(--ink-soft);
+}
+
+/* its lights as large as the mock's (about 13px) */
+:root[data-style="atlas"] .xw-lights {
+  gap: 1.4cqw;
+}
+
+:root[data-style="atlas"] .xw-lights i {
+  width: 2.5cqw;
+}
+
+:root[data-style="atlas"] .xw-title {
+  position: static;
+  margin-left: 6.8cqw; /* the mock's title stands 20px in from its lights */
+  text-align: start;
+  color: var(--ink);
+  font-size: 1em;
+}
+
+:root[data-style="atlas"] .xw-hints {
+  display: none;
+}
+
+:root[data-style="atlas"] .xw-branch {
+  margin-left: auto;
+}
+
+/* The window's inside is the mock's, measured at 1672x941 (the window box
+   at 781,160, 496x282; --wp is one of the mock's px in it): a bezel of the
+   night round everything, the panes recessed in it as rounded insets with a
+   thin border and a shade round them, a title bar and a status line that
+   stand clear of the frame's corner scrolls. The bezel is the title bar's
+   and the status line's own dark; the panes are a step lighter.
+   Title row: lights at x 796-846, centred 19px down, the title 96px in, a
+   hairline under it (y 32). Panes: 16px in from each side, from y 41 to 250
+   (the left 219px wide, the right 235, 11px between them, a hairline
+   between at 241). Status: a hairline at y 253, its words 28px in at the
+   left and 25px at the right, on the line's middle. */
+:root[data-style="atlas"] .xw {
+  --wp: calc(100cqw / 496);
+  background: var(--paper-warm);
+}
+
+:root[data-style="atlas"] .xw-bar {
+  padding-inline: calc(15.5 * var(--wp));
+  padding-top: calc(5.5 * var(--wp));
+  border-bottom-color: var(--a-hair);
+}
+
+:root[data-style="atlas"] .xw-title {
+  margin-left: calc(28 * var(--wp));
+}
+
+:root[data-style="atlas"] .xw-panes {
+  position: relative;
+  padding: calc(9 * var(--wp)) calc(14.5 * var(--wp)) calc(3 * var(--wp)) calc(15 * var(--wp));
+}
+
+:root[data-style="atlas"] .xw-pane {
+  overflow: hidden;
+  border: 1px solid var(--a-pane-line);
+  border-radius: calc(7 * var(--wp));
+  background: var(--paper);
+  box-shadow: 0 0 calc(4 * var(--wp)) calc(1.5 * var(--wp)) var(--a-pane-shade);
+}
+
+/* the path above a pane's rows reads as its header, set in line with the
+   rows' icons */
+:root[data-style="atlas"] .xw-path {
+  padding: calc(5.5 * var(--wp)) calc(14 * var(--wp));
+  border-bottom-color: var(--a-pane-line);
+}
+
+:root[data-style="atlas"] .xw-rows {
+  padding: calc(3 * var(--wp)) calc(2 * var(--wp));
+}
+
+/* the icon stands 16px in and its name about 50, as the mock's (51); the name
+   keeps the room for the longest folder, the "dir" column after it */
+:root[data-style="atlas"] .xw-rows li {
+  gap: 0;
+  padding-inline: calc(13 * var(--wp)) calc(4 * var(--wp));
+}
+
+:root[data-style="atlas"] .xw-rows .xw-icon {
+  margin-right: calc(14 * var(--wp));
+}
+
+:root[data-style="atlas"] .xw-rows .xw-icon[data-kind="file"] {
+  margin-right: calc(14 * var(--wp) + 0.45cqw);
+}
+
+/* (the mono holds its 11px floor as the window shrinks with the stage, so the
+   column after a name takes no more than its own width.) A name too long for
+   its pane is cut short of this gap, never into the column: the gap is the
+   room between a name's ellipsis and its kind, 10 of the mock's px */
+:root[data-style="atlas"] .xw-kind {
+  padding-left: calc(10 * var(--wp));
+}
+
+:root[data-style="atlas"] .xw-status {
+  padding-inline: calc(27 * var(--wp)) calc(24 * var(--wp));
+  border-top-color: var(--a-hair);
+}
+
+/* the band's hairline runs down the panes' two sides only, as the mock's
+   (not along the title row or the status line) */
+:root[data-style="atlas"] .xw-panes::after {
+  content: "";
+  position: absolute;
+  inset: 0 calc(6.5 * var(--wp)) calc(-0.5 * var(--wp)) calc(7 * var(--wp));
+  border-inline: 1px solid var(--a-recess-line);
+  pointer-events: none;
+}
+
+/* a window under about 330px (a viewport under 1100px, the stage shrunk to it)
+   has panes too narrow for a folder's name, its kind and the mono's floor:
+   the kind goes and the floor is a little lower */
+@container (max-width: 330px) {
+  :root[data-style="atlas"] .xw {
+    font-size: max(9.5px, 2.6cqw);
+  }
+
+  :root[data-style="atlas"] .xw-kind {
+    display: none;
+  }
+}
+
+@media (min-width: 481px) {
+  :root[data-style="atlas"] .xw-panes {
+    grid-template-columns: 219fr 235fr;
+    column-gap: calc(11 * var(--wp));
+  }
+
+  /* the hairline in the gap between the panes, from the title's rule to the
+     status line's */
+  :root[data-style="atlas"] .xw-panes::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: calc(-0.5 * var(--wp));
+    left: calc(15 * var(--wp) + (100% - 40.5 * var(--wp)) * 219 / 454 + 5 * var(--wp));
+    width: 1px;
+    background: var(--a-hair);
+    pointer-events: none;
+  }
+}
+
+/* "Projects": gold, the mock's double gilt rule run on from it (a rule and
+   a finer one under it, which starts a little in from the first; both
+   dimmer than the page's gilt: the mock's are thin, the light spread over
+   two px), eight-ray stars set on it as nodes, the rule cut away round each */
+:root[data-style="atlas"] .showcase-title {
+  --a-rule-lit: color-mix(in srgb, var(--l-rule) 80%, transparent);
+  gap: calc(15.8 * var(--u));
+  margin: 0 0 calc(12.4 * var(--u)) calc(2 * var(--u));
+  color: var(--a-gold-ink);
+}
+
+:root[data-style="atlas"] .showcase-title::after {
+  align-self: flex-end;
+  height: calc(29.7 * var(--u));
+  margin-bottom: calc(-5.9 * var(--u));
+  border: 0;
+  background:
+    var(--a-star8) calc(203.5 * var(--u)) 50% / calc(22 * var(--u)) calc(22 * var(--u)) no-repeat,
+    var(--a-star8) calc(376 * var(--u)) 50% / calc(22 * var(--u)) calc(22 * var(--u)) no-repeat,
+    var(--a-star8) calc(640 * var(--u)) 50% / calc(22 * var(--u)) calc(22 * var(--u)) no-repeat,
+    var(--a-star8) calc(754 * var(--u)) 50% / calc(16 * var(--u)) calc(16 * var(--u)) no-repeat,
+    linear-gradient(var(--a-rule-lit), var(--a-rule-lit)) 0 calc(50% - 2.2 * var(--u)) / 100% max(1px, 2 * var(--u)) no-repeat,
+    linear-gradient(var(--a-rule-lit), var(--a-rule-lit)) calc(13 * var(--u)) calc(50% + 2.4 * var(--u)) / calc(100% - 13 * var(--u)) max(1px, 1.5 * var(--u)) no-repeat;
+}
+
+/* on a phone the rule is short and the nodes (13px stars, their shade
+   dimming the plate's own stars and the rule round them) crowd it into a
+   smudge of grey overlapping ornaments: the double rule alone */
+@media (max-width: 720px) {
+  :root[data-style="atlas"] .showcase-title::after {
+    background:
+      linear-gradient(var(--a-rule-lit), var(--a-rule-lit)) 0 calc(50% - 2.2 * var(--u)) / 100% max(1px, 2 * var(--u)) no-repeat,
+      linear-gradient(var(--a-rule-lit), var(--a-rule-lit)) calc(13 * var(--u)) calc(50% + 2.4 * var(--u)) / calc(100% - 13 * var(--u)) max(1px, 1.5 * var(--u)) no-repeat;
+  }
+}
+
+/* A card, as the mock's: two framed panels in its frame, the picture's and
+   its name's. The picture fills the field inside the double rule, the
+   frame's foot under it (its double rule and two lower corners' devices),
+   the name below in a panel closed by the frame's own foot. The frame is
+   drawn over the content (.card-mark), so its devices lie over the
+   picture's top corners; under the content, the field alone, and the
+   states' art (hover, focus, pressed) as on any sheet. */
+:root[data-style="atlas"] .card.faceplate {
+  /* the name's baseline is the mock's (measured at 1672x941, its letters'
+     feet 2.5px under the first build's): the name drops by --a-title-drop,
+     the foot's padding gives back the same, so the card keeps its height */
+  --a-title-drop: calc(2.5 * var(--u));
+  gap: calc(10.9 * var(--u) + var(--a-title-drop));
+  padding: calc(12px * var(--plate-k)) calc(12px * var(--plate-k)) calc(var(--plate-w) - 12px + 1.5 * var(--u) - var(--a-title-drop));
+}
+
+:root[data-style="atlas"] .card.faceplate::before {
+  border-image-source: none;
+}
+
+/* the name stands in from the frame, clear of its lower flourishes; the
+   mock's four are not set at one inset (measured from each frame's rule: 42,
+   32, 41 and 45px), so a card may nudge its name (--title-dx): the mock's
+   four, by their place in a row of four (a cycle, so a row of any other
+   count keeps the even inset, and no project is named) */
+:root[data-style="atlas"] .card-title {
+  padding-inline: calc(34.7 * var(--u) - 12px * var(--plate-k) + 4px + var(--title-dx, 0px)) calc(34.7 * var(--u) - 12px * var(--plate-k) + 4px);
+}
+
+:root[data-style="atlas"] .showcase-row:has(> li:nth-child(4):last-child) > li:nth-child(4n + 1) .card {
+  --title-dx: calc(2 * var(--u));
+}
+
+:root[data-style="atlas"] .showcase-row:has(> li:nth-child(4):last-child) > li:nth-child(4n + 2) .card {
+  --title-dx: calc(-7 * var(--u));
+}
+
+:root[data-style="atlas"] .showcase-row:has(> li:nth-child(4):last-child) > li:nth-child(4n + 4) .card {
+  --title-dx: calc(5 * var(--u));
+}
+
+:root[data-style="atlas"] .card .card-mark {
+  display: block;
+  position: absolute;
+  inset: calc(var(--plate-fill-in) * var(--plate-k));
+  z-index: 2;
+  border: 0 solid transparent;
+  border-image: var(--k-plate) var(--plate-slice) / calc(152px * var(--plate-k)) / calc((96px + var(--plate-fill-in)) * var(--plate-k)) stretch;
+  pointer-events: none;
+}
+
+/* the screen meets the inner rule: no mount of its own */
+:root[data-style="atlas"] .card-screen {
+  padding: 0;
+  background: none;
+}
+
+/* The picture's panel closes on the frame's own foot: the sheet's lower
+   edge and lower corners alone (its upper slice taken whole as the top,
+   drawn none high, and the sides none long in a box no taller than the
+   corners' lower slice), set under the picture, side to side as the
+   card's frame (.card-mark: the card's 12px padding less the field's 3),
+   the double rule just below the picture's foot, its devices over the
+   picture's lower corners. */
+:root[data-style="atlas"] .card .card-screen::after {
+  inset: auto calc(-9px * var(--plate-k)) calc(-8px * var(--plate-k) - 1px);
+  height: calc(53px * var(--plate-k));
+  border-image: var(--k-plate) 490 152 152 152 / 0 calc(152px * var(--plate-k)) calc(152px * var(--plate-k)) /
+    0 calc(99px * var(--plate-k)) calc(99px * var(--plate-k)) stretch;
+  /* The mock sets one line between the picture and its name (the frame's
+     own foot, below the name, is the double rule). The sheet's lower edge is
+     a double rule, its outer line 4.7 of the sheet's px under the inner at
+     the box's foot: the mask lets the inner line and the corner devices
+     through, and hides the outer. */
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 4.7px * var(--plate-k)), transparent 0);
+  mask-image: linear-gradient(#000 calc(100% - 4.7px * var(--plate-k)), transparent 0);
+}
+
+/* the field's band of focus runs under the screen as well as round the
+   name, so a focused card is also ringed outside its frame, in the gold */
+:root[data-style="atlas"] .card.faceplate.is-live:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+}
+
+/* the mock's screens are a little wider than the shared 16:10, and as tall
+   as one another though its cards are not as wide (200px between the frame's
+   rule and the foot's); a stacked card keeps 16:9 */
+:root[data-style="atlas"] .card-screen .screen-face.has-art {
+  aspect-ratio: 16 / 9;
+}
+
+@media (min-width: 900px) {
+  /* the mock's four uneven columns, for a row of exactly four; any other count
+     takes the shared equal shares */
+  :root[data-style="atlas"] .showcase-row:has(> li:nth-child(4):last-child) {
+    grid-template-columns: 370.4fr 359.1fr 355.8fr 375.1fr;
+  }
+
+  :root[data-style="atlas"] .card-screen .screen-face.has-art {
+    aspect-ratio: auto;
+    height: calc(192 * var(--u));
+  }
+}
+
+/* A screen sits in a single gilt rule with a scroll at each corner, laid
+   over the screen's corners: the 9-slice keeps the scrolls whole (they
+   reach 108 of the mat's px in, past the window's own inset). */
+:root[data-style="atlas"] :is(.screen, .code-duet)::after {
+  border-image-slice: 112;
+  border-image-width: calc(112px * var(--mat-k));
+}
+
+/* The picture stands whole on a mat, as the mock's do: the field of the card
+   strewn with gold dust and small engraved marks, the picture set in it with
+   a margin of about 8% of the plate's height, nothing cut off or run under
+   the corners' flourishes. Its art is a mask of 1080x720 whose drawing does
+   not fill it, so the mask's box is set by where the drawing lies in it
+   (--drawn-x/-y/-w/-h, the share of the mask its centre and size are: Screen,
+   from the art's opaque bounds): its height a share of the plate's (--art-h:
+   the drawing as tall as the margin allows, 84%, so every drawing stands at
+   one height) and shifted (--art-dx/--art-dy, shares of the box) to put the
+   drawing's own centre in the middle. */
+:root[data-style="atlas"] .card .screen-face.has-art {
+  background: var(--a-mat) 0 0 / calc(640 * var(--u)) repeat;
+}
+
+:root[data-style="atlas"] .card .screen-art {
+  --art-h: calc(84% / var(--drawn-h, 1));
+  --art-dx: calc((var(--drawn-x, 0.5) - 0.5) * 100%);
+  --art-dy: calc((var(--drawn-y, 0.5) - 0.5) * 100%);
+  inset: auto;
+  top: 50%;
+  left: 50%;
+  height: var(--art-h);
+  aspect-ratio: 3 / 2;
+  transform: translate(calc(-50% - var(--art-dx)), calc(-50% - var(--art-dy)));
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* stacked, the plates are smaller and the corners' devices take a larger
+   share of them: the pictures stand a size down, clear of them */
+@media (max-width: 899px) {
+  :root[data-style="atlas"] .card .screen-art {
+    height: calc(var(--art-h) * 0.88);
+  }
+}
+
+/* the screen lies under the fine rule: a hairline of shade along its edge */
+:root[data-style="atlas"] .screen-edge {
+  --panel-edge: rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 0 0 1px var(--panel-edge);
+}
+
+/* The foot of the first screen: a gilt hairline under the row with a star
+   at each end, and the motto centred between two rules, in spaced gilt
+   capitals. Decoration: the motto is no part of the page's text. */
+:root[data-style="atlas"] .landing {
+  position: relative;
+}
+
+:root[data-style="atlas"] .landing::before {
+  content: "";
+  position: absolute;
+  left: calc(198 * var(--u));
+  right: calc(130.7 * var(--u));
+  bottom: calc(63.4 * var(--u));
+  height: calc(13.9 * var(--u));
+  background:
+    var(--a-sparkle) 0 50% / calc(11.9 * var(--u)) calc(11.9 * var(--u)) no-repeat,
+    var(--a-sparkle) calc(188.1 * var(--u)) 50% / calc(11.9 * var(--u)) calc(11.9 * var(--u)) no-repeat,
+    var(--a-sparkle) calc(100% - 259.4 * var(--u)) 50% / calc(13.9 * var(--u)) calc(13.9 * var(--u)) no-repeat,
+    linear-gradient(var(--a-gilt), var(--a-gilt)) calc(5.9 * var(--u)) 50% / calc(100% - 5.9 * var(--u)) max(1px, 1.6 * var(--u)) no-repeat;
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+:root[data-style="atlas"] .landing::after {
+  content: "AD ASTRA PER CODICEM" / "";
+  position: absolute;
+  left: calc(50% - 419.8 * var(--u));
+  width: calc(839.5 * var(--u));
+  bottom: calc(38.2 * var(--u));
+  font-family: var(--font-garamond), Georgia, serif;
+  font-size: calc(20.8 * var(--u));
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.17em;
+  text-indent: 0.17em;
+  text-align: center;
+  color: var(--a-gold-ink);
+  text-shadow: var(--l-halo);
+  background:
+    linear-gradient(var(--a-gilt), var(--a-gilt)) 0 55% / calc(242.6 * var(--u)) 1px no-repeat,
+    linear-gradient(var(--a-gilt), var(--a-gilt)) 100% 55% / calc(242.6 * var(--u)) 1px no-repeat;
+  pointer-events: none;
+}
+
+/* Below a desktop the first screen stacks (globals.css): the compass keeps
+   to the brand, a size down, and the foot's motto has no row to stand
+   under. */
+@media (max-width: 899px) {
+  :root[data-style="atlas"] .masthead .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  :root[data-style="atlas"] .masthead .brand .led {
+    position: static;
+    flex: none;
+    width: 44px;
+    height: 44px;
+  }
+
+  :root[data-style="atlas"] :is(.masthead, .landing)::after,
+  :root[data-style="atlas"] .landing::before {
+    content: none;
+  }
+
+  :root[data-style="atlas"] .launchpad-copy {
+    padding: 0;
+  }
+
+  :root[data-style="atlas"] .launchpad-keys .key {
+    min-height: 52px;
+    padding-inline: 26px;
+  }
+
+  /* by day the stacked screen has the cliff's painting behind "Projects":
+     its gilt ink on grey-brown rock is faint, so it is set darker, in a
+     close halo of the ivory field */
+  :root[data-style="atlas"][data-rice="paper"] .showcase-title {
+    color: #4a330c;
+    text-shadow:
+      0 0 2px #f8f2e2,
+      0 0 5px #f8f2e2,
+      0 0 9px #f8f2e2,
+      0 0 15px rgb(248 242 226 / 0.85);
+  }
+}
+
+/* A status marker is a gilt four-point star, the chart's own mark, not a
+   jewel (the kit's pins: derive.mjs stars; the status is always printed
+   beside it, Led.tsx): lit, bright; off, faint. On a card it sits on the
+   frame's top rule as a star sits on the mock's rules. */
+:root[data-style="atlas"] .led[data-on="false"]::before {
+  opacity: 0.45;
+}
+
+/* ---------- the other pages' running head ----------
+   Its keys are the home masthead's: cream roman words on the strip, a gold
+   underline when hovered or open, a gold ring when focused, their
+   shortcuts printed in the foot (globals.css .masthead .key). */
+:root[data-style="atlas"] .running-head .key:not(.cap) {
+  --kn: none;
+  --kh: none;
+  --kp: none;
+  --kf: none;
+  --ki: var(--print);
+  --ku: transparent;
+  min-height: 36px;
+  padding: 0 3px;
+  font-size: 19px;
+  font-weight: 400;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1px;
+}
+
+/* The words stand 28px apart along the strip: the head's own 22px between its
+   groups, and a key's 3px of padding at each side. The theme key keeps room
+   for the longest rice's name (globals.css), which sets its neighbours that
+   far off; the page links, which have none of that, took the shared 8px
+   between tiles and stood about 14px apart, so they take the head's gap. */
+:root[data-style="atlas"] .running-head .head-nav {
+  gap: 14px 22px;
+}
+
+:root[data-style="atlas"] .running-head :is(a.key, button.key):not(.cap):hover,
+:root[data-style="atlas"] .running-head .key[aria-expanded="true"] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--signal);
+}
+
+:root[data-style="atlas"] .running-head .key:not(.cap):focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+:root[data-style="atlas"] .running-head .key-legend {
+  display: none;
+}
+
+/* ---------- body copy ---------- */
+
+/* the roman at a book size: its x-height is smaller than the shared sans's */
 :root[data-style="atlas"] body {
-  font-synthesis-weight: none;
+  font-size: 18.5px;
 }
+
+/* ---------- labels, inline code, printed caps ---------- */
 
 /* A label is engraved on a gilt strip: the strip's rails stay their own
    height (a 9-slice, not stretched with the strip) when a long label wraps
@@ -296,26 +1389,9 @@
   border-image-width: 0 calc(48px * 0.14);
 }
 
-/* the home page's pair: drawn level, no plate of the chart between (the
-   tokens on :root) */
-:root[data-style="atlas"] .hero {
-  --tier-cut: none;
-}
-
-/* the screen sits under the gilt bezel: its shade is the bezel's, warm */
-:root[data-style="atlas"] .screen-edge {
-  --panel-edge: rgba(42, 29, 8, 0.5);
-  box-shadow:
-    inset 0 0 0 1px var(--panel-edge),
-    inset 2px 3px 0 rgba(42, 29, 8, 0.18),
-    inset 6px 9px 10px -2px rgba(42, 29, 8, 0.32);
-}
-
-/* On a phone, a prose sheet's words run from just inside its frame (the
-   gilt frame is 18px deep at a phone's scale), not at the tablet's inset: a
-   column of 26 letters breaks every few words.
-   (The flagship and the cards keep theirs: their status and focus band sit
-   at it.) */
+/* On a phone, a prose sheet's words run from just inside its corners' slice,
+   not at the tablet's inset: a column of 26 letters breaks every few words.
+   (The cards keep theirs: their focus band sits at it.) */
 @media (max-width: 720px) {
   :root[data-style="atlas"] :is(.hero-copy.faceplate, .detail-hero, .section, .launch-copy.faceplate, .colophon) {
     padding-inline: calc(var(--plate-w) + 6px);

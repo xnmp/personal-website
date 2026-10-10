@@ -21,7 +21,8 @@
  * throw the near pines' shadows, shrunk by perspective, into the middle of
  * the sky. A paper shadow box has paper-thin gaps, so each layer samples the
  * layer in front of it at a small offset in their shared (registered) UV
- * frame: the shadow of a thin gap, at any parallax. It is cheap, too: no
+ * frame, mapped across where a side layer is anchored apart from the layer
+ * it shades (framing.ts casterMap): the shadow of a thin gap, at any parallax. It is cheap, too: no
  * shadow pass, three texture reads per pixel.
  *
  * The layer art, the finish and the motes' colour all come from kit.css
@@ -32,6 +33,7 @@ import * as THREE from "three";
 import {
   COVER,
   cameraAt,
+  casterMap,
   castShadow,
   hingeAngle,
   layoutPlane,
@@ -164,9 +166,8 @@ function readFinish(): Finish {
 /** Where kit.css places each layer across the frame (framing.ts Placement):
  *  a style may anchor its left and right cut-outs to their sides
  *  (--left-anchor, --right-anchor) and hold them to --side-span frame widths.
- *  Such a layer is then out of register with the layers it would shade or be
- *  shaded by, so a style anchors only side layers outside the shadow chain
- *  (no left-back or right-back behind them). */
+ *  Each side's back row goes with it, as in kit.css. Every other layer
+ *  covers; the shadows between layers placed apart are mapped across. */
 function readPlacements(): Partial<Record<Layer, Placement>> {
   const css = getComputedStyle(document.documentElement);
   const span = num(css, "--side-span");
@@ -174,7 +175,8 @@ function readPlacements(): Partial<Record<Layer, Placement>> {
     const anchor = num(css, name);
     return { anchor: Number.isFinite(anchor) ? anchor : COVER.anchor, span: Number.isFinite(span) && span > 0 ? span : COVER.span };
   };
-  return { left: side("--left-anchor"), right: side("--right-anchor") };
+  const [left, right] = [side("--left-anchor"), side("--right-anchor")];
+  return { left, "left-back": left, right, "right-back": right };
 }
 
 /** Where kit.css puts the sun at this width: its disc's centre and diameter. */
@@ -230,6 +232,9 @@ function paperMaterial() {
       casterB: { value: blank },
       offA: { value: new THREE.Vector2() },
       offB: { value: new THREE.Vector2() },
+      // where each caster's art lies under this layer's (framing.ts casterMap)
+      mapA: { value: new THREE.Vector4(1, 1, 0, 0) },
+      mapB: { value: new THREE.Vector4(1, 1, 0, 0) },
       strA: { value: 0 },
       strB: { value: 0 },
       cloudMap: { value: blank },
@@ -249,14 +254,14 @@ function paperMaterial() {
     fragmentShader: /* glsl */ `
       uniform sampler2D map, casterA, casterB, cloudMap;
       uniform vec2 offA, offB, cloudOff;
-      uniform vec4 cloudRect;
+      uniform vec4 mapA, mapB, cloudRect;
       uniform float opacity, lit, strA, strB, cloudStr, darkness, softness;
       varying vec2 vUv;
       void main() {
         vec4 c = texture(map, vUv);
         if (c.a < 0.02) discard;
-        float occ = texture(casterA, vUv + offA, softness).a * strA;
-        occ = max(occ, texture(casterB, vUv + offB, softness).a * strB);
+        float occ = texture(casterA, (vUv + offA) * mapA.xy + mapA.zw, softness).a * strA;
+        occ = max(occ, texture(casterB, (vUv + offB) * mapB.xy + mapB.zw, softness).a * strB);
         vec2 cu = (vUv + cloudOff - cloudRect.xy) / cloudRect.zw;
         if (cloudStr > 0.0 && cu.x > 0.0 && cu.x < 1.0 && cu.y > 0.0 && cu.y < 1.0) {
           // the cloud's art carries its own soft drop shadow; only its paper casts
@@ -406,13 +411,18 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
   const layout = () => {
     const over = overscanFor(view, ART, RIG, DEPTH.sky);
     const placed = readPlacements();
+    const at = (l: Layer) => placed[l] ?? COVER;
     for (const [layer, { hinge, mesh }] of planes) {
-      const p = layoutPlane(view, ART, DEPTH[layer], FOV, over, placed[layer] ?? COVER);
+      const p = layoutPlane(view, ART, DEPTH[layer], FOV, over, at(layer));
+      const u = mesh.material.uniforms;
       hinge.position.set(p.hinge.x, p.hinge.y, p.hinge.z);
       mesh.scale.set(p.width, p.height, 1);
       mesh.position.set(0, p.height / 2, 0);
-      mesh.material.uniforms.repeat.value.set(...p.repeat);
-      mesh.material.uniforms.offset.value.set(...p.offset);
+      u.repeat.value.set(...p.repeat);
+      u.offset.value.set(...p.offset);
+      const [a, b] = CASTERS[layer];
+      if (a) u.mapA.value.set(...casterMap(view, ART, at(layer), at(a.from)));
+      if (b) u.mapB.value.set(...casterMap(view, ART, at(layer), at(b.from)));
     }
     skyRest.copy(sky.hinge.position);
     const sunAt = readSunAt();
@@ -466,7 +476,7 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
     return max > 0 ? window.scrollY / max : 0;
   };
 
-  // ---- the finish: load its art, and reload on a rice change ----
+  // ---- the finish: load its art, and reload on a rice or page change ----
   let finishKey = "";
   let loadToken = 0;
   const applyFinish = async () => {
@@ -522,11 +532,29 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
   };
   canvas.addEventListener("webglcontextlost", onLost);
 
-  const rice = new MutationObserver(() => applyFinish().catch(opts.onFail));
+  // a change to a style whose scene is a single plate hands the scene back to
+  // the CSS, which registers that plate to the page (lib/styles.ts SceneArt)
+  const rice = new MutationObserver(() =>
+    document.documentElement.dataset.sceneArt === "plate"
+      ? opts.onFail(new Error("this style's scene is a plate"))
+      : applyFinish().catch(opts.onFail),
+  );
   rice.observe(document.documentElement, { attributes: true, attributeFilter: ["data-rice", "data-style"] });
+  // a style may dress its inner pages' scene its own way (kit tokens under
+  // :root:has(...)), so a move to another page re-reads the finish; the same
+  // art is not reloaded (applyFinish keys on it)
+  const page = new MutationObserver(() => applyFinish().catch(opts.onFail));
+  const column = document.querySelector(".rack-inner");
+  if (column) page.observe(column, { childList: true });
 
   // ---- the loop ----
-  const ro = new ResizeObserver(resize);
+  // a style may dress the scene for a narrow screen its own way (kit tokens
+  // under a media query), so a resize re-reads the finish too (keyed: the
+  // same art is not reloaded)
+  const ro = new ResizeObserver(() => {
+    resize();
+    applyFinish().catch(opts.onFail);
+  });
   ro.observe(canvas);
   let start = -1;
   let settled = false;
@@ -646,6 +674,7 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
     disposed = true;
     cancelAnimationFrame(raf);
     rice.disconnect();
+    page.disconnect();
     canvas.removeEventListener("webglcontextlost", onLost);
     ro.disconnect();
     window.removeEventListener("pointermove", onPointer);

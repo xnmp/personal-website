@@ -1,0 +1,74 @@
+{
+  "/screens/automatedspike.png": {
+    "x": 0.4986,
+    "y": 0.4667,
+    "w": 0.6083,
+    "h": 0.5917
+  },
+  "/screens/ballast.png": {
+    "x": 0.5,
+    "y": 0.4563,
+    "w": 0.9056,
+    "h": 0.7708
+  },
+  "/screens/bwai.png": {
+    "x": 0.5014,
+    "y": 0.5083,
+    "w": 0.675,
+    "h": 0.8167
+  },
+  "/screens/diablo-clone.png": {
+    "x": 0.4236,
+    "y": 0.5,
+    "w": 0.7806,
+    "h": 0.8083
+  },
+  "/screens/eskiv-run.png": {
+    "x": 0.5,
+    "y": 0.5,
+    "w": 0.9667,
+    "h": 0.95
+  },
+  "/screens/eskiv.png": {
+    "x": 0.5,
+    "y": 0.5063,
+    "w": 0.7722,
+    "h": 0.6958
+  },
+  "/screens/lambdaquery.png": {
+    "x": 0.4764,
+    "y": 0.5,
+    "w": 0.5361,
+    "h": 0.9
+  },
+  "/screens/quickshell-statusbar.png": {
+    "x": 0.5,
+    "y": 0.5125,
+    "w": 0.9333,
+    "h": 0.875
+  },
+  "/screens/scrivo.png": {
+    "x": 0.5417,
+    "y": 0.4667,
+    "w": 0.7889,
+    "h": 0.7417
+  },
+  "/screens/tableau-frog.png": {
+    "x": 0.5083,
+    "y": 0.4979,
+    "w": 0.7556,
+    "h": 0.7542
+  },
+  "/screens/tauri-explorer.png": {
+    "x": 0.5028,
+    "y": 0.5521,
+    "w": 0.9722,
+    "h": 0.8208
+  },
+  "/screens/zheng-shang-you.png": {
+    "x": 0.4764,
+    "y": 0.4917,
+    "w": 0.3917,
+    "h": 0.675
+  }
+}

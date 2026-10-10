@@ -1,0 +1,12 @@
+Edit the attached reference image (ref.png), a painted cottage garden. Keep ONLY the low dry-stone garden wall that runs across the lower half of the picture and the things standing on its flat ledge, exactly as they are painted and exactly where they are in the frame:
+- the wall of rough honey and grey stones in irregular courses, with its flat coping ledge along the top, and the ivy, moss and small white daisies growing in its joints;
+- the few pink rose petals scattered on the ledge;
+- the cream mug lettered "Small tools happier people" with a little sprig;
+- the stack of four green cloth-bound books whose spines read "Build", "Play", "Explore", "A Kinder Internet";
+- the sleeping grey and brown tabby cat lying along the ledge, one white paw hanging over the ledge's front edge;
+- the terracotta flower pot lettered "Same Curiosity New Horizons", with its pink rose plant.
+The wall's two ends and its foot fade out softly into a few fern fronds, leaves and daisies, as they grow round it in the reference.
+
+Remove everything else: the plastered wall, the climbing roses, the hedge, the sky, the cottage, the gate and its sign, the wooden board, the watering can, the standing stones, the flower border in front of the wall, the foxgloves and the paving. Same painting, light, palette and brushwork as the reference. Same 16:9 framing as the reference, so every kept thing stays exactly where it is, at the highest resolution available.
+
+Background: if your image tool supports a transparent background, use a fully transparent background. Otherwise use a perfectly flat, pure magenta #FF00FF background with no gradient, texture, vignette or cast shadow on it.

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature } from "@/components/notebook";
-import { Screen, Cap, Key } from "@/components/rack";
+import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature, ProjectMeta, ProjectKicker, Folio } from "@/components/notebook";
+import { Screen, Key } from "@/components/rack";
 
 export const metadata: Metadata = {
   title: "Ballast: a mood diary made of markdown files",
@@ -13,11 +13,7 @@ export default function Page() {
     <>
       <RunningHead
         brand="chong"
-        meta={
-          <>
-            03 &nbsp;·&nbsp; Ballast &nbsp;·&nbsp; <span className="filed">active</span>
-          </>
-        }
+        meta={<ProjectMeta slug="ballast" />}
         nav={
           <>
             <Key href="/">← all projects</Key>
@@ -28,7 +24,7 @@ export default function Page() {
 
         <section className="detail-hero">
           <div>
-            <div className="kicker">03 · Ballast</div>
+            <ProjectKicker slug="ballast" />
             <h1>A mood diary that keeps every entry as a plain markdown file.</h1>
             <p>
               The tagline in the README is “The weight that keeps a ship stable while it
@@ -247,12 +243,7 @@ Placeholder note text, kept verbatim.`}</pre>
         </section>
 
       </main>
-      <footer className="folio">
-        <span className="fine-only">
-          Press <Cap>/</Cap> for the other projects
-        </span>
-        <span>03 / 11</span>
-      </footer>
+      <Folio slug="ballast" />
     </>
   );
 }

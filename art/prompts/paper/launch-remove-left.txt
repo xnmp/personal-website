@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png), a cut-paper diorama landscape, 16:9.
+
+Remove everything standing at the left edge in front of the landscape: the hiker with the orange backpack and orange jacket, the brown dog, the brown paper rock they stand on, the tall dark green pines at the left edge and the dark green pines in the bottom-left corner. Where they were, continue what lies behind them seamlessly, in exactly the same rendering: the layered green paper hills with their rows of small pines running down to the left and bottom edges, and the pale blue-grey mountains behind.
+
+Keep everything else exactly where and as it is in ref.png, pixel for pixel: the composition, every other element, the light, the palette, the cut-paper construction and the paper texture. FRAMING, the most important requirement: the output is the whole of ref.png's frame at exactly the same scale; do not zoom, crop, shift or re-centre anything, so the result lies exactly over ref.png. Same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available. Opaque. No lettering anywhere.

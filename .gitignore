@@ -49,3 +49,6 @@ next-env.d.ts
 # playwright
 /test-results/
 /playwright-report/
+
+# isolated dev servers (NEXT_DIST_DIR, next.config.ts)
+/.next-*/

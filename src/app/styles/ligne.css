@@ -1,51 +1,83 @@
 /* ==========================================================================
-   LIGNE CLAIRE (art/briefs/ligne.md): panels of a European science-fiction
-   comic album in the clear line, flat cream fields inside one ink border,
-   caption boxes, powder-blue inset frames, flat lamps, mint caption tags,
-   powder-blue code boxes, over the album's establishing shot of a desert
-   outpost. The kit is built by `node scripts/build-kit.mjs ligne` to the
-   same source geometry as the Paper Diorama, so only the art, the inks and
-   the mounts' slices change. Night (the dark rices: the album's night
-   pages) first, then day (the light rice).
+   LIGNE CLAIRE (art/briefs/ligne.md): a page of a European science-fiction
+   comic album in the clear line, matched to its original mock
+   (art/originals/ligne.webp). The website is laid out as the album lays
+   out a page: panels on cream paper, each a flat field inside one even
+   black ink line, the gutters between them the page. The home page's first
+   screen is three panels (the pale-blue header band, the hero with the
+   desert establishing shot as its picture, the projects panel with its four
+   card panels), drawn by the page so they size with the layout; the inner
+   pages' panels are the kit's 9-slice sheets in the same line (built by
+   `node scripts/build-kit.mjs ligne`). Everything is lettered, as the
+   album is: the wordmark is the mock's own brushed lettering, the headline
+   a letterer's heavy italic, and every other word, the prose too, one
+   plain, slightly condensed comic hand. Night (the dark rices: the album's
+   night pages) first, then day (the light rice).
    ========================================================================== */
 
 :root[data-style="ligne"] {
-  --font-display: var(--font-barlow);
+  /* one hand for every word (the headline's heavy italic apart): the
+     display role, the prose and the labels */
+  --ligne-hand: var(--font-comic-neue), "Comic Sans MS", sans-serif;
+  --font-display: var(--font-comic-neue);
+  --font-print: var(--font-comic-neue);
 
-  --signal: #e2553f; /* coral: the primary caption, the active lamp, focus */
+  /* the page, its panels and their line (the mock's colours by day) */
+  --ligne-ink: #040404; /* the mock's ink, sampled: a true black (3,3,3), every line's */
+  --ligne-line: 3px; /* a panel's border, the mock's */
+  --ligne-round: 6px; /* a panel's corner */
+  --ligne-page: #1b2047; /* the night page: the night's deepest blue */
+  --ligne-field: #4757a6; /* a panel's field by night (scripts/kits/ligne.mjs FIELD_NIGHT) */
+  --ligne-band: #34428f; /* the header band by night, a dusk blue under the field's */
+  /* the grounds of the cards' pictures, the mock's: the dungeon's slate, the
+     card table's felt, the battlefield's steel (a shade deeper by night),
+     and the inks the art is drawn in on them: torchlight, cardstock, a
+     marine's blue */
+  --ligne-slate: #2c3340;
+  --ligne-felt: #16452e;
+  --ligne-steel: #343b55;
+  --ligne-torch: #f1cf94;
+  --ligne-cardstock: #f4eddb;
+  --ligne-marine: #9fd4f5;
+
+  --signal: #e2553f; /* coral: focus, the active lamp, a hover's underline */
   --signal-ink: #ffd0c4; /* on the night-blue field (>= 4.5:1) */
-  --print: #fbf3e1; /* cream on the night page's blue */
+  --print: #fbf3e1; /* cream lettering on the night page's blue */
   --print-soft: #efe7d6;
   --print-faint: #ebe3d1; /* >= 4.5:1 on the field, small labels too */
   /* flat colour: nothing is cut or embossed */
   --engrave-lo: transparent;
   --engrave-hi: transparent;
   --silk-shadow: none;
-  --scene-ground: #343c86;
-  --k-scene-flat: url(/kit/ligne/scene-night.webp);
+  /* The scene is the album's page alone, its paper (scripts/kits/ligne.mjs
+     scene): the desert is the hero panel's picture (--k-hero), and the
+     flat scene the social cards print is that picture. */
+  --scene-ground: #1b2047;
+  --k-scene-flat: url(/kit/ligne/hero-night.webp);
   --k-sky: url(/kit/ligne/scene/night/sky.webp);
-  --k-sun: none; /* the ringed planet is painted in the sky */
+  --k-sun: none;
   --sun-sw: 1;
   --sun-sh: 1;
   --sun-cx: 0;
   --sun-cy: 0;
   --sun-r: 0;
-  --k-far: url(/kit/ligne/scene/night/far.webp);
-  --k-mid: url(/kit/ligne/scene/night/mid.webp);
-  --k-near: url(/kit/ligne/scene/night/near.webp);
+  --k-far: none;
+  --k-mid: none;
+  --k-near: none;
   --k-left-back: none;
   --k-right-back: none;
-  --k-left: url(/kit/ligne/scene/night/left.webp);
-  --k-right: url(/kit/ligne/scene/night/right.webp);
+  --k-left: none;
+  --k-right: none;
+  --k-hero: url(/kit/ligne/hero-night.webp);
+  --k-hero-phone: url(/kit/ligne/hero-night-phone.webp); /* its moon painted out */
   --k-plate: url(/kit/ligne/sheet-night-normal.webp);
   --k-plate-hover: url(/kit/ligne/sheet-night-hover.webp);
   --k-plate-pressed: url(/kit/ligne/sheet-night-pressed.webp);
   --k-plate-focus: url(/kit/ligne/sheet-night-focus.webp);
   --k-plate-flat: url(/kit/ligne/sheet-night-flat.webp);
-  /* The ink line is one weight, 3px, on every surface: each is drawn at
+  /* The ink line is one weight, 3px, round every panel: each is drawn at
      that weight for the scale it prints at here (scripts/kits/ligne.mjs),
-     and every scale puts the line's edges on whole px. Panels print at 0.5
-     on a phone too (a narrower inset makes up the corner's width). */
+     and every scale puts the line's edges on whole px. */
   --plate-k: 0.5;
   --mat-k: 0.2;
   /* a panel's field is cleared from the art (scripts/framed-pane.mjs) and
@@ -53,22 +85,21 @@
      so the ink border is the art and the field any size, its fibre at one
      scale everywhere */
   --plate-slice: var(--slice-plate);
-  --plate-field: #4757a6; /* a tone lighter than the moonlit ground */
+  --plate-field: #4757a6;
   --plate-fill: url(/kit/ligne/paper-night.webp);
   --plate-fill-size: 384px;
   --plate-fill-repeat: repeat;
-  /* the field starts under the ink line (inside the paper margin round it),
-     never outside it */
-  --plate-fill-in: 10px;
-  --strip-fill-in: 20px;
+  /* the field starts under the ink line, never outside it */
+  --plate-fill-in: 4px;
+  --strip-fill-in: 8px;
   --plate-repeat: stretch; /* an even ink line stretches clean */
   --strip-repeat: stretch;
   --plate-backdrop: none;
   --plate-round: 0px;
   --plate-light: none;
   --plate-sheen: none;
-  /* content clears the ink line and the focus band inside it (10px), not
-     the corner's full slice: the field is flat to the line */
+  /* content clears the ink line and the focus band inside it, not the
+     corner's full slice: the field is flat to the line */
   --plate-inset: -10px;
   /* the album's sun is upper right (scripts/kits/ligne.mjs): hover lifts a
      panel up and to the right off its flat shadow, which stays where it lay
@@ -78,7 +109,7 @@
   --plate-press-shift: translate(-4px, 4px);
   --key-k: 0.5; /* the captions' line is drawn for it (scripts/kits/ligne.mjs) */
   --key-hover-shift: 2px -2px;
-  --key-press-shift: -3px 3px;
+  --key-press-shift: 0 0;
   --key-legend-sink: 0px; /* the caption moves whole */
   /* the frame is flat: it throws no shade into the screen */
   --screen-occlusion: none;
@@ -93,7 +124,7 @@
   /* a tier's panels are set level, top and foot, as on a page: under the
      shorter of a pair, a closer panel (kit.css .tier-cut), the outpost's
      door and its rover, a close-up drawn at its own scale (scripts/kits/
-     ligne.mjs cuts), its middle band in the strip */
+     ligne.mjs cuts) */
   --hero-align: stretch;
   --tier-cut: block;
   --tier-cut-art: var(--k-cut-outpost);
@@ -101,11 +132,11 @@
   --tier-cut-size: cover;
   --k-bezel: url(/kit/ligne/mat-night.webp);
   /* the frame's slices take in the ink line round its window (the window
-     opens 120 of the art's px in: scripts/kits/ligne.mjs mat) */
-  --mat-t: 120;
-  --mat-r: 120;
-  --mat-b: 120;
-  --mat-l: 120;
+     opens 110 of the art's px in: scripts/kits/ligne.mjs mat) */
+  --mat-t: 110;
+  --mat-r: 110;
+  --mat-b: 110;
+  --mat-l: 110;
   --k-key: url(/kit/ligne/tile-night-normal.webp);
   --k-key-hover: url(/kit/ligne/tile-night-hover.webp);
   --k-key-pressed: url(/kit/ligne/tile-night-pressed.webp);
@@ -113,7 +144,7 @@
   --key-inset: 3px; /* the legend clears the caption's ink line */
   --key-lift: 0px;
   --k-tape: url(/kit/ligne/tape-night.webp); /* a mint caption tag */
-  --tape-ink: #1c1414;
+  --tape-ink: #040404;
   --k-chip: url(/kit/ligne/chip-night.webp); /* inline code: a flat powder-blue tint */
   --k-cap: url(/kit/ligne/cap-night.webp); /* a printed keycap: a white caption */
   --k-caption: url(/kit/ligne/caption-night.webp); /* a shelf's narrative caption */
@@ -128,93 +159,122 @@
   --k-cut-butte: url(/kit/ligne/cut-butte-night.webp);
   --k-cut-track: url(/kit/ligne/cut-track-night.webp);
   --k-cut-pillar: url(/kit/ligne/cut-pillar-night.webp);
-  --chip-ink: #1c1414;
+  --chip-ink: #040404;
   --chip-pad: 0.35em;
   --k-drift-cloud: none;
-  --motes: #cfd6ff;
+  /* the 3D scene's motes glow additively: black adds nothing, so none
+     drift over the page's paper */
+  --motes: #000000;
   --motes-kind: dust;
   --plate-under: var(--plate-field);
   --bezel-under: #b0c7d6;
-  /* the neutral caption by night is the night's deep blue, lettered in
-     cream (scripts/kits/ligne.mjs NIGHT_CAPTION), so the coral primary is
-     what calls */
-  --key-under: #2b3577;
-  --key-ink: #fbf3e1;
-  --key-ink-soft: #e4dccb;
+  /* the buttons keep the mock's cream and sky blue by night, a shade
+     dimmed (scripts/kits/ligne.mjs NIGHT), lettered in ink */
+  --key-under: #ede6d4;
+  --key-ink: #040404;
+  --key-ink-soft: #33302a;
   --k-key-signal: url(/kit/ligne/tile-signal-night-normal.webp);
   --k-key-signal-hover: url(/kit/ligne/tile-signal-night-hover.webp);
   --k-key-signal-pressed: url(/kit/ligne/tile-signal-night-pressed.webp);
   --k-key-signal-focus: url(/kit/ligne/tile-signal-night-focus.webp);
-  --key-signal-ink: #1c1414; /* ink on the lifted coral, as the album letters it (5.8:1) */
-  --key-signal-under: #ee6448;
+  --key-signal-ink: #040404;
+  --key-signal-under: #5fb3ea;
   --k-pin-brass: url(/kit/ligne/pin-brass.webp); /* a cream lamp */
   --k-pin-green: url(/kit/ligne/pin-green.webp); /* mint */
   --k-pin-amber: url(/kit/ligne/pin-amber.webp); /* apricot */
   --k-pin-signal: url(/kit/ligne/pin-signal.webp); /* coral */
   --k-glass: none; /* flat colour: no glare on the glass */
-  /* The establishing shot keeps its landmarks: the arch and mast to the
-     left, the outpost and rocket to the right, each anchored to its side and
-     on a narrow screen drawn at most 1.6 screens wide (the art is 16:9), so
-     they keep to their corners instead of being cropped away (kit.css; the
-     3D scene reads the same tokens). */
-  --left-anchor: 0;
-  --right-anchor: 1;
-  --side-span: 1.6;
-  --side-size: auto min(max(100%, 56.25vw), calc(56.25vw * 1.6));
+
+  /* The home page's first screen on the mock's stage (globals.css: home
+     landing), its pieces where the mock has them, in mock px. The masthead
+     is the band and the gutter under it (107), so the hero's panel starts
+     where the mock's does. */
+  --masthead-h: calc(107 * var(--u));
+  --l-left: calc(98 * var(--u)); /* the pitch and buttons */
+  --l-right: calc(62 * var(--u)); /* the nav's end */
+  --l-brand: calc(63 * var(--u));
+  --l-brand-weight: 800;
+  --l-tagline: calc(26 * var(--u));
+  --l-tagline-font: var(--font-comic-neue);
+  --l-tagline-track: 0;
+  --l-nav: calc(27 * var(--u));
+  --l-nav-font: var(--font-comic-neue);
+  --l-nav-weight: 700;
+  --l-launch-top: 0px;
+  --l-launch-align: center;
+  --l-win-x: calc(996 * var(--u));
+  --l-win-w: calc(611 * var(--u));
+  --l-title: calc(105 * var(--u));
+  --l-title-font: var(--font-grandstander);
+  --l-title-weight: 700;
+  --l-pitch: calc(32 * var(--u));
+  --l-pitch-font: var(--font-comic-neue);
+  --l-cards-l: calc(41 * var(--u));
+  --l-cards-r: calc(41 * var(--u));
+  --l-cards-gap: calc(16 * var(--u));
+  /* the panel's foot (15 under the cards) and the gutter: the mock's 30, less
+     the height the stage lacks of the mock's page where its width is the
+     limit (its 2 x slack wide is 1.126 x that tall), so the panels' foot
+     stands where the mock's does */
+  --l-foot: calc(30 * var(--u));
+  --l-heading: calc(32 * var(--u));
+  --l-heading-font: var(--font-comic-neue);
+  --l-heading-weight: 700;
+  --l-heading-rule: none; /* the panel's own line is the rule (below) */
+  --l-card-title: calc(35 * var(--u)); /* its capitals the mock's 25 */
+  --l-card-font: var(--font-comic-neue);
+  --l-card-weight: 700;
+  --card-title-order: 1; /* under its screen, as the mock letters it */
+  --l-ink: var(--print);
+  --l-ink-soft: var(--print);
+  --l-call: var(--print);
+  --l-halo: none;
+  --l-rule: var(--ligne-ink);
+  /* the window is set flat on the picture in the mock's heavy ink bezel (an
+     outline of 3 round its own 1px edge, ~4 mock px), its corners round */
+  --xw-round: calc(10 * var(--u));
+  --xw-shadow: 0 0 0 calc(3 * var(--u)) var(--ligne-ink);
+  --xw-edge: var(--ligne-ink);
 }
 
-/* On a tablet or a phone the sheets fill the width and the landmarks show
-   only above the masthead and between the sheets: held to 1.6 screens they
-   sink behind the sheets, so there they are drawn as tall as the screen
-   (the art spans about two screens on a tablet, four on a phone; the span
-   allows for a phone up to 2.36 times as tall as it is wide), the mast's
-   lamp, the planet and the rocket's nose in the open sky. */
-@media (max-width: 1099px) {
-  :root[data-style="ligne"] {
-    --side-span: 4.2;
-    --side-size: auto min(max(100%, 56.25vw), calc(56.25vw * 4.2));
-  }
-}
-
-/* On a phone, the band of open sky above the masthead (kit.css: room for a
-   sun) is the establishing shot's: deep enough for the mast's lamp and dish
-   and the rocket's nose cone, so the outpost is still there at a glance. */
-@media (max-width: 600px) {
-  :root[data-style="ligne"] .rack {
-    padding-top: 84px;
-  }
-}
-
-/* day: the album's daylight pages */
+/* day: the album's daylight pages, the mock's */
 :root[data-style="ligne"][data-rice="paper"] {
+  --ligne-page: #f9f3e2;
+  --ligne-field: #f9f3e2;
+  --ligne-band: #82caee;
+  --ligne-slate: #3a424d;
+  --ligne-felt: #1f5a3b;
+  --ligne-steel: #454c63;
   --signal: #e2553f;
   --signal-ink: #b8361f;
   --engrave-lo: transparent;
   --plate-under: var(--plate-field);
-  --print: #1c1414; /* the scene's ink on the cream field */
+  --print: #040404; /* the ink on the cream */
   --print-soft: #2f2d29;
   --print-faint: #3d3a35;
-  --scene-ground: #e9b98a;
-  --k-scene-flat: url(/kit/ligne/scene-day.webp);
+  --scene-ground: #f9f3e2;
+  --k-scene-flat: url(/kit/ligne/hero-day.webp);
   --k-sky: url(/kit/ligne/scene/day/sky.webp);
-  --k-far: url(/kit/ligne/scene/day/far.webp);
-  --k-mid: url(/kit/ligne/scene/day/mid.webp);
-  --k-near: url(/kit/ligne/scene/day/near.webp);
+  --k-far: none;
+  --k-mid: none;
+  --k-near: none;
   --k-left-back: none;
   --k-right-back: none;
-  --k-left: url(/kit/ligne/scene/day/left.webp);
-  --k-right: url(/kit/ligne/scene/day/right.webp);
+  --k-left: none;
+  --k-right: none;
   --k-sun: none;
   --sun-cx: 0;
   --sun-cy: 0;
   --sun-r: 0;
   --k-drift-cloud: none;
+  --k-hero: url(/kit/ligne/hero-day.webp);
+  --k-hero-phone: url(/kit/ligne/hero-day-phone.webp);
   --k-plate: url(/kit/ligne/sheet-day-normal.webp);
   --k-plate-hover: url(/kit/ligne/sheet-day-hover.webp);
   --k-plate-pressed: url(/kit/ligne/sheet-day-pressed.webp);
   --k-plate-focus: url(/kit/ligne/sheet-day-focus.webp);
   --k-plate-flat: url(/kit/ligne/sheet-day-flat.webp);
-  --plate-field: #f5ebd8;
+  --plate-field: #f9f3e2;
   --plate-fill: url(/kit/ligne/paper-day.webp);
   --k-strip: url(/kit/ligne/sheet-strip-day-normal.webp);
   --k-bezel: url(/kit/ligne/mat-day.webp);
@@ -234,25 +294,888 @@
   --caption-fill: #fce89e;
   --tag-fill: #cee5d1;
   --code-fill: #b5d3e7;
-  --mat-fill: #b9d4e9;
+  --mat-fill: #92cfec; /* the mock's powder blue round its Scrivo screen */
   --k-cut-outpost: url(/kit/ligne/cut-outpost-day.webp);
   --k-cut-butte: url(/kit/ligne/cut-butte-day.webp);
   --k-cut-track: url(/kit/ligne/cut-track-day.webp);
   --k-cut-pillar: url(/kit/ligne/cut-pillar-day.webp);
-  --tape-ink: #1c1414;
-  --mat-t: 120;
-  --mat-r: 120;
-  --mat-b: 120;
-  --mat-l: 120;
-  --key-ink: #1c1414;
+  --tape-ink: #040404;
+  --mat-t: 110;
+  --mat-r: 110;
+  --mat-b: 110;
+  --mat-l: 110;
+  --key-ink: #040404;
   --key-ink-soft: #33302a;
-  --chip-ink: #1c1414;
-  --motes: #fff3dc;
+  --chip-ink: #040404;
+  --motes: #000000;
   --motes-kind: dust;
-  --bezel-under: #b9d4e9;
-  --key-under: #fffaf0;
-  --key-signal-ink: #1c1414;
-  --key-signal-under: #e25d42;
+  --bezel-under: #92cfec;
+  --key-under: #f9f5e6; /* the mock's cream (249,245,230) */
+  --key-signal-ink: #040404;
+  --key-signal-under: #67c1fc;
+}
+
+/* ---------- the page ---------- */
+
+/* the album's page has an edge: a thin ink line round it, as the mock
+   draws round its page (fixed to the screen, over everything, never in
+   the way of a pointer) */
+:root[data-style="ligne"] body:has(.rack)::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  border: 3px solid var(--ligne-ink);
+  pointer-events: none;
+}
+
+/* ---------- home: the first screen, three panels on the page ---------- */
+
+/* The masthead is the header band: a full-width panel of flat pale sky
+   blue in the ink line (the mock's x 24-1649, y 16-96), the brand and its
+   line on one row at its left, the keys lettered at its right. The
+   masthead's box is the band and the gutter under it, so the hero's panel
+   opens where the mock's does. */
+:root[data-style="ligne"] .masthead {
+  box-sizing: border-box;
+  isolation: isolate;
+  min-height: var(--masthead-h);
+  align-items: center;
+  padding: calc(26 * var(--u)) var(--l-right) calc(11 * var(--u)) calc(62 * var(--u));
+}
+
+:root[data-style="ligne"] .masthead::before {
+  content: "";
+  position: absolute;
+  inset: calc(16 * var(--u)) calc(23 * var(--u)) calc(10 * var(--u)) calc(24 * var(--u));
+  z-index: -1;
+  border: var(--ligne-line) solid var(--ligne-ink);
+  border-radius: var(--ligne-round);
+  background: var(--ligne-band);
+}
+
+@media (min-width: 900px) {
+  :root[data-style="ligne"] .masthead-brand {
+    display: flex;
+    align-items: baseline;
+    gap: calc(34 * var(--u));
+    min-width: 0;
+  }
+}
+
+/* the wordmark is lettered alone: no lamp beside it */
+:root[data-style="ligne"] .masthead .brand .led {
+  display: none;
+}
+
+:root[data-style="ligne"] .masthead .brand {
+  line-height: 1;
+  text-transform: none;
+}
+
+/* The wordmark is the mock's own brushed lettering (a fixed name: its
+   strokes are a letterer's, which no face has), an ink mask cut from the
+   original (scripts/kits/ligne-raws.mjs wordmark) that the page fills with
+   its ink, by night the night's cream. The name stays the link's text, set
+   clear in the lettering's box: it is read, selected and found as text.
+   The box is the lettering's (182 x 73 mock px at the brand's 63), its
+   baseline the lettering's (61 px down). */
+:root[data-style="ligne"] :is(.masthead, .running-head) .brand a {
+  position: relative;
+  display: inline-block;
+  width: 2.889em;
+  color: transparent;
+  font-family: var(--ligne-hand);
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0;
+}
+
+:root[data-style="ligne"] :is(.masthead, .running-head) .brand a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: var(--wm-drop, 0.024em);
+  width: 100%;
+  aspect-ratio: 182 / 73;
+  background: var(--l-ink);
+  -webkit-mask: url(/kit/ligne/wordmark.webp) 0 0 / 100% 100% no-repeat;
+  mask: url(/kit/ligne/wordmark.webp) 0 0 / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+/* the tagline in the hand's bold italic, its baseline a little above the
+   wordmark's, as the mock letters it (74 to the wordmark's 81) */
+:root[data-style="ligne"] .masthead .tagline {
+  position: relative;
+  top: calc(-5 * var(--u));
+  margin: 0;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* the keys are the band's nav, lettered upright as the mock's links are,
+   the mock's 40 apart */
+:root[data-style="ligne"] .masthead .instruments {
+  gap: calc(40 * var(--u));
+  margin-top: 0;
+}
+
+:root[data-style="ligne"] .masthead .key {
+  font-style: normal;
+  font-weight: var(--l-nav-weight);
+}
+
+/* The hero panel: the desert establishing shot is its picture, laid at
+   its foot the panel's full width (the art carries sky above the mock's
+   crop, so a taller panel shows more sky; narrower than the art's 16:9 it
+   covers, the explorer kept in view), in the ink line. It takes the
+   height the first screen leaves above the projects. */
+:root[data-style="ligne"] .launchpad {
+  position: relative;
+  isolation: isolate;
+  flex: 1 0 auto;
+  min-height: calc(496 * var(--u));
+}
+
+:root[data-style="ligne"] .launchpad::before {
+  content: "";
+  position: absolute;
+  inset: 0 calc(23 * var(--u)) 0 calc(24 * var(--u));
+  z-index: -1;
+  border: var(--ligne-line) solid var(--ligne-ink);
+  border-radius: var(--ligne-round);
+  background: var(--k-hero) 38% 100% / cover no-repeat var(--ligne-page);
+}
+
+/* the copy stands in the sky at the panel's upper left, the window
+   centred at its right; the copy is set from the panel's foot, as the
+   picture is, so where a taller panel shows more sky it shows it above the
+   headline, and the words keep their place on the picture (on the sky, off
+   the clouds the mock keeps them off) */
+:root[data-style="ligne"] .launchpad-copy {
+  align-self: end;
+  padding-bottom: calc(139 * var(--u));
+}
+
+/* The headline is lettered across the sky as a splash panel's title is:
+   heavy italic capitals, drawn a touch taller than the face's own (a
+   letterer's caps), the two lines tilted to the mock's ~7 degrees, rising
+   to the right, the second stepped in from the first (the mock's EXPLORER
+   starts 20px right of its TAURI: the first line is drawn out to the
+   left). Its box is its words, so the tilt keeps it clear of the window. */
+:root[data-style="ligne"] .launchpad-title {
+  width: min-content; /* a word to a line, as the mock letters it */
+  /* (drawn up from its foot: its words stand above the box the pitch is
+     set under, so the pitch runs up under them, as close as the mock's) */
+  margin: 0 0 calc(-22 * var(--u)) calc(6 * var(--u));
+  text-indent: calc(-12 * var(--u));
+  font-style: italic;
+  line-height: 0.815;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  transform: rotate(-7deg) scale(1, 1.1);
+  transform-origin: 0 100%;
+  /* a brush's round ends: the letters drawn out a pen's radius all round
+     (copies of them set round a small circle), which rounds every corner
+     the face cuts square */
+  --brush: calc(1.15 * var(--u));
+  text-shadow:
+    var(--brush) 0 0 var(--brush-ink, currentColor),
+    calc(var(--brush) * -1) 0 0 var(--brush-ink, currentColor),
+    0 var(--brush) 0 var(--brush-ink, currentColor),
+    0 calc(var(--brush) * -1) 0 var(--brush-ink, currentColor),
+    calc(var(--brush) * 0.707) calc(var(--brush) * 0.707) 0 var(--brush-ink, currentColor),
+    calc(var(--brush) * -0.707) calc(var(--brush) * 0.707) 0 var(--brush-ink, currentColor),
+    calc(var(--brush) * 0.707) calc(var(--brush) * -0.707) 0 var(--brush-ink, currentColor),
+    calc(var(--brush) * -0.707) calc(var(--brush) * -0.707) 0 var(--brush-ink, currentColor);
+}
+
+/* The lettering's pen is a little heavier than the face's bold: the words
+   the mock letters are drawn with the same pen run round their strokes,
+   its width set by measuring the mock's stems (the median width of a
+   word's strokes across its rows, 1672 wide): nav 3.75 px, pitch 4.25,
+   labels 3.4, the legend 4.7 and the cards' titles 5.0, where the face's
+   bold has 3.5, 4.0, 3.7, 4.0 and 4.2 and the tagline's 3.4 is the mock's
+   own. */
+:root[data-style="ligne"] :is(.masthead .tagline, .running-head .meta) {
+  -webkit-text-stroke: 0.03em currentColor;
+}
+
+:root[data-style="ligne"] :is(.masthead .key, .running-head .key) {
+  -webkit-text-stroke: 0.037em currentColor;
+}
+
+:root[data-style="ligne"] :is(.launchpad-pitch, .launchpad-call) {
+  -webkit-text-stroke: 0.036em currentColor;
+}
+
+:root[data-style="ligne"] .key[data-size="lg"] {
+  -webkit-text-stroke: 0.047em currentColor;
+}
+
+:root[data-style="ligne"] :is(.title, .detail-hero h1, .section h2, .launch-copy h1) {
+  -webkit-text-stroke: 0.04em currentColor;
+}
+
+/* The panels' titles (the legend, the cards', the shelves') are heavy
+   marker lettering that leans as the mock's does: the legend 7 degrees, the
+   cards' titles 3.5 (measured on the mock: the shear that lines a word's
+   strokes up in columns). The face's own italic leans 11 to 12, too far for
+   either, and a browser will not slant a face by less than 20 degrees on
+   its own (font-style: oblique 7deg draws it upright), so the real bold is
+   sheared by the measured angle about its baseline, its pen run round it
+   to the mock's stems, and drawn in a little from its start. */
+:root[data-style="ligne"] :is(.showcase-title, .card-title, .module-title) {
+  --lean: 3.5deg;
+  --squeeze: 0.92;
+  font-family: var(--ligne-hand);
+  font-style: normal;
+  font-weight: 700;
+  -webkit-text-stroke: 0.054em currentColor;
+  transform: skewX(calc(var(--lean) * -1)) scaleX(var(--squeeze));
+  transform-origin: 0 78%;
+}
+
+:root[data-style="ligne"] .showcase-title {
+  --lean: 7deg;
+  --squeeze: 1;
+  -webkit-text-stroke-width: 0.052em;
+}
+
+/* Below the first screen and on the inner pages the display lettering is
+   the first screen's: the headings in the hand's heavy bold (their
+   second voice its bold italic, not a light one), the panels' titles
+   heavy marker as the cards' are; the plain hand is the prose's */
+:root[data-style="ligne"] :is(.title, .detail-hero h1, .section h2, .launch-copy h1, .module-title) {
+  font-family: var(--ligne-hand);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+:root[data-style="ligne"] .title .soft {
+  font-style: italic;
+  font-weight: 700;
+  -webkit-text-stroke: 0.025em currentColor;
+}
+
+:root[data-style="ligne"] .launchpad-pitch,
+:root[data-style="ligne"] .launchpad-call {
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+:root[data-style="ligne"] .launchpad-pitch {
+  margin-top: calc(5 * var(--u));
+}
+
+/* the buttons, at the mock's size */
+:root[data-style="ligne"] .launchpad-keys {
+  gap: calc(12 * var(--u));
+  margin-top: calc(13 * var(--u));
+}
+
+:root[data-style="ligne"] .launchpad-keys .key {
+  min-height: max(40px, calc(53 * var(--u)));
+  padding: 0 calc(31 * var(--u)) 2px;
+  font-size: max(16px, calc(23.5 * var(--u)));
+  gap: 0.3em;
+}
+
+/* (the mock sets the call a little tighter round its longer words) */
+:root[data-style="ligne"] .launchpad-keys .key[data-tone="signal"] {
+  padding-inline: calc(21 * var(--u));
+}
+
+/* the call's arrow lettered with the same pen as its words (the face has
+   none: the fallback's is a hairline), its glyph kept for nothing but the
+   box: the arrow is decorative (aria-hidden) */
+:root[data-style="ligne"] .launchpad-keys .key-arrow {
+  display: inline-block;
+  width: 0.78em;
+  height: 0.62em;
+  margin-left: 0;
+  overflow: hidden;
+  text-indent: 2em;
+  white-space: nowrap;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 16' fill='none' stroke='%23000' stroke-width='2.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.2 8.4h14.4M11 2.6l5.8 5.8-6.2 5.6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 16' fill='none' stroke='%23000' stroke-width='2.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.2 8.4h14.4M11 2.6l5.8 5.8-6.2 5.6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@media (min-width: 900px) {
+  /* (centred in the hero a little above its middle, as the mock sets it) */
+  :root[data-style="ligne"] .launchpad-window {
+    margin-top: calc(-5 * var(--u));
+  }
+}
+
+/* The window is drawn as the mock draws it, an app window lettered at the
+   album's scale, in the visitor's rice (light by day): its title bar the
+   window's own face with three bright lights and its name lettered bold in
+   the middle; its two panes inside a bezel, a fine rounded line set in from
+   the window's edge; a row to a name, large, a folder or a sheet before
+   it, the selected row a solid bar; its foot the list's count at the left
+   and the open folder's path at the right. (cqw: the window's width;
+   at the mock's size 1cqw is 6px.) */
+:root[data-style="ligne"] .xw {
+  position: relative;
+  aspect-ratio: 611 / 403;
+  counter-reset: xw-items;
+  /* the window is an application in the scene, not lettering: it is set in
+     a neutral UI sans, as the mock draws it (the page's hand is for the
+     album's own words) */
+  font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: max(9px, 2.9cqw);
+}
+
+:root[data-style="ligne"] .xw-bar {
+  height: 6.6cqw;
+  padding-inline: 3.3cqw;
+  border-bottom: 0;
+  background: none;
+}
+
+:root[data-style="ligne"] .xw-lights {
+  gap: 1.3cqw;
+}
+
+/* the lights a window has, by night too */
+:root[data-style="ligne"] .xw-lights i {
+  width: 2.45cqw;
+  background: #ec5f57;
+}
+
+:root[data-style="ligne"] .xw-lights i:nth-child(2) {
+  background: #f4bd4f;
+}
+
+:root[data-style="ligne"] .xw-lights i:nth-child(3) {
+  background: #5fc454;
+}
+
+:root[data-style="ligne"] .xw-title {
+  color: var(--ink);
+  font-size: 1.08em;
+  font-weight: 700;
+}
+
+:root[data-style="ligne"] .xw-panes {
+  margin-inline: 1.3cqw;
+  border: max(1px, 0.25cqw) solid var(--xw-hairline);
+  border-radius: 1.2cqw;
+}
+
+:root[data-style="ligne"] .xw-pane + .xw-pane {
+  border-left: max(1px, 0.25cqw) solid var(--xw-hairline);
+}
+
+/* the panes carry no heading: the open folder's path is in the foot */
+:root[data-style="ligne"] .xw-path {
+  display: none;
+}
+
+:root[data-style="ligne"] .xw-pane + .xw-pane .xw-path {
+  position: absolute;
+  right: 3.6cqw;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  height: 6.4cqw;
+  padding: 0;
+  border: 0;
+  font-size: 0.92em;
+}
+
+:root[data-style="ligne"] .xw-rows {
+  grid-template-rows: repeat(auto-fill, 5.3cqw);
+  padding: 1.5cqw 1.3cqw;
+}
+
+:root[data-style="ligne"] .xw-rows li {
+  gap: 2.1cqw;
+  padding-inline: 3.6cqw 1.6cqw;
+  border-radius: 1cqw;
+}
+
+:root[data-style="ligne"] .xw-pane:first-child .xw-rows li {
+  counter-increment: xw-items;
+}
+
+/* its accent the album's sky blues (the band's, the call's), by night
+   too: an azure selection, sky-blue folders; the face keeps the rice */
+:root[data-style="ligne"] .xw {
+  --xw-sel: #2f6fb5;
+  --xw-folder: #5fb8f4;
+  /* the inner frame round the panes: a fine line a step off the face */
+  --xw-hairline: color-mix(in srgb, var(--ink) 45%, var(--paper));
+}
+
+:root[data-style="ligne"] .xw-rows li[data-selected] {
+  background: var(--xw-sel);
+  color: #ffffff;
+}
+
+/* the icons are crisp shapes drawn as masks (a flat colour any size takes
+   without a soft edge): a folder, large, rounded, its tab and its body; a
+   sheet, a dog-eared page whose three lines of text are cut through it, so
+   the row's own face shows in them (the page is the ink, by night too) */
+:root[data-style="ligne"] .xw-icon {
+  width: 3.7cqw;
+  height: 3cqw;
+  background: var(--xw-folder);
+  clip-path: none;
+  -webkit-mask: var(--xw-folder-shape) center / 100% 100% no-repeat;
+  mask: var(--xw-folder-shape) center / 100% 100% no-repeat;
+  --xw-folder-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 18'%3E%3Cpath d='M1 3.2A2.2 2.2 0 0 1 3.2 1h4.4c.6 0 1.1.2 1.5.7l1.3 1.6h9.4A2.2 2.2 0 0 1 21.9 5.5v9.3A2.2 2.2 0 0 1 19.7 17H3.2A2.2 2.2 0 0 1 1 14.8z'/%3E%3C/svg%3E");
+}
+
+:root[data-style="ligne"] li[data-selected] .xw-icon {
+  background: #a9d8fb;
+}
+
+:root[data-style="ligne"] .xw-icon[data-kind="file"] {
+  width: 2.7cqw;
+  height: 3.5cqw;
+  background: var(--ink);
+  -webkit-mask: var(--xw-sheet-shape) center / 100% 100% no-repeat;
+  mask: var(--xw-sheet-shape) center / 100% 100% no-repeat;
+  --xw-sheet-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 26'%3E%3Cpath fill-rule='evenodd' d='M2.5 1h10l6 6v17.2c0 .5-.4.8-.8.8H3.3c-.5 0-.8-.3-.8-.8zM12.5 1v6h6zM6 11.5h8v2H6zM6 15.5h8v2H6zM6 19.5h5v2H6z'/%3E%3C/svg%3E");
+}
+
+:root[data-style="ligne"] .xw-kind {
+  display: none;
+}
+
+:root[data-style="ligne"] .xw-status {
+  align-items: center;
+  height: 6.4cqw;
+  padding: 0 3.6cqw;
+  border-top: 0;
+  background: none;
+  font-size: 0.92em;
+}
+
+:root[data-style="ligne"] .xw-status > * {
+  display: none;
+}
+
+:root[data-style="ligne"] .xw-status::before {
+  content: counter(xw-items) " items";
+}
+
+/* The projects panel: a cream field in the ink line (the mock's y
+   627-926), its label lettered into its top line at the left as a
+   fieldset's legend, breaking it: under the label the line alone is
+   taken out and the label stands in the gap on the panel's own field, so by
+   night too it reads as a break in the line, not a patch of another colour. */
+:root[data-style="ligne"] .showcase {
+  position: relative;
+  isolation: isolate;
+  margin-top: calc(24 * var(--u));
+  padding: 0 var(--l-cards-r) 0 var(--l-cards-l);
+}
+
+:root[data-style="ligne"] .showcase::before {
+  content: "";
+  position: absolute;
+  inset: 0 calc(23 * var(--u)) calc(-15 * var(--u)) calc(24 * var(--u));
+  z-index: -1;
+  border: var(--ligne-line) solid var(--ligne-ink);
+  border-radius: var(--ligne-round);
+  background: var(--ligne-field);
+}
+
+:root[data-style="ligne"] .showcase-title {
+  --legend-rise: calc(18 * var(--u)); /* the line's centre, down from the label's top */
+  width: fit-content;
+  margin: calc(var(--legend-rise) * -1) 0 calc(3.5 * var(--u)) calc(4 * var(--u));
+  padding: 0 calc(10 * var(--u));
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  /* the break: from the line's top edge down, the label is laid on the
+     panel's own field, which the line runs under and is lost behind; above
+     it the page shows as it does either side, so the line is simply broken
+     (the page and the field are one cream by day; by night the field is the
+     lighter blue the line's inside edge already is, and a chip of the page's
+     deeper blue would sit in it as a patch) */
+  background: linear-gradient(var(--ligne-field), var(--ligne-field)) 0 var(--legend-rise) / 100% 100% no-repeat;
+  border-radius: 0 0 calc(5 * var(--u)) calc(5 * var(--u));
+}
+
+/* Each project is a card panel in the panels' own weight of line (its
+   sheet printed a little over a panel's scale, so its hand-drawn line,
+   thinned in places, averages the 3px the band and the hero are drawn
+   in), flat on the projects panel, its field a flat cream with no grain
+   (the mock's title strips are flat colour), its screen at the top set in
+   from the line, its title lettered under it. */
+:root[data-style="ligne"] .card.faceplate {
+  --plate-k: 0.56;
+  --plate-fill: linear-gradient(var(--plate-field), var(--plate-field));
+  --plate-fill-size: initial; /* (kit.css: inside the art's own field) */
+  --plate-fill-repeat: no-repeat;
+  gap: calc(7 * var(--u));
+  padding: calc(6 * var(--u)) calc(7 * var(--u)) calc(10 * var(--u));
+}
+
+:root[data-style="ligne"] .card-title {
+  padding-inline: calc(4 * var(--u));
+  letter-spacing: -0.01em;
+}
+
+/* a card's screen: the picture with a thin dark edge, no mat, wide as the
+   mock's (376 x 203) */
+:root[data-style="ligne"] .card .screen {
+  aspect-ratio: 376 / 203;
+  padding: 0;
+  border-radius: 3px;
+  background: none;
+}
+
+:root[data-style="ligne"] .card .screen::after {
+  content: none;
+}
+
+:root[data-style="ligne"] .card .screen-face.has-art {
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 3px;
+}
+
+/* The project's own 1-bit art is the card's picture, as the mock's cards
+   have a scene: a flat ground from the mock's palette (slate, felt, a
+   blue-grey) under it, the art drawn in a contrasting ink and scaled to fill
+   the plate, its own aspect kept, the way the mock's scenes fill theirs.
+   Fitted by what is drawn, never by whose it is. The art is a mask of
+   1080x720 whose drawing does not fill it, and Screen passes where the
+   drawing lies (--drawn-x/-y/-w/-h: its centre and size as shares of the
+   mask, from the art's opaque bounds), so every drawing stands at one
+   height, about 82% of the plate's (the mock's scenes fill 80-83%), and is
+   centred on it: --art-h is the mask's height for that, --art-dx/--art-dy
+   (shares of the mask) the shift that brings the drawing's own centre to the
+   plate's. The art's margin is what runs past the plate. */
+:root[data-style="ligne"] .card .screen-face.has-art {
+  background: var(--plate-ground, var(--paper));
+}
+
+:root[data-style="ligne"] .card .screen-art {
+  --art-h: calc(81.6% / var(--drawn-h, 1));
+  --art-dx: calc((var(--drawn-x, 0.5) - 0.5) * 100%);
+  --art-dy: calc((var(--drawn-y, 0.5) - 0.5) * 100%);
+  inset: auto;
+  top: 50%;
+  left: 50%;
+  height: var(--art-h);
+  aspect-ratio: 3 / 2;
+  transform: translate(calc(-50% - var(--art-dx)), calc(-50% - var(--art-dy)));
+  background: var(--plate-ink, var(--tone, var(--cyan)));
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* A game's plate takes its ground and ink from a cycle along the row, the
+   mock's three: slate with torchlight, billiard felt with cardstock, steel
+   blue with marine (the mock's second, third and fourth cards, so today's
+   row looks as it does there). A tool's card is an app window (below), its
+   ground the window's and its ink the project's tone, wherever it stands. */
+:root[data-style="ligne"] .showcase-row > li:nth-child(3n + 2) > .card:not([data-shelf="tools"]) {
+  --plate-ground: var(--ligne-slate);
+  --plate-ink: var(--ligne-torch);
+}
+
+:root[data-style="ligne"] .showcase-row > li:nth-child(3n + 3) > .card:not([data-shelf="tools"]) {
+  --plate-ground: var(--ligne-felt);
+  --plate-ink: var(--ligne-cardstock);
+}
+
+:root[data-style="ligne"] .showcase-row > li:nth-child(3n + 1) > .card:not([data-shelf="tools"]) {
+  --plate-ground: var(--ligne-steel);
+  --plate-ink: var(--ligne-marine);
+}
+
+:root[data-style="ligne"] .card .screen-edge {
+  box-shadow: inset 0 0 0 2px var(--ligne-ink);
+  border-radius: 3px;
+}
+
+/* A tool's card is a mini window in a powder-blue mat, as the mock's Scrivo
+   is (keyed to what the card is, a tool, so a game's is not one, wherever
+   it stands in the row): the mat runs to the card's line, the window inset in
+   it, a chrome bar over the screen with the three lights at its left and
+   a search and a square at its right (drawn here: the bar is the window's,
+   the screen under it the project's). */
+:root[data-style="ligne"] .card[data-shelf="tools"] .screen {
+  --bar: calc(24 * var(--u));
+  margin: calc(-3 * var(--u)) calc(-4 * var(--u)) 0;
+  padding: calc(10 * var(--u) + var(--bar)) calc(10 * var(--u)) calc(9 * var(--u));
+  border-radius: 3px 3px 0 0;
+  background: var(--mat-fill);
+}
+
+:root[data-style="ligne"] .card[data-shelf="tools"] .screen::before {
+  content: "";
+  position: absolute;
+  inset: calc(10 * var(--u)) calc(10 * var(--u)) calc(9 * var(--u));
+  z-index: 4;
+  border: 2px solid var(--ligne-ink);
+  border-radius: calc(6 * var(--u));
+  /* the lights, then the square and the search glass at the right, then
+     the bar's own face and its rule */
+  --dot: calc(5 * var(--u));
+  background:
+    radial-gradient(circle var(--dot), #ec5f57 92%, transparent) calc(14 * var(--u)) calc(var(--bar) / 2 - var(--dot)) / calc(2 * var(--dot)) calc(2 * var(--dot)) no-repeat,
+    radial-gradient(circle var(--dot), #f3bd4f 92%, transparent) calc(30 * var(--u)) calc(var(--bar) / 2 - var(--dot)) / calc(2 * var(--dot)) calc(2 * var(--dot)) no-repeat,
+    radial-gradient(circle var(--dot), #5fc454 92%, transparent) calc(46 * var(--u)) calc(var(--bar) / 2 - var(--dot)) / calc(2 * var(--dot)) calc(2 * var(--dot)) no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 14' fill='none' stroke='%23786f66' stroke-width='1.6'%3E%3Ccircle cx='6' cy='6' r='4.2'/%3E%3Cpath d='M9 9l3.6 3.6'/%3E%3Crect x='30.8' y='1.8' width='10.4' height='10.4' rx='1'/%3E%3Cpath d='M33.6 7.5h4.8'/%3E%3C/svg%3E") right calc(12 * var(--u)) top calc(var(--bar) / 2 - 7 * var(--u)) / calc(44 * var(--u)) calc(14 * var(--u)) no-repeat,
+    linear-gradient(var(--rule), var(--rule)) 0 calc(var(--bar) - 1px) / 100% 1px no-repeat,
+    linear-gradient(var(--paper-warm), var(--paper-warm)) 0 0 / 100% var(--bar) no-repeat;
+  pointer-events: none;
+}
+
+:root[data-style="ligne"] .card[data-shelf="tools"] .screen-face,
+:root[data-style="ligne"] .card[data-shelf="tools"] .screen-edge {
+  border-radius: 0 0 calc(5 * var(--u)) calc(5 * var(--u));
+}
+
+:root[data-style="ligne"] .card[data-shelf="tools"] .screen-edge {
+  box-shadow: none;
+}
+
+/* A card's screen is as tall as the mock's four cards make it and no taller:
+   its width is the row's share (a third of the row, with three cards), and
+   its height would follow it (376 x 203), so three cards would stand a
+   third taller and push the row off the first screen. The cap is the
+   four-card height, from the stage's own measures (in mock pixels: the row
+   is the stage's 1672 less the panel's 41 either side, four cards and three
+   16px gaps across it, less each card's 7px either side; the tool's window
+   runs 4px past the card's padding either side). Fewer cards stay as tall
+   and are wider, and more are shorter. The stacked layout (below 900px)
+   sets its own widths. */
+@media (min-width: 900px) {
+  :root[data-style="ligne"] .card .screen {
+    max-height: calc(((1672 - 2 * 41 - 3 * 16) / 4 - 2 * 7) * 203 / 376 * var(--u));
+  }
+
+  :root[data-style="ligne"] .card[data-shelf="tools"] .screen {
+    max-height: calc(((1672 - 2 * 41 - 3 * 16) / 4 - 2 * 7 + 2 * 4) * 203 / 376 * var(--u));
+  }
+}
+
+/* By night the headline is lettered as a title is on a night sky: cream,
+   in a black ink outline. */
+:root[data-style="ligne"]:not([data-rice="paper"]) .launchpad-title {
+  --brush-ink: var(--ligne-ink); /* the outline rounded, not the cream */
+  -webkit-text-stroke: calc(5 * var(--u)) var(--ligne-ink);
+  paint-order: stroke fill;
+}
+
+/* Narrower than a desktop the first screen stacks (globals.css): the band
+   holds the brand and the keys, the tagline under them; the hero panel
+   the headline, pitch, buttons and the window, the desert behind; the
+   projects two to a row in their panel. The panels keep the mock's ink
+   line and gutters, at the screen's width. */
+@media (max-width: 899px) {
+  :root[data-style="ligne"] {
+    --masthead-h: 0px;
+  }
+
+  :root[data-style="ligne"] .masthead {
+    padding: 14px 16px 16px;
+    margin-bottom: 10px;
+    row-gap: 2px;
+  }
+
+  :root[data-style="ligne"] .masthead::before {
+    inset: 0;
+  }
+
+  :root[data-style="ligne"] .masthead .tagline {
+    white-space: normal;
+  }
+
+  /* the hero panel is the copy's, the desert's ground and the explorer
+     under the words; the window stands under it, a panel of its own */
+  :root[data-style="ligne"] .launchpad {
+    min-height: 0;
+    padding: 0;
+    gap: 22px;
+  }
+
+  :root[data-style="ligne"] .launchpad::before {
+    content: none;
+  }
+
+  :root[data-style="ligne"] .launchpad-copy {
+    position: relative;
+    isolation: isolate;
+    padding: 14px 16px max(190px, 46vw);
+  }
+
+  :root[data-style="ligne"] .launchpad-copy::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border: var(--ligne-line) solid var(--ligne-ink);
+    border-radius: var(--ligne-round);
+    /* the picture without its moon, which the stacked buttons would cut */
+    background: var(--k-hero-phone) 38% 100% / cover no-repeat var(--ligne-page);
+  }
+
+  /* (set down by the height its tilt raises its right end) */
+  :root[data-style="ligne"] .launchpad-title {
+    margin: 0.42em 0 6px 12px;
+    font-size: clamp(46px, 13vw, 76px);
+  }
+
+  :root[data-style="ligne"] .launchpad-window {
+    border-radius: var(--xw-round);
+    box-shadow: var(--xw-shadow);
+  }
+
+  :root[data-style="ligne"] .launchpad-pitch,
+  :root[data-style="ligne"] .launchpad-call {
+    font-size: 19px;
+  }
+
+  :root[data-style="ligne"] .launchpad-keys .key {
+    min-height: 46px;
+    padding-inline: 20px;
+    font-size: 18px;
+  }
+
+  :root[data-style="ligne"] .xw {
+    aspect-ratio: 606 / 344;
+  }
+
+  :root[data-style="ligne"] .showcase {
+    margin-top: 24px;
+    padding: 0 12px 14px;
+  }
+
+  :root[data-style="ligne"] .showcase::before {
+    inset: 0;
+  }
+
+  :root[data-style="ligne"] .showcase-title {
+    --legend-rise: 16px;
+    margin: -16px 0 6px 6px;
+    padding-inline: 8px;
+    font-size: 26px;
+  }
+
+  :root[data-style="ligne"] .card-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root[data-style="ligne"] .xw {
+    aspect-ratio: auto;
+  }
+
+  /* sized to its rows here, so it holds them all (globals.css), lettered
+     at a size a phone reads */
+  :root[data-style="ligne"] .xw {
+    font-size: 13px;
+  }
+
+  :root[data-style="ligne"] .xw-rows {
+    grid-template-rows: none;
+    grid-auto-rows: 2.1em;
+  }
+}
+
+/* ---------- inner pages: the album's other pages ---------- */
+
+/* The running head is the same pale-blue band as the home's, in the same
+   ink line (drawn by the page: the strip's art is a cream panel). */
+:root[data-style="ligne"] .running-head::before {
+  border-image-source: none;
+  inset: 0;
+  border: var(--ligne-line) solid var(--ligne-ink);
+  border-radius: var(--ligne-round);
+  background: var(--ligne-band);
+}
+
+:root[data-style="ligne"] .running-head {
+  color: var(--l-ink);
+}
+
+:root[data-style="ligne"] .running-head .brand {
+  font-size: 30px;
+}
+
+/* its line lettered beside the wordmark as the home's tagline is, in the
+   hand's bold italic, in words */
+:root[data-style="ligne"] .running-head .meta {
+  font-size: 17px;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* The running head's keys are its nav, lettered on the band as the home's
+   are (globals.css .masthead .key): words, not caption boxes, the band's
+   ink, a coral underline under the pointer. */
+:root[data-style="ligne"] .running-head .key {
+  --kn: none;
+  --kh: none;
+  --kp: none;
+  --kf: none;
+  --ki: var(--l-ink);
+  --ku: transparent;
+  min-height: 36px;
+  padding: 0 2px;
+  font-size: 19px;
+  translate: none;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1.5px;
+}
+
+:root[data-style="ligne"] .running-head :is(a.key, button.key):hover,
+:root[data-style="ligne"] .running-head .key[aria-expanded="true"] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--signal);
+}
+
+:root[data-style="ligne"] .running-head .key:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+:root[data-style="ligne"] .running-head .theme-key {
+  min-width: 0;
+}
+
+:root[data-style="ligne"] .running-head :is(.instruments, .head-nav) {
+  gap: 26px;
+}
+
+:root[data-style="ligne"] .running-head .brand .led {
+  display: none;
+}
+
+/* the intro panel runs the projects' full measure, as every panel on the
+   page does (globals.css sets it to three quarters) */
+@media (min-width: 1000px) {
+  :root[data-style="ligne"] .rack-main > .intro {
+    width: auto;
+  }
+}
+
+/* the home page's column below the first screen is the first screen's
+   panels' measure (the stage less their 24 and 23 margins), so the page's
+   edges hold where they are as it scrolls (kit.css sets a narrower column) */
+@media (min-width: 900px) {
+  :root[data-style="ligne"] .rack:has(.masthead) {
+    max-width: calc(var(--stage-w) - 47 * var(--u));
+    padding-inline: 0;
+  }
 }
 
 @media (max-width: 720px) {
@@ -261,39 +1184,75 @@
   }
 
   /* prose sheets keep the cards' measure from the line on a phone */
-  :root[data-style="ligne"] :is(.hero-copy.faceplate, .flagship, .detail-hero, .section, .launch-copy.faceplate) {
+  :root[data-style="ligne"] :is(.hero-copy.faceplate, .detail-hero, .section, .launch-copy.faceplate) {
     padding-inline: calc(var(--plate-w) + 14px);
   }
 }
 
+/* Lettered: a button is a caption box lettered as the mock letters its
+   buttons, in words, not capitals; the bands' nav (words, not boxes) and a
+   printed keycap stand upright. The mock's button labels lean 5.5 degrees
+   (measured as the legend's 7 are), half the face's own italic, so the call
+   buttons are the upright bold sheared by that angle: the label's own box
+   (the button's art stays square) and, as the caption moves whole, in every
+   state. */
+:root[data-style="ligne"] .key {
+  font-family: var(--ligne-hand);
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0;
+}
 
-/* Lettered: what a comic letters by hand (captions, tags, the strips'
-   names, a panel's number) is in the album's capitals, in the face that
-   sets its headlines (the album's lettering set in type); what speaks from
-   a balloon or a narrative caption (a tag, a shelf's heading) leans, as a
-   letterer's pen does there */
-:root[data-style="ligne"] :is(.key, .tape, .kicker, .shelf-label, .module-num, .hero-copy > .silk) {
-  font-family: var(--font-barlow), var(--font-print), sans-serif;
-  font-weight: 600;
+:root[data-style="ligne"] .key[data-size="lg"] {
+  font-style: normal;
+}
+
+:root[data-style="ligne"] .key[data-size="lg"] > span {
+  transform: skewX(-5.5deg);
+}
+
+:root[data-style="ligne"] :is(.masthead, .running-head) .key,
+:root[data-style="ligne"] .key.cap {
+  font-style: normal;
+}
+
+/* the style key's caret in the nav's ink, not a faded grey */
+:root[data-style="ligne"] .style-caret {
+  opacity: 1;
+}
+
+/* what a comic letters small by hand (tags, the strips' names, a panel's
+   number) is in the same hand, in capitals; what speaks from a balloon or
+   a narrative caption (a tag, a shelf's heading) leans, as a letterer's
+   pen does there. (The kicker apart, so these rules weigh one class.) */
+:root[data-style="ligne"] :is(.tape, .kicker, .shelf-label, .module-num),
+:root[data-style="ligne"] .hero-copy > .silk {
+  font-family: var(--ligne-hand);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 /* The album has one voice for what it letters: the small labels (a strip's
    facts, a status, a figure's number, a section's heading, the foot) are
-   lettered in the same capitals, upright, not typed in the terminal's face,
+   lettered in the same hand, upright, not typed in the terminal's face,
    which keeps to the screens and the code. */
 :root[data-style="ligne"] :is(.meta, .module-status, .module-stats, .launch-proof, .section-kicker, .plate-figure-label, .statusline, .colophon div, .feat h3, .openq strong, .code-panel h3, .tags) {
-  font-family: var(--font-barlow), var(--font-print), sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  /* the condensed capitals set as tall as the terminal face's were at the
-     label's size, not shrunk with their width */
-  font-size-adjust: cap-height 0.86;
+  font-family: var(--ligne-hand);
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
-:root[data-style="ligne"] :is(.tape, .kicker, .shelf-label, .module-num, .hero-copy > .silk) {
+:root[data-style="ligne"] :is(.tape, .kicker, .shelf-label, .module-num),
+:root[data-style="ligne"] .hero-copy > .silk {
   font-style: italic;
+}
+
+/* and what the page prints small beside them (a shelf's count, a printed
+   label, the foot's line and folio, a keycap's letter, a chord's plus):
+   the hand, not the terminal's face, which keeps to the screens and code */
+:root[data-style="ligne"] :is(.shelf-count, .silk, .folio, .folio > *, .chord-plus, .key-legend) {
+  font-family: var(--ligne-hand);
 }
 
 /* A shelf opens on a narrative caption, as a sequence in the album does: a
@@ -304,7 +1263,7 @@
   max-width: 100%;
   min-height: 0;
   padding: 9px 22px 8px;
-  color: #1c1414;
+  color: #040404;
 }
 
 /* (its line drawn, its yellow laid by the page inside it with the paper's
@@ -318,9 +1277,9 @@
 }
 
 /* a shelf's caption sits on the panels' line, its ink edge in line with
-   theirs (inside their margin of paper), not stepped out past it */
+   theirs, not stepped out past it */
 :root[data-style="ligne"] .divider.faceplate {
-  margin-inline-start: 6px;
+  margin-inline-start: 2px;
 }
 
 :root[data-style="ligne"] .divider.faceplate::after {
@@ -332,30 +1291,25 @@
 }
 
 :root[data-style="ligne"] .divider :is(.shelf-label, .shelf-note, .shelf-count) {
-  color: #1c1414;
+  color: #040404;
 }
 
 :root[data-style="ligne"] .shelf-label {
-  font-size: 26px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
 }
 
 :root[data-style="ligne"] .shelf-label .shelf-note {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   font-style: normal;
 }
 
-/* A panel you can open stands off the page on its flat shadow; a panel that
-   only holds its content (a page's opening, a section, the flagship, whose
-   links are inside it) is printed flat on the page (scripts/kits/ligne.mjs
-   `flat`), as are the strips. So what opens reads as such before a hover. */
-:root[data-style="ligne"] :is(.faceplate:not(.is-live, .running-head, .divider, .statusline, .folio), .section, .detail-hero, .colophon, .blank-leaf)::before {
+/* Every panel is printed flat on the page, as the mock's are (scripts/kits/
+   ligne.mjs `flat`); one you can open stands off it on its flat shadow
+   when the pointer is on it (the hover art, below). */
+:root[data-style="ligne"] :is(.faceplate:not(.running-head, .divider, .statusline, .folio), .section, .detail-hero, .colophon, .blank-leaf)::before {
   border-image-source: var(--k-plate-flat);
-}
-
-:root[data-style="ligne"] .shelf > .is-live:nth-child(even)::before {
-  border-image-source: var(--k-plate);
 }
 
 /* One flat shadow at a time: a state's art replaces the resting art rather
@@ -372,21 +1326,21 @@
 
 /* A card's tag hangs a hand below its panel's line, and its last line of
    figures stands as far above it: focused, the panel's coral band and its
-   inner line are laid inside that line (8px), and the tag must stay a tag
-   in the panel, clear of them, not hang off the band */
+   inner line are laid inside that line, and the tag must stay a tag in the
+   panel, clear of them, not hang off the band */
 :root[data-style="ligne"] .module {
   padding-top: calc(var(--plate-w) * 0.75 + 8px);
   padding-bottom: calc(var(--plate-w) * 0.8 + 8px);
 }
 
 /* A status lamp is lettered beside the status it marks, as everywhere else
-   on the page (the masthead, a tag), not hung where a pin would hold the
-   panel: no pin holds a panel to an album's page. */
-:root[data-style="ligne"] :is(.module, .flagship) > .led.sheet-pin {
+   on the page, not hung where a pin would hold the panel: no pin holds a
+   panel to an album's page. */
+:root[data-style="ligne"] .module > .led.sheet-pin {
   display: none;
 }
 
-:root[data-style="ligne"] :is(.module, .flagship) .module-status::before {
+:root[data-style="ligne"] .module .module-status::before {
   content: "";
   display: inline-block;
   width: 20px;
@@ -396,15 +1350,15 @@
   background: var(--k-pin-brass) center / contain no-repeat;
 }
 
-:root[data-style="ligne"] :is(.module, .flagship):has(> .led[data-on="true"][data-color="green"]) .module-status::before {
+:root[data-style="ligne"] .module:has(> .led[data-on="true"][data-color="green"]) .module-status::before {
   background-image: var(--k-pin-green);
 }
 
-:root[data-style="ligne"] :is(.module, .flagship):has(> .led[data-on="true"][data-color="amber"]) .module-status::before {
+:root[data-style="ligne"] .module:has(> .led[data-on="true"][data-color="amber"]) .module-status::before {
   background-image: var(--k-pin-amber);
 }
 
-:root[data-style="ligne"] :is(.module, .flagship):has(> .led[data-on="true"][data-color="signal"]) .module-status::before {
+:root[data-style="ligne"] .module:has(> .led[data-on="true"][data-color="signal"]) .module-status::before {
   background-image: var(--k-pin-signal);
 }
 
@@ -501,7 +1455,7 @@
   /* (the tint runs a pixel above the words and two below, as the drawn
      tint did; an inline box's padding never moves the line) */
   padding: 1px 0.15em 2px;
-  border-image: none;
+  border-image-source: none;
   border-radius: 2px;
   /* the tint laid by the page, the paper's fibre in it at the page's scale
      (a drawn tint stretched along a long identifier into streaks) */
@@ -586,7 +1540,7 @@
 }
 
 /* On a phone the masthead wraps its page links under the brand: its rows
-   clear the strip's line by a gap, top and foot, as a caption clears a
+   clear the band's line by a gap, top and foot, as a caption clears a
    panel's, never touching it. */
 @media (max-width: 600px) {
   :root[data-style="ligne"] .running-head {

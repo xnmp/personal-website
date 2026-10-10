@@ -1,0 +1,3 @@
+The pale day moon from the attached reference (ref.png), alone, seen straight-on and centred, filling about 70% of a square image: a full moon seen by day, pale and a little translucent, its grey maria and craters drawn finely and softly as in the reference, a crisp round edge, no glow. Exactly the reference's colours and finish. No stars, no clouds, no sky, no text.
+
+Background: fully transparent everywhere except the moon. If your image tool cannot make a transparent background, use a perfectly flat pure magenta #FF00FF instead. Square 1:1 image.

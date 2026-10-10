@@ -1,11 +1,4 @@
-import {
-  RunningHead,
-  Tags,
-  Tag,
-  OpenQuestion,
-  Plate,
-  Folio,
-} from "@/components/notebook";
+import { RunningHead, Tags, Tag, OpenQuestion, Plate, Folio, ProjectMeta, ProjectKicker } from "@/components/notebook";
 import { Screen, Key } from "@/components/rack";
 
 export const metadata = {
@@ -19,11 +12,7 @@ export default function LambdaQueryPage() {
     <>
       <RunningHead
         brand="chong"
-        meta={
-          <>
-            06 &nbsp;·&nbsp; LambdaQuery &nbsp;·&nbsp; <span className="filed">active</span>
-          </>
-        }
+        meta={<ProjectMeta slug="lambdaquery" />}
         nav={
           <>
             <Key href="/">← all projects</Key>
@@ -34,7 +23,7 @@ export default function LambdaQueryPage() {
 
         <section className="detail-hero">
           <div>
-            <div className="kicker">06 · LambdaQuery</div>
+            <ProjectKicker slug="lambdaquery" />
             <h1>Python compre&shy;hensions, compiled to SQL.</h1>
             <p>
               Queries built as composable value objects (<code>fmap</code>,{" "}
@@ -249,7 +238,7 @@ WHERE EXISTS (
         </section>
 
       </main>
-      <Folio number="06" />
+      <Folio slug="lambdaquery" />
     </>
   );
 }

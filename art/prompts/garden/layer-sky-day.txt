@@ -1,1 +1,13 @@
-Recreate the attached reference (ref.png, a cottage garden in botanical watercolour) as its sky only: the sky with its clouds and the warm glow at the upper left, exactly as in the reference and in the same positions. Remove every tree, hedge, building, hill, wall, gate, plant and the path; where they were, continue the plain sky and a soft pale haze, calm and low in contrast, down to the bottom edge. Fully opaque image. Keep the exact painting style, colours and lighting of the reference. Same 16:9 framing as the reference. No writing, no letters, numbers or symbols.
+Not generated: derived by scripts/kits/garden.mjs (core(), sky()), the
+scene's only layer, 2312x1261 (the mock's 1672x941 core at x 320, y 0, with
+the 320 mock px bleed either side and below; garden.css --sky-bleed-*).
+1. plate-core-day, the core: plate-open-day (prompt plate-open-day.txt: the
+   original mock with its UI and its low wall painted out), its upper middle
+   (x 690-1352, y 0-350) from plaster-day-b (plaster-day-b.txt: no rose or
+   vine under the masthead's words or behind the window), the five lettered
+   margin props laid back from the original mock (art/raw/originals/
+   garden.png, through traced mattes) over props-out-day (props-out-day.txt:
+   the plate's edits redrew their lettering). Two-band composites.
+2. layer-sky-day: plate-bleed-day-c (plate-bleed-day-c.txt: the core
+   painted on into a grey margin) with the core pasted back exact,
+   feathered over 24 px at its sides and foot.

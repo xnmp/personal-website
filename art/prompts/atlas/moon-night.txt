@@ -1,0 +1,3 @@
+The full moon from the attached reference (ref.png), alone, seen straight-on and centred, filling about 70% of a square image: a bright, softly lit full moon with its grey maria and craters drawn finely as in the reference, a crisp round edge, and a soft pale-blue glow of moonlight round it fading out to nothing well inside the image's edges. Exactly the reference's colours and finish. No stars, no clouds, no sky, no text.
+
+Background: fully transparent everywhere except the moon and its glow. If your image tool cannot make a transparent background, use a perfectly flat pure magenta #FF00FF instead. Square 1:1 image.

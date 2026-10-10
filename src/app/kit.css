@@ -241,15 +241,41 @@ body:has(.rack) {
   z-index: -2;
   background: var(--scene-ground);
   overflow: hidden;
+  container-type: size; /* its layers are sized to it (cqw, cqh), less a scrollbar */
 }
 
 .scene-layer {
   position: absolute;
   inset: 0;
-  background: var(--layer) var(--layer-x, center) bottom / var(--layer-size, cover) no-repeat;
+  background: var(--layer) var(--layer-x, center) var(--layer-y, bottom) / var(--layer-size, cover) no-repeat;
 }
 
 [data-layer="sky"] { --layer: var(--k-sky); }
+
+/* A plate style's sky is one painting (lib/styles.ts SceneArt): the mock's
+   own picture with the page painted out, painted on past the mock's edges
+   by --sky-bleed-x on each side and --sky-bleed-bottom below (mock px). On a
+   desktop it is registered to the home page's stage (globals.css --stage-w,
+   --u): drawn at the stage's scale, its core centred across and its top on
+   the stage's, so what the page stands against stays where the mock has it
+   at any aspect. Only a frame the bleed cannot fill (much taller or wider
+   than the mock's) scales it up, to cover. Stacked, below 900px, there is
+   no stage: the core covers the frame from its foot, as a plate without a
+   bleed would. */
+:root[data-scene-art="plate"] [data-layer="sky"] {
+  --sky-w: calc(1672 + 2 * var(--sky-bleed-x, 0));
+  --sky-h: calc(941 + var(--sky-bleed-bottom, 0));
+  --sky-s: max(100cqw / 1672, 100cqh / 941); /* the core's cover scale */
+  --layer-size: calc(var(--sky-w) * var(--sky-s)) auto;
+  --layer-y: calc(100cqh - 941 * var(--sky-s));
+}
+
+@media (min-width: 900px) {
+  :root[data-scene-art="plate"] [data-layer="sky"] {
+    --layer-size: max(var(--sky-w) * var(--u), 100cqh * var(--sky-w) / var(--sky-h), 100cqw) auto;
+    --layer-y: top;
+  }
+}
 
 /* The sun (or moon) hangs upper left, where the brief puts the light. It is
    cut out of the sky art (scripts/lift-sun.mjs) so it can be placed on its
@@ -314,14 +340,17 @@ body:has(.rack) {
    background-position-x (--left-anchor, --right-anchor), and hold them to
    --side-span frame widths (drawn at --side-size, which the style writes
    from it), so that on a narrow screen each landmark keeps to its side,
-   smaller, instead of being cropped away. Unset, they cover, centred. The
-   3D scene reads the same tokens (scene3d/framing.ts Placement). */
-[data-layer="left"] {
+   smaller, instead of being cropped away. Unset, they cover, centred. Each
+   side's back row goes with it, so the two stay in register. The 3D scene
+   reads the same tokens (scene3d/framing.ts Placement). */
+[data-layer="left"],
+[data-layer="left-back"] {
   --layer-x: calc(var(--left-anchor, 0.5) * 100%);
   --layer-size: var(--side-size, cover);
 }
 
-[data-layer="right"] {
+[data-layer="right"],
+[data-layer="right-back"] {
   --layer-x: calc(var(--right-anchor, 0.5) * 100%);
   --layer-size: var(--side-size, cover);
 }
@@ -853,13 +882,15 @@ body:has(.rack) {
   aspect-ratio: 3 / 2;
 }
 
-/* the 1-bit art is a mask, so the active rice decides its colour */
+/* the 1-bit art is a mask, so the active rice decides its colour. It is
+   drawn whole, never cropped, whatever the screen's shape (a card, a
+   figure), a little in from the glass's edge (a style may set --art-inset) */
 .screen-art {
   position: absolute;
-  inset: 0;
+  inset: var(--art-inset, 4%);
   background: var(--tone, var(--cyan));
-  -webkit-mask: var(--art) center / cover no-repeat;
-  mask: var(--art) center / cover no-repeat;
+  -webkit-mask: var(--art) center / contain no-repeat;
+  mask: var(--art) center / contain no-repeat;
 }
 
 /* The screens are the only things here that aren't paper: they sit behind

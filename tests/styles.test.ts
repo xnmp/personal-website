@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import sharp from "sharp";
 import { DEFAULT_STYLE, STYLES, isStyle, styleName, styleOr } from "../src/lib/styles";
 
 describe("style registry", () => {
@@ -69,6 +70,41 @@ describe("every style is a complete kit", () => {
           if (m) expect(existsSync(`public${m[1]}`)).toBe(true);
         }
       });
+      // kit.css registers a plate to the stage, its core the mock's 1672 x
+      // 941 and its bleed as declared; a sky painted to another shape would
+      // slide off the page it was painted for. A painted sky must also bleed
+      // far enough to register from a 4:3 frame to a 21:9 one (a flat one
+      // has nothing to register).
+      if (s.scene === "plate")
+        test("its plate is painted to the bleed it declares, far enough for 4:3 to 21:9", async () => {
+          const bleed = (k: string) => Number(sNight.get(k) ?? 0);
+          const [bx, bb] = [bleed("--sky-bleed-x"), bleed("--sky-bleed-bottom")];
+          for (const finish of [sNight, sDay]) {
+            const sky = (finish.get("--k-sky") ?? sNight.get("--k-sky"))?.match(/url\(([^)]+)\)/)?.[1];
+            expect(sky).toBeDefined();
+            const img = sharp(`public${sky}`);
+            const { width, height } = await img.metadata();
+            expect(width! / height!).toBeCloseTo((1672 + 2 * bx) / (941 + bb), 2);
+            const flat = (await img.stats()).channels.every((c) => c.stdev < 2);
+            if (!flat) {
+              expect(bb).toBeGreaterThanOrEqual(313); // a 4:3 frame's foot
+              expect(bx).toBeGreaterThanOrEqual(279); // a 21:9 frame's sides
+            }
+          }
+        });
     });
   }
+});
+
+// The build's CSS minifier writes the shorthand `border-image: none` as an
+// empty declaration (`border-image: ;`), which the browser drops, so the
+// reset never happens and a kit's border image shows through. The longhand
+// `border-image-source: none` survives and takes the image away.
+describe("every stylesheet survives the build's minifier", () => {
+  const sheets = ["src/app/kit.css", "src/app/globals.css", ...readdirSync("src/app/styles").filter((f) => f.endsWith(".css")).map((f) => `src/app/styles/${f}`)];
+  for (const sheet of sheets)
+    test(`${sheet} resets a border image by its source, not the shorthand`, () => {
+      const css = readFileSync(sheet, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+      expect(css.match(/border-image\s*:\s*none\b[^;]*;?/g) ?? []).toEqual([]);
+    });
 });

@@ -1,0 +1,31 @@
+<!-- The call to act, drawn (not generated): the mock's pill is a matte
+     bottle-green face in a crisp ivory hairline, crisper than a generation
+     returns. Rendered at 2400x480 to art/raw/solarpunk/pill-green/pill-green.png
+     (sharp); the tile build sizes it to its 120px base. Its outer edge is
+     soft over a few px, as a generated plate's is: the build finds the
+     plate's edge where its alpha crosses half. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="480" viewBox="0 0 2400 480">
+  <defs>
+    <linearGradient id="face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b4a32"/>
+      <stop offset="1" stop-color="#1f3826"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4efe3"/>
+      <stop offset="1" stop-color="#d6ceb9"/>
+    </linearGradient>
+    <filter id="soft" x="-1%" y="-5%" width="102%" height="110%">
+      <feGaussianBlur stdDeviation="2.5"/>
+    </filter>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="7"/>
+      <feColorMatrix values="0 0 0 0 0.5  0 0 0 0 0.6  0 0 0 0 0.5  0 0 0 0.07 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+  <rect x="10" y="10" width="2380" height="460" rx="230" fill="#3a3326" filter="url(#soft)"/>
+  <rect x="13" y="13" width="2374" height="454" rx="227" fill="url(#rim)"/>
+  <rect x="32" y="32" width="2336" height="416" rx="208" fill="#0f1c13"/>
+  <rect x="36" y="36" width="2328" height="408" rx="204" fill="url(#face)"/>
+  <rect x="36" y="36" width="2328" height="408" rx="204" fill="#fff" filter="url(#grain)"/>
+</svg>

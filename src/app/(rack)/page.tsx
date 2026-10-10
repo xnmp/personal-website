@@ -3,12 +3,16 @@ import { Cap, Key, ModuleCard, RackKeys, Prop } from "@/components/rack";
 import { Masthead } from "@/components/landing/Masthead";
 import { ExplorerWindow } from "@/components/landing/ExplorerWindow";
 import { ShowcaseCard } from "@/components/landing/ShowcaseCard";
-import { FEATURED, FLAGSHIP, bySlug, projects, shelves } from "@/data/projects";
+import { FEATURED, FLAGSHIP, project, projects, shelves } from "@/data/projects";
 
 export default function Home() {
-  const flagship = bySlug.get(FLAGSHIP)!;
-  const featured = FEATURED.map((slug) => bySlug.get(slug)!);
+  const flagship = project(FLAGSHIP);
+  const featured = FEATURED.map(project);
   const onFirstScreen = new Set([FLAGSHIP, ...FEATURED]);
+  // the shelves hold the rest, each shelf only if it has any
+  const mounted = shelves
+    .map((shelf) => ({ shelf, items: projects.filter((p) => p.shelf === shelf.id && !onFirstScreen.has(p.slug)) }))
+    .filter(({ items }) => items.length > 0);
   return (
     <>
       <RackKeys />
@@ -18,21 +22,22 @@ export default function Home() {
         <div className="landing">
           <section className="launchpad" aria-labelledby="flagship-title">
             <div className="launchpad-copy">
-              <h2 id="flagship-title" className="launchpad-title">
+              {/* data-text: a style that letters the name as art keys it to the word it paints */}
+              <h2 id="flagship-title" className="launchpad-title" data-text={flagship.title}>
                 {flagship.title}
               </h2>
               <p className="launchpad-pitch">A keyboard-first file manager.</p>
               <p className="launchpad-call">Alpha testers wanted.</p>
               <div className="keys launchpad-keys">
-                <Key href="/p/tauri-explorer#alpha" tone="signal" size="lg" ariaLabel="Join the Tauri Explorer alpha">
+                <Key href={`${flagship.href}#alpha`} tone="signal" size="lg" ariaLabel={`Join the ${flagship.title} alpha`}>
                   Join the alpha <span className="key-arrow" aria-hidden>{"\u2192"}</span>
                 </Key>
-                <Key href="/p/tauri-explorer#live" size="lg">
+                <Key href={`${flagship.href}#live`} size="lg">
                   Try it live
                 </Key>
               </div>
             </div>
-            <a href="/p/tauri-explorer" className="launchpad-window" data-rack-stop aria-label="Tauri Explorer details">
+            <a href={flagship.href} className="launchpad-window" data-rack-stop aria-label={`${flagship.title} details`}>
               <ExplorerWindow />
             </a>
           </section>
@@ -67,8 +72,7 @@ export default function Home() {
           </p>
         </div>
 
-        {shelves.map((shelf) => {
-          const mounted = projects.filter((p) => p.shelf === shelf.id && !onFirstScreen.has(p.slug));
+        {mounted.map(({ shelf, items }) => {
           return (
             <div key={shelf.id} className="shelf-group">
               {/* a 1U blanking panel, silkscreened with the shelf's name */}
@@ -77,10 +81,10 @@ export default function Home() {
                   {shelf.label}{" "}
                   <span className="shelf-note">{shelf.note}</span>
                 </h2>
-                <span className="shelf-count">{mounted.length} projects</span>
+                <span className="shelf-count">{items.length} {items.length === 1 ? "project" : "projects"}</span>
               </div>
               <div className="shelf">
-                {mounted.map((p) => (
+                {items.map((p) => (
                   <ModuleCard key={p.slug} p={p} />
                 ))}
               </div>

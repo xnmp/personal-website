@@ -1,1 +1,4 @@
-Edit the attached image (ref.png), the sky of a comic album's establishing shot. Keep it identical in every respect (the same sky, clouds, colours, size, position and framing) except for the ringed planet and the small moon: redraw each drawn in the clear line, as the rest of the image is: every shape bounded by an even black ink outline, filled with flat colour (one flat light tone and at most one flat shadow tone, the shadow a crisp shape), no gradients, no hatching or texture strokes, no airbrushed glow. The planet's ring is a flat band inside the same ink outline, passing in front of the planet and behind it. Same 16:9 framing as the reference. No writing, no letters, numbers or symbols.
+Not generated: the scene's only layer is the album's page, a flat frame of
+its cream #f9f3e2 at 1920x1080 (the original mock's page), into which the kit
+lays the paper's fibre (scripts/kits/ligne.mjs scene.paper). Written with
+sharp: create({ width: 1920, height: 1080, channels: 3, background: "#f9f3e2" }).

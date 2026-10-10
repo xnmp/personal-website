@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png): the clean background plate of a website's phone page, a cyanotype print on white paper. Produce the same picture with exactly one change and nothing else:
+
+The torn white paper border round the whole sheet (it is thin at the sides and the top, and a little deeper along the foot) is gone. The deep Prussian-blue print, with its brush marks, its mottling and its fine white blueprint grid lines, runs right out to all four edges of the image. Every object that the border had cut off (the fern photogram at the top, the keyboard photogram at the left edge, the white gears and the fern at the right edge, the grid lines) runs on out to the image's edge as it would have, and the plain blue ground fills the strips where the border was.
+
+Keep everything else exactly where and as it is in the reference: the ferns, the keyboard, the gears, every handwritten note and arrow, the grid lines, the open blue middle, the palette, the texture and the brushwork. Same framing and the same tall portrait aspect as the reference (899x1750), at the highest resolution available. No new text, objects or marks.

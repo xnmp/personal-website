@@ -17,6 +17,7 @@ export function ModuleCard({ p }: { p: Project }) {
       data-rack-stop
       aria-labelledby={`${p.slug}-title`}
       aria-describedby={`${p.slug}-heading`}
+      data-shelf={p.shelf}
     >
       {/* the sheet hangs on a pin in its status's colour */}
       <Led status={p.status} className="sheet-pin" />

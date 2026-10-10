@@ -1,0 +1,7 @@
+Edit the attached reference image (ref.png): a cut-paper diorama landscape, 16:9. It is being split into depth layers for a parallax pop-up scene. Produce its back layer, the sky, as a complete opaque picture.
+
+Keep: the pale blue sky paper with its fibrous texture; the coral-orange paper sun at the upper left (whole: complete its disc where the trees, clouds or mountains overlap it); every white and cream cut-paper cloud that floats in the sky, including the low bank of cream clouds along the horizon behind the mountains.
+
+Remove: the torn cream paper band across the very top of the picture and the shadow it casts (continue the blue sky up to the top edge in its place); and everything that is not sky: the mountains, hills, trees, rocks, river, bridge, village, hiker, signpost, plants and flowers. In their place continue the blue sky paper and the horizon's cream cloud bank down to the bottom edge, the blue deepening a little toward the horizon, so the whole frame is sky.
+
+Keep what stays exactly where and as it is in ref.png: the same position, size, outline, colours, paper texture and soft light from the upper left. Same framing and the same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available. Opaque, no transparency. No lettering anywhere.

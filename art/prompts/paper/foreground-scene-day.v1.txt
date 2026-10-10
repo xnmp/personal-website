@@ -1,0 +1,7 @@
+Edit the attached reference image (ref.png): a mock-up of a website's home page painted as a cut-paper diorama, 16:9. Produce only the cut-paper things in the very front of the scene, the ones that overlap the band of project cards, cut out on transparency.
+
+Keep only: the large flat pale stone in the bottom right corner with its hand-lettered words SAME / CURIOSITY / FURTHER and the short stroke under them (keep the lettering exactly as it is); the green paper leaves and ferns along the bottom edge of the picture and up the left end of the cards' band; the two little white paper flowers with yellow centres near the bottom, right of centre, with their stems and leaves; and the pale paper rocks along the bottom edge. Continue them where the cards' band or the cards overlap them, so each is whole.
+
+Not part of this: the sky and the whole landscape behind, the band of torn paper behind the cards, the cards and their screens, the label "Projects" and every pin.
+
+Keep what stays exactly where and as it is in ref.png: the same position, size, outline, colours, paper texture and soft light from the upper left. Everything else is fully transparent (use a transparent background with real alpha). Same framing and the same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available. No lettering anywhere but the stone's.

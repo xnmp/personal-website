@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png), a cut-paper diorama landscape, tall portrait (927x1697, about 9:16).
+
+Remove the small dark hiker silhouette with a backpack and a staff standing on the hilltop at the right, and the dark green pine standing at the right edge lower down. Where they were, continue what lies behind them seamlessly, in exactly the same rendering: the blue paper mountain and the smooth crest of the green paper hill (without anyone on it), and the layered green hills running to the right edge.
+
+Keep everything else exactly where and as it is in ref.png, pixel for pixel: the composition, every other element (the sun, the clouds, the left pine, the smaller pines, the plants), the light, the palette, the cut-paper construction and the paper texture. FRAMING, the most important requirement: the output is the whole of ref.png's frame at exactly the same scale; do not zoom, crop, shift or re-centre anything, so the result lies exactly over ref.png. Same tall portrait aspect as the reference (927x1697), at the highest resolution available. Opaque. No lettering anywhere.

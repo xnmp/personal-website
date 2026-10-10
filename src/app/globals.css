@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./rice.css";
 @import "./kit.css";
+@import "./styles/paper.css";
 @import "./styles/solarpunk.css";
 @import "./styles/sumi.css";
 @import "./styles/cyanotype.css";
@@ -134,6 +135,18 @@ pre code {
   code wbr {
     display: none;
   }
+}
+
+/* except in an aside or a feature's column, too narrow for a long path at
+   any width (some 220-290px, where ~/.config/tauri-explorer/themes is ~290) */
+.section .aside-note code:has(wbr),
+.feat code:has(wbr) {
+  white-space: normal;
+}
+
+.section .aside-note code wbr,
+.feat code wbr {
+  display: inline;
 }
 
 /* A chip is one scrap of tape: it never splits across lines. Only on a
@@ -415,8 +428,12 @@ pre code {
    the pieces with the --l-* tokens (mock px times --u), and colours the
    words that stand on its scene with --l-ink. Below 900px it stacks. */
 :root {
-  /* less a classic scrollbar's width, so the stage never runs under it */
-  --stage-w: min(100vw - 16px, 177.7svh);
+  /* the page's width: the screen less the scrollbar's, so nothing sized to
+     it runs under it. The head script measures the scrollbar (layout.tsx,
+     --scrollbar: 0 where scrollbars overlay the page, ~15px where they take
+     room); 16px until it has */
+  --page-w: calc(100vw - var(--scrollbar, 16px));
+  --stage-w: min(var(--page-w), 177.7svh);
   --u: calc(var(--stage-w) / 1672);
   --l-left: calc(80 * var(--u)); /* brand and copy from the stage's left */
   --l-right: calc(80 * var(--u)); /* the keys from its right */
@@ -533,10 +550,20 @@ pre code {
   display: none;
 }
 
+/* the theme key keeps no tile width here: the words keep the mock's even
+   spacing, and the row is set from the right, so the key's right end stays
+   under the pointer as the theme cycles */
+.masthead .theme-key {
+  min-width: 0;
+}
+
 .landing {
   display: flex;
   flex-direction: column;
-  min-height: calc(100svh - var(--masthead-h, calc(150 * var(--u))));
+  /* the stage's height less the masthead, not the screen's: the cards stand
+     where the mock has them, on the plate registered to the stage (kit.css),
+     however tall the window; a taller one shows the bleed under them */
+  min-height: calc(941 * var(--u) - var(--masthead-h, calc(150 * var(--u))));
   padding-bottom: var(--l-foot);
 }
 
@@ -665,14 +692,19 @@ pre code {
   font-size: 0.95em;
 }
 
+/* clipped at the foot: a list longer than its pane stops there, and a
+   clipped icon (its own stacking context) cannot paint over the status */
 .xw-panes {
   display: grid;
   grid-template-columns: 1fr 1fr;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 .xw-pane {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
 }
 
@@ -687,7 +719,15 @@ pre code {
   white-space: nowrap;
 }
 
+/* whole rows only: as many as the pane holds, the rest none tall (a row
+   cut through by the status bar reads as a broken window) */
 .xw-rows {
+  display: grid;
+  grid-template-rows: repeat(auto-fill, 3.95cqw);
+  grid-auto-rows: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
   list-style: none;
   margin: 0;
   padding: 1cqw 1.2cqw;
@@ -697,7 +737,7 @@ pre code {
   display: flex;
   align-items: center;
   gap: 1.3cqw;
-  height: 3.95cqw;
+  overflow: hidden;
   padding-inline: 1.2cqw;
   border-radius: 0.7cqw;
   white-space: nowrap;
@@ -757,6 +797,15 @@ pre code {
   text-overflow: ellipsis;
 }
 
+/* one line of chords by default; a style may set each key as a cap */
+.xw-hint + .xw-hint::before {
+  content: " · ";
+}
+
+.xw-hints kbd {
+  font: inherit;
+}
+
 /* ---- the row of projects at the foot ---- */
 .showcase {
   margin-top: auto;
@@ -784,9 +833,14 @@ pre code {
   border-top: 1px solid var(--l-rule);
 }
 
+/* One row of as many cards as FEATURED holds (the mocks show four): each
+   card a column of its own, in equal shares. A style may set the mock's
+   own proportions for four, under :has(> li:nth-child(4):last-child), and
+   must leave any other count to these. */
 .showcase-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: var(--l-cards-gap);
   margin: 0;
   padding: 0;
@@ -933,6 +987,7 @@ pre code {
   }
 
   .showcase-row {
+    grid-auto-flow: row;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
@@ -959,6 +1014,12 @@ pre code {
   .xw {
     aspect-ratio: auto;
     font-size: 11px;
+  }
+
+  /* sized to its rows here, so it holds them all */
+  .xw-rows {
+    grid-template-rows: none;
+    grid-auto-rows: 3.95cqw;
   }
 
   .xw-hints {
@@ -1596,6 +1657,7 @@ pre code {
   line-height: 1.5;
   color: var(--print-soft);
   margin-top: 8px;
+  overflow-wrap: anywhere; /* asides cite long repo paths */
 }
 
 .section ol,
@@ -2863,7 +2925,7 @@ pre code {
 /* the command is typed straight on the strip, not on a scrap of its own */
 .cmd-text {
   border: 0;
-  border-image: none;
+  border-image-source: none;
   background: none;
   color: var(--tape-ink);
   font-size: 15px;

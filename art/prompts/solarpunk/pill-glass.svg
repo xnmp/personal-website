@@ -1,0 +1,25 @@
+<!-- The home page's second call, drawn (not generated): the mock's bright
+     ivory hairline round clear glass (the page lays the smoke inside it:
+     its key-under colour). Rendered at 2400x480 to art/raw/solarpunk/pill-glass/pill-glass.png
+     (sharp); the tile build sizes it to its 120px base. Its outer edge is
+     soft over a few px, as a generated plate's is: the build finds the
+     plate's edge where its alpha crosses half. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="480" viewBox="0 0 2400 480">
+  <defs>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8f5ee"/>
+      <stop offset="1" stop-color="#e0d9c9"/>
+    </linearGradient>
+    <filter id="soft" x="-1%" y="-5%" width="102%" height="110%">
+      <feGaussianBlur stdDeviation="2.5"/>
+    </filter>
+    <mask id="ring">
+      <rect width="2400" height="480" fill="#000"/>
+      <rect x="10" y="10" width="2380" height="460" rx="230" fill="#fff" filter="url(#soft)"/>
+      <rect x="32" y="32" width="2336" height="416" rx="208" fill="#000"/>
+    </mask>
+  </defs>
+  <rect x="0" y="0" width="2400" height="480" fill="#4a4436" mask="url(#ring)"/>
+  <rect x="13" y="13" width="2374" height="454" rx="227" fill="url(#rim)" mask="url(#ring)"/>
+  <rect x="32" y="32" width="2336" height="416" rx="208" fill="none" stroke="#1a1a14" stroke-opacity="0.35" stroke-width="4"/>
+</svg>

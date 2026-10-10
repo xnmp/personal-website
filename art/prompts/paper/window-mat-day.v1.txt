@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png): a mock-up of a website's home page painted as a cut-paper diorama, 16:9. Produce only the cream paper mat behind its app window, cut out on transparency.
+
+Keep only the sheet of cream paper with a torn, deckled fibrous edge and softly rounded corners that the dark "Tauri Explorer" app window is mounted on, at the upper right, with the soft shadow its edge casts. Remove the dark window entirely and continue the mat's plain cream paper across the whole area where the window was, so the mat is one whole, plain sheet.
+
+Keep what stays exactly where and as it is in ref.png: the same position, size, outline, colours, paper texture, torn fibrous edges and soft light from the upper left. Everything else is fully transparent (use a transparent background with real alpha): the landscape, the sky and every other part of the page. Same framing and the same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available, so the kept piece can be laid back over the page in exactly the same place. No lettering anywhere.

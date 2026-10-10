@@ -1,0 +1,10 @@
+Edit the attached reference image (ref.png): the clean background plate of a website's project page, a cyanotype print: a deep Prussian-blue sun-print with brush marks, mottling, fine white blueprint grid lines, white blueprint line-drawings and photogram silhouettes laid on it. Produce the same picture with exactly these changes and nothing else:
+
+1. Remove the blueprint-style etching of a gothic stone corridor at the left of the picture's lower half (it runs from the left edge to about 31% of the width and from about 57% to 85% of the height): its pillars, pointed arch, stairs, rubble, floor, the small standing figure with its glow, and the thin dashed perspective lines that run out from it.
+2. Remove the small handwritten note "deeper always deeper" and its little curved arrow, at the left edge of the corridor.
+3. Remove the handwritten note "geometry from logic -not files" above and to the right of the two gear drawings.
+4. Remove the handwritten note "rooms() enemies() loot() repeat()" together with the tall square bracket beside it, at the lower right of the gear drawings.
+
+Take every one of these away completely: no ghost outline, no pale patch, no lighter haze or glow where they stood. Where each was, continue the plain deep Prussian-blue ground exactly as it is round it: the same brush streaks, mottling, grain and fine specks, with the fine white blueprint grid lines carrying on straight through where they run. The result there must read as untouched empty cyanotype ground.
+
+Keep everything else exactly where and as it is in the reference, untouched: the two gear drawings with their dimension lines and tick marks, the keycap drawing in its box with its small note "small systems big worlds" and its piece of tape, the white fern photograms, the grid lines and registration crosses, the palette, the texture and the brushwork. Same framing and the same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available. No new text, objects or marks.

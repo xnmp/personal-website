@@ -1,0 +1,1 @@
+(not generated: scripts/kits/solarpunk-deck.mjs cuts the launch laptop's keyboard deck from art/originals/solarpunk-launch.webp.)

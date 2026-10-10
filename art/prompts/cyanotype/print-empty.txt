@@ -1,0 +1,5 @@
+Edit the attached reference image (ref.png): a cyanotype print on white paper, a deep Prussian-blue sheet with objects and notes printed on it, inside a torn white paper border. Produce the same picture with everything inside the border removed: the sheet left empty.
+
+Keep the torn white paper border round the whole sheet exactly as it is: its width on every side, its ragged outline, the dry brushed boundary where the blue emulsion stops and bites into the white paper, and the paper's fibrous texture. Fill the whole inside with the plain deep Prussian-blue cyanotype ground alone, in the same rendering: its brush marks, its mottling and its tooth, deepest at the top and a little lighter and more mottled toward the middle and the foot, as in the reference. Remove every object, plant, photo print, piece of tape, note, word, gear, circle, grid line and mark: nothing at all is printed on the blue.
+
+Same framing and the same 16:9 landscape aspect as the reference (1672x941), at the highest resolution available. No text anywhere.

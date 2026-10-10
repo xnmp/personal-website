@@ -1,193 +1,170 @@
 /* ==========================================================================
-   SUMI-E INK (art/briefs/sumi.md): hanging scrolls of kozo washi in pale silk
-   mounts, the flagship's in navy brocade with a jade pendant; bands of torn
-   washi for the masthead, shelf heads and feet; vermilion seal-stamps and
-   washi cards ringed in dry brush; round seals; ink brush swashes; before a
-   sumi-e landscape inscribed in its corners. Set in EB Garamond throughout,
-   mono only on the screens and for code. The kit is built by
-   `node scripts/build-kit.mjs sumi` to the same source geometry as the Paper
-   Diorama. Night (the dark rices) first, then day (the light rice); the
-   pieces the concept adds to the shared system follow the tokens.
+   SUMI-E INK (art/briefs/sumi.md): the page brushed onto an ink-wash
+   landscape, after the original mock (art/originals/sumi.webp). The scene is
+   the mock's painting; the home page's names are the mock's own brush
+   lettering, the other pages' titles an upright dry brush (Protest
+   Revolution), and everything else a book serif (EB Garamond); the only
+   surfaces are cards of deckle-edged washi and the app's window; cinnabar
+   seals mark the brand, an inscription and each card. The kit is built by
+   `node scripts/build-kit.mjs sumi`. Night (the dark rices) first, then day
+   (the light rice); the first screen and the pieces the style adds follow.
    ========================================================================== */
 
 :root[data-style="sumi"] {
   --font-display: var(--font-garamond);
   --font-print: var(--font-garamond);
+  --font-brush: var(--font-protest);
 
-  --signal: #d9532e; /* vermilion: the primary card, the active bead, focus */
-  --signal-ink: #f08a68;
-  --print: #ece4d2; /* cream ink on ink-dyed washi */
-  --print-soft: #c4bdae;
-  --print-faint: #a8a297;
-  --engrave-lo: rgba(236, 228, 210, 0.18);
+  --signal: #d9532e; /* cinnabar: the primary button, the active key, focus */
+  --signal-ink: #ef8a6c;
+  --print: #ece4d2; /* cream on the night's ink-dyed washi */
+  --print-soft: #c9c1b0;
+  --print-faint: #aca595;
+  --engrave-lo: rgba(236, 228, 210, 0.2);
   --engrave-hi: transparent;
-  --scene-ground: #141a26;
+  /* the night's painting (an edit of the day's): blue-black paper, the
+     ranges in silvery washes */
+  --scene-ground: #161b26;
   --k-scene-flat: url(/kit/sumi/scene-night.webp);
   --k-sky: url(/kit/sumi/scene/night/sky.webp);
-  --k-sun: url(/kit/sumi/scene/night/sun.webp); /* the moon (see .scene-sun) */
-  --sun-sw: 192;
-  --sun-sh: 192;
-  --sun-cx: 96;
-  --sun-cy: 96;
-  --sun-r: 68;
-  --k-far: url(/kit/sumi/scene/night/far.webp);
-  --k-mid: url(/kit/sumi/scene/night/mid.webp);
-  --k-near: url(/kit/sumi/scene/night/near.webp);
+  /* the moon in the sun's place, inked off white in gofun (see the sun below) */
+  --k-sun: url(/kit/sumi/moon-night.webp);
+  --sun-sw: 240;
+  --sun-sh: 240;
+  --sun-cx: 119;
+  --sun-cy: 117;
+  --sun-r: 91;
+  /* the painting runs on 320 mock px past the mock's sides and foot, for the
+     frame round the stage (kit.css: registered to it on a desktop) */
+  --sky-bleed-x: 320;
+  --sky-bleed-bottom: 320;
+  /* one painting: no layers before it */
+  --k-far: none;
+  --k-mid: none;
+  --k-near: none;
   --k-left-back: none;
   --k-right-back: none;
-  --k-left: url(/kit/sumi/scene/night/left.webp);
-  --k-right: url(/kit/sumi/scene/night/right.webp);
+  --k-left: none;
+  --k-right: none;
+  /* the cards' washi, deckled on every side; its paper is the page's own,
+     tiled (--plate-fill), so its fibres keep their scale at any size */
   --k-plate: url(/kit/sumi/sheet-night-normal.webp);
   --k-plate-hover: url(/kit/sumi/sheet-night-hover.webp);
   --k-plate-pressed: url(/kit/sumi/sheet-night-pressed.webp);
   --k-plate-focus: url(/kit/sumi/sheet-night-focus.webp);
   --k-plate-flat: url(/kit/sumi/sheet-night-flat.webp);
-  /* the sheets are scroll mounts with their washi cleared
-     (scripts/framed-pane.mjs): the washi is painted here, tiled, so its
-     fibres keep their scale at any size */
   --plate-slice: var(--slice-plate);
   --plate-fill: url(/kit/sumi/washi-night.webp);
   --plate-fill-size: 512px;
   --plate-fill-repeat: repeat;
-  /* the rollers' knobs stand out past the silk: the washi starts under the
-     silk (30 of the art's px in from its edge), never in the clear margin
-     beside it; the strips' silk runs to their edge */
-  --plate-fill-in: 30px;
-  /* pressed: the face dims with its frame (the sheets' pressedFlags --dim) */
-  --plate-press-dim: 0.78;
-  /* a band of torn washi: the page's paper starts past the deepest bite
-     into its edge (scripts/kits/sumi.mjs BAND), so a bite shows the scene
-     behind, never the page's fill; its torn edges are cut seamless and
-     repeated, where a stretch would drag the tears into streaks */
-  --strip-fill-in: 18px;
+  /* the page's paper starts under the deckle's solid paper, never out in a
+     bite (scripts/kits/sumi.mjs `frame`); the torn rails repeat along a
+     side, where a stretch would drag the tears into streaks */
+  --plate-fill-in: 24px;
+  --plate-repeat: round;
+  --strip-fill-in: 24px;
   --strip-repeat: round;
+  --plate-press-dim: 0.92;
   --plate-backdrop: none;
   --plate-round: 0px;
-  --plate-light: url(/kit/sumi/sheet-night-light.webp);
-  --plate-light-in: 0px; /* a framed pane: the pool's edge lies under the frame (kit.css) */
-  --plate-sheen: url(/kit/sumi/sheet-night-sheen.webp);
-  /* a scroll is mostly empty paper: content stands well clear of the mount */
-  --plate-inset: 12px;
-  --k-strip: url(/kit/sumi/sheet-strip-night-normal.webp); /* torn washi, ink-dyed */
-  /* the flagship's mount, navy brocade (see .flagship below) */
-  --k-brocade: url(/kit/sumi/sheet-brocade-night-normal.webp);
-  --k-brocade-hover: url(/kit/sumi/sheet-brocade-night-hover.webp);
-  --k-brocade-pressed: url(/kit/sumi/sheet-brocade-night-pressed.webp);
-  --k-brocade-focus: url(/kit/sumi/sheet-brocade-night-focus.webp);
-  --k-brocade-flat: url(/kit/sumi/sheet-brocade-night-flat.webp);
-  --k-brocade-light: url(/kit/sumi/sheet-brocade-night-light.webp);
-  --k-brocade-sheen: url(/kit/sumi/sheet-brocade-night-sheen.webp);
-  --k-pendant: url(/kit/sumi/pendant-night.webp);
-  --k-seal-brand: url(/kit/sumi/seal-brand.webp);
-  /* the opening scroll's painting, in gofun white by night */
-  --k-vignette: url(/kit/sumi/vignette-night.webp);
-  /* nothing pins a scroll: it hangs */
+  --plate-light: none;
+  --plate-sheen: none;
+  --plate-inset: 6px;
+  --k-strip: url(/kit/sumi/sheet-night-normal.webp);
+  /* nothing pins paper laid on a painting */
   --k-pin-hold: none;
   --k-pin-hold-signal: none;
-  /* scrolls hang in a level row */
   --shelf-stagger: 0px;
   --shelf-align: stretch;
-  /* the opening pair hangs from one line, each scroll its own length, as
-     scrolls of different paintings do */
   --hero-stagger: 0px;
   --hero-align: start;
   --silk-shadow: none;
+  /* the screens framed as the mock frames its window: a thin band of
+     charcoal with rounded corners */
   --k-bezel: url(/kit/sumi/mat-night.webp);
-  --mat-t: 112;
-  --mat-r: 112;
-  --mat-b: 108;
-  --mat-l: 118;
+  --mat-t: 65;
+  --mat-r: 66;
+  --mat-b: 64;
+  --mat-l: 67;
+  /* the secondary: a rectangle drawn in a line of gofun white, the painting
+     showing inside it */
   --k-key: url(/kit/sumi/tile-night-normal.webp);
   --k-key-hover: url(/kit/sumi/tile-night-hover.webp);
   --k-key-pressed: url(/kit/sumi/tile-night-pressed.webp);
   --k-key-focus: url(/kit/sumi/tile-night-focus.webp);
   --key-inset: 0px;
-  --key-lift: 0px; /* a card's edge is a hair: the label centres in the box */
-  --k-tape: url(/kit/sumi/tape-night.webp); /* a swash of gofun white */
-  --tape-ink: #1d1d1f;
-  --k-chip: url(/kit/sumi/chip-night.webp); /* inline code: a slip of indigo washi */
+  --key-lift: 0px; /* a line has no thickness to lift the label off */
+  /* a label and inline code: a slip of ink-dyed washi */
+  --k-tape: url(/kit/sumi/chip-night.webp);
+  --tape-ink: #ece4d2;
+  --k-chip: url(/kit/sumi/chip-night.webp);
   --chip-ink: #ece4d2;
   --chip-pad: 0.35em; /* a straight-cut slip */
   --k-drift-cloud: none;
   --motes: #dfe6f0;
   --motes-kind: dust;
-  --plate-under: #1e2024;
-  --bezel-under: #22304a;
-  --key-under: #2a3854;
+  --plate-under: #1d2230;
+  --bezel-under: #26272b;
+  --key-under: transparent;
   --key-ink: #ece4d2;
-  --key-ink-soft: #c4bdae;
+  --key-ink-soft: #c9c1b0;
+  /* the primary: a field of madder red brushed on */
   --k-key-signal: url(/kit/sumi/tile-signal-night-normal.webp);
   --k-key-signal-hover: url(/kit/sumi/tile-signal-night-hover.webp);
   --k-key-signal-pressed: url(/kit/sumi/tile-signal-night-pressed.webp);
   --k-key-signal-focus: url(/kit/sumi/tile-signal-night-focus.webp);
-  --key-signal-ink: #fbf3e4; /* cream on vermilion */
-  --key-signal-under: #a82c16;
-  /* round seals: ink, jade, ochre, vermilion */
+  --key-signal-ink: #fbf3e4; /* cream on madder */
+  --key-signal-under: #9c2f29;
+  /* round seals, in the painting's own inks: sumi (off), ochre (paused) and
+     cinnabar, a live project's seal the deep paste (see the shelves below)
+     and the alpha's the bright vermilion */
   --k-pin-brass: url(/kit/sumi/pin-brass.webp);
-  --k-pin-green: url(/kit/sumi/pin-green.webp);
+  --k-pin-green: url(/kit/sumi/pin-signal.webp);
   --k-pin-amber: url(/kit/sumi/pin-amber.webp);
   --k-pin-signal: url(/kit/sumi/pin-signal.webp);
-  /* the landscape's cut-outs keep to their sides on a narrow screen, so the
-     pine and its inscription hold the left, the pavilion and its the right */
-  --left-anchor: 0;
-  --right-anchor: 1;
-  /* the sun (the moon) a pale disc at the upper right, just under the
-     masthead's band (about 100px deep), over the far ranges */
-  --sun-d: clamp(56px, 5.2vw, 100px);
-  --sun-x: calc(100vw - clamp(70px, 8.3vw, 170px));
-  --sun-y: calc(var(--sun-d) / 2 + 106px);
   --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+  --k-calligraphy: url(/kit/sumi/calligraphy-night.webp);
+  --k-rule: url(/kit/sumi/rule-night.webp);
 }
 
-/* day: soft daylight on cream washi, pale celadon silk */
+/* day: the mock's own painting, ink on warm paper */
 :root[data-style="sumi"][data-rice="paper"] {
-  --k-tape: url(/kit/sumi/tape-day.webp); /* a swash of sumi ink */
-  --k-chip: url(/kit/sumi/chip-day.webp); /* a slip of pale washi */
+  --k-tape: url(/kit/sumi/chip-day.webp); /* a slip of pale washi */
+  --tape-ink: #1d1d1f;
+  --k-chip: url(/kit/sumi/chip-day.webp);
   --chip-ink: #1d1d1f;
-  --tape-ink: #f3ecdc;
-  --signal: #c8371e;
-  --signal-ink: #a82c16;
+  --signal: #b23a2e;
+  --signal-ink: #8f231d;
   --print: #1d1d1f;
-  --print-soft: #3b3b3e;
-  --print-faint: #55555a;
-  --engrave-lo: rgba(29, 29, 31, 0.18);
-  --scene-ground: #e9e0cc;
+  --print-soft: #3a3936;
+  --print-faint: #55524c;
+  --engrave-lo: rgba(29, 29, 31, 0.2);
+  --scene-ground: #e2d6c8;
   --k-scene-flat: url(/kit/sumi/scene-day.webp);
   --k-sky: url(/kit/sumi/scene/day/sky.webp);
-  --k-sun: url(/kit/sumi/scene/day/sun.webp);
-  --sun-cx: 96;
-  --sun-cy: 95;
-  --sun-r: 79;
-  --k-far: url(/kit/sumi/scene/day/far.webp);
-  --k-mid: url(/kit/sumi/scene/day/mid.webp);
-  --k-near: url(/kit/sumi/scene/day/near.webp);
+  --k-sun: url(/kit/sumi/sun-day.webp);
+  --sun-cx: 119;
+  --sun-cy: 117;
+  --sun-r: 91;
+  --k-far: none;
+  --k-mid: none;
+  --k-near: none;
   --k-left-back: none;
   --k-right-back: none;
-  --k-left: url(/kit/sumi/scene/day/left.webp);
-  --k-right: url(/kit/sumi/scene/day/right.webp);
+  --k-left: none;
+  --k-right: none;
   --k-plate: url(/kit/sumi/sheet-day-normal.webp);
   --k-plate-hover: url(/kit/sumi/sheet-day-hover.webp);
   --k-plate-pressed: url(/kit/sumi/sheet-day-pressed.webp);
   --k-plate-focus: url(/kit/sumi/sheet-day-focus.webp);
   --k-plate-flat: url(/kit/sumi/sheet-day-flat.webp);
   --plate-fill: url(/kit/sumi/washi-day.webp);
-  --plate-light: url(/kit/sumi/sheet-day-light.webp);
-  --plate-sheen: url(/kit/sumi/sheet-day-sheen.webp);
-  --k-strip: url(/kit/sumi/sheet-strip-day-normal.webp);
-  --k-brocade: url(/kit/sumi/sheet-brocade-day-normal.webp);
-  --k-brocade-hover: url(/kit/sumi/sheet-brocade-day-hover.webp);
-  --k-brocade-pressed: url(/kit/sumi/sheet-brocade-day-pressed.webp);
-  --k-brocade-focus: url(/kit/sumi/sheet-brocade-day-focus.webp);
-  --k-brocade-flat: url(/kit/sumi/sheet-brocade-day-flat.webp);
-  --k-brocade-light: url(/kit/sumi/sheet-brocade-day-light.webp);
-  --k-brocade-sheen: url(/kit/sumi/sheet-brocade-day-sheen.webp);
-  --k-pendant: url(/kit/sumi/pendant-day.webp);
-  --k-vignette: url(/kit/sumi/vignette-day.webp);
+  --k-strip: url(/kit/sumi/sheet-day-normal.webp);
   --k-bezel: url(/kit/sumi/mat-day.webp);
-  --mat-t: 108;
-  --mat-r: 110;
-  --mat-b: 104;
-  --mat-l: 110;
+  --mat-t: 64;
+  --mat-r: 66;
+  --mat-b: 64;
+  --mat-l: 66;
   --k-key: url(/kit/sumi/tile-day-normal.webp);
   --k-key-hover: url(/kit/sumi/tile-day-hover.webp);
   --k-key-pressed: url(/kit/sumi/tile-day-pressed.webp);
@@ -199,23 +176,85 @@
   --k-drift-cloud: none;
   --motes: #fff6e2;
   --motes-kind: dust;
-  --plate-under: #f3ecdc;
-  --bezel-under: #2f3e5c;
-  --key-under: #e9e0cc;
+  --plate-under: #e8ded2;
+  --bezel-under: #262628;
+  --key-under: transparent;
   --key-ink: #1d1d1f;
-  --key-ink-soft: #3b3b3e;
+  --key-ink-soft: #3a3936;
+  --k-calligraphy: url(/kit/sumi/calligraphy-day.webp);
+  --k-rule: url(/kit/sumi/rule-day.webp);
 }
 
-/* On a phone the column fills the screen: the disc would sit over the
-   masthead's band or the first scroll, alone. The sky goes without it. */
-@media (max-width: 720px) {
+/* ---------- the sun and the inscription ----------
+   Both stand at the top right, in the margin past the nav, placed from the
+   stage's top right in its units, as the painting is (kit.css registers it to
+   the stage); hung on their own, not painted in, so that the inscription
+   keeps clear of the bleed painted on past the mock's edge.
+   The sun (the moon by night) is the scene's (kit.css .scene-sun), centred
+   where the mock has it (140 from the right, 136 down, 72 across); the
+   inscription 行遠自邇 hangs down the right edge (the mock's 1622-1650,
+   17-150) with its seal under it (1623-1649, 162-189), fixed with the
+   painting. Both are cut from one sprite (calligraphy-*.webp, 338x600: the
+   four characters 116x433 from 112,30, the seal 86x87 from 126,484), each
+   drawn to the mock's box: the brush's characters are a little wider than
+   the mock's, so the column is drawn a shade narrower than its height
+   scales, as the mock's slender hand is. */
+:root[data-style="sumi"] {
+  --sun-d: calc(72 * var(--u));
+  --sun-x: calc(var(--page-w) / 2 + var(--stage-w) / 2 - 140 * var(--u));
+  --sun-y: calc(136 * var(--u));
+}
+
+:root[data-style="sumi"] body:has(.rack)::after,
+:root[data-style="sumi"] body:has(.rack)::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+}
+
+:root[data-style="sumi"] body:has(.rack)::after {
+  top: calc(17 * var(--u));
+  right: calc((100% - var(--stage-w)) / 2 + 21 * var(--u));
+  width: calc(29 * var(--u));
+  height: calc(134 * var(--u));
+  background: var(--k-calligraphy) calc(112 / (338 - 116) * 100%) calc(30 / (600 - 433) * 100%) /
+    calc(338 / 116 * 100%) calc(600 / 433 * 100%) no-repeat;
+}
+
+/* the seal in the mock's paste, a deep cinnabar, its cut lines as heavy as
+   the mock's (the sprite's are a brighter, thinner red): darkened, and
+   thickened by a hair of its own colour round each line */
+:root[data-style="sumi"] body:has(.rack)::before {
+  top: calc(162 * var(--u));
+  right: calc((100% - var(--stage-w)) / 2 + 22 * var(--u));
+  width: calc(27 * var(--u));
+  height: calc(28 * var(--u));
+  background: var(--k-calligraphy) calc(126 / (338 - 86) * 100%) calc(484 / (600 - 87) * 100%) /
+    calc(338 / 86 * 100%) calc(600 / 87 * 100%) no-repeat;
+  filter: brightness(0.8) saturate(0.82) drop-shadow(0 0 0.35px rgb(150 40 30 / 0.9));
+}
+
+/* by night the paste is lit, as the cards' seals are: a dark red would sink
+   into the blue-black paper */
+:root[data-style="sumi"]:not([data-rice="paper"]) body:has(.rack)::before {
+  filter: brightness(1.25) saturate(0.9) drop-shadow(0 0 0.35px rgb(230 96 70 / 0.9));
+}
+
+/* On a phone the column fills the screen: no margin for either. */
+@media (max-width: 899px) {
   :root[data-style="sumi"],
   :root[data-style="sumi"][data-rice="paper"] {
     --k-sun: none;
   }
+
+  :root[data-style="sumi"] body:has(.rack)::after,
+  :root[data-style="sumi"] body:has(.rack)::before {
+    content: none;
+  }
 }
 
-/* ---------- type: a book face throughout ----------
+/* ---------- type: a brush for the names, a book face for the rest ----------
    Labels are set in the serif's small capitals, not typed in mono: mono is
    for the screens and code alone. */
 :root[data-style="sumi"]
@@ -251,18 +290,38 @@
   letter-spacing: 0;
 }
 
-:root[data-style="sumi"] :is(.title, .shelf-label, .module-title, .flagship h2, .detail-hero h1, .section h2) {
-  font-weight: 700;
+:root[data-style="sumi"] :is(.shelf-label, .module-title, .section h2) {
+  font-weight: 600;
+}
+
+/* a page's kicker is set in cinnabar, as the call under the home's title
+   is: no slip of paper under it */
+:root[data-style="sumi"] .kicker {
+  padding: 0;
+  border-image-source: none; /* the shorthand `none` is dropped by the CSS minifier */
+}
+
+:root[data-style="sumi"] :is(.kicker, .kicker *) {
+  color: var(--signal-ink);
+}
+
+/* a page's own title is written in the brush, as the home's names are */
+:root[data-style="sumi"] :is(.title, .detail-hero h1, .launch-copy h1) {
+  font-family: var(--font-brush), var(--font-garamond), cursive;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.05;
 }
 
 :root[data-style="sumi"] .title {
-  font-size: clamp(40px, 4.3vw, 64px);
-  line-height: 0.98;
-  letter-spacing: -0.022em;
+  font-size: clamp(40px, 4.3vw, 62px);
 }
 
-:root[data-style="sumi"] :is(.title, .flagship h2) .soft {
+:root[data-style="sumi"] .title .soft {
+  font-family: var(--font-garamond), Georgia, serif;
   font-weight: 500;
+  font-size: 0.62em;
+  letter-spacing: -0.01em;
 }
 
 /* the book face sets smaller on its body than the sans it replaces */
@@ -270,59 +329,579 @@
   font-size: clamp(18px, 1.75vw, 21px);
 }
 
-:root[data-style="sumi"] :is(.flagship p, .module-heading) {
+:root[data-style="sumi"] .module-heading {
   font-size: 17.5px;
 }
 
 :root[data-style="sumi"] .key {
   font-weight: 500;
-  font-size: 16px;
+  font-size: 17px;
   letter-spacing: 0.005em;
 }
 
 :root[data-style="sumi"] .key[data-size="lg"] {
-  font-size: 19px;
+  font-weight: 500;
+  font-size: 20px;
 }
 
-/* ---------- the masthead: a band of torn washi across the page ----------
-   The brand set large beside its seal (重, chóng), a line of text after a
-   hairline rule, and the page's controls printed as words on the paper. The
-   band runs off both sides of the screen and up past its top, so only its
-   torn lower edge shows. */
-:root[data-style="sumi"] .rack {
-  padding-top: 12px;
+/* The outlined key is a line of ink about 4 of its art's px thick: printed at
+   about 0.4 it is the mock's fine brush line, at a large key's 0.55 a
+   marker's. Focused, its line turns cinnabar (the art) and a cinnabar ring
+   stands round it, a second line drawn clear of the first. */
+:root[data-style="sumi"] .key:not([data-tone="signal"]) {
+  --key-k: 0.38;
 }
 
-:root[data-style="sumi"] .running-head {
-  --plate-k: 0.45;
+:root[data-style="sumi"] .key:not([data-tone="signal"]):focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ---------- the first screen (globals.css home landing) ----------
+   Placed in the mock's pixels: the brush wordmark and its seal at the top
+   left, the tagline under it widely spaced, the keys as serif words at the
+   top right; the flagship's name brushed large, its pitch, call and keys
+   indented under it, its window at the right in a thin frame; the brush
+   heading and its rule, and four washi cards at the foot. */
+:root[data-style="sumi"] {
+  --l-left: calc(76 * var(--u));
+  --l-right: calc(178 * var(--u));
+  --l-head-top: calc(14 * var(--u));
+  --l-brand: calc(90 * var(--u));
+  --l-brand-weight: 400;
+  --l-tagline: calc(18.5 * var(--u));
+  --l-tagline-font: var(--font-garamond);
+  --l-tagline-track: 0.126em;
+  --l-nav: calc(21 * var(--u));
+  --l-nav-font: var(--font-garamond);
+  --l-nav-weight: 450;
+  --l-launch-top: calc(0 * var(--u));
+  --l-launch-align: start;
+  --l-win-x: calc(734 * var(--u));
+  --l-win-w: calc(611 * var(--u));
+  --l-title: calc(97 * var(--u));
+  --l-title-font: var(--font-brush);
+  --l-title-weight: 400;
+  --l-pitch: calc(25 * var(--u));
+  --l-pitch-font: var(--font-garamond);
+  --l-cards-l: calc(75 * var(--u));
+  --l-cards-r: calc(72 * var(--u));
+  --l-cards-gap: calc(20 * var(--u));
+  --l-foot: calc(66 * var(--u));
+  --l-heading: calc(38 * var(--u));
+  --l-heading-font: var(--font-brush);
+  --l-heading-weight: 400;
+  --l-heading-rule: none; /* the brush's own rule (below) */
+  --l-card-title: calc(28 * var(--u));
+  --l-card-font: var(--font-garamond);
+  --l-card-weight: 600;
+  --l-ink: #ece4d2;
+  --l-ink-soft: #ddd5c4;
+  --l-call: #ef8a6c;
+  /* the night's painting is busy behind the words: a soft pool of its
+     paper under them */
+  --l-halo: 0 0 calc(10 * var(--u)) rgb(16 20 30 / 0.9), 0 0 calc(22 * var(--u)) rgb(16 20 30 / 0.6);
+  --l-rule: rgb(236 228 210 / 0.4);
+  /* the window: rounded, a thin line of chrome round it (the mock's frame is
+     its dark window's own edge, a hair of grey), a soft shadow on the paper */
+  --xw-round: calc(9 * var(--u));
+  --xw-edge: #4a4a4e;
+  --xw-shadow: 0 0 0 calc(1.5 * var(--u)) #3a3a3e, 0 calc(14 * var(--u)) calc(34 * var(--u)) rgb(0 0 0 / 0.5);
+}
+
+:root[data-style="sumi"][data-rice="paper"] {
+  /* the mock's words are a true black, its wet ink's */
+  --l-ink: #101011;
+  --l-ink-soft: #2b2a28;
+  --l-call: #8f231d;
+  /* the paper's own tone, a breath of it, where the painting runs behind */
+  --l-halo: 0 0 calc(12 * var(--u)) rgb(232 224 212 / 0.85);
+  --l-rule: rgb(29 29 31 / 0.4);
+  --xw-shadow: 0 0 0 calc(1.5 * var(--u)) #3a3a3c, 0 calc(14 * var(--u)) calc(30 * var(--u)) rgb(40 30 20 / 0.32);
+}
+
+/* The masthead is the mock's band above the window (globals.css sizes the
+   landing to the screen less 150 of it, so the cards stand at the foot);
+   the window rises into its foot, where the mock has it, 136 down. The keys
+   sit on the wordmark's line. */
+@media (min-width: 900px) {
+  :root[data-style="sumi"] .masthead {
+    min-height: calc(150 * var(--u));
+  }
+
+  /* the keys are words: the theme key needs no room for a tile's legend */
+  :root[data-style="sumi"] .masthead .theme-key {
+    min-width: 0;
+  }
+
+  :root[data-style="sumi"] .launchpad-window {
+    margin-top: calc(-14 * var(--u));
+  }
+
+  :root[data-style="sumi"] .masthead .instruments {
+    margin-top: calc(17 * var(--u));
+  }
+}
+
+/* ---- the names: the mock's own brush lettering ----
+   "chong", "Tauri Explorer" and "Projects" are the words the mock writes in
+   the hand the style is judged by (upright, a bouncing baseline, wet ink
+   running dry along each stroke), which no face draws. So each is the mock's
+   lettering, lifted off its paper (scripts/kits/sumi-letters.mjs:
+   letter-*.webp), laid as a mask over a fill of the words' ink, so the night
+   writes it in its cream. The word stays in the page, unseen, for reading,
+   finding and selecting; its box is the lettering's, in the mock's px, its
+   height the lettering's aspect (never the unseen line's, which would
+   stretch it). The mask is a pseudo-element's, so a focused link keeps its
+   ring.
+   The brand and "Projects" are the site's constants. The flagship's title
+   is the flagship's data: the lettering paints the one word "Tauri
+   Explorer" (the h2's data-text), so it is keyed to that word, and any
+   other title is live text in the brush face (below, under the lettered
+   box). */
+:root[data-style="sumi"] :is(.masthead .brand a, .running-head .brand a, .launchpad-title[data-text="Tauri Explorer"], .showcase-title) {
+  position: relative;
+  display: block;
+  flex: none;
   min-height: 0;
-  gap: 10px 26px;
-  padding: 10px 4px 26px;
-  margin-bottom: clamp(12px, 9vh - 24px, 70px);
+  color: transparent;
+  text-shadow: none;
+  white-space: nowrap;
 }
 
-:root[data-style="sumi"] .running-head::before {
-  inset: -160px calc(50% - 50vw) 0;
+/* the unseen word kept to the lettering's box (the heading's rule hangs out
+   of its own) */
+:root[data-style="sumi"] :is(.masthead .brand a, .running-head .brand a, .launchpad-title[data-text="Tauri Explorer"]) {
+  overflow: clip;
 }
 
-:root[data-style="sumi"] .brand {
-  gap: 0.28em;
-  font-weight: 700;
-  font-size: clamp(32px, 2.8vw, 46px);
-  letter-spacing: -0.015em;
-}
-
-/* the power lamp is the brand's seal, stamped after the name */
-:root[data-style="sumi"] .brand .led {
-  order: 1;
-  width: 0.8em;
-  height: 0.8em;
-  margin: 0;
-}
-
-:root[data-style="sumi"] .brand .led::before {
+:root[data-style="sumi"] :is(.masthead .brand a, .running-head .brand a, .launchpad-title[data-text="Tauri Explorer"], .showcase-title)::before {
+  content: "";
+  position: absolute;
   inset: 0;
-  background: var(--k-seal-brand) center / contain no-repeat;
+  background: var(--l-ink);
+  -webkit-mask: var(--letters) 0 0 / 100% 100% no-repeat;
+  mask: var(--letters) 0 0 / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+/* the wordmark (the mock's 80-342, 14-116), its seal after it */
+:root[data-style="sumi"] .masthead .brand {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  font-family: var(--font-brush), cursive;
+  line-height: 1;
+}
+
+:root[data-style="sumi"] .masthead .brand a {
+  --letters: url(/kit/sumi/letter-brand.webp);
+  width: calc(262 * var(--u));
+  aspect-ratio: 262 / 102;
+  margin-left: calc(4 * var(--u));
+  font-size: calc(84 * var(--u));
+  line-height: calc(102 * var(--u));
+}
+
+/* the brand's mark is its seal, 重 (chóng), stamped after the name (its
+   block the mock's 344-380, 40-89) */
+:root[data-style="sumi"] .masthead .brand .led {
+  order: 1;
+  flex: none;
+  width: calc(40 * var(--u));
+  height: calc(53 * var(--u));
+  margin: calc(24 * var(--u)) 0 0;
+  border-radius: 0;
+  background: url(/kit/sumi/seal-brand.webp) center / contain no-repeat;
+  box-shadow: none;
+}
+
+:root[data-style="sumi"] .masthead .brand .led::before,
+:root[data-style="sumi"] .masthead .brand .led::after {
+  content: none;
+}
+
+/* the tagline in the serif's book weight and the words' own ink, clear of
+   the g's tail */
+:root[data-style="sumi"] .masthead .tagline {
+  margin-top: calc(-1 * var(--u));
+  padding-left: calc(14 * var(--u));
+  line-height: 1.25;
+  font-weight: 500;
+  color: var(--l-ink);
+}
+
+/* the flagship's name (the mock's 78-652, 186-310: the T's bar sweeping in
+   from the left, its stem trailing dry past the pitch's first line): the
+   box is the mock's whatever the title, and the lettering is laid in it for
+   the one title it paints */
+:root[data-style="sumi"] .launchpad-title {
+  width: calc(574 * var(--u));
+  margin: calc(36 * var(--u)) 0 0 calc(2 * var(--u));
+}
+
+:root[data-style="sumi"] .launchpad-title[data-text="Tauri Explorer"] {
+  --letters: url(/kit/sumi/letter-title.webp);
+  aspect-ratio: 574 / 124;
+  line-height: calc(124 * var(--u));
+}
+
+/* any other title is live text in the brush, the lettering's box at least
+   (a longer name sets on two lines, balanced, rather than run out of the
+   column) */
+:root[data-style="sumi"] .launchpad-title:not([data-text="Tauri Explorer"]) {
+  display: flex;
+  align-items: center;
+  min-height: calc(124 * var(--u));
+  padding-bottom: calc(10 * var(--u)); /* the pitch is tucked up under the box: clear of a second line's descenders */
+  font-size: max(40px, calc(86 * var(--u)));
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+/* the pitch, the call and the keys stand indented under the name, the pitch
+   tucked up under its box (the T's dry tail hangs past the pitch's line,
+   clear of it to its left); set in the serif's book weight, as the mock's
+   sturdier face is, its f and i apart */
+:root[data-style="sumi"] :is(.launchpad-pitch, .launchpad-call) {
+  margin-left: calc(80 * var(--u));
+  font-weight: 500;
+  font-variant-ligatures: no-common-ligatures;
+}
+
+:root[data-style="sumi"] .launchpad-pitch {
+  margin-top: calc(-11.2 * var(--u));
+}
+
+/* the call is the louder line: larger, in vermilion */
+:root[data-style="sumi"] .launchpad-call {
+  font-size: max(18px, calc(29.5 * var(--u)));
+}
+
+:root[data-style="sumi"] .launchpad-keys {
+  align-items: flex-start;
+  gap: calc(22 * var(--u));
+  margin: calc(19.3 * var(--u)) 0 0 calc(78 * var(--u));
+}
+
+:root[data-style="sumi"] .launchpad-keys .key {
+  justify-content: center;
+  font-weight: 500;
+  font-size: max(16px, calc(23 * var(--u)));
+  letter-spacing: 0.004em;
+}
+
+/* the madder field (the mock's 154-380, 390-448) */
+:root[data-style="sumi"] .launchpad-keys .key[data-tone="signal"] {
+  --key-k: 0.5;
+  min-width: calc(228 * var(--u));
+  min-height: calc(60 * var(--u));
+  padding-inline: calc(30 * var(--u));
+}
+
+/* the mock's arrow is a long, sturdy one, set close after the word (a
+   word's space after it, not a key's gap) */
+:root[data-style="sumi"] .launchpad-keys .key[data-tone="signal"] {
+  gap: 0;
+}
+
+:root[data-style="sumi"] .launchpad-keys .key-arrow {
+  margin-left: 0.12em;
+  font-size: 1.22em;
+  line-height: 0;
+  -webkit-text-stroke: 0.025em currentColor;
+}
+
+/* "Try it live" is drawn as the mock draws it: its line the mock's own
+   (key-line.webp, lifted with the letters: broken where the brush lifted,
+   heavier along the foot), round a patch of the cards' paper, so the
+   painting stops at it; the key's box is the line's (the mock's 404-570,
+   391-447), the mask's paper margin hung outside it. The line is the same
+   in every state: the key lifts as every key does, and focused it is ringed
+   in cinnabar (above). */
+:root[data-style="sumi"] .launchpad-keys .key:not([data-tone]) {
+  min-width: calc(166.5 * var(--u));
+  min-height: calc(55.5 * var(--u));
+  margin-top: calc(2.5 * var(--u));
+  padding-inline: calc(30 * var(--u));
+  --ki: var(--l-ink);
+}
+
+:root[data-style="sumi"] .launchpad-keys .key:not([data-tone])::before,
+:root[data-style="sumi"] .launchpad-keys .key:not([data-tone])::after {
+  border-image-source: none;
+  opacity: 1;
+  transition: none;
+}
+
+:root[data-style="sumi"] .launchpad-keys .key:not([data-tone])::before {
+  inset: calc(1.5 * var(--u));
+  border-radius: calc(5 * var(--u));
+  background: var(--plate-fill) center / var(--plate-fill-size) var(--plate-fill-repeat);
+}
+
+:root[data-style="sumi"] .launchpad-keys .key:not([data-tone])::after {
+  inset: calc(-4.5 * var(--u)) calc(-4.5 * var(--u)) calc(-5 * var(--u)) calc(-4 * var(--u));
+  background: var(--l-ink);
+  -webkit-mask: url(/kit/sumi/key-line.webp) 0 0 / 100% 100% no-repeat;
+  mask: url(/kit/sumi/key-line.webp) 0 0 / 100% 100% no-repeat;
+}
+
+/* "Projects" (the mock's 84-216, 544-592), a dry stroke after it (the
+   mock's 228-443 at 571: rule-*.webp, 900x386, the stroke 838 wide from 31
+   in, its line 183 down) */
+:root[data-style="sumi"] .showcase-title {
+  --letters: url(/kit/sumi/letter-projects.webp);
+  width: calc(132 * var(--u));
+  aspect-ratio: 132 / 48;
+  margin: 0 0 calc(19.5 * var(--u)) calc(9 * var(--u));
+  line-height: calc(48 * var(--u));
+}
+
+/* the rule placed as a share of the heading's box (132x48), so it keeps its
+   place by the word at any size: the stroke 215 long from 144 in, its line
+   27 down */
+:root[data-style="sumi"] .showcase-title::after {
+  content: "";
+  position: absolute;
+  left: calc((144 - 31 * 215 / 838) / 132 * 100%);
+  top: calc((27 - 183 * 215 / 838) / 48 * 100%);
+  flex: none;
+  width: calc(900 * 215 / 838 / 132 * 100%);
+  height: calc(386 * 215 / 838 / 48 * 100%);
+  border: 0;
+  background: var(--k-rule) center / 100% 100% no-repeat;
+}
+
+/* A tall window (5:4, 4:3) sets the cards at the screen's foot, below the
+   stage's own place for them, and the painting scaled up to fill it: the
+   heading then lands on the plate's foot, on the pines at its left. It is
+   lifted off them on a breath of the paper round its strokes, as the
+   painting's mist parts round a form (on the open paper where the mock has
+   it, at 16:9 and 16:10, there is no call for it). */
+@media (min-width: 900px) and (max-aspect-ratio: 3 / 2) {
+  :root[data-style="sumi"] .showcase-title {
+    filter: drop-shadow(0 0 calc(2 * var(--u)) var(--scene-ground)) drop-shadow(0 0 calc(3 * var(--u)) var(--scene-ground))
+      drop-shadow(0 0 calc(6 * var(--u)) var(--scene-ground)) drop-shadow(0 0 calc(12 * var(--u)) var(--scene-ground));
+  }
+}
+
+/* A phone stacks the first screen (globals.css): the names are drawn to the
+   column, the brand small enough that its seal keeps clear of the keys, and
+   the copy's indent shrinks to a step. */
+@media (max-width: 899px) {
+  :root[data-style="sumi"] .masthead .brand a {
+    width: 146px;
+    margin-left: 0;
+  }
+
+  :root[data-style="sumi"] .masthead .brand .led {
+    width: 22px;
+    height: 29px;
+    margin: 13px 14px 0 0;
+  }
+
+  :root[data-style="sumi"] .masthead .tagline {
+    margin-top: 2px;
+    padding-left: 4px;
+    letter-spacing: 0.1em;
+  }
+
+  :root[data-style="sumi"] .launchpad-title {
+    width: min(100%, 340px);
+    margin: 0;
+  }
+
+  :root[data-style="sumi"] :is(.launchpad-pitch, .launchpad-call, .launchpad-keys) {
+    margin-left: 22px;
+  }
+
+  :root[data-style="sumi"] .launchpad-pitch {
+    margin-top: -4px;
+  }
+
+  :root[data-style="sumi"] .launchpad-keys .key[data-tone="signal"] {
+    min-width: 0;
+  }
+
+  :root[data-style="sumi"] .showcase-title {
+    width: 100px;
+    margin-left: 4px;
+  }
+
+  /* the painting set so the copy stands on its open paper, as the mock's
+     does: the left of its middle, between the cliff and the lake. The core
+     (the mock's 1672, covering the frame at --sky-s a mock px) stands 13% of
+     the way along the room it has to move in, its bleed hung outside it. */
+  :root[data-style="sumi"] [data-layer="sky"] {
+    --layer-x: calc(0.13 * (100cqw - 1672 * var(--sky-s)) - 320 * var(--sky-s));
+  }
+}
+
+/* ---------- the cards: deckle-edged washi ----------
+   The title at the top left in the serif, the screen under it with rounded
+   corners and no mat, a seal over its lower-right corner. */
+:root[data-style="sumi"] .card.faceplate {
+  --plate-k: 0.4;
+  gap: calc(12 * var(--u));
+  padding: calc(10 * var(--u)) calc(23 * var(--u)) calc(43 * var(--u));
+  color: var(--print);
+}
+
+/* Washi is translucent: laid on the painting, the card lets its ink show
+   through, as the rocks and pines along the mock's foot show through the
+   cards' lower edges. The paper (the resting sheet) is a little clear; the
+   card's words and its screen stand on it whole. By night the dyed paper is
+   nearly the painting's own tone, so it keeps more of its body, or the card
+   would melt into the dark. */
+:root[data-style="sumi"] .card.faceplate::before {
+  opacity: 0.9;
+}
+
+:root[data-style="sumi"][data-rice="paper"] .card.faceplate::before {
+  opacity: 0.74;
+}
+
+/* the mock's deckle is a grey tear, its burn the ink's grey: the sheet's
+   generated edge runs to ochre, so the day's cards are drawn a little
+   greyer, every state alike */
+:root[data-style="sumi"][data-rice="paper"] .card.faceplate::before,
+:root[data-style="sumi"][data-rice="paper"] .card.faceplate::after {
+  filter: saturate(0.6);
+}
+
+:root[data-style="sumi"] .card-title {
+  letter-spacing: -0.005em;
+}
+
+/* a flat screen laid in the card, as the mock's: no mat, its edge a
+   hairline, no recess shading it; the shelves' cards below the first screen
+   lay theirs the same way */
+:root[data-style="sumi"] :is(.card-screen, .module .screen) {
+  padding: 0;
+  background: none;
+}
+
+:root[data-style="sumi"] :is(.card-screen, .module .screen)::after {
+  content: none;
+}
+
+:root[data-style="sumi"] .card-screen .screen-face {
+  border-radius: calc(7 * var(--u));
+}
+
+:root[data-style="sumi"] .module .screen-face {
+  border-radius: 6px;
+}
+
+:root[data-style="sumi"] :is(.card-screen, .module .screen) .screen-edge {
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--panel-edge);
+}
+
+:root[data-style="sumi"] .card-screen .screen-face.has-art {
+  aspect-ratio: 319 / 176;
+}
+
+/* the seal stands on a patch of the card's paper over the screen's corner,
+   as a seal stamped on the paper the picture is laid on. It is the project's
+   own: the paste's frame (seal-blank, the same for every card) and the one
+   character the project carries (`--glyph`, a CSS string) stamped in it as
+   live text, in Sumi's seal face (src/app/fonts.ts) and the paste's own
+   grain (seal-grain, a mask), so any project's card has its seal, in any
+   place in the row. The patch reaches a little above the seal, so no edge
+   of a picture is left standing over it. The sprite is 160 across with the
+   frame 88 of it, set so the frame is 31 across, and the character is
+   centred in the frame (the sprite's 77.7 down: 29 up from its foot, the live
+   face's ink sitting a touch high, 28.5). */
+:root[data-style="sumi"] .card-mark {
+  --seal-sprite: calc(160 / 88 * 31 * var(--u));
+  display: block;
+  position: absolute;
+  right: calc(15 * var(--u));
+  bottom: calc(13 * var(--u));
+  width: calc(46 * var(--u));
+  height: calc(61 * var(--u));
+  border-top-left-radius: calc(9 * var(--u));
+  background:
+    url(/kit/sumi/seal-blank.webp) center bottom / var(--seal-sprite) auto no-repeat,
+    var(--plate-fill) center / var(--plate-fill-size) var(--plate-fill-repeat);
+  pointer-events: none;
+}
+
+:root[data-style="sumi"] .card-mark::after {
+  content: var(--glyph, none);
+  position: absolute;
+  left: 50%;
+  bottom: calc(28.5 * var(--u));
+  translate: -50% 50%;
+  /* the seal's old characters stood taller than they were wide (about 0.8
+     of the frame across, 0.75 down); a square face is drawn up to that */
+  scale: 1 1.2;
+  font: 700 calc(26 * var(--u)) / 1 var(--font-seal);
+  font-synthesis: none;
+  white-space: nowrap;
+  /* the paste's colour, its grain the mask's (an opacity of about .87) */
+  color: rgb(183 16 3);
+  -webkit-mask: url(/kit/sumi/seal-grain.webp) center / var(--seal-sprite) auto repeat;
+  mask: url(/kit/sumi/seal-grain.webp) center / var(--seal-sprite) auto repeat;
+}
+
+/* ---------- the running head (the other pages) ----------
+   The brand in the brush with its seal, the line after a hairline rule, and
+   the page's controls printed as serif words, on a band of the cards' washi. */
+:root[data-style="sumi"] .running-head {
+  --plate-k: 0.4;
+}
+
+:root[data-style="sumi"] .running-head .brand {
+  gap: 0.24em;
+  font-family: var(--font-brush), cursive;
+  font-weight: 400;
+  font-size: clamp(30px, 2.6vw, 42px);
+}
+
+/* the wordmark is the home page's lettering (above), at the band's size
+   (its box the name's, ascender to the g's tail), a little smaller on a
+   narrow phone, where the band's keys share its row */
+:root[data-style="sumi"] .running-head .brand a {
+  --letters: url(/kit/sumi/letter-brand.webp);
+  height: 1.15em;
+  aspect-ratio: 262 / 102;
+  line-height: 1;
+}
+
+@media (max-width: 400px) {
+  :root[data-style="sumi"] .running-head .brand a {
+    height: 1em;
+  }
+}
+
+/* focused, the lettered name is ringed, as a key is: a text link's focus
+   (globals.css) prints the word and underlines it, and here the word is the
+   lettering (the link's [href] outranks that rule) */
+:root[data-style="sumi"] :is(.masthead, .running-head) .brand a[href]:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: 2px;
+  color: transparent;
+  text-decoration: none;
+}
+
+:root[data-style="sumi"] .running-head .brand .led {
+  order: 1;
+  width: 0.62em;
+  height: 0.78em;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: url(/kit/sumi/seal-brand.webp) center / contain no-repeat;
+}
+
+:root[data-style="sumi"] .running-head .brand .led::before,
+:root[data-style="sumi"] .running-head .brand .led::after {
+  content: none;
 }
 
 :root[data-style="sumi"] .running-head .meta {
@@ -330,15 +909,15 @@
   padding-left: 24px;
   border-left: 1px solid var(--engrave-lo);
   font-variant-caps: normal;
-  letter-spacing: 0.01em;
-  font-size: 18px;
+  letter-spacing: 0.06em;
+  font-size: 17px;
   line-height: 1.5;
   color: var(--print-soft);
 }
 
-/* the page's controls are words printed on the band (the concept's
-   "Projects, Notes, Contact"): no card, the brush's vermilion underline as
-   the pointer comes to one, a vermilion keyline round one in focus */
+/* the page's controls are words printed on the band (the mock's "Projects,
+   Notes, Contact"): no button, a cinnabar underline as the pointer comes
+   to one, a cinnabar keyline round one in focus */
 :root[data-style="sumi"] .running-head .key {
   --kn: none;
   --kh: none;
@@ -348,7 +927,7 @@
   min-height: 36px;
   padding: 0 4px 2px;
   font-size: 19px;
-  font-weight: 500;
+  font-weight: 400;
   text-underline-offset: 6px;
   text-decoration-thickness: 1.5px;
 }
@@ -364,102 +943,36 @@
   border-radius: 2px;
 }
 
-:root[data-style="sumi"] .running-head .key:active:not(:disabled) {
+:root[data-style="sumi"] :is(.running-head, .masthead) .key:active:not(:disabled) {
   color: var(--signal-ink);
 }
 
-/* the signal word (the style menu's checked item) has no vermilion card to
-   print on: it is the vermilion, underlined in it */
-:root[data-style="sumi"] .running-head .key[data-tone="signal"] {
+/* the signal word (the style menu's checked item) has no red field to print
+   on: it is the cinnabar, underlined in it */
+:root[data-style="sumi"] :is(.running-head, .masthead) .key[data-tone="signal"] {
   --ki: var(--signal-ink);
   text-decoration-line: underline;
   text-decoration-color: var(--signal);
 }
 
 @media (max-width: 600px) {
-  :root[data-style="sumi"] .running-head {
-    padding-bottom: 22px;
-  }
-
   :root[data-style="sumi"] .running-head .key {
     min-height: 40px;
     font-size: 17px;
   }
 }
 
-/* ---------- the opening scroll: a painting on its washi ----------
-   A small ink landscape at its lower right, a seal under it; the copy
-   leaves it the room it needs below the text. */
-:root[data-style="sumi"] .hero-copy.faceplate {
-  padding-bottom: calc(var(--plate-w) + 22px + min(15vw, 150px));
-}
-
-:root[data-style="sumi"] .hero-copy.faceplate::before {
-  background:
-    var(--k-seal-brand) right calc(var(--plate-w) + 4px) bottom calc(var(--plate-w) + 2px) / 22px 22px no-repeat,
-    var(--k-vignette) right calc(var(--plate-w) + 30px) bottom calc(var(--plate-w) + 6px) / min(70%, 400px) auto no-repeat,
-    var(--plate-light) center / calc(100% - 2 * var(--light-in)) calc(100% - 2 * var(--light-in)) no-repeat,
-    var(--plate-fill) var(--plate-fill-at, center) / var(--plate-fill-size) var(--plate-fill-repeat);
-}
-
-/* ---------- the flagship: the one scroll mounted in brocade ----------
-   Navy brocade woven with gold clouds; a jade bi disc and a vermilion
-   tassel hang from the right end of its top roller (the sheet's pin, which
-   on a card is its status seal). */
-:root[data-style="sumi"] .flagship {
-  --k-plate: var(--k-brocade);
-  --k-plate-hover: var(--k-brocade-hover);
-  --k-plate-pressed: var(--k-brocade-pressed);
-  --k-plate-focus: var(--k-brocade-focus);
-  --k-plate-flat: var(--k-brocade-flat);
-  --plate-light: var(--k-brocade-light);
-  --plate-sheen: var(--k-brocade-sheen);
-}
-
-:root[data-style="sumi"] .flagship > .led.sheet-pin {
-  top: 3px;
-  left: auto;
-  right: -19px;
-  width: 40px;
-  height: 170px;
-  aspect-ratio: auto;
-  translate: none;
-  z-index: 4;
-}
-
-:root[data-style="sumi"] .flagship > .led.sheet-pin::before {
-  inset: 0;
-  background: var(--k-pendant) center top / contain no-repeat;
-}
-
-/* ---------- cards: a brush swash, a seal, an arrow ----------
-   Each card's number is written in cream on a broad dry stroke of ink (its
-   round head and dry tail kept, the middle drawn out); its status is a round
-   seal stamped at its top right; a vermilion arrow points on at its foot. */
-:root[data-style="sumi"] .module-num {
-  display: inline-block;
-  min-width: min(58%, 15em);
-  padding: 5px 56px 5px 15px;
-  border: 0 solid transparent;
-  border-image: var(--k-tape) 8 200 8 58 fill / 0 54px 0 16px / 0 2px stretch;
-  color: var(--tape-ink);
-  font-weight: 600;
-  letter-spacing: 0.1em;
-}
-
-:root[data-style="sumi"] .module-top {
-  padding-left: 0;
-}
-
+/* ---------- the shelves' cards ----------
+   A card's status is a round seal stamped at its top right. */
 :root[data-style="sumi"] .module .module-top {
   padding-right: 40px;
 }
 
 :root[data-style="sumi"] .module > .led.sheet-pin {
-  top: calc(var(--plate-w) * 0.75 - 6px);
+  top: calc(var(--plate-w) * 0.75 - 4px);
   left: auto;
-  right: calc(var(--plate-w) * 0.75 - 3px);
-  width: 44px;
+  right: calc(var(--plate-w) * 0.75 - 2px);
+  width: 40px;
   translate: none;
 }
 
@@ -467,27 +980,9 @@
   background-position: center;
 }
 
-:root[data-style="sumi"] .module-inner {
-  position: relative;
-}
-
-:root[data-style="sumi"] .module-inner::after {
-  content: "\2192" / "";
-  position: absolute;
-  right: 4px;
-  bottom: -6px;
-  font-family: var(--font-garamond), Georgia, serif;
-  font-size: 30px;
-  line-height: 1;
-  color: var(--signal);
-}
-
-:root[data-style="sumi"] .module-stats {
-  padding-right: 40px;
-}
-
-/* a kicker, and a label taped elsewhere, is written on the swash too */
-:root[data-style="sumi"] :is(.tape, .kicker) {
-  padding: 5px 46px 5px 14px;
-  border-image: var(--k-tape) 8 200 8 58 fill / 0 46px 0 14px / 0 2px stretch;
+/* a live project's seal is the deep cinnabar paste, the alpha's the bright
+   vermilion: the painting has no green to stamp it in (both the same seal,
+   --k-pin-green above) */
+:root[data-style="sumi"] .led[data-on="true"][data-color="green"]::before {
+  filter: brightness(0.84) saturate(0.88);
 }

@@ -1,14 +1,5 @@
 import Image from "next/image";
-import {
-  RunningHead,
-  Tags,
-  Tag,
-  OpenQuestion,
-  Plate,
-  Features,
-  Feature,
-  Folio,
-} from "@/components/notebook";
+import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature, Folio, ProjectMeta, ProjectKicker } from "@/components/notebook";
 import { Cap, Screen, Key } from "@/components/rack";
 
 export const metadata = {
@@ -22,11 +13,7 @@ export default function TableauFrogPage() {
     <>
       <RunningHead
         brand="chong"
-        meta={
-          <>
-            05 &nbsp;·&nbsp; Tableau Frog &nbsp;·&nbsp; <span className="filed">active</span>
-          </>
-        }
+        meta={<ProjectMeta slug="tableau-frog" />}
         nav={
           <>
             <Key href="/">← all projects</Key>
@@ -38,7 +25,7 @@ export default function TableauFrogPage() {
 
         <section className="detail-hero">
           <div>
-            <div className="kicker">05 · Tableau Frog</div>
+            <ProjectKicker slug="tableau-frog" />
             <h1>Point at a difference; it tells you if it’s real.</h1>
             <p>
               A data explorer that inverts the usual workflow: you never pick a
@@ -178,7 +165,7 @@ export default function TableauFrogPage() {
         </section>
 
       </main>
-      <Folio number="05" />
+      <Folio slug="tableau-frog" />
     </>
   );
 }

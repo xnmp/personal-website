@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { RunningHead } from "@/components/notebook";
+import { RunningHead, ProjectMeta, Folio } from "@/components/notebook";
 import { Cap, Key, Led, Screen, Prop } from "@/components/rack";
 import { CopyKey } from "@/components/launch/CopyKey";
 import { DownloadKey } from "@/components/launch/DownloadKey";
@@ -73,11 +73,7 @@ export default function TauriExplorerPage() {
     <>
       <RunningHead
         brand="chong"
-        meta={
-          <>
-            01 &nbsp;·&nbsp; Tauri Explorer &nbsp;·&nbsp; <span className="filed">alpha open</span>
-          </>
-        }
+        meta={<ProjectMeta slug="tauri-explorer" />}
         nav={
           <>
             <Key href="/">← all projects</Key>
@@ -398,12 +394,7 @@ export default function TauriExplorerPage() {
         </div>
 
       </main>
-      <footer className="folio">
-        <span className="fine-only">
-          Press <Cap>/</Cap> for the other projects
-        </span>
-        <span>01 / 11</span>
-      </footer>
+      <Folio slug="tauri-explorer" />
     </>
   );
 }

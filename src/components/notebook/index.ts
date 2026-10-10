@@ -4,4 +4,4 @@ export { Tags, Tag } from "./Tags";
 export { OpenQuestion } from "./OpenQuestion";
 export { Plate } from "./Plate";
 export { Features, Feature } from "./Features";
-export { Folio } from "./Folio";
+export { Folio, ProjectMeta, ProjectKicker } from "./Folio";
