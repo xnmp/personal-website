@@ -13,8 +13,8 @@ type Common = {
 
 type Props = Common &
   (
-    | { href: string; external?: boolean; newTab?: boolean; onClick?: never; ariaLabel?: string; disabled?: never }
-    | { href?: never; external?: never; newTab?: never; onClick: () => void; ariaLabel?: string; disabled?: boolean }
+    | { href: string; external?: boolean; newTab?: boolean; current?: boolean; onClick?: never; ariaLabel?: string; disabled?: never }
+    | { href?: never; external?: never; newTab?: never; current?: never; onClick: () => void; ariaLabel?: string; disabled?: boolean }
   );
 
 /**
@@ -47,7 +47,7 @@ export function Key({ tone = "neutral", size = "md", legend, children, className
       );
     }
     return (
-      <Link className={cls} href={rest.href} aria-label={ariaLabel} {...data}>
+      <Link className={cls} href={rest.href} aria-label={ariaLabel} aria-current={rest.current ? "page" : undefined} {...data}>
         {inner}
       </Link>
     );

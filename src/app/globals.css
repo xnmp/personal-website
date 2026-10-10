@@ -3399,7 +3399,9 @@ html:has(dialog[open]) {
 }
 
 .style-icon,
-.rice-icon {
+.rice-icon,
+.about-icon,
+.index-icon {
   display: none;
   flex: none;
 }
@@ -3424,26 +3426,47 @@ html:has(dialog[open]) {
   }
 }
 
-/* on a narrow phone the theme key goes to its disc as well */
+/* on a narrow phone the theme key goes to its disc as well, and the about
+   key to its glyph */
 @media (max-width: 400px) {
-  .instruments .theme-key :is(.rice-name, .rice-word) {
+  .instruments .theme-key :is(.rice-name, .rice-word),
+  .instruments .about-word {
     display: none !important;
   }
 
-  .instruments .rice-icon {
+  .instruments :is(.rice-icon, .about-icon) {
     display: block;
   }
 
-  .running-head .instruments .theme-key {
+  .running-head .instruments :is(.theme-key, .about-key) {
     min-width: 36px;
     padding-inline: 0;
     justify-content: center;
   }
 }
 
-/* the narrowest: the keys stand closer */
+/* the narrowest: every key is a glyph (the index key goes to its lens), on
+   a tile a little under a thumb's (still past WCAG's 24px target), and they
+   stand closer, so the brand and four keys keep one row */
 @media (max-width: 340px) {
   .running-head .instruments {
-    gap: 4px;
+    gap: 2px;
+  }
+
+  .running-head .instruments :is(.about-key, .index-key, .theme-key, .style-key) {
+    min-width: 32px;
+  }
+
+  .instruments .index-word {
+    display: none !important;
+  }
+
+  .instruments .index-icon {
+    display: block;
+  }
+
+  .running-head .instruments .index-key {
+    padding-inline: 0;
+    justify-content: center;
   }
 }

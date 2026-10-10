@@ -220,3 +220,25 @@ test("the about page is linked from home and prints its facts", async ({ page })
   await page.getByRole("link", { name: "← all projects" }).click();
   await expect(page).toHaveURL(/\/$/);
 });
+
+test("every page's masthead has an about key beside index, marked current on the about page", async ({ page }) => {
+  for (const route of ["/", "/p/tauri-explorer", "/p/ashen-cathedral"]) {
+    await page.goto(route);
+    const keys = page.locator(":is(.running-head, .masthead) .instruments");
+    await expect(keys.getByRole("link", { name: "About me" })).not.toHaveAttribute("aria-current", "page");
+    await expect(keys.getByRole("button", { name: "Open the index of projects" })).toBeVisible();
+  }
+  await page.locator(".instruments").getByRole("link", { name: "About me" }).click();
+  await expect(page).toHaveURL(/\/about$/);
+  await expect(page.locator(".instruments").getByRole("link", { name: "About me" })).toHaveAttribute("aria-current", "page");
+});
+
+// the site draws its own day and night: Dark Reader's restyling lays an
+// opaque fill on every element, over the scene's art, so each page asks it
+// to leave the page alone
+test("every page opts out of Dark Reader", async ({ page }) => {
+  for (const route of ["/", "/about", ...projects.map((p) => p.href)]) {
+    await page.goto(route);
+    await expect(page.locator('meta[name="darkreader-lock"]'), route).toHaveCount(1);
+  }
+});

@@ -111,9 +111,6 @@ export default function Home() {
           </span>
         </span>
         <span>
-          <Link href="/about">about me</Link>
-        </span>
-        <span>
           <a href="https://github.com/xnmp">github/xnmp</a>
         </span>
         <span>

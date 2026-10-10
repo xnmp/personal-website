@@ -307,6 +307,17 @@
   }
 }
 
+/* the narrowest: the glyph tiles narrow with every style's (globals.css) */
+@media (max-width: 340px) {
+  :root[data-style="solarpunk"] .running-head .key {
+    min-width: 32px;
+  }
+
+  :root[data-style="solarpunk"] .running-head .instruments {
+    gap: 2px;
+  }
+}
+
 /* the style key's caret is as cream as its word */
 :root[data-style="solarpunk"] :is(.masthead, .running-head) .style-caret {
   opacity: 1;

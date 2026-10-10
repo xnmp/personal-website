@@ -9,6 +9,10 @@ export const metadata: Metadata = {
   title: "chong: tools, games, and the agents that play them",
   description:
     "Things I build: a keyboard-first file manager in alpha, a markdown editor, a mood diary, a Hyprland status bar, and agents for Brood War, Magic and a family card game.",
+  // The site has its own day and night finishes. Dark Reader would recolour
+  // them, and its stylesheet lays an opaque fill on every element, covering
+  // the scene's art; this tag asks it to leave the page as drawn.
+  other: { "darkreader-lock": "true" },
 };
 
 // Runs before paint so the stored style (lib/styles.ts) and rice apply

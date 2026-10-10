@@ -1156,6 +1156,19 @@
   gap: 26px;
 }
 
+/* on a phone the keys share the brand's row: they stand closer */
+@media (max-width: 600px) {
+  :root[data-style="ligne"] .running-head .instruments {
+    gap: 14px;
+  }
+}
+
+@media (max-width: 340px) {
+  :root[data-style="ligne"] .running-head .instruments {
+    gap: 6px;
+  }
+}
+
 :root[data-style="ligne"] .running-head .brand .led {
   display: none;
 }
