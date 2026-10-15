@@ -775,3 +775,53 @@ returns native alpha, so there is no chroma-key step.
 9. `shot-crops.mjs` also writes the live demo's still
    (`public/tauri/live-app-<theme>.webp`), the app at the demo's 1440×900,
    untouched. Sources live in `art/raw/`.
+
+### Super-resolution (@2x)
+
+The build works in mock pixels (1672x941 sources), so a scene drawn at the
+stage's scale on a large or HiDPI screen (`--u` times the device pixel ratio,
+about 2 on a 3440px monitor or a 2x laptop) shows each file pixel twice over.
+Rather than re-plumb the derive scripts, a last stage makes a 2x sibling of
+selected shipped files with the OpenAI image edit API and conforms it to the
+1x file, which stays the source of truth.
+
+- **List**: `art/hires.json` names the shipped files (`src` under `public/`)
+  and the defaults (model `gpt-image-2.5-sunburst`, `factor` 2, WebP
+  `quality` 75). `bun run hires [--only x] [--dry]` makes
+  `<name>@2x.webp` beside each; the prompt is `art/prompts/hires/upscale.txt`.
+  It calls the imagegen skill's keyring wrapper (`HIRES_PYTHON`,
+  `HIRES_IMAGEGEN` override the paths); `--dry` makes no requests.
+- **Tiles**: a file larger than the API's output limits (3840px edge, 8.3 MP)
+  is cut into overlapping tiles (`scripts/hires/tiles.mjs`) and feathered
+  back together.
+- **Conforming** (`scripts/hires/merge.mjs`): the model keeps the
+  picture but not its exact geometry or tone. Each tile is aligned to the 1x
+  by block matching (DoG-luminance ZNCC, alpha-weighted) and a smooth warp,
+  iterated up to three times; its low frequencies are then replaced by the
+  1x's (`toneMatch`), so only the new fine detail is the model's. Alpha is the
+  1x alpha resized. A transparent cut-out is sent with its clear area
+  push-pull filled, so the model sees no matte.
+- **Gates**: after alignment, the reliable blocks' residual must be at most
+  0.6 source px (median) and 1.0 (p90), and the blurred MAE at most
+  `--max-mae`; the maximum is reported, not gated (redrawn texture matches
+  poorly anywhere). A rejected file is not written; `stats.json` says why.
+  `--accept` overrides after review.
+- **Cache**: requests, model tiles, stats and a lossless `master.png` live in
+  `art/raw/hires/<path>/<key>/` (gitignored), keyed by the 1x file's bytes,
+  factor, model and prompt. A cached tile is never requested again;
+  `--remerge` re-runs conforming and encoding from the cache alone. A kit
+  rebuild that changes a 1x file changes its key, so its @2x must be made
+  again (and `bun run hires` will request it).
+- **Serving**: each CSS declaration that names a 1x file with a @2x sibling is
+  followed, in the same rule, by a one-line twin under
+  `@media (min-resolution: 1.5dppx), (min-width: 2200px)` naming the @2x. A
+  twin beside its declaration keeps the cascade as authored (a later phone
+  override still wins). `bun run hires:css --write` writes and updates the
+  twins; `--check` (also a test) fails when one is missing, stale or orphaned.
+  A 1080p desktop at 100% keeps the 1x files.
+- **Diorama**: the 3D scene reads the same tokens, so it gets the @2x URL
+  under the same media query; it decodes each layer at the drawing buffer's
+  width (1920 or 1280 at least, 3840 at most) and never past the file's own
+  width (`scene3d/layer-bitmap.ts`).
+- **A scene ships whole**: a multi-layer finish gets its @2x only when every
+  layer has one, so one painting is never half sharp.

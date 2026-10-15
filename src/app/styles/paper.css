@@ -192,9 +192,13 @@
 
 :root[data-style="paper"][data-rice="paper"]:has(.detail-hero) {
   --k-sky: url(/kit/paper/scene/project-day/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/paper/scene/project-day/sky@2x.webp); }
   --k-mid: url(/kit/paper/scene/project-day/hills-far.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mid: url(/kit/paper/scene/project-day/hills-far@2x.webp); }
   --k-left: url(/kit/paper/scene/project-day/pines-left.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-left: url(/kit/paper/scene/project-day/pines-left@2x.webp); }
   --k-right: url(/kit/paper/scene/project-day/pines-right.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right: url(/kit/paper/scene/project-day/pines-right@2x.webp); }
 }
 
 :root[data-style="paper"][data-rice="paper"]:has(.launch-hero) {
@@ -2091,9 +2095,13 @@
 
   :root[data-style="paper"][data-rice="paper"]:not(:has(.detail-hero, .launch-hero)) {
     --k-sky: url(/kit/paper/scene/phone-day/sky.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/paper/scene/phone-day/sky@2x.webp); }
     --k-mid: url(/kit/paper/scene/phone-day/hills-far.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mid: url(/kit/paper/scene/phone-day/hills-far@2x.webp); }
     --k-left: url(/kit/paper/scene/phone-day/pines-left.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-left: url(/kit/paper/scene/phone-day/pines-left@2x.webp); }
     --k-right: url(/kit/paper/scene/phone-day/pines-right.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right: url(/kit/paper/scene/phone-day/pines-right@2x.webp); }
   }
 
   /* the strip: the name at the left, the links at the right, one row */

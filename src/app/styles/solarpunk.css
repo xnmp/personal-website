@@ -36,6 +36,7 @@
   /* the scene is one plate, the mock with the page painted out, by night
      (scripts/kits/solarpunk.mjs scene); the moon is painted into the glass */
   --k-sky: url(/kit/solarpunk/scene/night/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/solarpunk/scene/night/sky@2x.webp); }
   /* the plate is painted on this far past the mock's edges (mock px), so on
      a desktop it stays registered to the stage (scene.bleed in the recipe) */
   --sky-bleed-x: 320;
@@ -143,6 +144,7 @@
   --scene-ground: #c9a35a;
   --k-scene-flat: url(/kit/solarpunk/scene-day.webp);
   --k-sky: url(/kit/solarpunk/scene/day/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/solarpunk/scene/day/sky@2x.webp); }
   --k-sun: none; /* the sun is painted into the glass, upper left */
   --sun-cx: 0;
   --sun-cy: 0;
@@ -204,10 +206,12 @@
 
 :root[data-style="solarpunk"][data-rice="paper"]:has(.detail-hero) {
   --k-sky: url(/kit/solarpunk/scene/project-day/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/solarpunk/scene/project-day/sky@2x.webp); }
 }
 
 :root[data-style="solarpunk"][data-rice="paper"]:has(.launch-hero) {
   --k-sky: url(/kit/solarpunk/scene/launch-day/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/solarpunk/scene/launch-day/sky@2x.webp); }
 }
 
 /* ---------- every page: one voice ----------

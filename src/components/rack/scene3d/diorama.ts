@@ -30,6 +30,7 @@
  * one. Geometry lives in ./framing.ts.
  */
 import * as THREE from "three";
+import { layerBitmap, layerTextureWidth } from "./layer-bitmap";
 import {
   COVER,
   cameraAt,
@@ -188,10 +189,11 @@ function readSunAt() {
 }
 
 /** Decode an image off the main thread, flipped for WebGL, `w` px wide. */
-async function bitmap(url: string, w: number) {
+async function bitmap(url: string, w: number, layer = false) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`${url}: ${res.status}`);
   const blob = await res.blob();
+  if (layer) return layerBitmap(blob, w);
   // with only a width given, the height keeps the image's aspect
   // premultiplied, so filtering at a cut edge blends toward clear, not black
   return createImageBitmap(blob, { imageOrientation: "flipY", premultiplyAlpha: "premultiply", resizeWidth: w, resizeQuality: "high" });
@@ -485,9 +487,9 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
     if (keyNow === finishKey) return;
     finishKey = keyNow;
     const token = ++loadToken;
-    const texW = small() ? 1280 : 1920;
+    const texW = layerTextureWidth(renderer.getDrawingBufferSize(new THREE.Vector2()).x, small());
     const [imgs, cloudImg, sunImg] = await Promise.all([
-      Promise.all(LAYERS.map((l) => (f.layers[l] ? bitmap(f.layers[l], texW) : Promise.resolve(null)))),
+      Promise.all(LAYERS.map((l) => (f.layers[l] ? bitmap(f.layers[l], texW, true) : Promise.resolve(null)))),
       f.cloud ? bitmap(f.cloud, 512) : Promise.resolve(null),
       f.sun ? bitmap(f.sun.url, f.sun.sprite.w) : Promise.resolve(null),
     ]);

@@ -32,6 +32,7 @@
   --scene-ground: #041a33;
   --k-scene-flat: url(/kit/cyanotype/scene-night.webp);
   --k-sky: url(/kit/cyanotype/scene/night/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/night/sky@2x.webp); }
   /* the same print with everything drawn on it taken out, registered to it
      (the type's knock-out, below) */
   --k-ground: url(/kit/cyanotype/scene/ground-night/sky.webp);
@@ -280,6 +281,7 @@
   --scene-ground: #0b3768;
   --k-scene-flat: url(/kit/cyanotype/scene-day.webp);
   --k-sky: url(/kit/cyanotype/scene/day/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/day/sky@2x.webp); }
   --k-ground: url(/kit/cyanotype/scene/ground-day/sky.webp);
   --k-sun: none;
   --sun-cx: 0;
@@ -1713,11 +1715,13 @@
 @media (min-width: 1100px) {
   :root[data-style="cyanotype"]:is(:has(.detail-hero .tags), :has(.detail-hero.solo)) {
     --k-sky: url(/kit/cyanotype/scene/project-night/sky.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/project-night/sky@2x.webp); }
     --k-ground: url(/kit/cyanotype/scene/ground-project-night/sky.webp);
   }
 
   :root[data-style="cyanotype"][data-rice="paper"]:is(:has(.detail-hero .tags), :has(.detail-hero.solo)) {
     --k-sky: url(/kit/cyanotype/scene/project-day/sky.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/project-day/sky@2x.webp); }
     --k-ground: url(/kit/cyanotype/scene/ground-project-day/sky.webp);
   }
 
@@ -1728,6 +1732,7 @@
 
   :root[data-style="cyanotype"][data-rice="paper"]:has(.launch-hero) {
     --k-sky: url(/kit/cyanotype/scene/launch-day/sky.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/launch-day/sky@2x.webp); }
     --k-ground: url(/kit/cyanotype/scene/ground-launch-day/sky.webp);
   }
 

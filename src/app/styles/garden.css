@@ -27,6 +27,7 @@
   --k-scene-flat: url(/kit/garden/scene-night.webp);
   /* the plate is the whole scene: the moon is painted in its sky */
   --k-sky: url(/kit/garden/scene/night/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/garden/scene/night/sky@2x.webp); }
   /* the painting runs on 320 mock px past the mock's sides and foot, for the
      frame round the stage (kit.css: registered to it on a desktop), its
      lettered props whole in it at any aspect */
@@ -135,6 +136,7 @@
   --scene-ground: #9a8c62;
   --k-scene-flat: url(/kit/garden/scene-day.webp);
   --k-sky: url(/kit/garden/scene/day/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/garden/scene/day/sky@2x.webp); }
   --k-sun: none;
   --sun-cx: 0;
   --sun-cy: 0;

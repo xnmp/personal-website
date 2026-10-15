@@ -54,6 +54,7 @@
   --sky-bleed-x: 320;
   --sky-bleed-bottom: 320;
   --k-sky: url(/kit/atlas/sky-plate-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/atlas/sky-plate-night@2x.webp); }
   --k-sun: url(/kit/atlas/scene/night/sun.webp);
   --sun-sw: 392;
   --sun-sh: 392;
@@ -246,6 +247,7 @@
   --scene-ground: #dfe6ea;
   --k-scene-flat: url(/kit/atlas/scene-day.webp);
   --k-sky: url(/kit/atlas/sky-plate-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/atlas/sky-plate-day@2x.webp); }
   --k-sun: url(/kit/atlas/scene/day/sun.webp);
   --sun-sw: 392;
   --sun-sh: 392;

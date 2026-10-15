@@ -1,0 +1,180 @@
+import { describe, expect, test } from "bun:test";
+import { checkRepo, diagnostics, HIRES_MEDIA, main, transformCss } from "../scripts/hires/css.mjs";
+import { layerBitmap, layerTextureWidth } from "../src/components/rack/scene3d/layer-bitmap";
+
+const available = new Set(["/kit/a@2x.webp", "/kit/b@2x.webp"]);
+const media = "(min-resolution: 1.5dppx), (min-width: 2200px)";
+const twin = (prop: string, value: string) => `@media ${media} { ${prop}: ${value}; }`;
+
+describe("hires CSS reconciliation", () => {
+  test("writes exactly one adjacent twin, preserving comments and later overrides; a second write is a no-op", () => {
+    expect(HIRES_MEDIA).toBe(media);
+    const input = `/* art */\n.a {\n  --sky: url(/kit/a.webp); /* keep */\n  --sky: none;\n}\n`;
+    const expected = `/* art */\n.a {\n  --sky: url(/kit/a.webp);\n  ${twin("--sky", "url(/kit/a@2x.webp)")} /* keep */\n  --sky: none;\n}\n`;
+    const written = transformCss(input, available);
+    expect(written.css).toBe(expected);
+    expect(written.issues.map((i: { kind: string }) => i.kind)).toEqual(["missing"]);
+    expect(transformCss(expected, available)).toEqual({ css: expected, issues: [] });
+  });
+
+  test("replaces quoted and unquoted URLs in a multi-URL value, only where an @2x file is available", () => {
+    const value = `image-set(URL('/kit/a.webp') 1x, url( "/kit/b.webp" ) 2x), url(/kit/missing.webp), url(/else/a.webp)`;
+    const expectedValue = `image-set(URL('/kit/a@2x.webp') 1x, url( "/kit/b@2x.webp" ) 2x), url(/kit/missing.webp), url(/else/a.webp)`;
+    const input = `.a {\n\tbackground: ${value} !important;\n}`;
+    expect(transformCss(input, available).css).toBe(`.a {\n\tbackground: ${value} !important;\n\t${twin("background", expectedValue + " !important")}\n}`);
+  });
+
+  test("updates an old URL and old media without duplicating the twin", () => {
+    const input = `.a {\n  --sky: url(/kit/a.webp);\n  @media (min-resolution: 2dppx) { --sky: url('/kit/old@2x.webp'); }\n}`;
+    const { css, issues } = transformCss(input, available);
+    expect(css).toBe(`.a {\n  --sky: url(/kit/a.webp);\n  ${twin("--sky", "url(/kit/a@2x.webp)")}\n}`);
+    expect(issues.map((i: { message: string }) => i.message).join("\n")).toMatch(/unavailable.*old@2x.webp/);
+    expect(issues.map((i: { message: string }) => i.message).join("\n")).toMatch(/media must be/);
+    expect(transformCss(css, available).issues).toEqual([]);
+  });
+
+  test("repairs a reverted twin while preserving standalone authored 1x policy queries", () => {
+    const input = `.a {\n  --sky: url(/kit/a.webp);\n  ${twin("--sky", "url(/kit/b.webp)")}\n}`;
+    expect(transformCss(input, available).css).toBe(`.a {\n  --sky: url(/kit/a.webp);\n  ${twin("--sky", "url(/kit/a@2x.webp)")}\n}`);
+    const authored = `.a {\n  @media ${media} {\n    --sky: url(/kit/a.webp);\n  }\n}`;
+    const expected = `.a {\n  @media ${media} {\n    --sky: url(/kit/a.webp);\n    ${twin("--sky", "url(/kit/a@2x.webp)")}\n  }\n}`;
+    expect(transformCss(authored, available).css).toBe(expected);
+    expect(transformCss(expected, available).issues).toEqual([]);
+  });
+
+  test("removes orphan twins after a deleted, renamed, or changed base declaration", () => {
+    for (const base of ["", "  color: red;\n", "  --sky: none;\n"]) {
+      const input = `.a {\n${base}  ${twin("--sky", "url(/kit/a@2x.webp)")}\n}`;
+      const result = transformCss(input, available);
+      expect(result.css).toBe(`.a {${base ? "\n" + base.trimEnd() : ""}\n}`);
+      expect(result.issues.some((i: { kind: string }) => i.kind === "orphan")).toBe(true);
+    }
+  });
+
+  test("removes twins for a missing file and duplicates, and repairs a changed property", () => {
+    const existing = `.a {\n  --sky: url(/kit/a.webp);\n  ${twin("--sky", "url(/kit/a@2x.webp)")}\n}`;
+    expect(transformCss(existing, new Set()).css).toBe(".a {\n  --sky: url(/kit/a.webp);\n}");
+    const duplicate = existing.replace("\n}", `\n  ${twin("--sky", "url(/kit/a@2x.webp)")}\n}`);
+    expect(transformCss(duplicate, available).css).toBe(existing);
+    const renamed = existing.replace("--sky: url(/kit/a.webp)", "--near: url(/kit/a.webp)");
+    const result = transformCss(renamed, available);
+    expect(result.css).toBe(existing.replaceAll("--sky", "--near"));
+    expect(transformCss(result.css, available).issues).toEqual([]);
+  });
+
+  test("nests twins inside media queries and nested selectors at every reference", () => {
+    const input = `@media (max-width: 720px) {\n  .a {\n    --sky: url(/kit/a.webp);\n    & .b {\n      --sky: url(/kit/a.webp);\n    }\n  }\n}`;
+    const expected = `@media (max-width: 720px) {\n  .a {\n    --sky: url(/kit/a.webp);\n    ${twin("--sky", "url(/kit/a@2x.webp)")}\n    & .b {\n      --sky: url(/kit/a.webp);\n      ${twin("--sky", "url(/kit/a@2x.webp)")}\n    }\n  }\n}`;
+    expect(transformCss(input, available).css).toBe(expected);
+    expect(transformCss(expected, available).issues).toEqual([]);
+  });
+
+  test("reports query-string URLs and leaves their whole declarations untouched", () => {
+    for (const value of ["url('/kit/a.webp?v=2')", "url(/kit/a.webp), url(/kit/b.webp?version=1)"]) {
+      const input = `.a { --sky: ${value}; }`;
+      const result = transformCss(input, available);
+      expect(result.css).toBe(input);
+      expect(result.issues).toHaveLength(1);
+      expect(result.issues[0]).toMatchObject({ kind: "query", line: 1, column: 6 });
+    }
+  });
+
+  test("round-trips unrelated CSS byte-identically, including CRLF, comments and apparent URLs inside strings", () => {
+    const input = `/* url(/kit/a.webp) */\r\n.a{ content: 'url(/kit/a.webp)'; --x: url(/kit/unlisted.webp) /* art */; }\r\n@media (width < 30em){.b { color : red!important }}\r\n@media ${media} { color: red; }\r\n.b { @media ${media} { color: blue; } }\r\n`;
+    expect(transformCss(input, available)).toEqual({ css: input, issues: [] });
+    const crlf = ".a {\r\n\t--sky: url(/kit/a.webp);\r\n}\r\n";
+    const expected = `.a {\r\n\t--sky: url(/kit/a.webp);\r\n\t${twin("--sky", "url(/kit/a@2x.webp)")}\r\n}\r\n`;
+    expect(transformCss(crlf, available).css).toBe(expected);
+    expect(transformCss(expected, available).issues).toEqual([]);
+  });
+
+  test("moves a separated twin to immediately after its declaration, keeping intervening comments", () => {
+    const input = `.a {\n  --sky: url(/kit/a.webp);\n  /* art note */\n  ${twin("--sky", "url(/kit/a@2x.webp)")}\n}`;
+    expect(transformCss(input, available).css).toBe(`.a {\n  --sky: url(/kit/a.webp);\n  ${twin("--sky", "url(/kit/a@2x.webp)")}\n  /* art note */\n}`);
+  });
+
+  test("repairs twins containing comments and keeps unrelated declaration semicolons as authored", () => {
+    const input = `.a {\n  --sky: url(/kit/a.webp);\n  @media (min-resolution: 2dppx) { /* art */ --sky: url(/kit/a@2x.webp); }\n  color: red\n}`;
+    const result = transformCss(input, available);
+    expect(result.css).toBe(`.a {\n  --sky: url(/kit/a.webp);\n  ${twin("--sky", "url(/kit/a@2x.webp)")} /* art */\n  color: red\n}`);
+    expect(transformCss(result.css, available)).toEqual({ css: result.css, issues: [] });
+  });
+
+  test("keeps URL fragments, folds a multiline value into one line, and preserves a BOM", () => {
+    const input = `\uFEFF.a {\n  --sky: url(/kit/a.webp#art),\n    url(/kit/b.webp);\n}`;
+    const expected = `\uFEFF.a {\n  --sky: url(/kit/a.webp#art),\n    url(/kit/b.webp);\n  ${twin("--sky", "url(/kit/a@2x.webp#art), url(/kit/b@2x.webp)")}\n}`;
+    expect(transformCss(input, available).css).toBe(expected);
+    expect(transformCss(expected, available).issues).toEqual([]);
+    expect(transformCss("\uFEFF.a{}", available)).toEqual({ css: "\uFEFF.a{}", issues: [] });
+  });
+
+  test("preserves comments inside declaration values and handles a missing final semicolon", () => {
+    const input = ".a {\n  --sky: url(/kit/a.webp) /* paper */\n}";
+    const result = transformCss(input, available);
+    expect(result.css).toBe(`.a {\n  --sky: url(/kit/a.webp) /* paper */;\n  ${twin("--sky", "url(/kit/a@2x.webp) /* paper */")}\n}`);
+    expect(transformCss(result.css, available).issues).toEqual([]);
+  });
+
+  test("empty input is unchanged, malformed CSS and conflicting modes fail clearly", async () => {
+    expect(transformCss("", available)).toEqual({ css: "", issues: [] });
+    expect(() => transformCss(".a {", available)).toThrow(/Unclosed block/);
+    await expect(main(["--check", "--write"])).rejects.toThrow(/Choose either/);
+    await expect(main(["--surprise"])).rejects.toThrow(/Unknown option/);
+  });
+
+  test("repo CSS has current twins for every available manifest asset", async () => {
+    const messages = diagnostics(await checkRepo());
+    expect(messages, `Run node scripts/hires/css.mjs --write after upscales finish:\n${messages.join("\n")}`).toEqual([]);
+  });
+});
+
+describe("diorama layer bitmap sizes", () => {
+  test("sizes to the drawing buffer between the phone/desktop floor and the 2x ceiling", () => {
+    expect([0, 900, 1500, 2600, 3840, 8000].map((width) => layerTextureWidth(width, true))).toEqual([1280, 1280, 1500, 2600, 3840, 3840]);
+    expect([0, 900, 1500, 2600, 3840, 8000].map((width) => layerTextureWidth(width, false))).toEqual([1920, 1920, 1920, 2600, 3840, 3840]);
+  });
+
+  const image = (width: number, height: number, close: () => void) => ({ width, height, close }) as ImageBitmap;
+  test("decodes at natural size and returns small/equal sources without resizing up", async () => {
+    for (const width of [640, 1920]) {
+      let closed = false;
+      const img = image(width, width / 2, () => { closed = true; });
+      const inputs: unknown[] = [];
+      const decode = (async (input: ImageBitmapSource, options?: ImageBitmapOptions) => {
+        inputs.push({ input, options });
+        return img;
+      }) as typeof createImageBitmap;
+      const blob = new Blob();
+      expect(await layerBitmap(blob, 1920, decode)).toBe(img);
+      expect(inputs).toEqual([{ input: blob, options: { imageOrientation: "flipY", premultiplyAlpha: "premultiply" } }]);
+      expect(closed).toBe(false);
+    }
+  });
+
+  test("resizes from the decoded bitmap, preserving its flip and aspect, and releases the intermediate", async () => {
+    let closed = false;
+    const natural = image(3840, 2160, () => { closed = true; });
+    const resized = image(2560, 1440, () => {});
+    const inputs: unknown[] = [];
+    const decode = (async (input: ImageBitmapSource, options?: ImageBitmapOptions) => {
+      inputs.push({ input, options });
+      return input instanceof Blob ? natural : resized;
+    }) as typeof createImageBitmap;
+    expect(await layerBitmap(new Blob(), 2560, decode)).toBe(resized);
+    // no second flip: the resize must not ask for one
+    expect(inputs[1]).toEqual({ input: natural, options: { premultiplyAlpha: "premultiply", resizeWidth: 2560, resizeQuality: "high" } });
+    expect(closed).toBe(true);
+  });
+
+  test("releases the decoded bitmap if resizing fails, and propagates decode errors", async () => {
+    let closed = false;
+    const img = image(3840, 2160, () => { closed = true; });
+    const decode = (async (input: ImageBitmapSource) => {
+      if (input instanceof Blob) return img;
+      throw new Error("resize failed");
+    }) as typeof createImageBitmap;
+    await expect(layerBitmap(new Blob(), 1920, decode)).rejects.toThrow("resize failed");
+    expect(closed).toBe(true);
+    await expect(layerBitmap(new Blob(), 1920, (async () => { throw new Error("decode failed"); }) as typeof createImageBitmap)).rejects.toThrow("decode failed");
+  });
+});

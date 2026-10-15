@@ -1,0 +1,4 @@
+Use case: super-resolution upscale of an existing illustration (edit target: Image 1).
+Primary request: Re-render Image 1 at higher resolution as a faithful, sharper copy of itself.
+Constraints: Keep the composition, framing, crop and aspect ratio identical. Every element must stay at exactly the same position, size, shape and orientation. Keep all colours, values, lighting and the medium unchanged. Keep every letter of any text identical and in the same place, size and typeface. Only add fine, consistent detail: crisp edges, clean line work, fine material texture (paper fibre, brush grain, foliage, print grain) of the kind already present.
+Avoid: adding, removing, moving or restyling anything; new objects; changed text; borders, frames, vignettes or watermarks; smoothing or plastic look; colour shifts.

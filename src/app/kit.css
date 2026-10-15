@@ -178,17 +178,25 @@
   --scene-ground: #9fa3b8;
   --k-scene-flat: url(/kit/paper/scene-alpenglow.webp);
   --k-sky: url(/kit/paper/scene/alpenglow/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/paper/scene/alpenglow/sky@2x.webp); }
   --k-sun: url(/kit/paper/scene/alpenglow/sun.webp);
   --sun-cx: 169;
   --sun-cy: 96;
   --sun-r: 55;
   --k-far: url(/kit/paper/scene/alpenglow/mountains.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-far: url(/kit/paper/scene/alpenglow/mountains@2x.webp); }
   --k-mid: url(/kit/paper/scene/alpenglow/hills-far.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mid: url(/kit/paper/scene/alpenglow/hills-far@2x.webp); }
   --k-near: url(/kit/paper/scene/alpenglow/hills-near.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-near: url(/kit/paper/scene/alpenglow/hills-near@2x.webp); }
   --k-left-back: url(/kit/paper/scene/alpenglow/pines-left-back.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-left-back: url(/kit/paper/scene/alpenglow/pines-left-back@2x.webp); }
   --k-right-back: url(/kit/paper/scene/alpenglow/pines-right-back.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right-back: url(/kit/paper/scene/alpenglow/pines-right-back@2x.webp); }
   --k-left: url(/kit/paper/scene/alpenglow/pines-left.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-left: url(/kit/paper/scene/alpenglow/pines-left@2x.webp); }
   --k-right: url(/kit/paper/scene/alpenglow/pines-right.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right: url(/kit/paper/scene/alpenglow/pines-right@2x.webp); }
   --k-plate: url(/kit/paper/sheet-alpenglow-normal.webp);
   --k-plate-hover: url(/kit/paper/sheet-alpenglow-hover.webp);
   --k-plate-pressed: url(/kit/paper/sheet-alpenglow-pressed.webp);

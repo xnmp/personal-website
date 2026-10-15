@@ -142,6 +142,7 @@
   --scene-ground: #e2d6c8;
   --k-scene-flat: url(/kit/sumi/scene-day.webp);
   --k-sky: url(/kit/sumi/scene/day/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/sumi/scene/day/sky@2x.webp); }
   --k-sun: url(/kit/sumi/sun-day.webp);
   --sun-cx: 119;
   --sun-cy: 117;
