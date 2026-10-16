@@ -9,6 +9,7 @@ import { webpOptions } from '../webp.mjs';
 import { planTiles } from './tiles.mjs';
 import { blendTiles, colourStats, composeFlow, estimateFlow, padTransparent, toneMatch, warp } from './merge.mjs';
 import { cacheKey, validateManifest } from './manifest.mjs';
+import { lockEntry, writeLockEntry } from './lock.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const exists = async (path) => access(path).then(() => true, () => false);
@@ -49,17 +50,21 @@ export async function mapJobs(items, jobs, task) {
 export function cliOptions(args) {
   const { values } = parseArgs({ args, options: {
     manifest: { type: 'string', default: 'art/hires.json' }, only: { type: 'string' }, dry: { type: 'boolean' },
-    force: { type: 'boolean' }, remerge: { type: 'boolean' }, accept: { type: 'boolean' }, jobs: { type: 'string', default: '4' }, 'max-mae': { type: 'string', default: '14' },
+    force: { type: 'boolean' }, remerge: { type: 'boolean' }, verify: { type: 'boolean' }, accept: { type: 'boolean' }, jobs: { type: 'string', default: '4' }, 'max-mae': { type: 'string', default: '14' },
   } });
   const jobs = Number(values.jobs), maxMae = Number(values['max-mae']);
   if (!Number.isSafeInteger(jobs) || jobs < 1) throw new Error('--jobs must be a positive integer');
   if (!Number.isFinite(maxMae) || maxMae < 0) throw new Error('--max-mae must be non-negative');
+  if (values.verify && !values.remerge) throw new Error('--verify requires --remerge');
   return { ...values, jobs, maxMae };
 }
 
 export function acceptanceReasons(stats, label, maxMae) {
   if (!stats.gateable) return [];
-  return [...(stats.postWarp.median > 0.6 ? [`${label}: residual median ${stats.postWarp.median.toFixed(2)} source px > 0.6`] : []),
+  const { reliableBlocks = 0, visibleBlocks = 0 } = stats.postWarp;
+  const required = Math.max(3, Math.ceil(0.2 * visibleBlocks));
+  return [...(reliableBlocks < required ? [`${label}: cannot establish alignment (${reliableBlocks} reliable blocks; need ${required} of ${visibleBlocks} visible blocks)`] : []),
+    ...(stats.postWarp.median > 0.6 ? [`${label}: residual median ${stats.postWarp.median.toFixed(2)} source px > 0.6`] : []),
     ...(stats.postWarp.p90 > 1 ? [`${label}: residual p90 ${stats.postWarp.p90.toFixed(2)} source px > 1.0`] : []),
     ...(stats.blurredMae > maxMae ? [`${label}: blurred MAE ${stats.blurredMae.toFixed(2)} > ${maxMae}`] : [])];
 }
@@ -187,9 +192,21 @@ async function processAsset(asset, opts, promptText, root, invoke) {
   await master.png().toFile(masterPath);
   timing('master written');
   if (reasons.length && !opts.accept) throw new Error(`REJECTED: ${reasons.join('; ')} (review stats.json; --accept overrides)`);
+  if (opts.verify) {
+    if (!await exists(output)) {
+      console.log(`${relative(root, output)} not shipped; verified gates only`);
+      return;
+    }
+    const encoded = await sharp(masterPath).webp(asset.lossless ? { lossless: true } : webpOptions(asset.quality)).toBuffer();
+    if (!encoded.equals(await readFile(output))) throw new Error('remerge differs from shipped bytes; output and lock left untouched');
+    await writeLockEntry(root, asset, lockEntry(sourceBytes, asset, key));
+    console.log(`${relative(root, output)} byte-identical; provenance locked`);
+    return;
+  }
   const temporary = output + '.pending';
   await sharp(masterPath).webp(asset.lossless ? { lossless: true } : webpOptions(asset.quality)).toFile(temporary);
   await rename(temporary, output);
+  await writeLockEntry(root, asset, lockEntry(sourceBytes, asset, key));
   timing('webp written');
   console.log(`${relative(root, output)} written${reasons.length ? ' (--accept)' : ''}`);
 }

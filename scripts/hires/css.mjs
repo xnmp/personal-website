@@ -6,6 +6,7 @@ import { extname, resolve, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { validateManifest } from './manifest.mjs';
+import { lockMatches, outputPath, readLock } from './lock.mjs';
 
 export const HIRES_MEDIA = '(min-resolution: 1.5dppx), (min-width: 2200px)';
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
@@ -177,41 +178,63 @@ async function cssFiles(dir) {
 /** Read-only repo check, shared by the CLI and the repo-level test guard. */
 export async function checkRepo(root = ROOT) {
   const manifest = validateManifest(JSON.parse(await readFile(resolve(root, 'art/hires.json'), 'utf8')));
+  const lock = await readLock(root);
   const available = new Set();
-  await Promise.all(manifest.assets.filter((a) => a.src.startsWith('public/kit/')).map(async ({ src }) => {
-    const url = hiresUrl(src.slice('public'.length));
+  const issues = [];
+  const states = await Promise.all(manifest.assets.map(async (asset) => {
+    const output = outputPath({ src: asset.src, factor: 2 });
+    const url = output.slice('public'.length);
     try {
-      if ((await stat(resolve(root, 'public' + url))).isFile()) available.add(url);
-    } catch (error) { if (error.code !== 'ENOENT') throw error; }
+      if (!(await stat(resolve(root, output))).isFile()) return { asset, url, valid: false };
+    } catch (error) { if (error.code === 'ENOENT') return { asset, url, valid: false }; throw error; }
+    // A missing sibling is normal; an existing one must prove its provenance,
+    // even when its group is incomplete or no CSS declaration uses it yet.
+    let valid = false;
+    try { valid = asset.factor === 2 && lockMatches(lock.assets[output], await readFile(resolve(root, asset.src)), asset); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    return { asset, url, valid, issue: valid ? null : {
+      kind: 'provenance', message: `${output}: stale or unlocked @2x; run bun run hires --only ${asset.src}`,
+    } };
   }));
-  return Promise.all((await cssFiles(resolve(root, 'src/app'))).map(async (path) => {
+  const incomplete = new Set(states.filter((s) => s.asset.group && !s.valid).map((s) => s.asset.group));
+  for (const { asset, url, valid, issue } of states) {
+    if (issue) issues.push(issue);
+    if (valid && !incomplete.has(asset.group)) available.add(url);
+  }
+  for (const group of [...incomplete].sort()) {
+    const missing = states.filter((s) => s.asset.group === group && !s.valid).map((s) => s.asset.src);
+    issues.push({ kind: 'group', severity: 'info', message: `${group}: incomplete group; using 1x for every member (unavailable: ${missing.join(', ')})` });
+  }
+  const results = await Promise.all((await cssFiles(resolve(root, 'src/app'))).map(async (path) => {
     const original = await readFile(path, 'utf8');
     return { path: relative(root, path), original, ...transformCss(original, available) };
   }));
+  return [{ path: 'art/hires.lock.json', original: '', css: '', issues }, ...results];
 }
 
-export const diagnostics = (results) => results.flatMap(({ path, issues }) =>
-  issues.map(({ line, column, kind, message }) => `${path}:${line}:${column}: ${kind}: ${message}`));
+export const diagnostics = (results, includeInfo = false) => results.flatMap(({ path, issues }) =>
+  issues.filter((i) => includeInfo || i.severity !== 'info').map(({ line = 1, column = 1, kind, severity, message }) =>
+    `${path}:${line}:${column}: ${severity === 'info' ? 'info: ' : ''}${kind}: ${message}`));
 
 export async function main(args = process.argv.slice(2), { root = ROOT, log = console.log } = {}) {
   const { values } = parseArgs({ args, options: { check: { type: 'boolean' }, write: { type: 'boolean' } } });
   if (values.check && values.write) throw new Error('Choose either --check or --write');
   const results = await checkRepo(root);
   if (!values.write) {
-    const messages = diagnostics(results);
+    const messages = diagnostics(results, true);
     messages.forEach((message) => log(message));
     if (!messages.length) log('Hires CSS is up to date.');
-    return messages.length ? 1 : 0;
+    return diagnostics(results).length ? 1 : 0;
   }
   for (const { path, original, css } of results) {
     if (css === original) continue;
     await writeFile(resolve(root, path), css);
     log(`${path}: updated hires twins`);
   }
-  // Query URLs stay actionable even in write mode.
-  const unresolved = diagnostics(results.map((r) => ({ ...r, issues: r.issues.filter((i) => i.kind === 'query') })));
-  unresolved.forEach((message) => log(message));
-  return unresolved.length ? 1 : 0;
+  // Rewriting twins cannot repair query URLs or provenance; groups stay info.
+  const unresolved = results.map((r) => ({ ...r, issues: r.issues.filter((i) => ['query', 'provenance', 'group'].includes(i.kind)) }));
+  diagnostics(unresolved, true).forEach((message) => log(message));
+  return diagnostics(unresolved).length ? 1 : 0;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

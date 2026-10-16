@@ -27,12 +27,13 @@ export function validateManifest(value) {
   const seen = new Set();
   const assets = value.assets.map((entry, i) => {
     const where = `assets[${i}]${typeof entry?.src === 'string' ? ` (${entry.src})` : ''}`;
-    keys(entry, ['src', 'factor', 'quality', 'lossless', 'note'], where);
+    keys(entry, ['src', 'factor', 'quality', 'lossless', 'note', 'group'], where);
     if (typeof entry.src !== 'string' || !entry.src.startsWith('public/') || posix.normalize(entry.src) !== entry.src ||
         entry.src.includes('\\') || entry.src.includes('\0') || !/\.(webp|png|jpe?g|tiff?|avif|gif)$/i.test(entry.src)) fail(where, 'src must be a raster path inside public/');
     if (seen.has(entry.src)) fail(where, 'duplicate src');
     seen.add(entry.src);
     options(entry, where);
+    if ('group' in entry && (typeof entry.group !== 'string' || !/^[a-z0-9]+(?:[/-][a-z0-9]+)*$/.test(entry.group))) fail(where, 'invalid group');
     return { ...DEFAULTS, ...value.defaults, ...entry };
   });
   return { version: 1, defaults: { ...DEFAULTS, ...value.defaults }, assets };

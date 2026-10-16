@@ -804,14 +804,23 @@ selected shipped files with the OpenAI image edit API and conforms it to the
 - **Gates**: after alignment, the reliable blocks' residual must be at most
   0.6 source px (median) and 1.0 (p90), and the blurred MAE at most
   `--max-mae`; the maximum is reported, not gated (redrawn texture matches
-  poorly anywhere). A rejected file is not written; `stats.json` says why.
-  `--accept` overrides after review.
+  poorly anywhere). With at least 1% alpha-weighted visible area, fewer than
+  max(3, 20% of blocks containing visible paint) reliable blocks rejects as
+  "cannot establish alignment"; below 1% the gates are skipped. A rejected
+  file is not written; `stats.json` says why. `--accept` overrides after review.
 - **Cache**: requests, model tiles, stats and a lossless `master.png` live in
   `art/raw/hires/<path>/<key>/` (gitignored), keyed by the 1x file's bytes,
   factor, model and prompt. A cached tile is never requested again;
   `--remerge` re-runs conforming and encoding from the cache alone. A kit
   rebuild that changes a 1x file changes its key, so its @2x must be made
-  again (and `bun run hires` will request it).
+  again (and `bun run hires` will request it). `--remerge --verify` checks the
+  cached assets' gates and byte-compares existing outputs without publishing;
+  byte-identical outputs get lock entries too.
+- **Provenance**: committed `art/hires.lock.json` records each output's source
+  SHA-256, factor, model and full cache key. Every output write updates it.
+  CSS only considers a sibling available when its lock matches the current
+  1x bytes, factor and model; `--check` and the repo test name every stale or
+  unlocked sibling with the fix: `bun run hires --only <source>`.
 - **Serving**: each CSS declaration that names a 1x file with a @2x sibling is
   followed, in the same rule, by a one-line twin under
   `@media (min-resolution: 1.5dppx), (min-width: 2200px)` naming the @2x. A
@@ -821,7 +830,11 @@ selected shipped files with the OpenAI image edit API and conforms it to the
   A 1080p desktop at 100% keeps the 1x files.
 - **Diorama**: the 3D scene reads the same tokens, so it gets the @2x URL
   under the same media query; it decodes each layer at the drawing buffer's
-  width (1920 or 1280 at least, 3840 at most) and never past the file's own
-  width (`scene3d/layer-bitmap.ts`).
-- **A scene ships whole**: a multi-layer finish gets its @2x only when every
-  layer has one, so one painting is never half sharp.
+  width rounded up to 640px buckets (1920 or 1280 at least, 3840 at most),
+  never past the file's own width (`scene3d/layer-bitmap.ts`). Crossing a bucket
+  reloads the art; a pixel-ratio change refreshes the renderer and finish too.
+- **A scene ships whole**: manifest entries may share a `group` (Paper's
+  layers use `paper/<finish>`). CSS wires the group only when every member
+  has a lock-valid @2x; incomplete groups stay at 1x and `--check` reports
+  them as info. Manually held files are unnecessary; existing files in
+  `art/raw/hires/held/` can stay there.

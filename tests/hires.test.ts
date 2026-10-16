@@ -2,10 +2,12 @@ import { describe, expect, test } from "bun:test";
 import sharp from "sharp";
 import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { createHash } from "node:crypto";
 import { API_LIMITS, planTiles } from "../scripts/hires/tiles.mjs";
 import { blendTiles, composeFlow, conformanceStats, estimateFlow, gaussianBlur, padTransparent, toneMatch, warp } from "../scripts/hires/merge.mjs";
 import { cacheKey, validateManifest } from "../scripts/hires/manifest.mjs";
 import { acceptanceReasons, alignTile, cliOptions, main, mapJobs } from "../scripts/hires/upscale.mjs";
+import { outputPath } from "../scripts/hires/lock.mjs";
 
 const rgb = (width: number, height: number, pixel: (x: number, y: number, c: number) => number) => ({
   width, height, channels: 3,
@@ -230,6 +232,20 @@ describe("hires local flow alignment", () => {
     const p = (120 * output.width + 120) * 3;
     expect(Math.abs(corrected.data[p] - texture(59.75, 59.75, 0))).toBeLessThan(1);
   });
+  test("rejects opaque texture displaced beyond the alignment search (9 by 7 source px at 2x)", async () => {
+    const width = 400, height = 320;
+    const noise = (x: number, y: number, c: number) => {
+      const seed = Math.imul(Math.floor(x) + 1000, 73856093) ^ Math.imul(Math.floor(y) + 1000, 19349663) ^ Math.imul(c + 1, 83492791);
+      return (Math.imul(seed ^ (seed >>> 16), 2246822519) >>> 0) % 256;
+    };
+    const source = rgb(width, height, noise);
+    const output = rgb(width * 2, height * 2, (x, y, c) => noise((x + 0.5) / 2 - 0.5 - 9, (y + 0.5) / 2 - 0.5 - 7, c));
+    const { postWarp } = await alignTile(source, output, 2);
+    expect(postWarp.reliableBlocks).toBe(0);
+    // Tone matching can hide the colour error; missing geometry evidence must
+    // reject even when MAE and the fallback displacement statistics are zero.
+    expect(acceptanceReasons({ gateable: true, postWarp, blurredMae: 0 }, 'whole', 14).join()).toMatch(/cannot establish alignment/);
+  });
   test("identity gives a zero field and a pixel-exact warp, including edges", () => {
     const source = rgb(240, 240, texture), original = source.data.slice();
     const flow = estimateFlow(source, source);
@@ -363,16 +379,19 @@ describe("hires local flow alignment", () => {
 
 describe("hires manifest and cache contracts", () => {
   test("resolves defaults and per-asset overrides without mutation", () => {
-    const input = manifest([{ src: 'public/kit/a.webp', factor: 2.3, lossless: true }]);
+    const input = manifest([{ src: 'public/kit/a.webp', factor: 2.3, lossless: true, group: 'paper/phone-day' }]);
     const result = validateManifest(input);
     expect(result.assets[0]).toMatchObject({ factor: 2.3, quality: 82, lossless: true, model: 'gpt-image-2.5-sunburst' });
-    expect(input.assets[0]).toEqual({ src: 'public/kit/a.webp', factor: 2.3, lossless: true });
+    expect(result.assets[0].group).toBe('paper/phone-day');
+    expect(input.assets[0]).toEqual({ src: 'public/kit/a.webp', factor: 2.3, lossless: true, group: 'paper/phone-day' });
   });
   test("rejects malformed entries and names each entry", () => {
     for (const entry of [null, [], {}, { src: 1 }, { src: 'public/kit/a.svg' }, { src: '../public/a.webp' }, { src: 'public/../../a.png' }, { src: 'public/../secret.png' }, { src: 'public//a.png' }, { src: 'public/a.webp', surprise: true }, { src: 'public/a.webp', factor: 0 }, { src: 'public/a.webp', quality: 101 }, { src: 'public/a.webp', lossless: 1 }, { src: 'public/a.webp', note: {} }])
       expect(() => validateManifest(manifest([entry]))).toThrow(/assets\[0\]/);
     expect(() => validateManifest(manifest([{ src: 'public/a.webp' }, { src: 'public/a.webp' }]))).toThrow(/assets\[1\].*duplicate/);
     for (const value of [null, {}, { ...manifest([]), version: 2 }, { ...manifest([]), extra: 1 }, { ...manifest([]), defaults: { sigma: -1 } }]) expect(() => validateManifest(value)).toThrow();
+    for (const group of [null, 1, [], '', ' ', 'paper/../night', '/night', 'paper//night', 'paper\nnight'])
+      expect(() => validateManifest(manifest([{ src: 'public/a.webp', group }]))).toThrow(/invalid group/);
   });
   test("keys track source content, scale, model and complete prompt", () => {
     const key = cacheKey(new Uint8Array([1, 2]), 2, 'model', 'prompt');
@@ -382,9 +401,14 @@ describe("hires manifest and cache contracts", () => {
     expect(cacheKey(new Uint8Array([1, 2]), 2, 'other', 'prompt')).not.toBe(key);
     expect(cacheKey(new Uint8Array([1, 2]), 2, 'model', 'prompt\nnote')).not.toBe(key);
   });
+  test("output siblings preserve the source stem and resolved scale", () => {
+    expect(outputPath({ src: 'public/kit/a.paint.png', factor: 2 })).toBe('public/kit/a.paint@2x.webp');
+    expect(outputPath({ src: 'public/kit/a.jpeg', factor: 2.3 })).toBe('public/kit/a@2.3x.webp');
+  });
   test("rejects invalid CLI worker counts and acceptance thresholds", () => {
     for (const jobs of ['0', '-1', '1.5', 'NaN']) expect(() => cliOptions(['--jobs', jobs])).toThrow(/jobs/);
     for (const mae of ['-1', 'NaN', 'Infinity']) expect(() => cliOptions(['--max-mae', mae])).toThrow(/max-mae/);
+    expect(() => cliOptions(['--verify'])).toThrow(/requires --remerge/);
   });
   test("bounded workers finish outstanding work before reporting failures", async () => {
     const completed: number[] = [];
@@ -405,12 +429,39 @@ describe("hires manifest and cache contracts", () => {
 
 describe("hires offline shell", () => {
   test("gates on median, p90 and MAE with inclusive boundaries, ignoring max", () => {
-    const stats = { gateable: true, postWarp: { median: 0.6, p90: 1, max: 5 }, blurredMae: 14 };
+    const stats = { gateable: true, postWarp: { median: 0.6, p90: 1, max: 5, reliableBlocks: 4, visibleBlocks: 20 }, blurredMae: 14 };
     expect(acceptanceReasons(stats, 'whole', 14)).toEqual([]);
     expect(acceptanceReasons({ ...stats, postWarp: { ...stats.postWarp, median: 0.61 } }, 'whole', 14).join()).toMatch(/residual median/);
     expect(acceptanceReasons({ ...stats, postWarp: { ...stats.postWarp, p90: 1.01 } }, 'whole', 14).join()).toMatch(/residual p90/);
     expect(acceptanceReasons({ ...stats, blurredMae: 14.01 }, 'tile 0', 14).join()).toMatch(/tile 0: blurred MAE/);
     expect(acceptanceReasons({ ...stats, gateable: false, blurredMae: 100 }, 'whole', 0)).toEqual([]);
+  });
+  test("requires three reliable blocks and 20% of visible blocks, including fractional thresholds", () => {
+    const reasons = (reliableBlocks: number, visibleBlocks: number, gateable = true) => acceptanceReasons({ gateable, blurredMae: 0,
+      postWarp: { median: 0, p90: 0, reliableBlocks, visibleBlocks } }, 'tile 0', 14);
+    expect(reasons(2, 3).join()).toMatch(/cannot establish alignment.*need 3/);
+    expect(reasons(3, 15)).toEqual([]);
+    expect(reasons(3, 16).join()).toMatch(/cannot establish alignment.*need 4/);
+    expect(reasons(4, 20)).toEqual([]);
+    expect(reasons(0, 0, false)).toEqual([]);
+    const source = rgb(240, 240, (x, y, c) => 120 + 30 * Math.sin(x * 0.31 + y * 0.17 + c) + 25 * Math.cos(y * 0.41 - x * 0.13 + c));
+    const weights = Float32Array.from({ length: 240 * 240 }, (_, i) => i % 240 < 80 ? 1 : 0);
+    const flow = estimateFlow(source, source, { weights });
+    expect(flow.diagnostics.visibleBlocks).toBe(3);
+    expect(flow.diagnostics.totalBlocks).toBe(9);
+    expect(reasons(flow.diagnostics.reliableBlocks, flow.diagnostics.visibleBlocks)).toEqual([]);
+  });
+  test("skips below 1% weighted visibility but requires alignment evidence at exactly 1%", () => {
+    const source = rgb(100, 100, () => 100);
+    const weights = new Float32Array(10000);
+    weights.fill(1, 0, 99);
+    const gate = () => {
+      const postWarp = estimateFlow(source, source, { weights }).diagnostics;
+      return acceptanceReasons({ gateable: postWarp.gateable, postWarp, blurredMae: 0 }, 'whole', 14);
+    };
+    expect(gate()).toEqual([]);
+    weights[99] = 1;
+    expect(gate().join()).toMatch(/cannot establish alignment/);
   });
   test("remerge corrects cached global drift and accepts isolated redrawn texture", async () => {
     const root = await mkdtemp(join(process.cwd(), 'tests/.hires-'));
@@ -459,6 +510,23 @@ describe("hires offline shell", () => {
       expect(local.rejected).toBe(false);
       expect(local.reasons).toEqual([]);
       expect(await readdir(join(root, 'public'))).toContain('local@2x.webp');
+      const lockPath = join(root, 'art/hires.lock.json');
+      const lock = JSON.parse(await readFile(lockPath, 'utf8'));
+      for (const asset of validateManifest(input).assets) {
+        const source = await readFile(join(root, asset.src));
+        expect(lock.assets[outputPath(asset)]).toEqual({
+          sourceSha256: createHash('sha256').update(source).digest('hex'), factor: 2, model: 'gpt-image-2.5-sunburst',
+          cacheKey: cacheKey(source, asset.factor, asset.model, 'Faithful upscale.\n'),
+        });
+      }
+      const originalOutput = await readFile(join(root, 'public/global@2x.webp'));
+      expect(await main(['--remerge', '--verify', '--only', 'global'], { root, invoke })).toBe(0);
+      expect(await readFile(join(root, 'public/global@2x.webp'))).toEqual(originalOutput);
+      expect(JSON.parse(await readFile(lockPath, 'utf8'))).toEqual(lock);
+      await writeFile(join(root, 'public/global@2x.webp'), 'different shipped bytes');
+      expect(await main(['--remerge', '--verify', '--only', 'global'], { root, invoke })).toBe(1);
+      expect(await readFile(join(root, 'public/global@2x.webp'), 'utf8')).toBe('different shipped bytes');
+      expect(JSON.parse(await readFile(lockPath, 'utf8'))).toEqual(lock);
     } finally { await rm(root, { recursive: true, force: true }); }
   });
   test("remerge encodes an almost transparent tile and explains why its gates were skipped", async () => {
@@ -505,7 +573,7 @@ describe("hires offline shell", () => {
       const bad = rgb(width, height, painting);
       await sharp(Buffer.from(Uint8Array.from(bad.data, Math.round)), { raw: { width, height, channels: 3 } }).png().toFile(join(root, 'public/bad.png'));
       const rgba = new Uint8Array(width * height * 4);
-      for (let i = 0; i < width * height; i++) rgba.set([80, 120, 160, i % width < 20 ? 0 : i % width < 40 ? 128 : 255], i * 4);
+      for (let i = 0; i < width * height; i++) rgba.set([0, 1, 2].map((c) => Math.round(painting(i % width, Math.floor(i / width), c))).concat(i % width < 20 ? 0 : i % width < 40 ? 128 : 255), i * 4);
       await sharp(rgba, { raw: { width, height, channels: 4 } }).png().toFile(join(root, 'public/good.png'));
       await writeFile(join(root, 'art/hires.json'), JSON.stringify(manifest([
         { src: 'public/bad.png', lossless: true }, { src: 'public/good.png', lossless: true },

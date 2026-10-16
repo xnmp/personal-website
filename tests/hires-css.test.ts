@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { checkRepo, diagnostics, HIRES_MEDIA, main, transformCss } from "../scripts/hires/css.mjs";
 import { layerBitmap, layerTextureWidth } from "../src/components/rack/scene3d/layer-bitmap";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { lockEntry, outputPath, writeLockEntry } from "../scripts/hires/lock.mjs";
+import { validateManifest } from "../scripts/hires/manifest.mjs";
 
 const available = new Set(["/kit/a@2x.webp", "/kit/b@2x.webp"]);
 const media = "(min-resolution: 1.5dppx), (min-width: 2200px)";
@@ -128,10 +132,77 @@ describe("hires CSS reconciliation", () => {
   });
 });
 
+describe("hires provenance and whole groups", () => {
+  test("withholds partial groups, ships complete groups, and rejects every stale or unlocked sibling", async () => {
+    const root = await mkdtemp(join(process.cwd(), 'tests/.hires-css-'));
+    try {
+      await Promise.all(['art', 'src/app', 'public/kit'].map((dir) => mkdir(join(root, dir), { recursive: true })));
+      const manifest = { version: 1, defaults: {}, assets: [
+        { src: 'public/kit/a.webp', group: 'paper/day' },
+        { src: 'public/kit/b.webp', group: 'paper/day' },
+        { src: 'public/kit/c.webp' },
+      ] };
+      const { assets } = validateManifest(manifest);
+      await writeFile(join(root, 'art/hires.json'), JSON.stringify(manifest));
+      const cssPath = join(root, 'src/app/kit.css');
+      const original = `.a {\n  --a: url(/kit/a.webp);\n  --b: url(/kit/b.webp);\n  --c: url(/kit/c.webp);\n}\n`;
+      await writeFile(cssPath, original);
+      const source = Buffer.from('source image bytes');
+      const key = 'a'.repeat(64);
+      for (const asset of assets) await writeFile(join(root, asset.src), source);
+      const publish = async (asset: typeof assets[number]) => {
+        await writeFile(join(root, outputPath(asset)), 'shipped image bytes');
+        await writeLockEntry(root, asset, lockEntry(source, asset, key));
+      };
+      // c is independent of the paper finish, and a alone must stay at 1x.
+      await publish(assets[0]);
+      await publish(assets[2]);
+      const messages: string[] = [];
+      expect(await main(['--write'], { root, log: (s: string) => messages.push(s) })).toBe(0);
+      expect(await readFile(cssPath, 'utf8')).toBe(transformCss(original, new Set(['/kit/c@2x.webp'])).css);
+      expect(await main(['--check'], { root, log: (s: string) => messages.push(s) })).toBe(0);
+      expect(messages.join('\n')).toMatch(/info: group: paper\/day: incomplete group/);
+      expect(diagnostics(await checkRepo(root))).toEqual([]);
+
+      await publish(assets[1]);
+      expect(await main(['--write'], { root, log: () => {} })).toBe(0);
+      expect(await readFile(cssPath, 'utf8')).toBe(transformCss(original, new Set(['/kit/a@2x.webp', '/kit/b@2x.webp', '/kit/c@2x.webp'])).css);
+      expect(await main(['--check'], { root, log: () => {} })).toBe(0);
+
+      // Rebuilding a's 1x invalidates it. b's missing lock must also be named,
+      // even after the twins are removed and the group falls back to 1x.
+      await writeFile(join(root, assets[0].src), 'rebuilt source image bytes');
+      const lockPath = join(root, 'art/hires.lock.json');
+      const lock = JSON.parse(await readFile(lockPath, 'utf8'));
+      delete lock.assets[outputPath(assets[1])];
+      await writeFile(lockPath, JSON.stringify(lock));
+      expect(await main(['--write'], { root, log: () => {} })).toBe(1);
+      expect(await readFile(cssPath, 'utf8')).toBe(transformCss(original, new Set(['/kit/c@2x.webp'])).css);
+      const errors = diagnostics(await checkRepo(root));
+      expect(errors).toHaveLength(2);
+      for (const name of ['a', 'b']) expect(errors.join('\n')).toContain(`public/kit/${name}@2x.webp: stale or unlocked @2x; run bun run hires --only public/kit/${name}.webp`);
+      expect(await main(['--check'], { root, log: () => {} })).toBe(1);
+
+      // A changed factor/model or malformed key cannot bless old art either.
+      for (const change of [{ factor: 3 }, { model: 'other-model' }, { cacheKey: 'bad-key' }]) {
+        await writeLockEntry(root, assets[2], { ...lockEntry(source, assets[2], key), ...change });
+        expect(diagnostics(await checkRepo(root)).join('\n')).toContain('public/kit/c@2x.webp: stale or unlocked');
+      }
+      await writeLockEntry(root, assets[2], lockEntry(source, assets[2], key));
+      await writeFile(join(root, 'art/hires.json'), JSON.stringify({ ...manifest, assets: [...manifest.assets.slice(0, 2), { ...manifest.assets[2], factor: 3 }] }));
+      expect(diagnostics(await checkRepo(root)).join('\n')).toContain('public/kit/c@2x.webp: stale or unlocked');
+      await writeFile(join(root, 'art/hires.json'), JSON.stringify(manifest));
+      await rm(lockPath);
+      expect(diagnostics(await checkRepo(root)).filter((s: string) => s.includes('stale or unlocked'))).toHaveLength(3);
+    } finally { await rm(root, { recursive: true, force: true }); }
+  });
+});
+
 describe("diorama layer bitmap sizes", () => {
   test("sizes to the drawing buffer between the phone/desktop floor and the 2x ceiling", () => {
-    expect([0, 900, 1500, 2600, 3840, 8000].map((width) => layerTextureWidth(width, true))).toEqual([1280, 1280, 1500, 2600, 3840, 3840]);
-    expect([0, 900, 1500, 2600, 3840, 8000].map((width) => layerTextureWidth(width, false))).toEqual([1920, 1920, 1920, 2600, 3840, 3840]);
+    expect([0, 900, 1500, 2600, 3840, 8000].map((width) => layerTextureWidth(width, true))).toEqual([1280, 1280, 1920, 3200, 3840, 3840]);
+    expect([0, 900, 1500, 2600, 3840, 8000].map((width) => layerTextureWidth(width, false))).toEqual([1920, 1920, 1920, 3200, 3840, 3840]);
+    expect([1919, 1920, 1921, 2559, 2560, 2561].map((width) => layerTextureWidth(width, false))).toEqual([1920, 1920, 2560, 2560, 2560, 3200]);
   });
 
   const image = (width: number, height: number, close: () => void) => ({ width, height, close }) as ImageBitmap;

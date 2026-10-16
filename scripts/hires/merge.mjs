@@ -235,7 +235,7 @@ export function estimateFlow(src, up, { weights, blocks, search = 4, step = 0.25
   for (let by = 0; by < rows; by++) for (let bx = 0; bx < cols; bx++) {
     const left = Math.floor(bx * width / cols), right = Math.floor((bx + 1) * width / cols);
     const top = Math.floor(by * height / rows), bottom = Math.floor((by + 1) * height / rows);
-    const block = { dx: 0, dy: 0, score: 0, reliable: false, reason: 'visible-area' };
+    const block = { dx: 0, dy: 0, score: 0, reliable: false, visible: false, reason: 'visible-area' };
     measured.push(block);
     if (!visible.gateable) continue;
     // Alpha-stratified sampling preserves narrow cut-outs. At most ~384
@@ -255,6 +255,7 @@ export function estimateFlow(src, up, { weights, blocks, search = 4, step = 0.25
       area += mass;
       if (mass) { xs.push(px); ys.push(py); ws.push(mass); values.push(a.data[py * width + px]); }
     }
+    block.visible = area > 0;
     if (area < Math.max(16, (right - left) * (bottom - top) * 0.01) || xs.length < 12) continue;
     const score = (dx, dy) => {
       let total = 0, sa = 0, sb = 0, aa = 0, bb = 0, ab = 0;
@@ -362,6 +363,7 @@ export function estimateFlow(src, up, { weights, blocks, search = 4, step = 0.25
   });
   return { width, height, cols, rows, vectors, blocks: measured,
     diagnostics: { ...visible, reliableShare: reliable.length / measured.length, reliableBlocks: reliable.length, totalBlocks: measured.length,
+      visibleBlocks: measured.filter((p) => p.visible).length,
       measuredReliableBlocks: measurements.length, outlierBlocks: measurements.length - reliable.length,
       ...magnitudeStats(measured.filter((p) => p.reliable)), registrationMetric: 'block-luminance-dog-zncc', registrationSigmas: [1, 4], registrationStep: step } };
 }

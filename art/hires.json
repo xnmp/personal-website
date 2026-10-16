@@ -75,124 +75,164 @@
       "src": "public/kit/atlas/sky-quiet-night.webp"
     },
     {
-      "src": "public/kit/paper/scene/alpenglow/hills-far.webp"
+      "src": "public/kit/paper/scene/alpenglow/hills-far.webp",
+      "group": "paper/alpenglow"
     },
     {
-      "src": "public/kit/paper/scene/alpenglow/hills-near.webp"
+      "src": "public/kit/paper/scene/alpenglow/hills-near.webp",
+      "group": "paper/alpenglow"
     },
     {
-      "src": "public/kit/paper/scene/alpenglow/mountains.webp"
+      "src": "public/kit/paper/scene/alpenglow/mountains.webp",
+      "group": "paper/alpenglow"
     },
     {
-      "src": "public/kit/paper/scene/alpenglow/pines-left-back.webp"
+      "src": "public/kit/paper/scene/alpenglow/pines-left-back.webp",
+      "group": "paper/alpenglow"
     },
     {
-      "src": "public/kit/paper/scene/alpenglow/pines-left.webp"
+      "src": "public/kit/paper/scene/alpenglow/pines-left.webp",
+      "group": "paper/alpenglow"
     },
     {
-      "src": "public/kit/paper/scene/alpenglow/pines-right-back.webp"
+      "src": "public/kit/paper/scene/alpenglow/pines-right-back.webp",
+      "group": "paper/alpenglow"
     },
     {
-      "src": "public/kit/paper/scene/alpenglow/pines-right.webp"
+      "src": "public/kit/paper/scene/alpenglow/pines-right.webp",
+      "group": "paper/alpenglow"
     },
     {
-      "src": "public/kit/paper/scene/alpenglow/sky.webp"
+      "src": "public/kit/paper/scene/alpenglow/sky.webp",
+      "group": "paper/alpenglow"
     },
     {
-      "src": "public/kit/paper/scene/night/hills-far.webp"
+      "src": "public/kit/paper/scene/night/hills-far.webp",
+      "group": "paper/night"
     },
     {
-      "src": "public/kit/paper/scene/night/hills-near.webp"
+      "src": "public/kit/paper/scene/night/hills-near.webp",
+      "group": "paper/night"
     },
     {
-      "src": "public/kit/paper/scene/night/mountains.webp"
+      "src": "public/kit/paper/scene/night/mountains.webp",
+      "group": "paper/night"
     },
     {
-      "src": "public/kit/paper/scene/night/pines-left-back.webp"
+      "src": "public/kit/paper/scene/night/pines-left-back.webp",
+      "group": "paper/night"
     },
     {
-      "src": "public/kit/paper/scene/night/pines-left.webp"
+      "src": "public/kit/paper/scene/night/pines-left.webp",
+      "group": "paper/night"
     },
     {
-      "src": "public/kit/paper/scene/night/pines-right-back.webp"
+      "src": "public/kit/paper/scene/night/pines-right-back.webp",
+      "group": "paper/night"
     },
     {
-      "src": "public/kit/paper/scene/night/pines-right.webp"
+      "src": "public/kit/paper/scene/night/pines-right.webp",
+      "group": "paper/night"
     },
     {
-      "src": "public/kit/paper/scene/night/sky.webp"
+      "src": "public/kit/paper/scene/night/sky.webp",
+      "group": "paper/night"
     },
     {
-      "src": "public/kit/paper/scene/project-day/hills-far.webp"
+      "src": "public/kit/paper/scene/project-day/hills-far.webp",
+      "group": "paper/project-day"
     },
     {
-      "src": "public/kit/paper/scene/project-day/pines-left.webp"
+      "src": "public/kit/paper/scene/project-day/pines-left.webp",
+      "group": "paper/project-day"
     },
     {
-      "src": "public/kit/paper/scene/project-day/pines-right.webp"
+      "src": "public/kit/paper/scene/project-day/pines-right.webp",
+      "group": "paper/project-day"
     },
     {
-      "src": "public/kit/paper/scene/project-day/sky.webp"
+      "src": "public/kit/paper/scene/project-day/sky.webp",
+      "group": "paper/project-day"
     },
     {
-      "src": "public/kit/paper/scene/project-night/hills-far.webp"
+      "src": "public/kit/paper/scene/project-night/hills-far.webp",
+      "group": "paper/project-night"
     },
     {
-      "src": "public/kit/paper/scene/project-night/pines-left.webp"
+      "src": "public/kit/paper/scene/project-night/pines-left.webp",
+      "group": "paper/project-night"
     },
     {
-      "src": "public/kit/paper/scene/project-night/pines-right.webp"
+      "src": "public/kit/paper/scene/project-night/pines-right.webp",
+      "group": "paper/project-night"
     },
     {
-      "src": "public/kit/paper/scene/project-night/sky.webp"
+      "src": "public/kit/paper/scene/project-night/sky.webp",
+      "group": "paper/project-night"
     },
     {
-      "src": "public/kit/paper/scene/launch-day/hills-far.webp"
+      "src": "public/kit/paper/scene/launch-day/hills-far.webp",
+      "group": "paper/launch-day"
     },
     {
-      "src": "public/kit/paper/scene/launch-day/pines-left.webp"
+      "src": "public/kit/paper/scene/launch-day/pines-left.webp",
+      "group": "paper/launch-day"
     },
     {
-      "src": "public/kit/paper/scene/launch-day/pines-right.webp"
+      "src": "public/kit/paper/scene/launch-day/pines-right.webp",
+      "group": "paper/launch-day"
     },
     {
-      "src": "public/kit/paper/scene/launch-day/sky.webp"
+      "src": "public/kit/paper/scene/launch-day/sky.webp",
+      "group": "paper/launch-day"
     },
     {
-      "src": "public/kit/paper/scene/launch-night/hills-far.webp"
+      "src": "public/kit/paper/scene/launch-night/hills-far.webp",
+      "group": "paper/launch-night"
     },
     {
-      "src": "public/kit/paper/scene/launch-night/pines-left.webp"
+      "src": "public/kit/paper/scene/launch-night/pines-left.webp",
+      "group": "paper/launch-night"
     },
     {
-      "src": "public/kit/paper/scene/launch-night/pines-right.webp"
+      "src": "public/kit/paper/scene/launch-night/pines-right.webp",
+      "group": "paper/launch-night"
     },
     {
-      "src": "public/kit/paper/scene/launch-night/sky.webp"
+      "src": "public/kit/paper/scene/launch-night/sky.webp",
+      "group": "paper/launch-night"
     },
     {
-      "src": "public/kit/paper/scene/phone-day/hills-far.webp"
+      "src": "public/kit/paper/scene/phone-day/hills-far.webp",
+      "group": "paper/phone-day"
     },
     {
-      "src": "public/kit/paper/scene/phone-day/pines-left.webp"
+      "src": "public/kit/paper/scene/phone-day/pines-left.webp",
+      "group": "paper/phone-day"
     },
     {
-      "src": "public/kit/paper/scene/phone-day/pines-right.webp"
+      "src": "public/kit/paper/scene/phone-day/pines-right.webp",
+      "group": "paper/phone-day"
     },
     {
-      "src": "public/kit/paper/scene/phone-day/sky.webp"
+      "src": "public/kit/paper/scene/phone-day/sky.webp",
+      "group": "paper/phone-day"
     },
     {
-      "src": "public/kit/paper/scene/phone-night/hills-far.webp"
+      "src": "public/kit/paper/scene/phone-night/hills-far.webp",
+      "group": "paper/phone-night"
     },
     {
-      "src": "public/kit/paper/scene/phone-night/pines-left.webp"
+      "src": "public/kit/paper/scene/phone-night/pines-left.webp",
+      "group": "paper/phone-night"
     },
     {
-      "src": "public/kit/paper/scene/phone-night/pines-right.webp"
+      "src": "public/kit/paper/scene/phone-night/pines-right.webp",
+      "group": "paper/phone-night"
     },
     {
-      "src": "public/kit/paper/scene/phone-night/sky.webp"
+      "src": "public/kit/paper/scene/phone-night/sky.webp",
+      "group": "paper/phone-night"
     }
   ]
 }

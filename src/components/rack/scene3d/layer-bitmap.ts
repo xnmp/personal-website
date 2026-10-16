@@ -1,6 +1,6 @@
 /** The layers keep enough pixels for the canvas, up to the 2x art's width. */
 export const layerTextureWidth = (bufferWidth: number, small: boolean) =>
-  Math.min(3840, Math.max(small ? 1280 : 1920, bufferWidth));
+  Math.min(3840, Math.max(small ? 1280 : 1920, Math.ceil(bufferWidth / 640) * 640));
 
 /** Decode once at the art's own size; a smaller source never gets stretched. */
 export async function layerBitmap(blob: Blob, width: number, decode = createImageBitmap) {

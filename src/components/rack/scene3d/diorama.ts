@@ -364,7 +364,6 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
     throw new Error("software GL");
   }
   const small = () => Math.min(window.innerWidth, window.innerHeight) < 720;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small() ? 1.5 : 1.75));
   // the art's sRGB numbers go out as they are (see paperTexture)
   renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
   renderer.toneMapping = THREE.NoToneMapping;
@@ -447,6 +446,8 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
     const h = canvas.clientHeight;
     if (!w || !h) return;
     view = { w, h };
+    const pixelRatio = Math.min(window.devicePixelRatio, small() ? 1.5 : 1.75);
+    if (renderer.getPixelRatio() !== pixelRatio) renderer.setPixelRatio(pixelRatio);
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -483,11 +484,11 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
   let loadToken = 0;
   const applyFinish = async () => {
     const f = readFinish();
-    const keyNow = JSON.stringify([f.layers, f.cloud, f.sun, f.motes.getHexString(), f.fireflies]);
+    const texW = layerTextureWidth(renderer.getDrawingBufferSize(new THREE.Vector2()).x, small());
+    const keyNow = JSON.stringify([f.layers, f.cloud, f.sun, f.motes.getHexString(), f.fireflies, texW]);
     if (keyNow === finishKey) return;
     finishKey = keyNow;
     const token = ++loadToken;
-    const texW = layerTextureWidth(renderer.getDrawingBufferSize(new THREE.Vector2()).x, small());
     const [imgs, cloudImg, sunImg] = await Promise.all([
       Promise.all(LAYERS.map((l) => (f.layers[l] ? bitmap(f.layers[l], texW, true) : Promise.resolve(null)))),
       f.cloud ? bitmap(f.cloud, 512) : Promise.resolve(null),
@@ -552,12 +553,26 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
   // ---- the loop ----
   // a style may dress the scene for a narrow screen its own way (kit tokens
   // under a media query), so a resize re-reads the finish too (keyed: the
-  // same art is not reloaded)
-  const ro = new ResizeObserver(() => {
+  // same art at the same texture width is not reloaded)
+  const refresh = () => {
     resize();
     applyFinish().catch(opts.onFail);
-  });
+  };
+  const ro = new ResizeObserver(refresh);
   ro.observe(canvas);
+  // moving between screens or changing zoom can change the pixel ratio
+  // without resizing the canvas; watch the new ratio after each change
+  let resolution: MediaQueryList;
+  const onResolution = () => {
+    resolution.removeEventListener("change", onResolution);
+    watchResolution();
+    refresh();
+  };
+  const watchResolution = () => {
+    resolution = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+    resolution.addEventListener("change", onResolution);
+  };
+  watchResolution();
   let start = -1;
   let settled = false;
   let raf = 0;
@@ -679,6 +694,7 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
     page.disconnect();
     canvas.removeEventListener("webglcontextlost", onLost);
     ro.disconnect();
+    resolution.removeEventListener("change", onResolution);
     window.removeEventListener("pointermove", onPointer);
     for (const p of planes.values()) p.tex?.dispose();
     cloudTex?.dispose();
