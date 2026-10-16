@@ -53,6 +53,89 @@
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "d3c53184f2849bade6053263d3e79c90d5331539b9e1353fadb178cfe7787364"
     },
+    "public/kit/atlas/tile-day-focus@2x.webp": {
+      "provider": "external",
+      "sourceSha256": "37cfa7991f58f8a94b433d17d0b17fedcb6eed872f4b5ec9f1cb0d0749ae0add",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "769d7806238e1e6de59f6a75d6e74bf872094e1354b5882b60b4fc3d813f65f9",
+      "familyMembership": {
+        "reference": "public/kit/atlas/tile-day-normal.webp",
+        "members": [
+          "public/kit/atlas/tile-day-focus.webp",
+          "public/kit/atlas/tile-day-hover.webp",
+          "public/kit/atlas/tile-day-normal.webp",
+          "public/kit/atlas/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "d27a704dd20983a51922eb90d5087bad7e564eaf60ced57bc0dee6db99d6d9f6",
+      "outputSha256": "40f757c51459389fdc7727fa145e40e95f68bc91ccad0459e3553e6dd804b49f",
+      "width": 680,
+      "height": 320,
+      "derivationDigest": "1f0305c071548ec43f7db7b9e065024df40a715f678d8a037aad4b877a490edf"
+    },
+    "public/kit/atlas/tile-day-hover@2x.webp": {
+      "provider": "external",
+      "sourceSha256": "2bf83037f92dd6b8ab663795a7397642153a26fb0e1e33f87b6da1b277da01bd",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "ffed0ea5054b6e1b1a0c4a2cb2b204b0b47d18f816c53eb496d319603ba0cd9f",
+      "familyMembership": {
+        "reference": "public/kit/atlas/tile-day-normal.webp",
+        "members": [
+          "public/kit/atlas/tile-day-focus.webp",
+          "public/kit/atlas/tile-day-hover.webp",
+          "public/kit/atlas/tile-day-normal.webp",
+          "public/kit/atlas/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "d27a704dd20983a51922eb90d5087bad7e564eaf60ced57bc0dee6db99d6d9f6",
+      "outputSha256": "769d713ad9993a9363b049af7d0cfbb336f3f57ea1a2fd37020ce23b8349bfff",
+      "width": 680,
+      "height": 320,
+      "derivationDigest": "293bd9508fcacace669b7c3f692368c7bf206fa8b24bfbb52ba6f05ef5a255ec"
+    },
+    "public/kit/atlas/tile-day-normal@2x.webp": {
+      "provider": "external",
+      "sourceSha256": "69a2615e496ff7b80b6079a6a9861aefac8724def960a7061258971ac4b0ebe0",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "ba1c3dc7ad5579aee9425781f331157d157ceba5d93e1e9c73c9d98256c44dd1",
+      "familyMembership": {
+        "reference": "public/kit/atlas/tile-day-normal.webp",
+        "members": [
+          "public/kit/atlas/tile-day-focus.webp",
+          "public/kit/atlas/tile-day-hover.webp",
+          "public/kit/atlas/tile-day-normal.webp",
+          "public/kit/atlas/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "b85295363a128f554c23d0bec548f2e947357dbd5d83dcd6018268eefe6572ca",
+      "outputSha256": "acd127e2e5a5e42bee2df69c7e245ac6ef631e604ff449b47aad3e2499a13f14",
+      "width": 680,
+      "height": 320
+    },
+    "public/kit/atlas/tile-day-pressed@2x.webp": {
+      "provider": "external",
+      "sourceSha256": "8df4c7cc6cd0c216566f3b81f858a9c22ff15b2337238d15af94e975d4cdac4a",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "6cc9f6d92c2fb6024a1dabd524b0812e9e1446d9d4a855620603beaf96d61438",
+      "familyMembership": {
+        "reference": "public/kit/atlas/tile-day-normal.webp",
+        "members": [
+          "public/kit/atlas/tile-day-focus.webp",
+          "public/kit/atlas/tile-day-hover.webp",
+          "public/kit/atlas/tile-day-normal.webp",
+          "public/kit/atlas/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "d27a704dd20983a51922eb90d5087bad7e564eaf60ced57bc0dee6db99d6d9f6",
+      "outputSha256": "845fe9e72e17215822a37570f56466103892204f2797fc05033666ea546989c4",
+      "width": 680,
+      "height": 320,
+      "derivationDigest": "364b04cd52e4f02992fa781ff2e9137a4a65ff397d7446cfd216b7139d5efc98"
+    },
     "public/kit/cyanotype/scene/day/sky@2x.webp": {
       "sourceSha256": "9017f63eb89b416a2f5a4998c8abb47a9c7a4973e9b56a72a98771a06054d26d",
       "factor": 2,
@@ -114,6 +197,110 @@
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "96c40148bcbb2f5aa069ec01180af4394455e64df35cc1f61b1076901eb2a0a7"
     },
+    "public/kit/garden/sheet-day-flat@2x.webp": {
+      "sourceSha256": "1eaf0b3ae95e7aeae901a33b7dac0bb85d22d1d504b75519698b7c33edeb9df6",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "283795adf6de90b561d7f9d3cba66926ec49a25ab57e924e91f26fcec5c4bbbe",
+      "familyMembership": {
+        "reference": "public/kit/garden/sheet-day-normal.webp",
+        "members": [
+          "public/kit/garden/sheet-day-flat.webp",
+          "public/kit/garden/sheet-day-focus.webp",
+          "public/kit/garden/sheet-day-hover.webp",
+          "public/kit/garden/sheet-day-normal.webp",
+          "public/kit/garden/sheet-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "34a08e40de3cee7a29ad836deeef0e837660af7d88462c7d861f4293828de9da",
+      "outputSha256": "14a9157e80b918d18af6899696f40532fe9b692b989db778760fc2b7ca604e06",
+      "width": 2384,
+      "height": 1714,
+      "derivationDigest": "6746dd7029daf59ae1d87b84be24456e5e26dcede3e467a8a268de2a3fb2bd75"
+    },
+    "public/kit/garden/sheet-day-focus@2x.webp": {
+      "sourceSha256": "c4a8e59c2f58bec3f7f5443e2ba4f67374af846ac8be680bde05ec5c5ce49f6a",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "eef3280c2778833b8b248f100f36954a1f370c316dd4f76193bfaa5bad65150b",
+      "familyMembership": {
+        "reference": "public/kit/garden/sheet-day-normal.webp",
+        "members": [
+          "public/kit/garden/sheet-day-flat.webp",
+          "public/kit/garden/sheet-day-focus.webp",
+          "public/kit/garden/sheet-day-hover.webp",
+          "public/kit/garden/sheet-day-normal.webp",
+          "public/kit/garden/sheet-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "34a08e40de3cee7a29ad836deeef0e837660af7d88462c7d861f4293828de9da",
+      "outputSha256": "27ebc1fc4a984c4825a37ad50b0104951878e40e4dce669e208cae5801354160",
+      "width": 2384,
+      "height": 1714,
+      "derivationDigest": "5bb5e06b7c150994b79b35c43858159f16670191d5aa0ac776e45854295385a8"
+    },
+    "public/kit/garden/sheet-day-hover@2x.webp": {
+      "sourceSha256": "0bf6194c53acb35bbab426629625d017b3e1bcedefa191684a88caeb0c14ffea",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "68db860dbe81858a18825e3c89422279908ba64f00df3d5fa03776188ecbb349",
+      "familyMembership": {
+        "reference": "public/kit/garden/sheet-day-normal.webp",
+        "members": [
+          "public/kit/garden/sheet-day-flat.webp",
+          "public/kit/garden/sheet-day-focus.webp",
+          "public/kit/garden/sheet-day-hover.webp",
+          "public/kit/garden/sheet-day-normal.webp",
+          "public/kit/garden/sheet-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "34a08e40de3cee7a29ad836deeef0e837660af7d88462c7d861f4293828de9da",
+      "outputSha256": "1819a1d0f9dd8d80c6e9b8eaf4797b4b0309e912e28c65276421c0ffaef87633",
+      "width": 2384,
+      "height": 1714,
+      "derivationDigest": "f36dc803b5baa6a111702953ba61faa4d95b1a9755366fe0b6b1e172a6f49c0c"
+    },
+    "public/kit/garden/sheet-day-normal@2x.webp": {
+      "sourceSha256": "aeebf42bdbb8bd01ae975e93c54b0adb663d7c5d5550f0b157cb779bcdd3ca66",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "56e0f01a72d97f918a21d1bcf333625c980282c4610f67a5673eab8fa9f94905",
+      "familyMembership": {
+        "reference": "public/kit/garden/sheet-day-normal.webp",
+        "members": [
+          "public/kit/garden/sheet-day-flat.webp",
+          "public/kit/garden/sheet-day-focus.webp",
+          "public/kit/garden/sheet-day-hover.webp",
+          "public/kit/garden/sheet-day-normal.webp",
+          "public/kit/garden/sheet-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "e99200eab11e4ef084aa42e1fedbefcdb9fee35dc540c1512017b12f6cde1ac2",
+      "outputSha256": "b10cd3c804dc3accf1a77c3f90581537f881056ea8d1dc04b5bf1328ccb6dbca",
+      "width": 2384,
+      "height": 1714
+    },
+    "public/kit/garden/sheet-day-pressed@2x.webp": {
+      "sourceSha256": "37e5710024d60312fbd38112b50d6ea6db865b642df75c90196455453dec5d62",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "16270134c3411c3fd93c5289f3e01ce118c06e567ffbd7af29dfa8817b498e18",
+      "familyMembership": {
+        "reference": "public/kit/garden/sheet-day-normal.webp",
+        "members": [
+          "public/kit/garden/sheet-day-flat.webp",
+          "public/kit/garden/sheet-day-focus.webp",
+          "public/kit/garden/sheet-day-hover.webp",
+          "public/kit/garden/sheet-day-normal.webp",
+          "public/kit/garden/sheet-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "34a08e40de3cee7a29ad836deeef0e837660af7d88462c7d861f4293828de9da",
+      "outputSha256": "bf32ee626d2ae88ee89cbfe68b969c444eb49d324b3bdcf69c57aca372f5967e",
+      "width": 2384,
+      "height": 1714,
+      "derivationDigest": "081fbd13241d87e57e55d8d5d4c688388b8d88c7144c9ee10d12bbeb3c1b9be9"
+    },
     "public/kit/garden/wall-day@2x.webp": {
       "provider": "external",
       "sourceSha256": "e905e25adb7f1d6f10e03b886030721250c5bbd6df2d82a2e4913d539e06e40f",
@@ -154,6 +341,13 @@
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "9819fa07c3b67c4af2cd0766a354267404bae2588cfb4c59a2bd6a50671a5db5"
     },
+    "public/kit/ligne/tape-day@2x.webp": {
+      "provider": "external",
+      "sourceSha256": "a1e41c790d6ac6b729364ea879d34abfec391c7b8aa7f3df1b47b69faa65cf58",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "ac4d0d5b993228d42ea5013ceb4bd2ab9933568d9b2d48fca515966e2f0dbc44"
+    },
     "public/kit/paper/foreground-day@2x.webp": {
       "provider": "external",
       "sourceSha256": "070b1755151267ea5de8124639f5514fd3fd72455bd04e1d98df1a35d3c80d27",
@@ -167,6 +361,20 @@
       "factor": 2,
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "2f565d9772f6e003a83a0b00040847bc45209ec653ade4d0f5417031ae2d6a9f"
+    },
+    "public/kit/paper/label-day@2x.webp": {
+      "provider": "external",
+      "sourceSha256": "09a6b6738129124739247df12f4e403a23ea501caab127b5729c2c76475f5577",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "9941af051716964354bf4860b071eb47507c347d700797ab58764f2080ede80b"
+    },
+    "public/kit/paper/label-night@2x.webp": {
+      "provider": "external",
+      "sourceSha256": "be7c27ec9a0abbb6debc631a9b67d4297ac7f83a4676431dbdea49745ef7fcac",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "3d3634614a88c511290017cefb2ff67330a807c974ebb2676f0a27026401caf8"
     },
     "public/kit/paper/launch-stage-hiker-day@2x.webp": {
       "provider": "external",
@@ -546,6 +754,17 @@
       "factor": 2,
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "1af6bb9e171fa69ca09c0e59a4be391027aa992279346c9787803fb777f395f2"
+    },
+    "public/kit/solarpunk/sheet-day-light@2x.webp": {
+      "provider": "resample",
+      "sourceSha256": "2924fd83492f9651890170ac2f4f998f67837d1beb08c7847862b2a8ac83d35c",
+      "factor": 2,
+      "model": "framed-pane/sheen-v1",
+      "cacheKey": "0dc2b0f080681634504bb86bb43caeaecfb73f5b05195093b1e3c3e06a6871a7",
+      "recipeDigest": "5450e36447f3976e303bfdaa48f9d4e3b318e1c39b00232bfb1f36d59c480629",
+      "outputSha256": "3a7f03400fa62e32e1b40642aad42cd63922b30dc5e9f3ac8de4569d082f5f59",
+      "width": 512,
+      "height": 512
     },
     "public/kit/sumi/scene/day/sky@2x.webp": {
       "sourceSha256": "0997c0bd35269dabef5f6f38c2a4caad2005e700fa31bea570cab0b9e66cedb8",

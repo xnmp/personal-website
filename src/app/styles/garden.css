@@ -151,11 +151,17 @@
   --k-left: none;
   --k-right: none;
   --k-plate: url(/kit/garden/sheet-day-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/garden/sheet-day-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/garden/sheet-day-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/garden/sheet-day-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/garden/sheet-day-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/garden/sheet-day-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/garden/sheet-day-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/garden/sheet-day-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/garden/sheet-day-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/garden/sheet-day-flat@2x.webp) 2x); }
   --k-strip: url(/kit/garden/sheet-day-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip: image-set(url(/kit/garden/sheet-day-normal@2x.webp) 2x); }
   --k-bezel: none;
   --mat-t: 40;
   --mat-r: 40;

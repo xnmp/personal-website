@@ -163,6 +163,7 @@
   --k-plate-flat: url(/kit/solarpunk/sheet-day-flat.webp);
   --plate-fill: url(/kit/solarpunk/frost-day.webp);
   --plate-light: url(/kit/solarpunk/sheet-day-light.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --plate-light: url(/kit/solarpunk/sheet-day-light@2x.webp); }
   --plate-sheen: url(/kit/solarpunk/sheet-day-sheen.webp);
   --k-strip: url(/kit/solarpunk/sheet-strip-day-normal.webp);
   --silk-shadow: 0 1px 0 rgba(255, 252, 238, 0.7);
