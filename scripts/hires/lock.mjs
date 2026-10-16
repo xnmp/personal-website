@@ -4,7 +4,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { extname, resolve } from 'node:path';
 import sharp from 'sharp';
 import { recipeDigest, validateProtection } from './manifest.mjs';
-import { derivationDigest } from './states.mjs';
+import { derivationDigest, statePolicy } from './states.mjs';
 
 export const outputPath = ({ src, factor }) => src.slice(0, -extname(src).length) + `@${factor}x.webp`;
 export const sourceSha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -12,6 +12,7 @@ export const generatorName = (asset) => asset.provider === 'external' ? 'codex-i
 export const lockEntry = (bytes, asset, key, proof = {}) => ({
   ...(asset.provider && asset.provider !== 'api' ? { provider: asset.provider } : {}),
   sourceSha256: sourceSha256(bytes), factor: asset.factor, model: generatorName(asset), cacheKey: key,
+  ...(asset.family && asset.reference !== asset.src ? { stateDerivation: statePolicy(asset) } : {}),
   ...(asset.glyphs ? { glyphs: true } : {}),
   ...(asset.family ? { familyMembership: asset.familyMembership } : {}),
   ...(recipeDigest(asset) ? { recipeDigest: recipeDigest(asset) } : {}), ...proof,
@@ -25,11 +26,14 @@ export const familyMembershipMatches = (entry, asset) => !asset.family || !!asse
 export function lockMatches(entry, bytes, asset, proof = {}) {
   if (!entry || (entry.provider ?? 'api') !== (asset.provider ?? 'api') || entry.sourceSha256 !== sourceSha256(bytes) || entry.factor !== asset.factor ||
       ![asset.model, generatorName(asset)].includes(entry.model) || !/^[a-f0-9]{64}$/.test(entry.cacheKey ?? '')) return false;
+  if (proof.candidateKey && entry.cacheKey !== proof.candidateKey) return false;
   if (!familyMembershipMatches(entry, asset) || !!entry.glyphs !== !!asset.glyphs) return false;
   if (asset.generator?.type === 'smooth-field' && (!proof.dependencyBytes || !proof.dependencyValid || entry.dependencies?.[asset.generator.from] !== sourceSha256(proof.dependencyBytes))) return false;
   const recipe = recipeDigest(asset);
   if (!recipe) return !entry.recipeDigest;
-  if (entry.recipeDigest !== recipe || !proof.outputBytes || entry.outputSha256 !== sourceSha256(proof.outputBytes) ||
+  // Implicit auto is prospective: legacy registered recipes remain valid.
+  const legacyState = asset.family && asset.reference !== asset.src && !entry.stateDerivation && asset.stateDerivation === undefined && asset.stateResidualMaxHf === undefined && entry.recipeDigest === recipeDigest(asset, true);
+  if ((!legacyState && entry.recipeDigest !== recipe) || !proof.outputBytes || entry.outputSha256 !== sourceSha256(proof.outputBytes) ||
       entry.width !== proof.width || entry.height !== proof.height || proof.width !== proof.sourceWidth * asset.factor || proof.height !== proof.sourceHeight * asset.factor) return false;
   if (asset.family && asset.reference !== asset.src) {
     if (!proof.referenceBytes || !proof.referenceOutputBytes || entry.derivationDigest !== derivationDigest(bytes, proof.referenceBytes, proof.referenceOutputBytes, asset.sigma)) return false;

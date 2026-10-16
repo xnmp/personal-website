@@ -3,7 +3,7 @@ import sharp from 'sharp';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { main } from '../scripts/hires/upscale.mjs';
+import { main, currentCandidateKey } from '../scripts/hires/upscale.mjs';
 import { validateManifest } from '../scripts/hires/manifest.mjs';
 import { lockEntry, outputPath, sourceSha256 } from '../scripts/hires/lock.mjs';
 import { derivationDigest } from '../scripts/hires/states.mjs';
@@ -25,6 +25,7 @@ const fixture = async (family = false) => {
   for (const asset of assets) {
     await writeFile(join(root, asset.src), source);
     await writeFile(join(root, outputPath(asset)), output);
+    entries[outputPath(asset)].cacheKey = await currentCandidateKey(asset, source, 'Upscale faithfully.', root);
   }
   const writeLock = () => writeFile(join(root, 'art/hires.lock.json'), JSON.stringify({ version: 1, assets: entries }));
   await writeLock();
@@ -101,14 +102,14 @@ test('pending accepts legacy output only at exact scale without rewriting the lo
         const before = await readFile(join(root, 'art/hires.lock.json'), 'utf8');
         const result = await run(root);
         expect(result.code).toBe(0);
-        expect(result.processed).toEqual(change === 'none' ? [] : family ? ['public/a.png', 'public/b.png'] : ['public/b.png']);
+        expect(result.processed).toEqual(change === 'none' ? [] : ['public/b.png']);
         expect(await readFile(join(root, 'art/hires.lock.json'), 'utf8')).toBe(before);
       } finally { await rm(root, { recursive: true, force: true }); }
     }
   }
 });
 
-test('pending treats registered families atomically and validates recipe, membership and derivation digests', async () => {
+test('pending validates state dependencies without rebuilding valid locked siblings', async () => {
   for (const change of ['none', 'source', 'missing', 'recipe', 'membership', 'derivation', 'reference-output']) {
     const { root, assets, entries, writeLock } = await fixture(true);
     try {
@@ -126,8 +127,30 @@ test('pending treats registered families atomically and validates recipe, member
       }
       await writeLock();
       const result = await run(root, ['--only', 'b.png']);
-      expect(result.processed).toEqual(change === 'none' ? [] : ['public/a.png', 'public/b.png']);
-      expect(result.messages).toContain(`Skipped ${change === 'none' ? 2 : 0} assets as up to date.`);
+      expect(result.processed).toEqual(change === 'none' ? [] : ['public/b.png']);
+      expect(result.messages).toContain(`Skipped ${change === 'none' ? 2 : 1} assets as up to date.`);
+    } finally { await rm(root, { recursive: true, force: true }); }
+  }
+});
+
+test('accepted family members survive pending siblings only for identical candidate inputs', async () => {
+  for (const change of ['none', 'source', 'prompt', 'candidate', 'output']) {
+    const { root, assets, entries, writeLock } = await fixture(true);
+    try {
+      Object.assign(entries[outputPath(assets[0])], { accepted: true });
+      await rm(join(root, outputPath(assets[1])));
+      if (change === 'source') await writeFile(join(root, assets[0].src), Buffer.concat([await readFile(join(root, assets[0].src)), Buffer.from('new source')]));
+      if (change === 'prompt') await writeFile(join(root, 'art/prompts/hires/upscale.txt'), 'A different candidate.');
+      if (change === 'candidate') {
+        const manifest = JSON.parse(await readFile(join(root, 'art/hires.json'), 'utf8'));
+        manifest.assets[0].note = 'Different candidate instructions';
+        await writeFile(join(root, 'art/hires.json'), JSON.stringify(manifest));
+      }
+      if (change === 'output') await writeFile(join(root, outputPath(assets[0])), await sharp({ create: { width: 16, height: 16, channels: 4, background: '#ffffff' } }).webp().toBuffer());
+      await writeLock();
+      const before = await readFile(join(root, 'art/hires.lock.json'));
+      expect((await run(root)).processed).toEqual(change === 'none' ? ['public/b.png'] : ['public/a.png', 'public/b.png']);
+      expect(await readFile(join(root, 'art/hires.lock.json'))).toEqual(before);
     } finally { await rm(root, { recursive: true, force: true }); }
   }
 });

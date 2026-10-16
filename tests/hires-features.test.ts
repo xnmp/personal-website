@@ -24,7 +24,7 @@ const encode = (img: ReturnType<typeof rgba>) => sharp(Buffer.from(img.data), { 
 const input = (assets: unknown[]) => ({ version: 1, defaults: {}, assets });
 const family = (provider = 'resample') => ['normal', 'hover', 'pressed', 'focus', 'flat'].map((state) => ({
   src: `public/kit/key-${state}.png`, family: 'key/day', reference: 'public/kit/key-normal.png', provider, stateCrop: true,
-  ...(provider === 'external' ? { external: { sizes: ['384x384'] } } : {}),
+  ...(provider === 'external' ? { external: { sizes: ['384x384'] }, stateDerivation: 'generate' } : {}),
 }));
 const fixture = async () => {
   const root = await mkdtemp(join(tmpdir(), 'hires-features-'));
@@ -200,7 +200,7 @@ test('deterministic family ships registered lossless outputs; CSS withholds ever
     const normal = rgba(64, 64);
     for (const [i, asset] of assets.entries()) await writeFile(join(root, asset.src), await encode(i ? rgba(64, 64, (x, y) => x >= 25 && x < 39 && y >= 25 && y < 39 ? [70 + 4 * i, 100, 130, 255] : [70, 100, 130, 255]) : normal));
     await writeFile(join(root, 'src/app/kit.css'), `.key {\n  --key: url(/kit/key-normal.png);\n  --hover: url(/kit/key-hover.png);\n  border-image: var(--key) 8 fill / 4px;\n}`);
-    expect(await main(['--only', 'key-hover'], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main(['--only', 'key-hover', '--accept'], { root, invoke: neverInvoke })).toBe(0);
     const reference = await decode(await readFile(join(root, outputPath(assets[0]))));
     for (const asset of assets.slice(1)) {
       const state = await decode(await readFile(join(root, asset.src)));
@@ -343,7 +343,7 @@ test('resample detail refusal cannot be overridden by accept or retry flags', as
 test('real Atlas sources retain zero visible outside-mask differences through lossless shipping', async () => {
   const root = await fixture();
   try {
-    const entries = ['normal', 'hover'].map((state) => ({ src: `public/kit/atlas/tile-day-${state}.webp`, family: 'atlas/tile-day', reference: 'public/kit/atlas/tile-day-normal.webp', provider: 'api' }));
+    const entries = ['normal', 'hover'].map((state) => ({ src: `public/kit/atlas/tile-day-${state}.webp`, family: 'atlas/tile-day', reference: 'public/kit/atlas/tile-day-normal.webp', provider: 'api', stateDerivation: 'generate' }));
     await mkdir(join(root, 'public/kit/atlas'));
     await writeFile(join(root, 'art/hires.json'), JSON.stringify(input(entries)));
     for (const entry of entries) await writeFile(join(root, entry.src), await readFile(new URL(`../${entry.src}`, import.meta.url)));
@@ -375,7 +375,7 @@ test('changed locked family membership withholds all five states and fails CSS c
     await writeFile(join(root, 'art/hires.json'), JSON.stringify(input(entries)));
     for (const [i, entry] of entries.entries()) await writeFile(join(root, entry.src), await encode(rgba(8, 8, () => [70 + i * 20, 100, 130, 255])));
     await writeFile(join(root, 'src/app/kit.css'), `.key {\n${entries.map((entry, i) => `  --state-${i}: url(${entry.src.slice(6)});`).join('\n')}\n}`);
-    expect(await main([], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main(['--accept'], { root, invoke: neverInvoke })).toBe(0);
     const lock = JSON.parse(await readFile(join(root, 'art/hires.lock.json'), 'utf8'));
     for (const entry of entries) expect(lock.assets[outputPath({ ...entry, factor: 2 })].familyMembership).toEqual({
       reference: entries[0].reference, members: entries.map((e) => e.src).sort(),

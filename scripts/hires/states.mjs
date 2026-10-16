@@ -1,9 +1,15 @@
 import { createHash } from 'node:crypto';
-import { validateImage, estimateFlow, colourStats } from './merge.mjs';
+import { validateImage, estimateFlow, colourStats, gaussianBlur } from './merge.mjs';
+
+import { bilinear2x } from './periodic.mjs';
+
+export const RESIDUAL_RECIPE = Object.freeze({ version: 'residual-v4', opaqueAlpha: 0.98, feather: 4, kernel: 'premultiplied-bilinear-v1', support: 'nearest-change-mask', clamp: 'premultiplied-rgba', hfSigma: 1 });
+export const statePolicy = (asset) => ({ mode: asset.stateDerivation ?? 'auto', maxHf: asset.stateResidualMaxHf ?? 4 });
 
 export const STATE_RECIPE = Object.freeze({ version: 'registered-v2', mask: 'premultiplied-rgba-exact-nearest-2x', feather: 2, toneAlpha: 'conform-v1' });
 const pair = (a, b) => {
   validateImage(a); validateImage(b);
+  if ([a, b].some((img) => img.data instanceof Float32Array && img.data.some((v) => !Number.isFinite(v)))) throw new Error('State images require finite channels');
   if (a.channels !== 4 || b.channels !== 4 || a.width !== b.width || a.height !== b.height) throw new Error('State images require matching RGBA geometry');
 };
 // Exact visible-paint contract: alpha and RGB * alpha must match. Compare
@@ -156,4 +162,121 @@ export function stateStats(state, normal, reference, shipped, down) {
     if ([0, 1].some((dy) => [0, 1].some((dx) => pixelDiffers(shipped, reference, ((y + dy) * shipped.width + x + dx) * 4)))) preservedSourcePixels++;
   }
   return { outsideDifferingPixels, stateMae: error / (count || 1), preservedSourcePixels, suppressed: !!count && !preservedSourcePixels };
+}
+
+// Signed code values, before filtering: invisible RGB contributes exactly zero.
+export function stateResidual(state, normal) {
+  pair(state, normal);
+  if (!state.data.some((v, i) => i % 4 === 3 && v > 0)) throw new Error('State is fully transparent');
+  return { ...state, data: Float32Array.from(state.data, (v, i) => {
+    const alpha = i - i % 4 + 3;
+    return i % 4 === 3 ? v - normal.data[i] : (v * state.data[alpha] - normal.data[i] * normal.data[alpha]) / 255;
+  }) };
+}
+
+export function residualRouting(state, normal, asset = {}) {
+  const { mode, maxHf } = statePolicy(asset);
+  const delta = stateResidual(state, normal), mask = differenceMask(state, normal);
+  const blurred = gaussianBlur(delta, 1);
+  let squared = 0, count = 0;
+  for (let p = 0; p < mask.length; p++) if (mask[p]) for (let c = 0; c < 4; c++) {
+    squared += (delta.data[p * 4 + c] - blurred.data[p * 4 + c]) ** 2;
+    count++;
+  }
+  const hfRms = Math.sqrt(squared / (count || 1));
+  return { mode, maxHf, hfRms, method: mode === 'auto' ? hfRms <= maxHf ? 'residual' : 'generate' : mode };
+}
+
+// Regions are classified at 1x, then replicated over each 2x footprint.
+export function stateRegions(state, normal) {
+  const changed = differenceMask(state, normal);
+  const opaque = Uint8Array.from(changed, (v, p) => Number(!!v &&
+    state.data[p * 4 + 3] >= 255 * RESIDUAL_RECIPE.opaqueAlpha && normal.data[p * 4 + 3] >= 255 * RESIDUAL_RECIPE.opaqueAlpha));
+  return { changed, opaque, translucent: Uint8Array.from(changed, (v, p) => v && !opaque[p] ? 1 : 0) };
+}
+
+const premulValue = (img, i, c) => img.data[i + c] * (c < 3 ? img.data[i + 3] / 255 : 1);
+
+// Four output pixels = two source pixels: a short transition with zero endpoint
+// slopes, broad enough to avoid a one-pixel alpha step without erasing a shadow.
+export function inwardWeights(mask, width, height, feather = Number(RESIDUAL_RECIPE.feather)) {
+  if (!Number.isInteger(feather) || feather < 1 || feather > 32) throw new Error('Invalid inward feather');
+  if (mask.length !== width * height) throw new Error('Invalid feather geometry');
+  const distance = Float32Array.from(mask, (v) => v ? feather : 0);
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    const p = y * width + x;
+    if (x) distance[p] = Math.min(distance[p], distance[p - 1] + 1);
+    if (y) distance[p] = Math.min(distance[p], distance[p - width] + 1);
+  }
+  for (let y = height - 1; y >= 0; y--) for (let x = width - 1; x >= 0; x--) {
+    const p = y * width + x;
+    if (x + 1 < width) distance[p] = Math.min(distance[p], distance[p + 1] + 1);
+    if (y + 1 < height) distance[p] = Math.min(distance[p], distance[p + width] + 1);
+  }
+  return Float32Array.from(distance, (d) => { const t = d / feather; return t * t * (3 - 2 * t); });
+}
+
+export function transferResidual(state, normal, reference, feather = Number(RESIDUAL_RECIPE.feather)) {
+  const delta = stateResidual(state, normal);
+  validateImage(reference);
+  if (reference.channels !== 4 || reference.width !== state.width * 2 || reference.height !== state.height * 2) throw new Error('Residual reference output must be matching RGBA at exactly 2x');
+  const regions = stateRegions(state, normal);
+  const mask = expandMask(regions.changed, state.width, state.height);
+  const opaque = expandMask(regions.opaque, state.width, state.height);
+  const weights = inwardWeights(mask, reference.width, reference.height, feather);
+  const up = bilinear2x(delta);
+  const target = bilinear2x({ ...state, data: Float32Array.from(state.data, (_, i) => premulValue(state, i - i % 4, i % 4)) });
+  const data = Uint8Array.from(reference.data);
+  for (let p = 0; p < mask.length; p++) if (mask[p]) {
+    const i = p * 4;
+    const value = (c) => opaque[p] ? premulValue(reference, i, c) + up.data[i + c]
+      : premulValue(reference, i, c) * (1 - weights[p]) + target.data[i + c] * weights[p];
+    const alpha = Math.max(0, Math.min(255, value(3)));
+    data[i + 3] = Math.round(alpha);
+    // Saturated generated paint can still put an additive RGB delta out of
+    // gamut. Encode valid RGBA; change reproduction and conformance assess the loss.
+    for (let c = 0; c < 3; c++) data[i + c] = data[i + 3] && alpha
+      ? Math.round(Math.max(0, Math.min(alpha, value(c))) * 255 / alpha) : 0;
+  }
+  return { ...reference, data };
+}
+
+const errorSummary = (errors) => {
+  errors.sort((a, b) => a - b);
+  const mae = errors.reduce((sum, v) => sum + v, 0) / (errors.length || 1);
+  const p99 = errors[Math.ceil(errors.length * 0.99) - 1] ?? 0;
+  return { mae, p99, samples: errors.length };
+};
+
+// Code units (/255). Opaque paint reproduces the delta; translucent paint
+// is compared absolutely to the state. These are diagnostics, never gates.
+export function residualDiagnostics(state, normal, down, referenceDown) {
+  pair(state, normal); pair(state, down); pair(state, referenceDown);
+  const regions = stateRegions(state, normal), errors = { opaque: [], translucent: [] };
+  for (let p = 0; p < regions.changed.length; p++) if (regions.changed[p]) for (let c = 0; c < 4; c++) {
+    const i = p * 4, value = (img) => premulValue(img, i, c);
+    const region = regions.opaque[p] ? 'opaque' : 'translucent';
+    errors[region].push(Math.abs(value(down) - value(state) - (regions.opaque[p] ? value(referenceDown) - value(normal) : 0)));
+  }
+  const opaque = errorSummary(errors.opaque), translucent = errorSummary(errors.translucent);
+  return { opaque, translucent, ...errorSummary([...errors.opaque, ...errors.translucent]) };
+}
+
+export const CHANGE_GATE = Object.freeze({ threshold: 24, minimumMagnitude: 0.5, minimumShare: 0.9 });
+export function changeReproduction(state, normal, down, referenceDown) {
+  pair(state, normal); pair(state, down); pair(state, referenceDown);
+  let strongPixels = 0, reproducedPixels = 0;
+  for (let i = 0; i < state.data.length; i += 4) {
+    let strong = false, reproduced = true;
+    for (let c = 0; c < 4; c++) {
+      const delta = premulValue(state, i, c) - premulValue(normal, i, c);
+      if (Math.abs(delta) < CHANGE_GATE.threshold) continue;
+      strong = true;
+      const observed = premulValue(down, i, c) - premulValue(referenceDown, i, c);
+      if (Math.sign(delta) * observed < Math.abs(delta) * CHANGE_GATE.minimumMagnitude) reproduced = false;
+    }
+    if (strong) { strongPixels++; if (reproduced) reproducedPixels++; }
+  }
+  const share = strongPixels ? reproducedPixels / strongPixels : 1;
+  return { ...CHANGE_GATE, strongPixels, reproducedPixels, share, passes: share >= CHANGE_GATE.minimumShare };
 }

@@ -21,24 +21,37 @@ export function wrapRegion(img, x, y, width, height) {
 
 // Pixel-centred bilinear interpolation in premultiplied RGBA. Used for smooth
 // maps and as a reproducible periodic seam baseline, independent of libvips.
-export function resample(img, factor = 2, periodic = false) {
+function upsample(img, factor, periodic, premultiply, floating) {
   validateImage(img);
   if (factor !== 2 || img.width * img.height * 4 * img.channels > 256_000_000) throw new Error('Resampling requires safe exact 2x geometry');
   const width = img.width * 2, height = img.height * 2, channels = img.channels;
-  const data = new Uint8Array(width * height * channels);
+  const data = floating ? new Float32Array(width * height * channels) : new Uint8Array(width * height * channels);
   const coord = (v, n) => periodic ? mod(v, n) : Math.max(0, Math.min(n - 1, v));
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
     const sx = (x + 0.5) / 2 - 0.5, sy = (y + 0.5) / 2 - 0.5, ix = Math.floor(sx), iy = Math.floor(sy), fx = sx - ix, fy = sy - iy;
     const sums = Array(channels).fill(0);
     for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) {
       const p = (coord(iy + dy, img.height) * img.width + coord(ix + dx, img.width)) * channels;
-      const weight = (dx ? fx : 1 - fx) * (dy ? fy : 1 - fy), a = channels === 4 ? img.data[p + 3] / 255 : 1;
-      for (let c = 0; c < channels; c++) sums[c] += img.data[p + c] * weight * (channels === 4 && c < 3 ? a : 1);
+      const weight = (dx ? fx : 1 - fx) * (dy ? fy : 1 - fy), a = premultiply && channels === 4 ? img.data[p + 3] / 255 : 1;
+      for (let c = 0; c < channels; c++) sums[c] += img.data[p + c] * weight * (premultiply && channels === 4 && c < 3 ? a : 1);
     }
-    for (let c = 0; c < channels; c++) data[(y * width + x) * channels + c] = Math.round(channels === 4 && c < 3 ? sums[3] ? sums[c] * 255 / sums[3] : 0 : sums[c]);
+    for (let c = 0; c < channels; c++) {
+      const value = premultiply && channels === 4 && c < 3 ? sums[3] ? sums[c] * 255 / sums[3] : 0 : sums[c];
+      data[(y * width + x) * channels + c] = floating ? value : Math.round(value);
+    }
   }
   return { width, height, channels, data };
 }
+
+// The same kernel, without alpha interpretation or quantisation, for signed fields.
+export const bilinear2x = (img) => {
+  const result = upsample(img, 2, false, false, true);
+  return { ...result, data: /** @type {Float32Array<ArrayBuffer>} */ (result.data) };
+};
+export const resample = (img, factor = 2, periodic = false) => {
+  const result = upsample(img, factor, periodic, true, false);
+  return { ...result, data: /** @type {Uint8Array<ArrayBuffer>} */ (result.data) };
+};
 
 // Compare signed wrap jumps and the derivatives immediately on either side,
 // in premultiplied RGBA so invisible RGB cannot hide or invent a seam.
