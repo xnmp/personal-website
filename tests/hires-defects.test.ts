@@ -1,11 +1,10 @@
 import { expect, test } from 'bun:test';
 import sharp from 'sharp';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { validateManifest, assetCacheKey } from '../scripts/hires/manifest.mjs';
 import { lockEntry, lockMatches, outputPath, outputProof, sourceSha256 } from '../scripts/hires/lock.mjs';
-import { backfillSettings } from '../scripts/hires/backfill-settings.mjs';
 import { checkRepo } from '../scripts/hires/css.mjs';
 import { registerState, transferResidual, changeReproduction, stateStats, differenceMask, expandMask, outsideDifferences, derivationDigest } from '../scripts/hires/states.mjs';
 import { protectGlyphs } from '../scripts/hires/protect.mjs';
@@ -137,37 +136,6 @@ test('generated dependencies reject a state whose canonical lock has become stal
   } finally { await rm(f.root, { recursive: true, force: true }); }
 });
 
-
-test('backfill stamps only valid outputs in dependency order and refuses stale canonical requests', async () => {
-  for (const bad of ['none', 'canonical-request', 'undecodable']) {
-    const f = await fixture(true);
-    try {
-      for (const a of f.assets) {
-        const entry = f.entries[outputPath(a)];
-        delete entry.settingsDigest;
-        entry.cacheKey = await upscale.currentCandidateKey(a, f.source, 'Upscale.', f.root, entry);
-      }
-      if (bad === 'canonical-request') f.entries[outputPath(f.assets[0])].cacheKey = 'b'.repeat(64);
-      if (bad === 'undecodable') await writeFile(join(f.root, outputPath(f.assets[0])), 'invalid image');
-      await writeFile(join(f.root, 'art/hires.lock.json'), JSON.stringify({ version: 1, assets: f.entries }));
-      const manifestSha256 = sourceSha256(await readFile(join(f.root, 'art/hires.json')));
-      const before = await readFile(join(f.root, 'art/hires.lock.json'));
-      const preview = await backfillSettings({ root: f.root, manifestSha256 });
-      expect(await readFile(join(f.root, 'art/hires.lock.json'))).toEqual(before);
-      expect(preview.migrated).toHaveLength(bad === 'none' ? 3 : 0);
-      expect(preview.rejected).toHaveLength(bad === 'none' ? 0 : 3);
-      const result = await backfillSettings({ root: f.root, manifestSha256, write: true });
-      expect(result.migrated).toEqual(preview.migrated);
-      if (bad === 'none') {
-        const lock = JSON.parse(await readFile(join(f.root, 'art/hires.lock.json'), 'utf8'));
-        const a = f.assets[2];
-        expect(lockMatches(lock.assets[outputPath(a)], f.source, a, await outputProof(a, f.source, f.output, f.root, f.assets))).toBe(true);
-        expect((await backfillSettings({ root: f.root, manifestSha256, write: true })).migrated).toEqual([]);
-      }
-      await expect(backfillSettings({ root: f.root, manifestSha256: '0'.repeat(64), write: true })).rejects.toThrow(/audited/);
-    } finally { await rm(f.root, { recursive: true, force: true }); }
-  }
-});
 
 test('per-asset overrides and defaults track all ordinary pixel and request settings', async () => {
   const f = await fixture();

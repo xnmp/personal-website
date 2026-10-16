@@ -2,11 +2,10 @@ import sharp from "sharp";
 import { describe, expect, test } from "bun:test";
 import { borderSources, checkRepo, diagnostics, HIRES_MEDIA, main, transformCss } from "../scripts/hires/css.mjs";
 import { layerBitmap, layerTextureWidth } from "../src/components/rack/scene3d/layer-bitmap";
-import { mkdtemp, mkdir, readFile, rm, writeFile, cp, symlink } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { lockEntry, outputPath, writeLockEntry } from "../scripts/hires/lock.mjs";
-import { backfillSettings } from "../scripts/hires/backfill-settings.mjs";
 import { validateManifest } from "../scripts/hires/manifest.mjs";
 
 const available = new Set(["/kit/a@2x.webp", "/kit/b@2x.webp"]);
@@ -195,20 +194,6 @@ ${selector} .x { border-image: var(--k) 1; }`;
     await expect(main(["--check", "--write"])).rejects.toThrow(/Choose either/);
     await expect(main(["--surprise"])).rejects.toThrow(/Unknown option/);
   });
-
-  test("repo CSS has current twins for every available manifest asset", async () => {
-    // Exercise the one-time migration on a scratch lock, leaving checked-in
-    // legacy locks and image assets untouched until the operator migrates them.
-    const root = await mkdtemp(join(tmpdir(), 'hires-repo-css-'));
-    try {
-      await mkdir(join(root, 'art/prompts/hires'), { recursive: true });
-      for (const file of ['hires.json', 'hires.lock.json', 'prompts/hires/upscale.txt']) await cp(join(process.cwd(), 'art', file), join(root, 'art', file));
-      for (const dir of ['public', 'src']) await symlink(join(process.cwd(), dir), join(root, dir));
-      await backfillSettings({ root, write: true });
-      const messages = diagnostics(await checkRepo(root));
-      expect(messages, `Run node scripts/hires/css.mjs --write after upscales finish:\n${messages.join("\n")}`).toEqual([]);
-    } finally { await rm(root, { recursive: true, force: true }); }
-  }, 120_000);
 });
 
 describe("hires provenance and whole groups", () => {

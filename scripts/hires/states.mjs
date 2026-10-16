@@ -3,12 +3,18 @@ import { validateImage, estimateFlow, colourStats, gaussianBlur } from './merge.
 
 import { bilinear2x } from './periodic.mjs';
 
-export const PREVIOUS_RESIDUAL_RECIPE = Object.freeze({ version: 'residual-v4', opaqueAlpha: 0.98, feather: 4, kernel: 'premultiplied-bilinear-v1', support: 'nearest-change-mask', clamp: 'premultiplied-rgba', hfSigma: 1 });
+const residualV4 = Object.freeze({ version: 'residual-v4', opaqueAlpha: 0.98, feather: 4, kernel: 'premultiplied-bilinear-v1', support: 'nearest-change-mask', clamp: 'premultiplied-rgba', hfSigma: 1 });
+const registeredV2 = Object.freeze({ version: 'registered-v2', mask: 'premultiplied-rgba-exact-nearest-2x', feather: 2, toneAlpha: 'conform-v1' });
+const registeredV3 = Object.freeze({ ...registeredV2, version: 'registered-v3' });
+export const STATE_RECIPE = registeredV3;
+const residualV5 = Object.freeze({ ...residualV4, version: 'residual-v5', support: 'signed-gaussian-mad-intended-mask', noiseSigma: 1, noiseFloor: 8, noiseMultiplier: 3, supportMargin: 3 });
+// These objects are immutable historical byte identities, not recipes to execute.
+export const HISTORICAL_DERIVATION_GENERATIONS = Object.freeze([
+  Object.freeze({ state: registeredV2, residual: residualV4 }),
+]);
+export const RESIDUAL_RECIPE = residualV5;
+export const CURRENT_DERIVATION_GENERATION = Object.freeze({ state: STATE_RECIPE, residual: RESIDUAL_RECIPE });
 export const statePolicy = (asset) => ({ mode: asset.stateDerivation ?? 'auto', maxHf: asset.stateResidualMaxHf ?? 4 });
-
-export const PREVIOUS_STATE_RECIPE = Object.freeze({ version: 'registered-v2', mask: 'premultiplied-rgba-exact-nearest-2x', feather: 2, toneAlpha: 'conform-v1' });
-export const STATE_RECIPE = Object.freeze({ ...PREVIOUS_STATE_RECIPE, version: 'registered-v3' });
-export const RESIDUAL_RECIPE = Object.freeze({ ...PREVIOUS_RESIDUAL_RECIPE, version: 'residual-v5', support: 'signed-gaussian-mad-intended-mask', noiseSigma: 1, noiseFloor: 8, noiseMultiplier: 3, supportMargin: 3 });
 const pair = (a, b) => {
   validateImage(a); validateImage(b);
   if ([a, b].some((img) => img.data instanceof Float32Array && img.data.some((v) => !Number.isFinite(v)))) throw new Error('State images require finite channels');
@@ -29,7 +35,7 @@ export function canonicaliseTransparent(img) {
   return { ...img, data };
 }
 
-/** @param {typeof STATE_RECIPE | typeof PREVIOUS_STATE_RECIPE} recipe */
+/** @param {{ version: string, mask: string, feather: number, toneAlpha: string }} recipe */
 export const derivationDigest = (stateBytes, normalBytes, referenceBytes, sigma, recipe = STATE_RECIPE) => createHash('sha256')
   .update(JSON.stringify([...[stateBytes, normalBytes, referenceBytes].map((bytes) => createHash('sha256').update(bytes).digest('hex')), recipe, sigma])).digest('hex');
 

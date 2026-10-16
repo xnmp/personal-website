@@ -3,7 +3,7 @@ import { expect, test } from 'bun:test';
 import { createHash } from 'node:crypto';
 import { validateManifest, recipeDigest, processingRecipe, assetCacheKey } from '../scripts/hires/manifest.mjs';
 import { lockEntry, lockMatches } from '../scripts/hires/lock.mjs';
-import { derivationDigest, PREVIOUS_STATE_RECIPE, STATE_RECIPE, RESIDUAL_RECIPE, changeReproduction, transferResidual, intendedChange } from '../scripts/hires/states.mjs';
+import { derivationDigest, CURRENT_DERIVATION_GENERATION, HISTORICAL_DERIVATION_GENERATIONS, STATE_RECIPE, RESIDUAL_RECIPE, changeReproduction, transferResidual, intendedChange } from '../scripts/hires/states.mjs';
 import { residualCandidate, stateConformance, stateCandidateFailures, withStateProviderFallback, ProviderUnavailable } from '../scripts/hires/upscale.mjs';
 import { CandidateRejected } from '../scripts/hires/retries.mjs';
 import { resample } from '../scripts/hires/periodic.mjs';
@@ -15,14 +15,23 @@ const assets = validateManifest({ version: 1, defaults: {}, assets: [
   { src: 'public/hover.png', family: 'pane', reference: 'public/normal.png' },
 ] }).assets;
 
-test('named previous recipe generation and implicit legacy locks survive only unchanged inputs', () => {
+// Captured from committed v4/v5 implementations; do not regenerate from the allowlist.
+const historicalLocks = [
+  { recipe: 'e52fb284a1646e42793ff8f58402ab17096f09263440e0544e0a68aab75cc588', implicit: 'b96b6b087c7c6bcfa5887c1e05567ca9812acac7b506718f9e4ff83bdbf111f5', derivation: '1281d12659e8648d6fec90efd94740f36791fca4a7c5aeee412e8287bc5aa5e1' },
+  { recipe: '58f96b07a71a51ed7abbe25633a7bba1f8890def0700dc9310a50841f88bf257', implicit: 'f4d9d69d53adbde8e8525ff9685459c6989f11832822db7a6ad6c8aed1998045', derivation: 'f1deeb44be69952f39e12da71e028dc951c4fa86b9a14c0f8e4685db08053960' },
+];
+
+test('v4 historical and v5 current locks survive only unchanged inputs', () => {
   const bytes = Buffer.from('source'), normal = Buffer.from('normal'), reference = Buffer.from('reference');
   const a = assets[1], key = 'a'.repeat(64);
   const proof = { outputBytes: Buffer.from('output'), width: 2, height: 2, sourceWidth: 1, sourceHeight: 1,
     referenceValid: true, referenceBytes: normal, referenceOutputBytes: reference };
-  for (const implicit of [false, true]) {
-    const entry = lockEntry(bytes, a, key, { recipeDigest: recipeDigest(a, implicit, true),
-      derivationDigest: derivationDigest(bytes, normal, reference, a.sigma, PREVIOUS_STATE_RECIPE) });
+  expect(HISTORICAL_DERIVATION_GENERATIONS).toHaveLength(1);
+  for (const [index, generation] of [...HISTORICAL_DERIVATION_GENERATIONS, CURRENT_DERIVATION_GENERATION].entries()) for (const implicit of [false, true]) {
+    const golden = historicalLocks[index];
+    const entry = lockEntry(bytes, a, key, { recipeDigest: implicit ? golden.implicit : golden.recipe, derivationDigest: golden.derivation });
+    expect(recipeDigest(a, implicit, generation)).toBe(entry.recipeDigest);
+    expect(derivationDigest(bytes, normal, reference, a.sigma, generation.state)).toBe(golden.derivation);
     if (implicit) delete entry.stateDerivation;
     expect(lockMatches(entry, bytes, a, proof)).toBe(true);
     for (const changed of [{ sigma: 9 }, { stateDerivation: 'generate' }, { stateResidualMaxHf: 8 }, { stateCrop: true }])
@@ -31,15 +40,19 @@ test('named previous recipe generation and implicit legacy locks survive only un
     expect(lockMatches(entry, bytes, a, { ...proof, referenceOutputBytes: Buffer.from('changed reference') })).toBe(false);
     expect(lockMatches({ ...entry, recipeDigest: '0'.repeat(64) }, bytes, a, proof)).toBe(false);
   }
+  const fake = { state: { ...STATE_RECIPE, version: 'registered-v999' }, residual: { ...RESIDUAL_RECIPE, version: 'residual-v999' } };
+  const unlisted = lockEntry(bytes, a, key, { recipeDigest: recipeDigest(a, false, fake),
+    derivationDigest: derivationDigest(bytes, normal, reference, a.sigma, fake.state) });
+  expect(lockMatches(unlisted, bytes, a, proof)).toBe(false);
   const fresh = lockEntry(bytes, a, key, { derivationDigest: derivationDigest(bytes, normal, reference, a.sigma) });
   expect(STATE_RECIPE.version).toBe('registered-v3');
   expect(RESIDUAL_RECIPE.version).toBe('residual-v5');
   expect(fresh.recipeDigest).toBe(recipeDigest(a));
-  expect(fresh.recipeDigest).not.toBe(recipeDigest(a, false, true));
+  expect(fresh.recipeDigest).not.toBe(recipeDigest(a, false, HISTORICAL_DERIVATION_GENERATIONS[0]));
   expect(lockMatches(fresh, bytes, a, proof)).toBe(true);
   // Paid request identities remain byte-identical to the previous generation.
   const original = createHash('sha256').update(bytes).update(JSON.stringify([a.factor, a.model, 'prompt'])).digest('hex');
-  const previous = processingRecipe({ ...a, sigma: 4, protect: undefined, protectFeather: undefined }, true, true);
+  const previous = processingRecipe({ ...a, sigma: 4, protect: undefined, protectFeather: undefined }, true, HISTORICAL_DERIVATION_GENERATIONS[0]);
   expect(assetCacheKey(bytes, a, 'prompt')).toBe(createHash('sha256').update(original).update(JSON.stringify([previous, null])).digest('hex'));
 });
 

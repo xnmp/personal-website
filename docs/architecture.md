@@ -911,78 +911,104 @@ selected shipped files through the API or an external generator and conforms the
   Transparent RGB is canonicalised to zero before encoding. Decoded shipped
   outputs must have zero differing premultiplied RGBA pixels outside the mask
   (alpha-zero pixels compare equal regardless of encoder RGB rewrites);
-  suppression of more than 10% of changed source footprints also rejects, without `--accept`
+  suppression of more than 10% of intended-change source footprints also rejects, without `--accept`
   overriding either registration invariant. Changed-region premultiplied MAE is
   gated by `--max-mae` in addition to normal conformance gates.
 
-- **Region-aware state derivation (`residual-v4`)**: pending family states default
+- **State derivation (`residual-v5`)**: pending family states default
   to `stateDerivation: "auto"`; asset settings override family settings. Modes
-  remain `"generate"`, `"residual"` (derive), and `"auto"` for manifest compatibility.
-  Auto measures RMS of `delta - Gaussian(sigma=1, delta)` over all four
-  premultiplied channels in the exact 1x change mask M. HF <=
-  `stateResidualMaxHf` (default 4/255) derives; crisp deltas generate.
+  remain `"generate"`, `"residual"` (derive), and `"auto"`. Auto measures RMS of
+  `delta - Gaussian(sigma=1, delta)` over all four premultiplied channels in the
+  exact 1x difference mask. HF <= `stateResidualMaxHf` (default 4/255) derives;
+  crisp deltas generate. Transfer requires a lock-valid shipped normal.
 
-  Each changed 1x footprint is opaque when both source alphas are >= 0.98.
-  Its four output pixels receive `premul(normal@2x) + U(delta)` without feather.
-  Other changed footprints use `U(premul(state))`, independent of generated
-  shadow error. U is pixel-centred bilinear interpolation without intermediate
-  rounding. The translucent replacement keeps full weight throughout M. Its
-  smoothstep feather ramps outside M, clipped to retain canonical equality. The raw
-  transfer copies every byte outside M. Family encoding canonicalises invisible
-  RGB and verifies exact visible premultiplied equality outside M after decode.
-  Results are clamped to valid premultiplied RGBA before byte encoding. Full
-  alpha prevents alpha clipping, but saturated generated RGB can still clip an
-  additive colour delta; change reproduction and conformance assess that loss.
+  **Noise model and intended support.** Filter the signed premultiplied RGBA
+  delta with a sigma-1 Gaussian so uncorrelated speckle cancels. Per-channel
+  high-frequency residual MAD, scaled by 1.4826, estimates noise on exact changed
+  pixels. Propagate through the filter using `||G||2 / ||I-G||2 =
+  0.28228 / 0.87252`; the noise floor is `max(8, 3 * estimated filtered sigma)`
+  in byte code units. The fixed floor allows quantisation and weak paint noise;
+  it is an empirical tolerance, not proof that all small changes are random.
+  Coherent evidence at that floor expands by three source pixels of contributing
+  support, intersected with exact differences. Derivation and suppression share
+  this intended-change mask. Registration retains the exact difference mask for
+  canonical equality. Noise-only footprints copy the canonical exactly.
 
-  Derived output is losslessly encoded, decoded and downsampled with Lanczos3.
-  Regional errors are diagnostics only: opaque changed pixels compare
-  `down(result) - down(normal@2x)` against the 1x premultiplied delta;
-  translucent changed pixels compare `down(result)` against the absolute
-  premultiplied state. MAE, p99 and sample counts for each region are recorded
-  under `stateDerivation.diagnostics` in stats.json; empty regions have zero
-  error and samples. There are no regional acceptance thresholds. Bilinear
-  upsampling followed by Lanczos3 downsampling is not an identity on crisp
-  antialiased edges, even for a pure source upscale. Comparing against the
-  kernel's own expected output would merely restate the construction.
+  **Transfer and gamut.** Opaque intended-change pixels (both source alphas
+  >= 0.98) receive `premul(normal@2x) + U(premul(state) - premul(normal))`.
+  Translucent intended-change pixels receive `U(premul(state))`; noise-only
+  pixels copy the canonical bytes. U is pixel-centred bilinear interpolation
+  of signed floating channels, without intermediate byte rounding. Clamp alpha
+  to [0, 255], then each premultiplied RGB channel to [0, clamped alpha], then
+  unpremultiply and round for encoding (zero RGB at zero encoded alpha).
+  Residuals retain canonical glyph protection. Lossless encoding canonicalises
+  invisible RGB and checks decoded visible equality outside the exact difference
+  mask.
 
-  Every generated or derived family state also passes whole-image conformance
-  and state-scoped conformance (mask plus four source pixels and contributing
-  tiles): sufficient alignment evidence, median <= 0.6px, p90 <= 1px, blurred
-  RGB MAE <= `--max-mae` (14), and registered premultiplied state MAE <= that
-  limit. Every state must reproduce its strong changes: for pixels with any
-  channel's |delta| >= min(24, maxDelta, max(6, 0.5 * maxDelta))/255, all such channels must retain the delta's sign
-  and at least half its magnitude in `down(output) - down(normal@2x)`.
-  At least 90% of these pixels must pass. The threshold is capped by the
-  state's peak delta, so even sub-6-code changes have evidence; only a zero-delta
-  state has an empty denominator. Registration must preserve at least 90% of
-  changed source footprints. `changeReproduction` records counts/share.
+  Downsample the decoded result with Lanczos3. Opaque regional diagnostics
+  compare `down(result) - down(normal@2x)` with the source premultiplied delta;
+  translucent diagnostics compare the result absolutely with the source state.
+  MAE, p99 and sample counts are diagnostic only, with zeros for empty regions;
+  resampling is not an identity on crisp antialiased edges.
 
-  If generation in auto mode fails change reproduction or any conformance gate,
-  it falls back once to derivation, recording `fallbackReason` and the generated
-  candidate's diagnostics. The fallback must pass the same change-reproduction
-  and standard conformance gates as generation, with identical thresholds. A
-  failed smooth derivation rejects; it does not loop back to generation.
-  **`--accept` overrides conformance only, never change reproduction, proportional
-  suppression, dimensions, or outside-mask invariants.** Auto still attempts
-  derivation before considering an acceptance override for bad generation.
+  Additive-everywhere v6 was considered and rejected: it regressed conformance
+  on 14 states by preserving canonical colour error and clamped 15.7% of intended
+  pixels. Shipped v5 passes 118/118 states on both gates; the real batch produced
+  atlas `sheet-day-hover`, `sheet-night-pressed` and sumi `tile-night-pressed`
+  with correct visuals.
 
-  Transfer requires a lock-valid shipped normal. Its bytes enter the derivation
-  digest. Residuals retain reference glyph protection. Generation keeps its
-  original paid-tile cache identity. Implicit auto accepts legacy registered lock
-  recipes; recipe changes invalidate prior derived locks. `--pending` skips
-  valid members individually, including `accepted: true` members, so a pending
-  sibling cannot re-gate and block an accepted normal. Validation checks source,
-  recipe, family membership, reference dependencies, output hash/geometry and
-  current candidate request key (including prompt, note, sizes and crop). A
-  changed source, candidate or output invalidates the old acceptance. A skipped
-  normal is loaded from its shipped output when its states need the reference.
-  Dry runs evaluate derived candidates only when a valid normal exists and
-  otherwise report deferred gates. `scripts/hires/audit-states.mjs` audits locked
-  states using real outputs without writes; `--calibrate --baseline <jsonl>`
-  evaluates a fixed state cohort in memory. With `--cache <directory>`, calibration
-  checks the current request's generated master and reports change-triggered
-  fallback eligibility, explicit generate-only routes, and unavailable cached
-  evidence separately. Neither command changes outputs, locks or cache.
+  **Gates and inherited alignment.** Generated candidates require whole-image
+  and state-scoped conformance: sufficient alignment evidence, median <= 0.6px,
+  p90 <= 1px, blurred RGB MAE <= `--max-mae` (14), and registered premultiplied
+  state MAE <= that limit. Derived candidates inherit alignment from the locked
+  canonical; they do not repeat displacement or reliable-block-count gates.
+  `conformance.alignment` records `inherited`, canonical path and reason.
+  Colour MAE, exterior equality, suppression and reproduction still apply.
+  Colour conformance remains absolute against the source state: preserving an
+  accepted canonical's colour error can reject an otherwise accurate additive
+  transfer. Alignment inheritance does not waive that colour gate.
+
+  Reproduction selects filtered source channels at
+  `max(noiseFloor, min(24, filteredPeak / 2))`. At least 90% of evidence pixels
+  must retain the sign and half the magnitude of every selected channel in
+  filtered `down(output) - down(normal@2x)`. If no evidence survives, the maximum
+  absolute filtered output-minus-canonical delta across the entire image must
+  stay inside the same noise floor; an empty denominator is not acceptance.
+  Registration also preserves at least 90% of intended source footprints.
+  **`--accept` waives conformance only, never reproduction, proportional
+  suppression, dimensions or outside-mask invariants.**
+
+  **Fallback.** Auto falls back once to derivation when generation fails any
+  conformance/reproduction gate or a provider cannot supply a candidate,
+  including unavailable external tiles and mixed provider/candidate failures.
+  Filesystem/programming errors are not provider failures. Record residual
+  `method`, `fallbackReason`, available generated diagnostics and provider stderr
+  tail. Explicit generate retains failure behavior. Derivation must pass its own
+  gates; a failed derivation never loops back to generation. Auto tries this
+  fallback before applying a conformance acceptance override.
+
+  **Historical locks and request identity.** New publications use
+  registered-v3/residual-v5. The explicit `HISTORICAL_DERIVATION_GENERATIONS`
+  allowlist also accepts registered-v2/residual-v4, plus pre-routing
+  registered variants only for implicit auto without a recorded policy.
+  Recompute each generation's recipe with today's resolved settings and match
+  its corresponding derivation digest; unknown generations fail. Historical
+  acceptance never skips source, settings, family membership, canonical
+  dependency, request key, output hash or decoded geometry validation. Canonical
+  bytes enter the derivation digest. Paid tile identities retain the original
+  registered-v2 namespace and literal non-periodic family sigma=4; actual sigma
+  is validated separately. Derivation changes reuse paid tiles, but protection
+  and registration are recomputed rather than reusing derived PNGs.
+
+  `--pending` skips each valid member, including accepted outputs and accepted
+  fallbacks, until inputs change. A pending sibling cannot re-gate an accepted
+  normal; load its shipped output as the reference. Dry runs derive only with a
+  valid normal and otherwise defer gates. `scripts/hires/audit-states.mjs` audits
+  locked outputs read-only; `--calibrate --baseline <jsonl>` fixes a cohort and
+  evaluates candidates in memory. Optional `--cache <directory>` checks the
+  current request's generated master; missing evidence stays unknown, never a
+  passing output or proof of provider failure. Neither mode mutates locks,
+  outputs or cache.
 
   Own-state alignment and displacement/evidence gates use only the visible
   state-difference mask plus four source pixels of context (S2 plus eight output
@@ -993,9 +1019,25 @@ selected shipped files through the API or an external generator and conforms the
   Optional `stateCrop: true` requests a difference bounding box plus 16 source
   pixels of margin when that rectangle covers at most 25% of the sheet. The
   request cache includes the normal-source hash and crop geometry. Model tiles
-  remain reusable; protection precedes registration and registration is recomputed
-  to avoid stale derived PNG composition
-  and the conformed own-state pixels, so refreshed tiles refresh derivations too.
+  remain reusable; protection precedes registration. Recompute registration from
+  the conformed candidate pixels so refreshed tiles cannot reuse stale derived
+  PNG compositions.
+
+- **Settings provenance.** Every publication records `settingsDigest` over
+  resolved provider, factor, model, sigma, encode quality/lossless, apiQuality,
+  note and external settings (ignored for non-external assets). Defaults and
+  overrides resolve before hashing. Validation requires this digest even for
+  grandfathered recipes. Source identity and recipe separately cover family,
+  reference/membership, crop, derivation policy, periodic halo, generator,
+  glyphs and protection; dependencies are recursively validated. `group` affects
+  delivery only. Encode quality/lossless and ordinary sigma reuse paid tiles;
+  periodic sigma changes request geometry. API quality changes non-high API
+  keys, preserving historical high-quality keys; external keys are unaffected.
+  Notes affect request prompts, external sizes affect external request keys,
+  and protection affects delivery only. The one-time legacy backfill and its
+  audited manifest restriction are recorded in
+  [hires-settings-migration.md](hires-settings-migration.md).
+
 - **Periodic materials**: `periodic: true` preserves modular source context
   through request padding, alignment, resampling, tone matching and restored
   alpha. It starts with a 32-source-pixel halo (larger when needed by sigma), uses
