@@ -164,6 +164,7 @@
   --plate-light-in: 0px;
   --plate-sheen: none;
   --k-strip: url(/kit/cyanotype/sheet-strip-night-normal.webp); /* a sheet without tape */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip: image-set(url(/kit/cyanotype/sheet-strip-night-normal@2x.webp) 2x); }
   --k-strip-d: url(/kit/cyanotype/sheet-strip-night-d-normal.webp);
   /* a page's own sheets, wide (below) */
   --k-plate-w: url(/kit/cyanotype/sheet-night-w-b-normal.webp);
@@ -433,6 +434,7 @@
   --plate-light: var(--k-light);
   --wash-ink: 96 132 176;
   --k-strip: url(/kit/cyanotype/sheet-strip-day-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip: image-set(url(/kit/cyanotype/sheet-strip-day-normal@2x.webp) 2x); }
   --k-strip-d: url(/kit/cyanotype/sheet-strip-day-d-normal.webp);
   --k-plate-w: url(/kit/cyanotype/sheet-day-w-b-normal.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-w: image-set(url(/kit/cyanotype/sheet-day-w-b-normal@2x.webp) 2x); }
