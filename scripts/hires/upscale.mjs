@@ -14,7 +14,7 @@ import { canonicaliseTransparent, registerState, stateRequestCrop, stateStats, d
 import { detailStats } from './detail.mjs';
 import { CandidateRejected, retrySelection } from './retries.mjs';
 import { sheenImage } from '../framed-pane.mjs';
-import { assetCacheKey, validateManifest, processingRecipe } from './manifest.mjs';
+import { assetCacheKey, validateManifest } from './manifest.mjs';
 import { lockEntry, lockMatches, outputPath, readLock, sourceSha256, writeLockEntry } from './lock.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
@@ -56,7 +56,7 @@ export async function mapJobs(items, jobs, task) {
 
 export function cliOptions(args) {
   const { values } = parseArgs({ args, options: {
-    manifest: { type: 'string', default: 'art/hires.json' }, only: { type: 'string' }, dry: { type: 'boolean' },
+    manifest: { type: 'string', default: 'art/hires.json' }, only: { type: 'string' }, dry: { type: 'boolean' }, pending: { type: 'boolean' },
     'retry-rejected': { type: 'string', default: '0' }, requests: { type: 'boolean' }, force: { type: 'boolean' }, remerge: { type: 'boolean' }, verify: { type: 'boolean' }, accept: { type: 'boolean' }, jobs: { type: 'string', default: '4' }, 'max-mae': { type: 'string', default: '14' },
   } });
   const jobs = Number(values.jobs), maxMae = Number(values['max-mae']), retryRejected = Number(values['retry-rejected']);
@@ -147,8 +147,8 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
   // independent of the model's paint. A new paid output cannot repair them.
   if (invariantReasons.length) throw new Error(`REJECTED: ${stats.reasons.join('; ')}`);
   if (hardReasons.length || (reasons.length && !opts.accept)) throw new CandidateRejected(`REJECTED: ${stats.reasons.join('; ')} (review stats.json; --accept overrides conformance gates only)`, stats.retryTiles?.length ? stats.retryTiles : stats.tiles?.map((_, i) => i));
-  const proof = processingRecipe(asset) ? { outputSha256: sourceSha256(encoded), width: decoded.width, height: decoded.height,
-    ...(derivation ? { derivationDigest: derivation } : {}) } : {};
+  const proof = { outputSha256: sourceSha256(encoded), width: decoded.width, height: decoded.height,
+    ...(derivation ? { derivationDigest: derivation } : {}) };
   const entry = lockEntry(sourceBytes, asset, key, { ...proof, ...(stats.acceptedOverride ? { accepted: true } : {}) });
   if (opts.verify) {
     if (!await exists(output)) { console.log(`${relative(root, output)} not shipped; verified gates only`); return; }
@@ -414,23 +414,50 @@ async function processAsset(asset, opts, promptText, root, invoke) {
   }
 }
 
-export async function main(args = process.argv.slice(2), { root = ROOT, invoke = run } = {}) {
+// Inspect encoded files and metadata only; never load cached tiles or merge pixels.
+async function isUpToDate(asset, lock, root) {
+  const entry = lock.assets[outputPath(asset)];
+  if (!entry) return false;
+  try {
+    const sourceBytes = await readFile(resolve(root, asset.src));
+    const outputBytes = await readFile(resolve(root, outputPath(asset)));
+    const proof = await outputProof(asset, sourceBytes, outputBytes, root);
+    // Legacy locks have no output proof. Supply observed metadata in memory so
+    // the existing recipe/family validation still applies without backfilling.
+    const legacy = ['outputSha256', 'width', 'height'].every((key) => !Object.hasOwn(entry, key));
+    const checkedEntry = legacy ? { ...entry, outputSha256: sourceSha256(outputBytes), width: proof.width, height: proof.height } : entry;
+    return lockMatches(checkedEntry, sourceBytes, asset, proof) &&
+      checkedEntry.outputSha256 === sourceSha256(outputBytes) && checkedEntry.width === proof.width && checkedEntry.height === proof.height &&
+      proof.width === proof.sourceWidth * asset.factor && proof.height === proof.sourceHeight * asset.factor;
+  } catch {
+    // Missing, unreadable or malformed files must go through normal processing.
+    return false;
+  }
+}
+
+export async function main(args = process.argv.slice(2), { root = ROOT, invoke = run, processAsset: processSelectedAsset = processAsset } = {}) {
   const opts = cliOptions(args);
   const manifest = validateManifest(JSON.parse(await readFile(resolve(root, opts.manifest), 'utf8')));
   const prompt = await readFile(resolve(root, 'art/prompts/hires/upscale.txt'), 'utf8');
   const selected = manifest.assets.filter((a) => !opts.only || a.src.includes(opts.only));
   const families = new Set(selected.map((a) => a.family).filter(Boolean));
-  const assets = manifest.assets.filter((a) => selected.includes(a) || families.has(a.family))
+  const candidates = manifest.assets.filter((a) => selected.includes(a) || families.has(a.family))
     .toSorted((a, b) => Number(!!a.family && a.src !== a.reference) - Number(!!b.family && b.src !== b.reference));
+  const lock = opts.pending ? await readLock(root) : null;
+  const states = await Promise.all(candidates.map(async (asset) => ({ asset, valid: opts.pending && await isUpToDate(asset, lock, root) })));
+  const pendingFamilies = new Set(states.filter(({ asset, valid }) => asset.family && !valid).map(({ asset }) => asset.family));
+  const assets = states.filter(({ asset, valid }) => !valid || pendingFamilies.has(asset.family)).map(({ asset }) => asset);
+  const skipped = candidates.length - assets.length;
   opts.assets = manifest.assets;
   const summary = { api: 0, external: 0, resample: 0, requests: 0, externalTiles: 0 };
   const failedFamilies = new Set();
-  if (!assets.length && !opts.requests) console.log('No matching hires assets; estimated requests 0.');
+  if (!candidates.length && !opts.requests) console.log('No matching hires assets; estimated requests 0.');
+  if (opts.pending && !opts.requests) console.log(`Skipped ${skipped} assets as up to date.`);
   let failed = false;
   for (const asset of assets) {
     if (asset.family && failedFamilies.has(asset.family)) { console.error(`${asset.src}: family blocked by a failed member`); continue; }
     try {
-      const plan = await processAsset(asset, opts, prompt, root, invoke);
+      const plan = await processSelectedAsset(asset, opts, prompt, root, invoke);
       summary[asset.provider]++;
       if (plan?.provider === 'api') summary.requests += plan.requests;
       if (plan?.provider === 'external') summary.externalTiles += plan.requests;

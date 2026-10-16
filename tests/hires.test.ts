@@ -518,9 +518,12 @@ describe("hires offline shell", () => {
       const lock = JSON.parse(await readFile(lockPath, 'utf8'));
       for (const asset of validateManifest(input).assets) {
         const source = await readFile(join(root, asset.src));
+        const output = await readFile(join(root, outputPath(asset)));
+        const { width, height } = await sharp(output).metadata();
         expect(lock.assets[outputPath(asset)]).toEqual({
           sourceSha256: createHash('sha256').update(source).digest('hex'), factor: 2, model: 'gpt-image-2.5-sunburst',
           cacheKey: cacheKey(source, asset.factor, asset.model, 'Faithful upscale.\n'),
+          outputSha256: createHash('sha256').update(output).digest('hex'), width, height,
         });
       }
       const originalOutput = await readFile(join(root, 'public/global@2x.webp'));

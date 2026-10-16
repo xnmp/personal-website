@@ -955,6 +955,17 @@ selected shipped files through the API or an external generator and conforms the
   estimated uncached API requests (before optional retries), and pending
   external tiles. The current inventory adds 357 assets, excluding glyph art.
 
+- **Pending assets**: `bun run hires --pending` skips processing assets only when
+  their current source and lock match and the shipped output matches its recorded
+  hash and exact dimensions. Recipe, family membership and registered-state
+  dependencies are validated too. A family is skipped only when every member is
+  current; `--only` still expands to the whole family. Legacy locks without output
+  proof are accepted when existing lock validation passes and output metadata
+  confirms exact factor-times-source dimensions, without rewriting the lock.
+  Newly written locks record output proof for every provider.
+  Combine with `--dry` to report the skipped count and remaining plan without
+  writing files, or with `--retry-rejected <n>` to retry only remaining work.
+
 - **Rejected candidates and budgets**: `--retry-rejected <n>` defaults to zero.
   A gate/decode/provider failure can replace a candidate; missing sources,
   process-launch errors, filesystem failures, stale provenance and publication
