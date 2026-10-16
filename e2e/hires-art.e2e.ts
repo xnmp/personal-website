@@ -45,9 +45,19 @@ function inventory() {
 // routes have no .sheet-flat sections. Cyanotype enables neither --tier-cut
 // nor --shot-cut; those decorations stay hidden at every viewport. Below
 // 900px page sheets use the non-wide variants. No real state paints wide-b flat.
+// Non-wide c-flat is also unreachable: it belongs to siblings 4n+3, but
+// flattened shelf cards are even, launch .sheet-flat sections are 4 and 6,
+// and the flat .sheet-row colophon is second (d/b/b below 900px, respectively).
+// The flat gallery shot is the first child of its own .shot-tier, so uses a.
+// At >=900px page sheets switch to wide art; the hidden tier/shot cuts add
+// no consumer. A narrower capture cannot expose c-flat on any current route.
 const unrenderedTwins: Readonly<Record<string, string>> = {
+  "/kit/ligne/sheet-day-normal@2x.webp": "Ligne prints every resting panel flat (--k-plate-flat, styles/ligne.css) and its strips repoint --k-plate at --k-strip; the normal sheet is only the state family's reference.",
+  "/kit/ligne/sheet-night-normal@2x.webp": "Ligne prints every resting panel flat (--k-plate-flat, styles/ligne.css) and its strips repoint --k-plate at --k-strip; the normal sheet is only the state family's reference.",
   "/kit/cyanotype/sheet-night-w-b-flat@2x.webp": "Odd wide page sheets never use flat art; flat sections are even siblings, and Cyanotype's tier/shot cuts are hidden.",
   "/kit/cyanotype/sheet-day-w-b-flat@2x.webp": "Odd wide page sheets never use flat art; flat sections are even siblings, and Cyanotype's tier/shot cuts are hidden.",
+  "/kit/cyanotype/sheet-night-c-flat@2x.webp": "No flat consumer is sibling 4n+3: shelves are even, launch flat sections are 4/6, the colophon is second, and the gallery shot is first; tier/shot cuts are hidden.",
+  "/kit/cyanotype/sheet-day-c-flat@2x.webp": "No flat consumer is sibling 4n+3: shelves are even, launch flat sections are 4/6, the colophon is second, and the gallery shot is first; tier/shot cuts are hidden.",
 };
 
 const desktop = { width: 1440, height: 900 };
@@ -188,6 +198,14 @@ async function capture(
           required: path === "/",
         }))
         : [{ name: "sheet", control: sheets.first(), required: path === "/" }]),
+      ...(id === "cyanotype" && path === "/"
+        ? ["4n + 1", "4n + 2", "4n + 3", "4n"].map((nth, index) => ({
+          name: `card-${"abcd"[index]}`,
+          // Showcase card art follows the wrapping li, unlike module plates.
+          control: page.locator(`.showcase-row > li:nth-child(${nth}) a.card.faceplate.is-live`).first(),
+          required: true,
+        }))
+        : []),
     ];
     for (const { name, control, required } of controls) {
       if (required) await expect(control, `${id} ${path}: required ${name} coverage`).toHaveCount(1);
