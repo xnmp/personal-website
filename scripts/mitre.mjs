@@ -206,10 +206,22 @@ function minCut(n, depth, cost) {
  * whole face repeats along its length (a glaze's mottle) is one rail as deep
  * as the tile ("t", `depth` its height). Works on the base art, in place.
  */
-export async function tileRails(path, { corner = 56, sides = ["l", "r"], overlap = 32, depth = corner, blend = 0 } = {}) {
+/**
+ * @typedef {{width: number, height: number, corner: number, depth: number,
+ * overlap: number, joins: {side: string, cut: number[]}[]}} TilePlan
+ */
+/**
+ * @param {string} path
+ * @param {{corner?: number, sides?: string[], overlap?: number, depth?: number, blend?: number, density?: number}} options
+ * @param {TilePlan | null} plan
+ */
+export async function tileRails(path, { corner = 56, sides = ["l", "r"], overlap = 32, depth = corner, blend = 0, density = 1 } = {}, plan = null) {
   const { data, info } = await sharp(path).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const { width: W, height: H } = info;
   const C = corner;
+  if (plan && (W !== plan.width * density || H !== plan.height * density || corner !== plan.corner * density || depth !== plan.depth * density || overlap !== plan.overlap * density ||
+    plan.joins.map((j) => j.side).join() !== ["r", "b", "t", "l"].filter((s) => sides.includes(s)).flatMap((s) => [s, s]).join())) throw new Error("tileRails: plan geometry does not match native art");
+  const joins = [];
   if (overlap > C) throw new Error(`tileRails: overlap ${overlap} is deeper than the ${C}px corner`);
   // `blend` (px): the art's broad tone along the rail (blurred by that much
   // along it, premultiplied; not across it, so a rim's highlight keeps its
@@ -247,7 +259,11 @@ export async function tileRails(path, { corner = 56, sides = ["l", "r"], overlap
     // rows i0 .. i0+overlap-1: `before` up to the path, `after` from it
     const join = (i0, before, after) => {
       const N = overlap;
-      const cut = minCut(N, depth, (s, j) => diff(before(i0 + s, j), after(i0 + s, j)));
+      const decision = plan?.joins[joins.length];
+      const cut = decision
+        ? Int32Array.from({ length: depth }, (_, j) => decision.cut[Math.floor(j / density)] * density)
+        : minCut(N, depth, (s, j) => diff(before(i0 + s, j), after(i0 + s, j)));
+      joins.push({ side, cut: Array.from(cut) });
       for (let j = 0; j < depth; j++)
         for (let s = 0; s < N; s++) {
           const p = s < cut[j] ? before(i0 + s, j) : after(i0 + s, j);
@@ -269,6 +285,7 @@ export async function tileRails(path, { corner = 56, sides = ["l", "r"], overlap
   await sharp(data, { raw: { width: W, height: H, channels: 4 } }).png().toFile(path + ".tmp.png");
   const { renameSync } = await import("node:fs");
   renameSync(path + ".tmp.png", path);
+  return { width: W, height: H, corner, depth, overlap, joins };
 }
 
 /** RGBA art's broad tone along one axis ("x" or "y"): a Gaussian of
@@ -330,7 +347,20 @@ const seeded = (seed) => () => {
  * cleared for the page's own, scripts/framed-pane.mjs, so nothing of it
  * shows). Works on the base art, in place; returns its new size.
  */
-export async function lengthenRails(path, { corner = 56, length = [null, null], patch = 64, overlap = 20, tolerance = 0.2, seed = 1, pool = false, quiet = null, splice = [], spliceOverlap = 32, density = 1 } = {}) {
+/**
+ * @typedef {{width: number, height: number, outputWidth: number, outputHeight: number,
+ * corner: number, patches: {side: string, source: string, start: number,
+ * pos: number, patch: number, cut: number[]}[]}} QuiltPlan
+ */
+/**
+ * @param {string} path
+ * @param {{corner?: number, length?: (number | null)[], patch?: number,
+ * overlap?: number, tolerance?: number, seed?: number, pool?: boolean,
+ * quiet?: {share: number, depth?: number} | null, splice?: string[],
+ * spliceOverlap?: number, density?: number}} options
+ * @param {QuiltPlan | null} plan
+ */
+export async function lengthenRails(path, { corner = 56, length = [null, null], patch = 64, overlap = 20, tolerance = 0.2, seed = 1, pool = false, quiet = null, splice = [], spliceOverlap = 32, density = 1 } = {}, plan = null) {
   const { data: src, info } = await sharp(path).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const { width: W, height: H } = info;
   const C = corner;
@@ -356,6 +386,8 @@ export async function lengthenRails(path, { corner = 56, length = [null, null], 
     r: { len: H - 2 * C, to: ly, from: (i, j) => inAt(W - 1 - j, C + i), into: (i, j) => outAt(W2 - 1 - j, C + i) },
   };
   const random = seeded(seed);
+  const patches = [];
+  if (plan && (W !== plan.width * density || H !== plan.height * density || W2 !== plan.outputWidth * density || H2 !== plan.outputHeight * density || corner !== plan.corner * density)) throw new Error("lengthenRails: plan geometry does not match native art");
   // which pieces of a rail, `P` px long, are its most marked (`quiet.share`
   // of them): a piece's mark is its worst chip, the most its pixels, to
   // `quiet.depth`, depart from the rail's median at their depth (luminance
@@ -396,6 +428,20 @@ export async function lengthenRails(path, { corner = 56, length = [null, null], 
       for (let i = 0; i < len; i++) for (let j = 0; j < C; j++) src.copy(out, into(i, j), from(i, j), from(i, j) + 4);
       continue;
     }
+    // The logical render owns quilting decisions. Native art supplies the
+    // samples, with the same source pieces, orientations and boundary cuts.
+    // Re-ranking at density 2 changes even a seeded arrangement.
+    if (plan) {
+      for (const piece of plan.patches.filter((p) => p.side === side)) {
+        const source = runs[piece.source];
+        for (let j = 0; j < C; j++)
+          for (let r = piece.cut[Math.floor(j / density)] * density; r < piece.patch * density; r++) {
+            const p = source.from(piece.start * density + r, j);
+            src.copy(out, into(piece.pos * density + r, j), p, p + 4);
+          }
+      }
+      continue;
+    }
     const P = Math.min(patch, Math.floor(len / 2));
     const O = Math.min(overlap, Math.floor(P / 2));
     if (to < P + O) throw new Error(`lengthenRails: a ${to}px rail is shorter than two ${P}px pieces can meet in`);
@@ -414,6 +460,7 @@ export async function lengthenRails(path, { corner = 56, length = [null, null], 
     // laid (up to `end`) on the cut through their overlap
     const lay = ({ q, s }, pos, end) => {
       const cut = end > pos ? minCut(end - pos, C, (r, j) => diff(into(pos + r, j), q.from(s + r, j))) : new Int32Array(C);
+      patches.push({ side, source: q.k, start: s, pos, patch: P, cut: Array.from(cut) });
       for (let j = 0; j < C; j++)
         for (let r = cut[j]; r < P; r++) src.copy(out, into(pos + r, j), q.from(s + r, j), q.from(s + r, j) + 4);
     };
@@ -495,7 +542,7 @@ export async function lengthenRails(path, { corner = 56, length = [null, null], 
   await sharp(out, { raw: { width: W2, height: H2, channels: 4 } }).png().toFile(path + ".tmp.png");
   const { renameSync } = await import("node:fs");
   renameSync(path + ".tmp.png", path);
-  return { width: W2, height: H2 };
+  return { width: W2, height: H2, plan: { width: W, height: H, outputWidth: W2, outputHeight: H2, corner, patches } };
 }
 
 /**

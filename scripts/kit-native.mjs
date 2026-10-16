@@ -96,7 +96,7 @@ export const scaleLengthen = (value, d) => ({
 });
 export const scaleTileRails = (value, d) => {
   const settings = { corner: 56, overlap: 32, blend: 0, ...(value === true ? {} : value) };
-  return scaleLengths({ ...settings, depth: settings.depth ?? settings.corner }, ['corner', 'overlap', 'depth', 'blend'], d);
+  return scaleLengths({ ...settings, density: d, depth: settings.depth ?? settings.corner }, ['corner', 'overlap', 'depth', 'blend'], d);
 };
 const scaleSettings = (p, d, painted = false) => Object.fromEntries(Object.entries(p).map(([key, value]) => {
   if (['normal', 'hover', 'pressed', 'flat'].includes(key)) return [key, scaleShadow(value, d)];

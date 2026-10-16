@@ -388,10 +388,26 @@ for (const s of kit.sheets ?? []) {
   if (s.window) await clearWindow(b.path, { ...(s.window === true ? {} : s.window), gain: s.gain ?? 1 });
   // rails grown longer than drawn, so the page's repeat of them (below) is
   // a long one (scripts/mitre.mjs lengthenRails)
-  if (s.lengthen) Object.assign(b, await lengthenRails(b.path, s.lengthen));
+  let railPlans = null;
+  if (density > 1 && s.lengthen) {
+    const logical = nativeKit({ type: "kit", kit: style, name: nativeName }, 1, { rawRoot: resolve(options.raw, ".."), requireRaw: true });
+    const entry = logical.sheets[0], settings = { ...logical.sheet, ...entry };
+    // The restricted lengthened recipes grade and optionally turn their raw.
+    // Do not silently plan on untreated art if another preparation is added.
+    if (entry.ink || entry.temper || entry.smoothRails || entry.grain || entry.mitre || entry.mirror || entry.window) throw new Error("native rail planning requires the logical sheet preparation");
+    const texture = await base(entry.src, { width: settings.width ?? 1000, ...(settings.height && { height: settings.height, fit: "fill" }) }, { gain: entry.gain ?? 1, alphaFloor: entry.alphaFloor }, `${TMP}/${s.name}-rails.png`, 1);
+    if (entry.turn) writeFileSync(texture.path, await sharp(texture.path).rotate(180).png().toBuffer());
+    const { plan } = await lengthenRails(texture.path, entry.lengthen);
+    const tile = entry.tileRails ? await tileRails(texture.path, entry.tileRails === true ? {} : entry.tileRails) : null;
+    railPlans = { lengthen: plan, tile };
+  }
+  if (s.lengthen) {
+    const { width, height } = await lengthenRails(b.path, s.lengthen, railPlans?.lengthen);
+    Object.assign(b, { width, height });
+  }
   // rails that tile between the corners as drawn (the page repeats them:
   // its --plate-repeat), where a stretch would smear what runs across them
-  if (s.tileRails) await tileRails(b.path, s.tileRails === true ? {} : s.tileRails);
+  if (s.tileRails) await tileRails(b.path, s.tileRails === true ? {} : s.tileRails, railPlans?.tile);
   // a strip is printed at a quarter of its art's size: a fine weave in it
   // aliases into a moire there unless the art is filtered first
   if (s.soften) writeFileSync(b.path, await sharp(b.path).blur(s.soften).png().toBuffer());

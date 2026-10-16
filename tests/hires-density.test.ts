@@ -301,3 +301,41 @@ test('rail quilting overlap and depth double as rendered handover regions', () =
   expect(measures[0]).toEqual([4, 10]);
   measures[0].forEach((v, i) => doubles(v, measures[1][i], 0));
 }));
+
+// A detailed native source may rank patches differently. The logical cut plan
+// must preserve the visible arrangement without throwing away subpixel paint.
+test('logical quilt and repeat plans preserve every rail and corner while retaining native detail', () => fixture(async (dir) => {
+  const { lengthenRails, tileRails } = await import('../scripts/mitre.mjs');
+  const { scaleLengthen, scaleTileRails } = await import('../scripts/kit-native.mjs');
+  const W = 96, H = 80, C = 12;
+  const logical = Buffer.alloc(W * H * 4), native = Buffer.alloc(W * H * 16);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const colour = [40 + (x * 17 + y * 31) % 170, 50 + (x * 7 + y * 13) % 160, 90, 255];
+    logical.set(colour, (y * W + x) * 4);
+    for (let yy = 0; yy < 2; yy++) for (let xx = 0; xx < 2; xx++) {
+      native.set([colour[0] + (xx === yy ? 3 : -3), ...colour.slice(1)], ((2 * y + yy) * W * 2 + 2 * x + xx) * 4);
+    }
+  }
+  const one = join(dir, 'plan-one.png'), two = join(dir, 'plan-two.png');
+  await sharp(logical, { raw: { width: W, height: H, channels: 4 } }).png().toFile(one);
+  await sharp(native, { raw: { width: W * 2, height: H * 2, channels: 4 } }).png().toFile(two);
+  const lengthen = { corner: C, length: [128, 40], patch: 20, overlap: 6, seed: 3, pool: true, splice: ['t', 'r', 'b', 'l'], spliceOverlap: 8, quiet: { share: 0.25, depth: 6 } };
+  const { plan } = await lengthenRails(one, lengthen);
+  await expect(lengthenRails(two, scaleLengthen({ ...lengthen, length: [130, 40] }, 2), plan)).rejects.toThrow(/plan geometry/);
+  await lengthenRails(two, scaleLengthen(lengthen, 2), plan);
+  const tile = { corner: C, sides: ['t', 'r', 'b', 'l'], overlap: 8 };
+  const repeatPlan = await tileRails(one, tile);
+  await expect(tileRails(two, scaleTileRails({ ...tile, sides: ['t'] }, 2), repeatPlan)).rejects.toThrow(/plan geometry/);
+  await tileRails(two, scaleTileRails(tile, 2), repeatPlan);
+  const a = await decode(one), b = await decode(two);
+  expect([b.width, b.height]).toEqual([a.width * 2, a.height * 2]);
+  let inspected = 0;
+  for (let y = 0; y < a.height; y++) for (let x = 0; x < a.width; x++) {
+    if (Math.min(x, y, a.width - 1 - x, a.height - 1 - y) >= C) continue;
+    const samples = [0, 1].flatMap(yy => [0, 1].map(xx => ((2 * y + yy) * b.width + 2 * x + xx) * 4));
+    for (let k = 0; k < 4; k++) expect(samples.reduce((sum, p) => sum + b.data[p + k], 0) / 4).toBe(a.data[(y * a.width + x) * 4 + k]);
+    expect(Math.max(...samples.map(p => b.data[p])) - Math.min(...samples.map(p => b.data[p]))).toBe(6);
+    inspected++;
+  }
+  expect(inspected).toBeGreaterThan(1000);
+}));

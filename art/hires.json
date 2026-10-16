@@ -1379,17 +1379,27 @@
     },
     {
       "src": "public/kit/cyanotype/sheet-strip-day-normal.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "cyanotype/sheet-strip-day",
       "reference": "public/kit/cyanotype/sheet-strip-day-normal.webp",
-      "lossless": true
+      "lossless": true,
+      "generator": {
+        "type": "kit",
+        "kit": "cyanotype",
+        "name": "sheet-strip-day-normal"
+      }
     },
     {
       "src": "public/kit/cyanotype/sheet-strip-night-normal.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "cyanotype/sheet-strip-night",
       "reference": "public/kit/cyanotype/sheet-strip-night-normal.webp",
-      "lossless": true
+      "lossless": true,
+      "generator": {
+        "type": "kit",
+        "kit": "cyanotype",
+        "name": "sheet-strip-night-normal"
+      }
     },
     {
       "src": "public/kit/cyanotype/tape-day.webp",
