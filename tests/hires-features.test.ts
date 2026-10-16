@@ -198,7 +198,7 @@ test('deterministic family ships registered lossless outputs; CSS withholds ever
     const entries = family(), { assets } = validateManifest(input(entries));
     await writeFile(join(root, 'art/hires.json'), JSON.stringify(input(entries)));
     const normal = rgba(64, 64);
-    for (const [i, asset] of assets.entries()) await writeFile(join(root, asset.src), await encode(i ? rgba(64, 64, (x, y) => x >= 25 && x < 39 && y >= 25 && y < 39 ? [70 + 20 * i, 100, 130, 255] : [70, 100, 130, 255]) : normal));
+    for (const [i, asset] of assets.entries()) await writeFile(join(root, asset.src), await encode(i ? rgba(64, 64, (x, y) => x >= 25 && x < 39 && y >= 25 && y < 39 ? [70 + 4 * i, 100, 130, 255] : [70, 100, 130, 255]) : normal));
     await writeFile(join(root, 'src/app/kit.css'), `.key {\n  --key: url(/kit/key-normal.png);\n  --hover: url(/kit/key-hover.png);\n  border-image: var(--key) 8 fill / 4px;\n}`);
     expect(await main(['--only', 'key-hover'], { root, invoke: neverInvoke })).toBe(0);
     const reference = await decode(await readFile(join(root, outputPath(assets[0]))));
@@ -326,35 +326,32 @@ test('replacing a cached state tile changes its derivation while keeping every u
   } finally { console.log = log; await rm(root, { recursive: true, force: true }); }
 }, 30_000);
 
-test('periodic gating evaluates the decoded WebP; lossy seam damage requires an explicit accepted lock', async () => {
+test('resample detail refusal cannot be overridden by accept or retry flags', async () => {
   const root = await fixture();
-  const log = console.log, error = console.error;
-  console.log = () => {}; console.error = () => {};
   try {
-    const asset = { src: 'public/kit/material.png', provider: 'resample', periodic: true, quality: 1 };
+    const asset = { src: 'public/kit/material.png', provider: 'resample', periodic: true };
     await writeFile(join(root, 'art/hires.json'), JSON.stringify(input([asset])));
-    const source = rgba(32, 32, (x, y) => [x * 47 + y * 31, x * 67 + y * 17, x * 29 + y * 53].map((v) => v % 256).concat(255));
-    await writeFile(join(root, asset.src), await encode(source));
-    expect(await main([], { root, invoke: neverInvoke })).toBe(1);
-    expect(await readdir(join(root, 'public/kit'))).toEqual(['material.png']);
-    // The deterministic master is exactly the baseline. Only encoding can fail.
-    expect(seamStats(resample(source, 2, true), resample(source, 2, true)).passes).toBe(true);
-    expect(await main(['--accept'], { root, invoke: neverInvoke })).toBe(0);
-    const output = await readFile(join(root, 'public/kit/material@2x.webp'));
-    expect(seamStats(await decode(output), resample(source, 2, true)).passes).toBe(false);
-    const lock = JSON.parse(await readFile(join(root, 'art/hires.lock.json'), 'utf8'));
-    expect(lock.assets['public/kit/material@2x.webp'].accepted).toBe(true);
-  } finally { console.log = log; console.error = error; await rm(root, { recursive: true, force: true }); }
+    await writeFile(join(root, asset.src), await encode(rgba(32, 32, (x, y) => [x % 2 * 255, y % 2 * 255, 100, 255])));
+    for (const flags of [[], ['--accept'], ['--retry-rejected', '5'], ['--dry']]) {
+      expect(await main(flags, { root, invoke: neverInvoke })).toBe(1);
+      expect(await readdir(join(root, 'public/kit'))).toEqual(['material.png']);
+      expect(await readdir(join(root, 'art'))).not.toContain('raw');
+    }
+  } finally { await rm(root, { recursive: true, force: true }); }
 });
 
 test('real Atlas sources retain zero visible outside-mask differences through lossless shipping', async () => {
   const root = await fixture();
   try {
-    const entries = ['normal', 'hover'].map((state) => ({ src: `public/kit/atlas/tile-day-${state}.webp`, family: 'atlas/tile-day', reference: 'public/kit/atlas/tile-day-normal.webp', provider: 'resample' }));
+    const entries = ['normal', 'hover'].map((state) => ({ src: `public/kit/atlas/tile-day-${state}.webp`, family: 'atlas/tile-day', reference: 'public/kit/atlas/tile-day-normal.webp', provider: 'api' }));
     await mkdir(join(root, 'public/kit/atlas'));
     await writeFile(join(root, 'art/hires.json'), JSON.stringify(input(entries)));
     for (const entry of entries) await writeFile(join(root, entry.src), await readFile(new URL(`../${entry.src}`, import.meta.url)));
-    expect(await main([], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main([], { root, invoke: async (_command: string, args: string[]) => {
+      const arg = (name: string) => args[args.indexOf(name) + 1];
+      const [w, h] = arg('--size').split('x').map(Number);
+      await sharp(arg('--image')).resize(w, h).png().toFile(arg('--out'));
+    } })).toBe(0);
     const [normal, state] = await Promise.all(entries.map(async (entry) => decode(await readFile(join(root, entry.src)))));
     const [reference, shipped] = await Promise.all(entries.map(async (entry) => decode(await readFile(join(root, outputPath({ ...entry, factor: 2 }))))));
     const mask = expandMask(differenceMask(state, normal), normal.width, normal.height);

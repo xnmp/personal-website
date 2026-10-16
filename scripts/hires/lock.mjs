@@ -1,5 +1,6 @@
-import { createHash } from 'node:crypto';
-import { readFile, writeFile, rename } from 'node:fs/promises';
+import { createHash, randomUUID } from 'node:crypto';
+import { readFile, writeFile, rename, open, unlink } from 'node:fs/promises';
+import { setTimeout as delay } from 'node:timers/promises';
 import { extname, resolve } from 'node:path';
 import { recipeDigest } from './manifest.mjs';
 import { derivationDigest } from './states.mjs';
@@ -42,11 +43,33 @@ export async function readLock(root) {
   return value;
 }
 
-// Assets publish sequentially; commit each entry only after its output succeeds.
+// Exclusive creation serialises writers across processes. Never steal a lock:
+// a slow writer must not lose ownership. A crashed writer fails closed; remove
+// its .writing file after confirming that process has stopped.
 export async function writeLockEntry(root, asset, entry) {
-  const lock = await readLock(root);
-  const assets = Object.fromEntries(Object.entries({ ...lock.assets, [outputPath(asset)]: entry }).sort(([a], [b]) => a.localeCompare(b)));
   const path = resolve(root, 'art/hires.lock.json');
-  await writeFile(path + '.pending', JSON.stringify({ version: 1, assets }, null, 2) + '\n');
-  await rename(path + '.pending', path);
+  const guard = path + '.writing', pending = path + `.${randomUUID()}.pending`;
+  const deadline = Date.now() + 30_000;
+  let handle;
+  while (!handle) {
+    try { handle = await open(guard, 'wx'); }
+    catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      if (Date.now() >= deadline) throw new Error(`Timed out waiting for ${guard}; check for a stopped writer before removing it`);
+      await delay(20);
+    }
+  }
+  try {
+    await handle.writeFile(`${process.pid}\n`);
+    const lock = await readLock(root);
+    const assets = Object.fromEntries(Object.entries({ ...lock.assets, [outputPath(asset)]: entry }).sort(([a], [b]) => a.localeCompare(b)));
+    await writeFile(pending, JSON.stringify({ version: 1, assets }, null, 2) + '\n', { flag: 'wx' });
+    await rename(pending, path);
+  } finally {
+    try { await unlink(pending).catch((error) => { if (error.code !== 'ENOENT') throw error; }); }
+    finally {
+      try { await handle.close(); }
+      finally { await unlink(guard); }
+    }
+  }
 }

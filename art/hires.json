@@ -685,7 +685,7 @@
     },
     {
       "src": "public/kit/cyanotype/plate-phone-ground-night.webp",
-      "provider": "api"
+      "provider": "resample"
     },
     {
       "src": "public/kit/cyanotype/scene/ground-day/sky.webp",
@@ -701,7 +701,7 @@
     },
     {
       "src": "public/kit/cyanotype/scene/ground-night/sky.webp",
-      "provider": "api"
+      "provider": "resample"
     },
     {
       "src": "public/kit/cyanotype/scene/ground-project-day/sky.webp",
@@ -709,7 +709,7 @@
     },
     {
       "src": "public/kit/cyanotype/scene/ground-project-night/sky.webp",
-      "provider": "api"
+      "provider": "resample"
     },
     {
       "src": "public/kit/cyanotype/screen-grain-day.webp",
@@ -1737,11 +1737,11 @@
     },
     {
       "src": "public/kit/ligne/scene/day/sky.webp",
-      "provider": "api"
+      "provider": "resample"
     },
     {
       "src": "public/kit/ligne/scene/night/sky.webp",
-      "provider": "api"
+      "provider": "resample"
     },
     {
       "src": "public/kit/ligne/sheet-day-flat.webp",

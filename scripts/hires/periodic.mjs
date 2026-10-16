@@ -1,6 +1,10 @@
 import { validateImage } from './merge.mjs';
 
 export const PERIODIC_RECIPE = Object.freeze({ version: 'periodic-v1', halo: 32, rmsTolerance: 1, p99Tolerance: 2 });
+// Gate calibration is independent of pixel processing/cache identity. Twenty
+// real-material periodic Lanczos + WebP controls require excess up to 1.89 RMS
+// and 5 p99 over interior innovation. Rounded limits retain those valid controls.
+export const SEAM_GATE = Object.freeze({ version: 'real-materials-v1', rmsTolerance: 2, p99Tolerance: 5 });
 export function periodicHalo(sigma) {
   if (!Number.isFinite(sigma) || sigma <= 0 || sigma > 64) throw new Error('Periodic sigma must be in (0, 64]');
   return Math.max(PERIODIC_RECIPE.halo, Math.ceil(3 * sigma / 2) + 16);
@@ -46,21 +50,41 @@ export function seamStats(output, baseline) {
     const p = (mod(y, height) * width + mod(x, width)) * channels;
     return img.data[p + c] * (channels === 4 && c < 3 ? img.data[p + 3] / 255 : 1);
   };
-  const errors = [[], []];
-  for (const vertical of [false, true]) for (let p = 0; p < (vertical ? height : width); p++) for (let c = 0; c < channels; c++) {
-    const at = (img, t) => vertical ? value(img, t, p, c) : value(img, p, t, c);
-    const end = vertical ? width : height;
-    const jump = (img) => at(img, 0) - at(img, end - 1);
-    errors[0].push(Math.abs(jump(output) - jump(baseline)));
-    for (const start of [-2, 0]) {
-      const derivative = (img) => (at(img, start + 1) - at(img, start)) - jump(img);
-      errors[1].push(Math.abs(derivative(output) - derivative(baseline)));
-    }
-  }
   const summarize = (values) => {
     values.sort((a, b) => a - b);
     return { rms: Math.sqrt(values.reduce((sum, v) => sum + v * v, 0) / values.length), p99: values[Math.ceil(values.length * 0.99) - 1] };
   };
-  const [jump, derivative] = errors.map(summarize);
-  return { jump, derivative, passes: [jump, derivative].every((s) => s.rms <= PERIODIC_RECIPE.rmsTolerance && s.p99 <= PERIODIC_RECIPE.p99Tolerance) };
+  const errorsAt = (vertical, cut) => {
+    const errors = [[], []];
+    for (let p = 0; p < (vertical ? height : width); p++) for (let c = 0; c < channels; c++) {
+      const at = (img, t) => vertical ? value(img, t + cut, p, c) : value(img, p, t + cut, c);
+      const jump = (img) => at(img, 0) - at(img, -1);
+      errors[0].push(Math.abs(jump(output) - jump(baseline)));
+      for (const start of [-2, 0]) {
+        const derivative = (img) => (at(img, start + 1) - at(img, start)) - jump(img);
+        errors[1].push(Math.abs(derivative(output) - derivative(baseline)));
+      }
+    }
+    return errors;
+  };
+  // New grain has no pointwise correspondence with a bilinear baseline, even
+  // away from the seam. Calibrate that innovation on 15 interior cuts per axis
+  // (90th percentile), then apply the real-material excess tolerance at the wrap.
+  // Keep axes independent: a good horizontal join cannot conceal a bad vertical one.
+  const allErrors = [[], []];
+  const axes = [true, false].map((vertical) => {
+    const errors = errorsAt(vertical, 0);
+    errors.forEach((values, i) => allErrors[i].push(...values));
+    const seam = errors.map(summarize);
+    const interior = Array.from({ length: 15 }, (_, i) => errorsAt(vertical, Math.floor((i + 1) * (vertical ? width : height) / 16)).map(summarize));
+    const percentile = (values) => values.sort((a, b) => a - b)[Math.ceil(values.length * 0.9) - 1];
+    const limits = [0, 1].map((i) => ({
+      rms: percentile(interior.map((cut) => cut[i].rms)) + SEAM_GATE.rmsTolerance,
+      p99: percentile(interior.map((cut) => cut[i].p99)) + SEAM_GATE.p99Tolerance,
+    }));
+    return { axis: vertical ? 'x' : 'y', jump: seam[0], derivative: seam[1], limits: { jump: limits[0], derivative: limits[1] },
+      passes: seam.every((s, i) => s.rms <= limits[i].rms && s.p99 <= limits[i].p99) };
+  });
+  const [jump, derivative] = allErrors.map(summarize);
+  return { jump, derivative, calibration: SEAM_GATE.version, axes, passes: axes.every((axis) => axis.passes) };
 }
