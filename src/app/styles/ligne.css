@@ -257,6 +257,7 @@
   --print-faint: #3d3a35;
   --scene-ground: #f9f3e2;
   --k-scene-flat: url(/kit/ligne/hero-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-scene-flat: url(/kit/ligne/hero-day@2x.webp); }
   --k-sky: url(/kit/ligne/scene/day/sky.webp);
   --k-far: none;
   --k-mid: none;
@@ -271,7 +272,9 @@
   --sun-r: 0;
   --k-drift-cloud: none;
   --k-hero: url(/kit/ligne/hero-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-hero: url(/kit/ligne/hero-day@2x.webp); }
   --k-hero-phone: url(/kit/ligne/hero-day-phone.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-hero-phone: url(/kit/ligne/hero-day-phone@2x.webp); }
   --k-plate: url(/kit/ligne/sheet-day-normal.webp);
   --k-plate-hover: url(/kit/ligne/sheet-day-hover.webp);
   --k-plate-pressed: url(/kit/ligne/sheet-day-pressed.webp);

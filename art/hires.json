@@ -300,7 +300,7 @@
     },
     {
       "src": "public/kit/garden/mug-front-night.webp",
-      "provider": "external",
+      "provider": "api",
       "group": "garden/foreground-night"
     },
     {
@@ -315,7 +315,7 @@
     },
     {
       "src": "public/kit/ligne/hero-day.webp",
-      "provider": "external"
+      "provider": "api"
     },
     {
       "src": "public/kit/ligne/hero-night.webp",
@@ -343,7 +343,7 @@
     },
     {
       "src": "public/kit/ligne/hero-day-phone.webp",
-      "provider": "external"
+      "provider": "api"
     },
     {
       "src": "public/kit/ligne/hero-night-phone.webp",

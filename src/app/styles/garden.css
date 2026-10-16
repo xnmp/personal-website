@@ -116,7 +116,9 @@
   --k-label: url(/kit/garden/label-night.webp);
   --label-ink: #1a2130;
   --k-wall: url(/kit/garden/wall-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-wall: url(/kit/garden/wall-night@2x.webp); }
   --k-mug-front: url(/kit/garden/mug-front-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mug-front: url(/kit/garden/mug-front-night@2x.webp); }
   /* the wall's art in the plate's frame (mock px): trimmed from y 187, 680
      tall, the whole 1672 across (scripts/kits/garden.mjs) */
   --wall-top: 187;

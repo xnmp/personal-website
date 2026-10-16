@@ -96,6 +96,12 @@
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "2fa786fac3c56c7c9840dcb375d8d6c3e2262ff613be8f300b9304cb5d02cec4"
     },
+    "public/kit/garden/mug-front-night@2x.webp": {
+      "sourceSha256": "c66b5c3531266bfb141d34c7126423c4aab8a72f8b653ca0ba4dad01b694f53b",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "481ac4b181ac13cc6664238c8189cd0a1e816030ea29b089b095206fc01db6e1"
+    },
     "public/kit/garden/scene/day/sky@2x.webp": {
       "sourceSha256": "2c8edb683b67c5e8bb383494852985b2a5cea1afbbffbe4268e28aaa5e8351de",
       "factor": 2,
@@ -121,6 +127,18 @@
       "factor": 2,
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "c8f5fe408f847bb5cc050d6180ac70dd157fa0cb8f4b126ce44e800616992c74"
+    },
+    "public/kit/ligne/hero-day-phone@2x.webp": {
+      "sourceSha256": "114e1131f06d2b5d61dffe330b965b12a095ac036a0c2b9b114e89d2179caca9",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "7c7b2a63d921134126e4034c09cf3d05603d02223ef3cfcd907c3cf7222ef049"
+    },
+    "public/kit/ligne/hero-day@2x.webp": {
+      "sourceSha256": "8c74220a6f990731a3a003885caa87926baa1d656e15776e0a169453965ee915",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "82f21424cae9cebc0a4be77739e76457a8daf65dff0979e2cb4d8205fb77f7af"
     },
     "public/kit/ligne/hero-night-phone@2x.webp": {
       "provider": "external",
@@ -459,6 +477,13 @@
       "factor": 2,
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "74b60710bd4c0fccd65d9d68e1be1ff00674818ec051ef810be5f9ff19202a08"
+    },
+    "public/kit/solarpunk/ivy-tuft-night@2x.webp": {
+      "provider": "external",
+      "sourceSha256": "723aa3936b31506779271835f6516186d3f4c60f51392bc1ff23d6dd8e41c070",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "a57f217072e1c3d5c7cf66caf40d9505c95b760f88ea06732337f0628ca92257"
     },
     "public/kit/solarpunk/phone-day@2x.webp": {
       "sourceSha256": "96165d8de62874f6c04943dd077125376e0dc1ac37f2b1ac23c40d0fbe553a8f",

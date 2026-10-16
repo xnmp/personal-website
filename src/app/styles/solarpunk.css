@@ -406,6 +406,7 @@
   --sp-phone-books: url(/kit/solarpunk/phone-books-night.webp);
   --sp-drape: url(/kit/solarpunk/ivy-drape-night.webp);
   --sp-tuft: url(/kit/solarpunk/ivy-tuft-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --sp-tuft: url(/kit/solarpunk/ivy-tuft-night@2x.webp); }
   --sp-corner-a: url(/kit/solarpunk/ivy-corner-a-night.webp);
   --sp-corner-b: url(/kit/solarpunk/ivy-corner-b-night.webp);
   --sp-corner-c: url(/kit/solarpunk/ivy-corner-c-night.webp);
