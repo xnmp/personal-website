@@ -56,6 +56,7 @@
   --k-scene-flat: url(/kit/ligne/hero-night.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-scene-flat: url(/kit/ligne/hero-night@2x.webp); }
   --k-sky: url(/kit/ligne/scene/night/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/ligne/scene/night/sky@2x.webp); }
   --k-sun: none;
   --sun-sw: 1;
   --sun-sh: 1;
@@ -90,6 +91,7 @@
   --plate-slice: var(--slice-plate);
   --plate-field: #4757a6;
   --plate-fill: url(/kit/ligne/paper-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --plate-fill: url(/kit/ligne/paper-night@2x.webp); }
   --plate-fill-size: 384px;
   --plate-fill-repeat: repeat;
   /* the field starts under the ink line, never outside it */
@@ -117,6 +119,7 @@
   /* the frame is flat: it throws no shade into the screen */
   --screen-occlusion: none;
   --k-strip: url(/kit/ligne/sheet-strip-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip: image-set(url(/kit/ligne/sheet-strip-night-normal@2x.webp) 2x); }
   /* panels sit on the page: nothing pins them */
   --k-pin-hold: none;
   --k-pin-hold-signal: none;
@@ -147,13 +150,16 @@
   --key-inset: 3px; /* the legend clears the caption's ink line */
   --key-lift: 0px;
   --k-tape: url(/kit/ligne/tape-night.webp); /* a mint caption tag */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/ligne/tape-night@2x.webp) 2x); }
   --tape-ink: #040404;
   --k-chip: url(/kit/ligne/chip-night.webp); /* inline code: a flat powder-blue tint */
   --k-cap: url(/kit/ligne/cap-night.webp); /* a printed keycap: a white caption */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-cap: image-set(url(/kit/ligne/cap-night@2x.webp) 2x); }
   --k-caption: url(/kit/ligne/caption-night.webp); /* a shelf's narrative caption */
   /* the paper's fibre, a veil laid over a flat tint where a box grows to
      its words (scripts/kits/ligne.mjs fibre-*), and the tints it lies on */
   --k-fibre: url(/kit/ligne/fibre-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-fibre: url(/kit/ligne/fibre-night@2x.webp); }
   --caption-fill: #dcbf5c;
   --tag-fill: #c4d7c0;
   --code-fill: #acc6d5;
@@ -259,6 +265,7 @@
   --k-scene-flat: url(/kit/ligne/hero-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-scene-flat: url(/kit/ligne/hero-day@2x.webp); }
   --k-sky: url(/kit/ligne/scene/day/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/ligne/scene/day/sky@2x.webp); }
   --k-far: none;
   --k-mid: none;
   --k-near: none;
@@ -282,7 +289,9 @@
   --k-plate-flat: url(/kit/ligne/sheet-day-flat.webp);
   --plate-field: #f9f3e2;
   --plate-fill: url(/kit/ligne/paper-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --plate-fill: url(/kit/ligne/paper-day@2x.webp); }
   --k-strip: url(/kit/ligne/sheet-strip-day-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip: image-set(url(/kit/ligne/sheet-strip-day-normal@2x.webp) 2x); }
   --k-bezel: url(/kit/ligne/mat-day.webp);
   --k-key: url(/kit/ligne/tile-day-normal.webp);
   --k-key-hover: url(/kit/ligne/tile-day-hover.webp);
@@ -296,8 +305,10 @@
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/ligne/tape-day@2x.webp) 2x); }
   --k-chip: url(/kit/ligne/chip-day.webp);
   --k-cap: url(/kit/ligne/cap-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-cap: image-set(url(/kit/ligne/cap-day@2x.webp) 2x); }
   --k-caption: url(/kit/ligne/caption-day.webp);
   --k-fibre: url(/kit/ligne/fibre-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-fibre: url(/kit/ligne/fibre-day@2x.webp); }
   --caption-fill: #fce89e;
   --tag-fill: #cee5d1;
   --code-fill: #b5d3e7;

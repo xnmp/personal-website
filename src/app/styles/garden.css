@@ -80,14 +80,20 @@
   --mat-l: 40;
   --bezel-under: #1b1e21;
   --k-key: url(/kit/garden/tile-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key: image-set(url(/kit/garden/tile-night-normal@2x.webp) 2x); }
   --k-key-hover: url(/kit/garden/tile-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-hover: image-set(url(/kit/garden/tile-night-hover@2x.webp) 2x); }
   --k-key-pressed: url(/kit/garden/tile-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-pressed: image-set(url(/kit/garden/tile-night-pressed@2x.webp) 2x); }
   --k-key-focus: url(/kit/garden/tile-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-focus: image-set(url(/kit/garden/tile-night-focus@2x.webp) 2x); }
   --key-inset: 0px;
   --key-lift: 1px;
   --k-tape: url(/kit/garden/tape-night.webp); /* copper plant label */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/garden/tape-night@2x.webp) 2x); }
   --tape-ink: #efe8d6;
   --k-chip: url(/kit/garden/chip-night.webp); /* inline code: a slip of slate */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-chip: image-set(url(/kit/garden/chip-night@2x.webp) 2x); }
   --chip-ink: #efe8d6;
   --chip-pad: 0.35em; /* a straight-cut slip */
   --k-drift-cloud: none;
@@ -98,9 +104,13 @@
   --key-ink: #1d2433;
   --key-ink-soft: #343c4c;
   --k-key-signal: url(/kit/garden/tile-signal-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal: image-set(url(/kit/garden/tile-signal-night-normal@2x.webp) 2x); }
   --k-key-signal-hover: url(/kit/garden/tile-signal-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-hover: image-set(url(/kit/garden/tile-signal-night-hover@2x.webp) 2x); }
   --k-key-signal-pressed: url(/kit/garden/tile-signal-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-pressed: image-set(url(/kit/garden/tile-signal-night-pressed@2x.webp) 2x); }
   --k-key-signal-focus: url(/kit/garden/tile-signal-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-focus: image-set(url(/kit/garden/tile-signal-night-focus@2x.webp) 2x); }
   --key-signal-ink: #f4ecd9; /* cream on the moss */
   --key-signal-under: #2e3c2e;
   --k-pin-brass: url(/kit/garden/pin-brass-night.webp); /* a cream glazed bead, by moonlight */
@@ -108,12 +118,14 @@
   --k-pin-amber: url(/kit/garden/pin-amber-night.webp);
   --k-pin-signal: url(/kit/garden/pin-signal-night.webp);
   --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-glass: url(/kit/paper/glass-glare@2x.webp); }
 
   /* the garden's own art: the sprig beside a name, the stone a row is named
      on, the wall the first screen's cards stand against (kit: props) */
   --k-sprig: url(/kit/garden/sprig-night.webp);
   --k-spray: url(/kit/garden/spray-night.webp);
   --k-label: url(/kit/garden/label-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-label: image-set(url(/kit/garden/label-night@2x.webp) 2x); }
   --label-ink: #1a2130;
   --k-wall: url(/kit/garden/wall-night.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-wall: url(/kit/garden/wall-night@2x.webp); }
@@ -128,6 +140,7 @@
 /* day: soft late-morning sun, the original mock */
 :root[data-style="garden"][data-rice="paper"] {
   --k-tape: url(/kit/garden/tape-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/garden/tape-day@2x.webp) 2x); }
   --tape-ink: #2a1d12; /* stamped into the copper */
   --signal: #4a6140; /* moss: the primary button, focus */
   --signal-ink: #3e5535;
@@ -173,10 +186,15 @@
   --k-key-pressed: url(/kit/garden/tile-day-pressed.webp);
   --k-key-focus: url(/kit/garden/tile-day-focus.webp);
   --k-key-signal: url(/kit/garden/tile-signal-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal: image-set(url(/kit/garden/tile-signal-normal@2x.webp) 2x); }
   --k-key-signal-hover: url(/kit/garden/tile-signal-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-hover: image-set(url(/kit/garden/tile-signal-hover@2x.webp) 2x); }
   --k-key-signal-pressed: url(/kit/garden/tile-signal-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-pressed: image-set(url(/kit/garden/tile-signal-pressed@2x.webp) 2x); }
   --k-key-signal-focus: url(/kit/garden/tile-signal-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-focus: image-set(url(/kit/garden/tile-signal-focus@2x.webp) 2x); }
   --k-chip: url(/kit/garden/chip-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-chip: image-set(url(/kit/garden/chip-day@2x.webp) 2x); }
   --chip-ink: #efe8d6; /* chalk on slate */
   --k-drift-cloud: none;
   --motes: #fff3c8;
@@ -194,6 +212,7 @@
   --k-sprig: url(/kit/garden/sprig-day.webp);
   --k-spray: url(/kit/garden/spray-day.webp);
   --k-label: url(/kit/garden/label-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-label: image-set(url(/kit/garden/label-day@2x.webp) 2x); }
   --label-ink: #1c1a12;
   --k-wall: url(/kit/garden/wall-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-wall: url(/kit/garden/wall-day@2x.webp); }

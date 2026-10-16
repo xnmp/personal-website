@@ -48,8 +48,10 @@ function casesFor(kit: string) {
   if (["paper", "solarpunk", "cyanotype"].includes(kit)) {
     cases.push(...["/p/ashen-cathedral", "/p/tauri-explorer"].map((path) => ({ path, viewport: desktop })));
   }
-  // Garden's launch gallery adds normal and flat sheet borders at other sizes.
-  if (kit === "garden") cases.push({ path: "/p/tauri-explorer", viewport: desktop });
+  // Garden's launch gallery adds normal and flat sheet borders at other sizes;
+  // the launch page's kickers, inline code and keycaps carry Atlas's tape and
+  // chip and Sumi's chip, which the home page never renders.
+  if (["garden", "atlas", "sumi"].includes(kit)) cases.push({ path: "/p/tauri-explorer", viewport: desktop });
   if (["paper", "solarpunk", "ligne"].includes(kit)) {
     cases.push({ path: "/", viewport: { width: 390, height: 900 } });
   }
@@ -162,10 +164,12 @@ async function capture(
     await snapshot("normal", true);
     if (path === "/" && viewport.width === desktop.width) {
       // Real links: never force pseudo-classes or swap tokens. A neutral key
-      // exercises Atlas's tile family; a shelf link exercises Garden's sheet
-      // family (the showcase uses different art in several styles).
+      // exercises Atlas's tile family; the signal key the signal tile family;
+      // a shelf link exercises Garden's sheet family (the showcase uses
+      // different art in several styles).
       for (const [name, control] of [
         ["key", page.getByRole("link", { name: "Try it live", exact: true })],
+        ["signal", page.getByRole("link", { name: /^Join the .+ alpha$/ })],
         ["sheet", page.locator("a.module.faceplate.is-live").first()],
       ] as const) {
         await control.hover();

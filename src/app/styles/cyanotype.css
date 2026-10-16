@@ -120,6 +120,7 @@
      scripts/mitre.mjs tileRails) */
   --plate-repeat: round;
   --k-light: url(/kit/cyanotype/sheet-night-light.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-light: url(/kit/cyanotype/sheet-night-light@2x.webp); }
   --plate-light: var(--k-light);
   /* the blue of the emulsion washed into a card's margins (--card-wash) */
   --wash-ink: 74 104 150;
@@ -153,8 +154,10 @@
   --key-inset: 4px; /* the legend clears the slip's deckle */
   --key-lift: 0px; /* a slip's edge is a hair: the legend centres in the box */
   --k-tape: url(/kit/cyanotype/tape-night.webp); /* cream paper tape */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/cyanotype/tape-night@2x.webp) 2x); }
   --tape-ink: #1c1a16;
   --k-chip: url(/kit/cyanotype/chip-night.webp); /* inline code: a slip of card */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-chip: image-set(url(/kit/cyanotype/chip-night@2x.webp) 2x); }
   --chip-ink: #1c1a16;
   --chip-pad: 0.35em; /* a straight-cut slip */
   --k-drift-cloud: none;
@@ -177,10 +180,13 @@
   --k-pin-amber: url(/kit/cyanotype/pin-amber.webp); /* coral */
   --k-pin-signal: url(/kit/cyanotype/pin-signal.webp); /* sun yellow */
   --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-glass: url(/kit/paper/glass-glare@2x.webp); }
   /* the white of the type on the print, as the sun printed it: a little of
      the blue showing through (scripts/kits/cyanotype.mjs typeTile) */
   --k-type: url(/kit/cyanotype/type-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-type: url(/kit/cyanotype/type-night@2x.webp); }
   --k-type-clean: url(/kit/cyanotype/type-clean-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-type-clean: url(/kit/cyanotype/type-clean-night@2x.webp); }
 
   /* the print's own fittings (below): its torn edge, a piece of tape */
   --k-frame: url(/kit/cyanotype/frame-night.webp);
@@ -193,6 +199,7 @@
      (scripts/kits/cyanotype-screen.mjs); dark by night, the rice's own */
   --k-screen-bezel: url(/kit/cyanotype/screen-bezel-night.webp);
   --k-screen-grain: url(/kit/cyanotype/screen-grain-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-screen-grain: url(/kit/cyanotype/screen-grain-night@2x.webp); }
   --screen-shade: inset 2px 3px 9px rgb(0 0 0 / 0.5);
   /* the mounts the project page's figure and the launch page's window lie
      on, taped (below) */
@@ -271,6 +278,7 @@
 /* day: daylight on the print and the white paper */
 :root[data-style="cyanotype"][data-rice="paper"] {
   --k-tape: url(/kit/cyanotype/tape-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/cyanotype/tape-day@2x.webp) 2x); }
   --tape-ink: #142033;
   --signal: #f2c14e;
   --signal-ink: #1f4e8c;
@@ -338,6 +346,7 @@
      the cards' 234, 232, 225): the same paper, its mean warmed */
   --plate-fill-warm: url(/kit/cyanotype/paper-warm-day.webp);
   --k-light: url(/kit/cyanotype/sheet-day-light.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-light: url(/kit/cyanotype/sheet-day-light@2x.webp); }
   --plate-light: var(--k-light);
   --wash-ink: 96 132 176;
   --k-strip: url(/kit/cyanotype/sheet-strip-day-normal.webp);
@@ -360,6 +369,7 @@
   --k-key-signal-pressed: url(/kit/cyanotype/tile-signal-pressed.webp);
   --k-key-signal-focus: url(/kit/cyanotype/tile-signal-focus.webp);
   --k-chip: url(/kit/cyanotype/chip-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-chip: image-set(url(/kit/cyanotype/chip-day@2x.webp) 2x); }
   --chip-ink: #142033;
   --motes: #f6f4ee;
   --motes-kind: dust;
@@ -375,6 +385,7 @@
   /* light by day: the print's paper, not white */
   --k-screen-bezel: url(/kit/cyanotype/screen-bezel-day.webp);
   --k-screen-grain: url(/kit/cyanotype/screen-grain-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-screen-grain: url(/kit/cyanotype/screen-grain-day@2x.webp); }
   --screen-paper: #ebe7dc;
   --screen-shade: inset 3px 4px 10px rgb(8 24 52 / 0.42);
   /* the window by day is light (the product), but it is a print: laid on the
@@ -395,10 +406,13 @@
   --k-mount-tape-project: url(/kit/cyanotype/mount-tape-project-day.webp);
   --k-mount-tape-launch: url(/kit/cyanotype/mount-tape-launch-day.webp);
   --k-phone-sky: url(/kit/cyanotype/plate-phone-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-phone-sky: url(/kit/cyanotype/plate-phone-day@2x.webp); }
   --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-day.webp);
   --k-strip-phone: url(/kit/cyanotype/strip-phone-day.webp);
   --k-type: url(/kit/cyanotype/type-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-type: url(/kit/cyanotype/type-day@2x.webp); }
   --k-type-clean: url(/kit/cyanotype/type-clean-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-type-clean: url(/kit/cyanotype/type-clean-day@2x.webp); }
   --l-ink: #e0e1dc;
   --l-ink-soft: #d3d8da;
   --l-chalk: rgb(236 234 228 / 0.92);

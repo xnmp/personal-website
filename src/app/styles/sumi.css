@@ -56,6 +56,7 @@
   --k-plate-flat: url(/kit/sumi/sheet-night-flat.webp);
   --plate-slice: var(--slice-plate);
   --plate-fill: url(/kit/sumi/washi-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --plate-fill: url(/kit/sumi/washi-night@2x.webp); }
   --plate-fill-size: 512px;
   --plate-fill-repeat: repeat;
   /* the page's paper starts under the deckle's solid paper, never out in a
@@ -83,6 +84,7 @@
   /* the screens framed as the mock frames its window: a thin band of
      charcoal with rounded corners */
   --k-bezel: url(/kit/sumi/mat-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-bezel: image-set(url(/kit/sumi/mat-night@2x.webp) 2x); }
   --mat-t: 65;
   --mat-r: 66;
   --mat-b: 64;
@@ -97,8 +99,10 @@
   --key-lift: 0px; /* a line has no thickness to lift the label off */
   /* a label and inline code: a slip of ink-dyed washi */
   --k-tape: url(/kit/sumi/chip-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/sumi/chip-night@2x.webp) 2x); }
   --tape-ink: #ece4d2;
   --k-chip: url(/kit/sumi/chip-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-chip: image-set(url(/kit/sumi/chip-night@2x.webp) 2x); }
   --chip-ink: #ece4d2;
   --chip-pad: 0.35em; /* a straight-cut slip */
   --k-drift-cloud: none;
@@ -120,10 +124,14 @@
      cinnabar, a live project's seal the deep paste (see the shelves below)
      and the alpha's the bright vermilion */
   --k-pin-brass: url(/kit/sumi/pin-brass.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-pin-brass: url(/kit/sumi/pin-brass@2x.webp); }
   --k-pin-green: url(/kit/sumi/pin-signal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-pin-green: url(/kit/sumi/pin-signal@2x.webp); }
   --k-pin-amber: url(/kit/sumi/pin-amber.webp);
   --k-pin-signal: url(/kit/sumi/pin-signal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-pin-signal: url(/kit/sumi/pin-signal@2x.webp); }
   --k-glass: url(/kit/paper/glass-glare.webp); /* a neutral glare map, shared */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-glass: url(/kit/paper/glass-glare@2x.webp); }
   --k-calligraphy: url(/kit/sumi/calligraphy-night.webp);
   --k-rule: url(/kit/sumi/rule-night.webp);
 }
@@ -131,8 +139,10 @@
 /* day: the mock's own painting, ink on warm paper */
 :root[data-style="sumi"][data-rice="paper"] {
   --k-tape: url(/kit/sumi/chip-day.webp); /* a slip of pale washi */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/sumi/chip-day@2x.webp) 2x); }
   --tape-ink: #1d1d1f;
   --k-chip: url(/kit/sumi/chip-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-chip: image-set(url(/kit/sumi/chip-day@2x.webp) 2x); }
   --chip-ink: #1d1d1f;
   --signal: #b23a2e;
   --signal-ink: #8f231d;
@@ -161,8 +171,10 @@
   --k-plate-focus: url(/kit/sumi/sheet-day-focus.webp);
   --k-plate-flat: url(/kit/sumi/sheet-day-flat.webp);
   --plate-fill: url(/kit/sumi/washi-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --plate-fill: url(/kit/sumi/washi-day@2x.webp); }
   --k-strip: url(/kit/sumi/sheet-day-normal.webp);
   --k-bezel: url(/kit/sumi/mat-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-bezel: image-set(url(/kit/sumi/mat-day@2x.webp) 2x); }
   --mat-t: 64;
   --mat-r: 66;
   --mat-b: 64;

@@ -33,13 +33,18 @@
   --card-under: #353c52;
   --k-band: url(/kit/paper/band-night.webp);
   --k-band-left: url(/kit/paper/band-left-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-band-left: image-set(url(/kit/paper/band-left-night@2x.webp) 2x); }
   --k-strip: url(/kit/paper/strip-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip: image-set(url(/kit/paper/strip-night@2x.webp) 2x); }
   --k-hero: url(/kit/paper/hero-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-hero: image-set(url(/kit/paper/hero-night@2x.webp) 2x); }
   --k-mount: url(/kit/paper/mount-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mount: image-set(url(/kit/paper/mount-night@2x.webp) 2x); }
   --k-label: url(/kit/paper/label-night.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-label: url(/kit/paper/label-night@2x.webp); }
   --k-ribbon: url(/kit/paper/ribbon-night.webp);
   --k-ledge: url(/kit/paper/ledge-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ledge: image-set(url(/kit/paper/ledge-night@2x.webp) 2x); }
   --k-foreground: url(/kit/paper/foreground-night.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-foreground: url(/kit/paper/foreground-night@2x.webp); }
   --k-tips: url(/kit/paper/tips-night.webp);
@@ -124,13 +129,18 @@
   --scene-ground: #63604e;
   --k-band: url(/kit/paper/band-day.webp);
   --k-band-left: url(/kit/paper/band-left-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-band-left: image-set(url(/kit/paper/band-left-day@2x.webp) 2x); }
   --k-strip: url(/kit/paper/strip-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip: image-set(url(/kit/paper/strip-day@2x.webp) 2x); }
   --k-hero: url(/kit/paper/hero-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-hero: image-set(url(/kit/paper/hero-day@2x.webp) 2x); }
   --k-mount: url(/kit/paper/mount-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mount: image-set(url(/kit/paper/mount-day@2x.webp) 2x); }
   --k-label: url(/kit/paper/label-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-label: url(/kit/paper/label-day@2x.webp); }
   --k-ribbon: url(/kit/paper/ribbon-day.webp);
   --k-ledge: url(/kit/paper/ledge-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ledge: image-set(url(/kit/paper/ledge-day@2x.webp) 2x); }
   --k-foreground: url(/kit/paper/foreground-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-foreground: url(/kit/paper/foreground-day@2x.webp); }
   --k-tips: url(/kit/paper/tips-day.webp);
