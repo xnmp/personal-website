@@ -18276,6 +18276,30 @@
       "height": 192,
       "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd"
     },
+    "public/kit/ligne/caption-day@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "6987275c09a40babdd90a31c36bd4ae36f89c413ea4c6bc407f1548eb756bdc3",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "5f73f5d82a3f6603ea986cdb0ae15509aa1bb56cd1ee6f4ae6e6e03db48887ce",
+      "recipeDigest": "d915a2729f7d47a078de58c0134b5d5da4b596f9652b72e7ac8511d148f0bc64",
+      "outputSha256": "c9aed35398e4272cee06bb59010623ac630ff8c5422a81fc809bc5da4d5a679e",
+      "width": 352,
+      "height": 192
+    },
+    "public/kit/ligne/caption-night@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "6987275c09a40babdd90a31c36bd4ae36f89c413ea4c6bc407f1548eb756bdc3",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "a5aa22dd41d5765e07dccf5e9ac40964af9f0d415e15be8b5b1605df1869c1e9",
+      "recipeDigest": "83bc31cb728161edeef47cdbe728affd94600711a85e89dacdb471c7e5415daf",
+      "outputSha256": "c9aed35398e4272cee06bb59010623ac630ff8c5422a81fc809bc5da4d5a679e",
+      "width": 352,
+      "height": 192
+    },
     "public/kit/ligne/fibre-day@2x.webp": {
       "provider": "external",
       "sourceSha256": "a9a01b3b9da7aa7e103a4ba0d3941bed9ba7072951c31e251e21c4ab410a486d",
@@ -18330,6 +18354,30 @@
       "cacheKey": "9819fa07c3b67c4af2cd0766a354267404bae2588cfb4c59a2bd6a50671a5db5",
       "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd"
     },
+    "public/kit/ligne/mat-day@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "5dc362a4657f2831c2202e2aa0d3ef1ef3c646b1778a6a605c6c4f92894e4237",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "de82b2f9dc862f6cb678778223d1ebf20a4e9adcfd93b3389698c2c635cdf69b",
+      "recipeDigest": "2c02e7daa14186a08886e1488bb968195f7ce30db3094582054964a35621a6d2",
+      "outputSha256": "4b30f6f2e0e7397437a910456b5c8313ea1395ec0194e3981eb1678e888601b5",
+      "width": 2560,
+      "height": 1450
+    },
+    "public/kit/ligne/mat-night@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "5dc362a4657f2831c2202e2aa0d3ef1ef3c646b1778a6a605c6c4f92894e4237",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "1d9803497c02fc18e839551a923ebec89ef92aecbd617589769f51eff482cb5a",
+      "recipeDigest": "497464a033b84470014a11cd661214e0df7850670b78483a8b60061b780a76f2",
+      "outputSha256": "4b30f6f2e0e7397437a910456b5c8313ea1395ec0194e3981eb1678e888601b5",
+      "width": 2560,
+      "height": 1450
+    },
     "public/kit/ligne/paper-day@2x.webp": {
       "sourceSha256": "cee0692ba1b41d9d08d7f0d807e0bf45325b4dd6c445566cb5dcb3288bc11959",
       "factor": 2,
@@ -18377,297 +18425,17 @@
       "settingsDigest": "1939224064ae42356aca0d185b62e95235d8306538c258a7c01d9f240c8562d0"
     },
     "public/kit/ligne/sheet-day-flat@2x.webp": {
-      "settingsDigest": "b3ee2cfb2f5f01213adc0b28cc000286223ae66f2ac6218fcd5e18422a0fc8c4",
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
       "sourceSha256": "1398d86505e5a0317963999f0bf6d86029f2f7a549fc86380efae2cf7a9eeb3b",
       "factor": 2,
-      "model": "gpt-image-2.5-sunburst",
-      "cacheKey": "3e3c91d2d8b76e11b30e7e360c7555085d166ab8b4b9e3dd9e786bdee615bb41",
+      "model": "kit-native-ink-v1",
+      "cacheKey": "91bb5be5378adc13857a2a349fb91465d3aaf041dc09f21ba62947490cb6708e",
       "stateDerivation": {
-        "mode": "auto",
+        "mode": "generate",
         "maxHf": 4,
         "hfRms": 4.25917568197417,
-        "method": "residual",
-        "fallbackReason": "whole: cannot establish alignment (0 reliable blocks; need 3 of 11 visible blocks); tile 0: cannot establish alignment (0 reliable blocks; need 3 of 11 visible blocks); whole-image: residual median 0.90 source px > 0.6; whole-image: residual p90 4.01 source px > 1.0; state-region: cannot establish alignment (1 reliable blocks; need 3 of 11 visible blocks); state-region: residual median 3.20 source px > 0.6; state-region: residual p90 3.20 source px > 1.0; state tile 0: cannot establish alignment (1 reliable blocks; need 3 of 11 visible blocks); state tile 0: residual median 3.20 source px > 0.6; state tile 0: residual p90 3.20 source px > 1.0",
-        "generated": {
-          "change": {
-            "threshold": 24,
-            "noiseFloor": 8,
-            "sigma": 1,
-            "minimumMagnitude": 0.5,
-            "minimumShare": 0.9,
-            "noiseSigma": [
-              0.0692805456161499,
-              0.05938453674316406,
-              0.03958898420333862,
-              0.4206348129272461
-            ],
-            "maxDelta": 77,
-            "noiseOnly": false,
-            "outputMaxDelta": 77.05711364746094,
-            "strongPixels": 12796,
-            "reproducedPixels": 12796,
-            "share": 1,
-            "passes": true
-          },
-          "conformance": {
-            "alignment": {
-              "inherited": false
-            },
-            "wholeImage": {
-              "mae": [
-                3.8157890122108795,
-                3.7980455022578807,
-                3.6467225849972555
-              ],
-              "meanColourDelta": [
-                -3.6953048860496334,
-                -3.665625927768877,
-                -3.4912055884180715
-              ],
-              "blurredMae": 3.7535190331553387,
-              "weightedArea": 10393.6470874995,
-              "visibleFraction": 0.021673479400736304,
-              "gateable": true,
-              "postWarp": {
-                "weightedArea": 10393.6470874995,
-                "visibleFraction": 0.021673479400736304,
-                "gateable": true,
-                "reliableShare": 0.13580246913580246,
-                "reliableBlocks": 11,
-                "totalBlocks": 81,
-                "visibleBlocks": 24,
-                "measuredReliableBlocks": 13,
-                "outlierBlocks": 2,
-                "median": 0.9013878188659974,
-                "p90": 4.00780488547035,
-                "max": 4.6097722286464435,
-                "registrationMetric": "block-luminance-dog-zncc",
-                "registrationSigmas": [
-                  1,
-                  4
-                ],
-                "registrationStep": 0.25
-              }
-            },
-            "whole": {
-              "mae": [
-                2.4926577079720973,
-                2.587889108564002,
-                2.72374409759688
-              ],
-              "meanColourDelta": [
-                -2.4255054957464033,
-                -2.5551074904620084,
-                -2.72374409759688
-              ],
-              "blurredMae": 2.601430304710993,
-              "weightedArea": 3936.564706146717,
-              "visibleFraction": 0.016163802162036597,
-              "gateable": true,
-              "flow": {
-                "weightedArea": 3936.564706146717,
-                "visibleFraction": 0.016163802162036597,
-                "gateable": true,
-                "reliableShare": 0.027777777777777776,
-                "reliableBlocks": 1,
-                "totalBlocks": 36,
-                "visibleBlocks": 11,
-                "measuredReliableBlocks": 1,
-                "outlierBlocks": 0,
-                "median": 3.2015621187164243,
-                "p90": 3.2015621187164243,
-                "max": 3.2015621187164243,
-                "registrationMetric": "block-luminance-dog-zncc",
-                "registrationSigmas": [
-                  1,
-                  4
-                ],
-                "registrationStep": 0.25
-              },
-              "postWarp": {
-                "weightedArea": 3936.564706146717,
-                "visibleFraction": 0.016163802162036597,
-                "gateable": true,
-                "reliableShare": 0.027777777777777776,
-                "reliableBlocks": 1,
-                "totalBlocks": 36,
-                "visibleBlocks": 11,
-                "measuredReliableBlocks": 1,
-                "outlierBlocks": 0,
-                "median": 3.2015621187164243,
-                "p90": 3.2015621187164243,
-                "max": 3.2015621187164243,
-                "registrationMetric": "block-luminance-dog-zncc",
-                "registrationSigmas": [
-                  1,
-                  4
-                ],
-                "registrationStep": 0.25
-              }
-            },
-            "tiles": [
-              {
-                "mae": [
-                  2.4926577079720973,
-                  2.587889108564002,
-                  2.72374409759688
-                ],
-                "meanColourDelta": [
-                  -2.4255054957464033,
-                  -2.5551074904620084,
-                  -2.72374409759688
-                ],
-                "blurredMae": 2.601430304710993,
-                "weightedArea": 3936.564706146717,
-                "visibleFraction": 0.016163802162036597,
-                "gateable": true,
-                "flow": {
-                  "weightedArea": 3936.564706146717,
-                  "visibleFraction": 0.016163802162036597,
-                  "gateable": true,
-                  "reliableShare": 0.027777777777777776,
-                  "reliableBlocks": 1,
-                  "totalBlocks": 36,
-                  "visibleBlocks": 11,
-                  "measuredReliableBlocks": 1,
-                  "outlierBlocks": 0,
-                  "median": 3.2015621187164243,
-                  "p90": 3.2015621187164243,
-                  "max": 3.2015621187164243,
-                  "registrationMetric": "block-luminance-dog-zncc",
-                  "registrationSigmas": [
-                    1,
-                    4
-                  ],
-                  "registrationStep": 0.25
-                },
-                "postWarp": {
-                  "weightedArea": 3936.564706146717,
-                  "visibleFraction": 0.016163802162036597,
-                  "gateable": true,
-                  "reliableShare": 0.027777777777777776,
-                  "reliableBlocks": 1,
-                  "totalBlocks": 36,
-                  "visibleBlocks": 11,
-                  "measuredReliableBlocks": 1,
-                  "outlierBlocks": 0,
-                  "median": 3.2015621187164243,
-                  "p90": 3.2015621187164243,
-                  "max": 3.2015621187164243,
-                  "registrationMetric": "block-luminance-dog-zncc",
-                  "registrationSigmas": [
-                    1,
-                    4
-                  ],
-                  "registrationStep": 0.25
-                }
-              }
-            ],
-            "registration": {
-              "outsideDifferingPixels": 0,
-              "stateMae": 0.8096698469352653,
-              "changedSourcePixels": 12855,
-              "preservedSourcePixels": 12855,
-              "preservedShare": 1,
-              "suppressed": false
-            },
-            "reasons": [
-              "whole: cannot establish alignment (0 reliable blocks; need 3 of 11 visible blocks)",
-              "tile 0: cannot establish alignment (0 reliable blocks; need 3 of 11 visible blocks)",
-              "whole-image: residual median 0.90 source px > 0.6",
-              "whole-image: residual p90 4.01 source px > 1.0",
-              "state-region: cannot establish alignment (1 reliable blocks; need 3 of 11 visible blocks)",
-              "state-region: residual median 3.20 source px > 0.6",
-              "state-region: residual p90 3.20 source px > 1.0",
-              "state tile 0: cannot establish alignment (1 reliable blocks; need 3 of 11 visible blocks)",
-              "state tile 0: residual median 3.20 source px > 0.6",
-              "state tile 0: residual p90 3.20 source px > 1.0"
-            ],
-            "passes": false
-          }
-        },
-        "diagnostics": {
-          "opaque": {
-            "mae": 0,
-            "p99": 0,
-            "samples": 0
-          },
-          "translucent": {
-            "mae": 0.7897633483576241,
-            "p99": 30,
-            "samples": 51420
-          },
-          "mae": 0.7897633483576241,
-          "p99": 30,
-          "samples": 51420
-        },
-        "conformance": {
-          "alignment": {
-            "inherited": true,
-            "reference": "public/kit/ligne/sheet-day-normal.webp",
-            "reason": "Deterministic delta over the locked canonical; alignment accepted by its lock."
-          },
-          "wholeImage": {
-            "mae": [
-              3.835613719015168,
-              3.813439652420851,
-              3.6534582592455918
-            ],
-            "meanColourDelta": [
-              -3.715326607218033,
-              -3.681026309059329,
-              -3.4979436984137937
-            ],
-            "blurredMae": 3.7675038768938705,
-            "weightedArea": 10393.6470874995,
-            "visibleFraction": 0.021673479400736304,
-            "gateable": true
-          },
-          "whole": {
-            "mae": [
-              2.5668741528688854,
-              2.6463265817349266,
-              2.749627889670245
-            ],
-            "meanColourDelta": [
-              -2.502222793840434,
-              -2.6129192974275313,
-              -2.749624937483227
-            ],
-            "blurredMae": 2.654276208091352,
-            "weightedArea": 3936.564706146717,
-            "visibleFraction": 0.016163802162036597,
-            "gateable": true
-          },
-          "tiles": [
-            {
-              "mae": [
-                2.5668741528688854,
-                2.6463265817349266,
-                2.749627889670245
-              ],
-              "meanColourDelta": [
-                -2.502222793840434,
-                -2.6129192974275313,
-                -2.749624937483227
-              ],
-              "blurredMae": 2.654276208091352,
-              "weightedArea": 3936.564706146717,
-              "visibleFraction": 0.016163802162036597,
-              "gateable": true
-            }
-          ],
-          "registration": {
-            "outsideDifferingPixels": 0,
-            "stateMae": 0.7897633483576297,
-            "changedSourcePixels": 12855,
-            "preservedSourcePixels": 12855,
-            "preservedShare": 1,
-            "suppressed": false
-          },
-          "reasons": [],
-          "passes": true
-        }
+        "method": "generate"
       },
       "familyMembership": {
         "reference": "public/kit/ligne/sheet-day-normal.webp",
@@ -18679,17 +18447,25 @@
           "public/kit/ligne/sheet-day-pressed.webp"
         ]
       },
-      "recipeDigest": "a80ef80b3603a94c0a1b5c525786b5d04922e39aac54ae6bd7ee2be333e84ea6",
-      "outputSha256": "9b2e29a2b6f622d2c9e8bb3332c89b49ec93a1db7c8295f03a668045f567b950",
+      "recipeDigest": "a287327999fde78174b6b49dd0c336b0a1796135a6ce566fcebdab667fe0a6b9",
+      "outputSha256": "a8fd1f31051aabb42147064cc8412de1dc73cebc42b46ea400df27dc14f28c08",
       "width": 1384,
       "height": 1386,
-      "derivationDigest": "25b9d9e5a6f761471c2d37b931d37987ea47b530b85fb4cc31174295507d0c45"
+      "derivationDigest": "50644f748ac5be397ca8e8055b81ef86de47193801b20ab646766a26ff64b36d"
     },
     "public/kit/ligne/sheet-day-focus@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
       "sourceSha256": "bf0ecfa4a6332ce2f00cb16849dbd62c17d9cb3c74bf6bf8dcce56a4f163a3fa",
       "factor": 2,
-      "model": "gpt-image-2.5-sunburst",
-      "cacheKey": "9b26fc32821e4c5b9fe7860fb44d71b399f3cb71fe7d6d73d92ece24bf826e10",
+      "model": "kit-native-ink-v1",
+      "cacheKey": "7fe44a7a6cf3ba24e4e7fe1556122ef023e3632b1dbec0c67c4fe2ece9b9d25d",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 23.241973844505832,
+        "method": "generate"
+      },
       "familyMembership": {
         "reference": "public/kit/ligne/sheet-day-normal.webp",
         "members": [
@@ -18700,305 +18476,24 @@
           "public/kit/ligne/sheet-day-pressed.webp"
         ]
       },
-      "recipeDigest": "6eb6b7172c93e08934acc4b875589120a8c75e934ac07a5c18e62ac74bf528ab",
-      "outputSha256": "a029acee8e07ec206b9ebd8c485607935511254418ca37f9b5a7d79e432b704b",
+      "recipeDigest": "16bae87d5a9265a75f729eeedce5f5c38204a1cc706ba975cea737c2c50c1003",
+      "outputSha256": "25f62fabc877a57a53ed0776f9227ed9d5ca4422aef1838b10a41b97dd548395",
       "width": 1384,
       "height": 1386,
-      "derivationDigest": "1f9d2484b21091ecdf5a070e6ad17b648634432df95368d959ce3805bf16a78d",
-      "settingsDigest": "b3ee2cfb2f5f01213adc0b28cc000286223ae66f2ac6218fcd5e18422a0fc8c4"
+      "derivationDigest": "dea7d1e49aeda99c9de4690498af3ef1fb27fd24eec37fc79f10567e1493a42a"
     },
     "public/kit/ligne/sheet-day-hover@2x.webp": {
-      "settingsDigest": "b3ee2cfb2f5f01213adc0b28cc000286223ae66f2ac6218fcd5e18422a0fc8c4",
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
       "sourceSha256": "300e4d633b22222f5553aa1042b78cb34d3df80516fb6bb9d5dd408f99e66b03",
       "factor": 2,
-      "model": "gpt-image-2.5-sunburst",
-      "cacheKey": "480f7e05e74a1dc5a1fb066a4de9a04302a5abbe5a29c3a906a669464bfde253",
+      "model": "kit-native-ink-v1",
+      "cacheKey": "d79a12906b4f0d46ef868cb10c6a7d7a622e1cf5bfd3f967f5464c591f9be60b",
       "stateDerivation": {
-        "mode": "auto",
+        "mode": "generate",
         "maxHf": 4,
         "hfRms": 4.784760167068133,
-        "method": "residual",
-        "fallbackReason": "whole: residual median 2.64 source px > 0.6; whole: residual p90 3.82 source px > 1.0; tile 0: residual median 2.64 source px > 0.6; tile 0: residual p90 3.82 source px > 1.0; state-region: cannot establish alignment (2 reliable blocks; need 3 of 11 visible blocks); state-region: residual median 2.41 source px > 0.6; state-region: residual p90 3.78 source px > 1.0; state tile 0: cannot establish alignment (2 reliable blocks; need 3 of 11 visible blocks); state tile 0: residual median 2.41 source px > 0.6; state tile 0: residual p90 3.78 source px > 1.0",
-        "generated": {
-          "change": {
-            "threshold": 24,
-            "noiseFloor": 11.632508662954304,
-            "sigma": 1,
-            "minimumMagnitude": 0.5,
-            "minimumShare": 0.9,
-            "noiseSigma": [
-              1.9740423894882202,
-              1.692036535835266,
-              1.1282991285324095,
-              11.98525867767334
-            ],
-            "maxDelta": 76.97276306152344,
-            "noiseOnly": false,
-            "outputMaxDelta": 76.97603607177734,
-            "strongPixels": 7979,
-            "reproducedPixels": 7979,
-            "share": 1,
-            "passes": true
-          },
-          "conformance": {
-            "alignment": {
-              "inherited": false
-            },
-            "wholeImage": {
-              "mae": [
-                4.580126891627695,
-                4.510606650196607,
-                3.9175554007174975
-              ],
-              "meanColourDelta": [
-                -4.500914540287161,
-                -4.423554272974797,
-                -3.8149863316620505
-              ],
-              "blurredMae": 4.3360963141806,
-              "weightedArea": 15717.694357861299,
-              "visibleFraction": 0.03277551392926228,
-              "gateable": true,
-              "postWarp": {
-                "weightedArea": 15717.694357861299,
-                "visibleFraction": 0.03277551392926228,
-                "gateable": true,
-                "reliableShare": 0.12345679012345678,
-                "reliableBlocks": 10,
-                "totalBlocks": 81,
-                "visibleBlocks": 24,
-                "measuredReliableBlocks": 10,
-                "outlierBlocks": 0,
-                "median": 0.3535533905932738,
-                "p90": 1,
-                "max": 1.5206906325745546,
-                "registrationMetric": "block-luminance-dog-zncc",
-                "registrationSigmas": [
-                  1,
-                  4
-                ],
-                "registrationStep": 0.25
-              }
-            },
-            "whole": {
-              "mae": [
-                6.069599923593935,
-                6.0292629521946965,
-                4.594646415956537
-              ],
-              "meanColourDelta": [
-                -6.069552481213942,
-                -6.0292629521946965,
-                -4.594646415956537
-              ],
-              "blurredMae": 5.56450309724839,
-              "weightedArea": 3420.913857851643,
-              "visibleFraction": 0.013024312628882047,
-              "gateable": true,
-              "flow": {
-                "weightedArea": 3420.913857851643,
-                "visibleFraction": 0.013024312628882047,
-                "gateable": true,
-                "reliableShare": 0.05555555555555555,
-                "reliableBlocks": 2,
-                "totalBlocks": 36,
-                "visibleBlocks": 11,
-                "measuredReliableBlocks": 2,
-                "outlierBlocks": 0,
-                "median": 2.406981447004902,
-                "p90": 3.7831864876053887,
-                "max": 3.7831864876053887,
-                "registrationMetric": "block-luminance-dog-zncc",
-                "registrationSigmas": [
-                  1,
-                  4
-                ],
-                "registrationStep": 0.25
-              },
-              "postWarp": {
-                "weightedArea": 3420.913857851643,
-                "visibleFraction": 0.013024312628882047,
-                "gateable": true,
-                "reliableShare": 0.05555555555555555,
-                "reliableBlocks": 2,
-                "totalBlocks": 36,
-                "visibleBlocks": 11,
-                "measuredReliableBlocks": 2,
-                "outlierBlocks": 0,
-                "median": 2.406981447004902,
-                "p90": 3.7831864876053887,
-                "max": 3.7831864876053887,
-                "registrationMetric": "block-luminance-dog-zncc",
-                "registrationSigmas": [
-                  1,
-                  4
-                ],
-                "registrationStep": 0.25
-              }
-            },
-            "tiles": [
-              {
-                "mae": [
-                  6.069599923593935,
-                  6.0292629521946965,
-                  4.594646415956537
-                ],
-                "meanColourDelta": [
-                  -6.069552481213942,
-                  -6.0292629521946965,
-                  -4.594646415956537
-                ],
-                "blurredMae": 5.56450309724839,
-                "weightedArea": 3420.913857851643,
-                "visibleFraction": 0.013024312628882047,
-                "gateable": true,
-                "flow": {
-                  "weightedArea": 3420.913857851643,
-                  "visibleFraction": 0.013024312628882047,
-                  "gateable": true,
-                  "reliableShare": 0.05555555555555555,
-                  "reliableBlocks": 2,
-                  "totalBlocks": 36,
-                  "visibleBlocks": 11,
-                  "measuredReliableBlocks": 2,
-                  "outlierBlocks": 0,
-                  "median": 2.406981447004902,
-                  "p90": 3.7831864876053887,
-                  "max": 3.7831864876053887,
-                  "registrationMetric": "block-luminance-dog-zncc",
-                  "registrationSigmas": [
-                    1,
-                    4
-                  ],
-                  "registrationStep": 0.25
-                },
-                "postWarp": {
-                  "weightedArea": 3420.913857851643,
-                  "visibleFraction": 0.013024312628882047,
-                  "gateable": true,
-                  "reliableShare": 0.05555555555555555,
-                  "reliableBlocks": 2,
-                  "totalBlocks": 36,
-                  "visibleBlocks": 11,
-                  "measuredReliableBlocks": 2,
-                  "outlierBlocks": 0,
-                  "median": 2.406981447004902,
-                  "p90": 3.7831864876053887,
-                  "max": 3.7831864876053887,
-                  "registrationMetric": "block-luminance-dog-zncc",
-                  "registrationSigmas": [
-                    1,
-                    4
-                  ],
-                  "registrationStep": 0.25
-                }
-              }
-            ],
-            "registration": {
-              "outsideDifferingPixels": 0,
-              "stateMae": 1.8798243701287254,
-              "changedSourcePixels": 8093,
-              "preservedSourcePixels": 8093,
-              "preservedShare": 1,
-              "suppressed": false
-            },
-            "reasons": [
-              "whole: residual median 2.64 source px > 0.6",
-              "whole: residual p90 3.82 source px > 1.0",
-              "tile 0: residual median 2.64 source px > 0.6",
-              "tile 0: residual p90 3.82 source px > 1.0",
-              "state-region: cannot establish alignment (2 reliable blocks; need 3 of 11 visible blocks)",
-              "state-region: residual median 2.41 source px > 0.6",
-              "state-region: residual p90 3.78 source px > 1.0",
-              "state tile 0: cannot establish alignment (2 reliable blocks; need 3 of 11 visible blocks)",
-              "state tile 0: residual median 2.41 source px > 0.6",
-              "state tile 0: residual p90 3.78 source px > 1.0"
-            ],
-            "passes": false
-          }
-        },
-        "diagnostics": {
-          "opaque": {
-            "mae": 0,
-            "p99": 0,
-            "samples": 0
-          },
-          "translucent": {
-            "mae": 0.8285119311533533,
-            "p99": 5,
-            "samples": 32372
-          },
-          "mae": 0.8285119311533533,
-          "p99": 5,
-          "samples": 32372
-        },
-        "conformance": {
-          "alignment": {
-            "inherited": true,
-            "reference": "public/kit/ligne/sheet-day-normal.webp",
-            "reason": "Deterministic delta over the locked canonical; alignment accepted by its lock."
-          },
-          "wholeImage": {
-            "mae": [
-              4.16260781411889,
-              4.091934354618405,
-              3.501913473266069
-            ],
-            "meanColourDelta": [
-              -4.083295823873928,
-              -4.004824944907088,
-              -3.399290106316209
-            ],
-            "blurredMae": 3.9188185473344546,
-            "weightedArea": 15717.694357861299,
-            "visibleFraction": 0.03277551392926228,
-            "gateable": true
-          },
-          "whole": {
-            "mae": [
-              4.227235196016239,
-              4.183097801073341,
-              2.7662462182285728
-            ],
-            "meanColourDelta": [
-              -4.227165416019714,
-              -4.183097801073341,
-              -2.7662462182285728
-            ],
-            "blurredMae": 3.725526405106051,
-            "weightedArea": 3420.913857851643,
-            "visibleFraction": 0.013024312628882047,
-            "gateable": true
-          },
-          "tiles": [
-            {
-              "mae": [
-                4.227235196016239,
-                4.183097801073341,
-                2.7662462182285728
-              ],
-              "meanColourDelta": [
-                -4.227165416019714,
-                -4.183097801073341,
-                -2.7662462182285728
-              ],
-              "blurredMae": 3.725526405106051,
-              "weightedArea": 3420.913857851643,
-              "visibleFraction": 0.013024312628882047,
-              "gateable": true
-            }
-          ],
-          "registration": {
-            "outsideDifferingPixels": 0,
-            "stateMae": 0.8285119311533472,
-            "changedSourcePixels": 8093,
-            "preservedSourcePixels": 8093,
-            "preservedShare": 1,
-            "suppressed": false
-          },
-          "reasons": [],
-          "passes": true
-        }
+        "method": "generate"
       },
       "familyMembership": {
         "reference": "public/kit/ligne/sheet-day-normal.webp",
@@ -19010,17 +18505,19 @@
           "public/kit/ligne/sheet-day-pressed.webp"
         ]
       },
-      "recipeDigest": "a80ef80b3603a94c0a1b5c525786b5d04922e39aac54ae6bd7ee2be333e84ea6",
-      "outputSha256": "ad1f10a7c6634e50dd40bfa66f6d87347510e7902687eff003d81a61eecf0089",
+      "recipeDigest": "4b9dd7d6d7faab196b43f3fe194e46d2f0d9a5536810727c357a99ac850c3898",
+      "outputSha256": "57abe91c4565e301a4d671286d31fd0f726d6bc62a79bef7220bc2ba8caec68e",
       "width": 1384,
       "height": 1386,
-      "derivationDigest": "278099f0fe0dbaf321e5dea59b6de01ad7061c66a0e47037c9fb37e22665a18b"
+      "derivationDigest": "85bb957360e17846d0decfd30153e8bd8bd08ad014a0f9f63eb84c31ef3516f7"
     },
     "public/kit/ligne/sheet-day-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
       "sourceSha256": "5c8f47d486272d706eee3e8eaade26ca67c77431d3d6b7c4a3e9f02941541fb6",
       "factor": 2,
-      "model": "gpt-image-2.5-sunburst",
-      "cacheKey": "c6d93f61c948f4667edfd79652db193c10ff82e1bd5eb629f977c39ea65f8a87",
+      "model": "kit-native-ink-v1",
+      "cacheKey": "8a03faab51375c4310d690326662824f2486a32ffa2a3929eddd5bf75c6fe0ee",
       "familyMembership": {
         "reference": "public/kit/ligne/sheet-day-normal.webp",
         "members": [
@@ -19031,17 +18528,24 @@
           "public/kit/ligne/sheet-day-pressed.webp"
         ]
       },
-      "recipeDigest": "1bef05f980bae912bb1c143e4142c7c249daf319fe86106ae4aed27d94342749",
-      "outputSha256": "37d9cd375a641390598b99ccc4a3312b208a50c45c0324075d0a6ebd0911f986",
+      "recipeDigest": "34f9935ad841101756edf80f6ffc378f88353b37d5b56e8ba815718f42433ddc",
+      "outputSha256": "fb445338fe8a29f9c142eaeb2c3a00f77e2d159774812d9e545c37f865a73e75",
       "width": 1384,
-      "height": 1386,
-      "settingsDigest": "b3ee2cfb2f5f01213adc0b28cc000286223ae66f2ac6218fcd5e18422a0fc8c4"
+      "height": 1386
     },
     "public/kit/ligne/sheet-day-pressed@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
       "sourceSha256": "8fc63d9ab3199f7d4c7bf34d737d0be5e703d49797af2273bed59992313fa078",
       "factor": 2,
-      "model": "gpt-image-2.5-sunburst",
-      "cacheKey": "3d72e26320f31fd2c5b8594eec1fd17c48c720de54b6a131a3b4b7b98c0ca96f",
+      "model": "kit-native-ink-v1",
+      "cacheKey": "49af9fe389d265c6759503020a56f25d140b4465a881eef06e7b89c99795ae2c",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 4.283938299400043,
+        "method": "generate"
+      },
       "familyMembership": {
         "reference": "public/kit/ligne/sheet-day-normal.webp",
         "members": [
@@ -19052,46 +18556,185 @@
           "public/kit/ligne/sheet-day-pressed.webp"
         ]
       },
-      "recipeDigest": "6eb6b7172c93e08934acc4b875589120a8c75e934ac07a5c18e62ac74bf528ab",
-      "outputSha256": "fc8983c9201fa030018e2ae5854f0c3f70a3169c7bccca26bbc1a221fc81c168",
+      "recipeDigest": "c20d366269b2ed520b4c4345e2369041ed77071e7671f20069064e0d45f9e281",
+      "outputSha256": "32cefa3b0956ea324679dd8f7c428d0c64441d6c50b27461b3b1c5a85a7e04fb",
       "width": 1384,
       "height": 1386,
-      "derivationDigest": "f9ff91ae64efc3e1ec5ff8f553c251cc8800c9bfb20372829eb54395ace4c625",
-      "settingsDigest": "b3ee2cfb2f5f01213adc0b28cc000286223ae66f2ac6218fcd5e18422a0fc8c4"
+      "derivationDigest": "be4c5e01006f5d12b69c3554fc8373ada5f830ec6e476cf80eefb668f947c0b0"
+    },
+    "public/kit/ligne/sheet-night-flat@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "fcde1bcaf045b756bf9b8d08a30f0ac92b43cf2011825ed1f7cc1c521763af71",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "e0f9f5d35c3d3e0c83cf663e5ed31765b93d47d5e6102102bde0c7efa396e370",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 11.40736453284225,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/sheet-night-normal.webp",
+        "members": [
+          "public/kit/ligne/sheet-night-flat.webp",
+          "public/kit/ligne/sheet-night-focus.webp",
+          "public/kit/ligne/sheet-night-hover.webp",
+          "public/kit/ligne/sheet-night-normal.webp",
+          "public/kit/ligne/sheet-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "06f6f4f8d9d92a3f5394c83476b806bab1b1e628d2cbd1fbf3505dd874689564",
+      "outputSha256": "98bcafa5cf6ba31ce77194dda1301235869bbffc5d37343dce4f618c4d89ff5f",
+      "width": 1384,
+      "height": 1386,
+      "derivationDigest": "a4b82a3100683fe6318803f6b46069bbbd95e18d3c2a6175533704e77df5eede"
+    },
+    "public/kit/ligne/sheet-night-focus@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "8cba6441bf0156eb5e2e5040180a480cf4ba661a3c9c321839f10227d0ed5f5c",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "f74e305d42643c7a5faca1825766414b3a473eda3238a8b555e1d52390d2f20b",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 21.010483541595786,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/sheet-night-normal.webp",
+        "members": [
+          "public/kit/ligne/sheet-night-flat.webp",
+          "public/kit/ligne/sheet-night-focus.webp",
+          "public/kit/ligne/sheet-night-hover.webp",
+          "public/kit/ligne/sheet-night-normal.webp",
+          "public/kit/ligne/sheet-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "1e72c5e401d361d018f918a6b72132383557c7c29773f5eba5b622379f6e42f2",
+      "outputSha256": "478d1143484e9ea21c26dd4fb23603e786d855836d873ffb6e83cec23e6c1a1a",
+      "width": 1384,
+      "height": 1386,
+      "derivationDigest": "008faf292c8f687764cf6c538dd4d04e05032655229d15cf839bff916a00229b"
+    },
+    "public/kit/ligne/sheet-night-hover@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "73f7501bcfc7bed16715a12828ec5902d2142e12065a4fac6b7faffb86487da7",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "bee42e53bc05f938d01614e1073827d6fcb8168f0e02d81cac9beac8b460e392",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 12.879887401607325,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/sheet-night-normal.webp",
+        "members": [
+          "public/kit/ligne/sheet-night-flat.webp",
+          "public/kit/ligne/sheet-night-focus.webp",
+          "public/kit/ligne/sheet-night-hover.webp",
+          "public/kit/ligne/sheet-night-normal.webp",
+          "public/kit/ligne/sheet-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "b917b625b0a24b41d9da0f7ce2ad5ec37ba48321f6fad2325c6fdeb8d53de661",
+      "outputSha256": "3eef8ced492a5c2abebbaabd3d185127acf0858541333d4658b6bbdf2c0d5b69",
+      "width": 1384,
+      "height": 1386,
+      "derivationDigest": "0710a13b4a57a0cb5f0347a77262f5065febd51bdb0738f1cd128a9bd004ca80"
+    },
+    "public/kit/ligne/sheet-night-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "b5050e729ee5c4ae259a0a383cebee8b0bd8cf80bfd210b9fc0a44783dd3e980",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "fbc514054f67c6c93ad166652b3ca557c9662769f9478762f2efa38cb2b12320",
+      "familyMembership": {
+        "reference": "public/kit/ligne/sheet-night-normal.webp",
+        "members": [
+          "public/kit/ligne/sheet-night-flat.webp",
+          "public/kit/ligne/sheet-night-focus.webp",
+          "public/kit/ligne/sheet-night-hover.webp",
+          "public/kit/ligne/sheet-night-normal.webp",
+          "public/kit/ligne/sheet-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "8a28473a5caeb04ee5a5de695a66b595a349861f435cf827ba4ac1c5e4985ddc",
+      "outputSha256": "8ca5c57d6cfb1f74f712827360c06f0f6ae5f4121bbef5e88f41c8265602474c",
+      "width": 1384,
+      "height": 1386
+    },
+    "public/kit/ligne/sheet-night-pressed@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "c1ca45ed46edd2e9cb92a80aba75f6c36e98c6cadc7368d6dfc893d17f9b2d2e",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "90004f5cb999fb5bda91c0660b0206fc85de1722f9731ed28ba22a30a22a25ed",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 11.53087498772507,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/sheet-night-normal.webp",
+        "members": [
+          "public/kit/ligne/sheet-night-flat.webp",
+          "public/kit/ligne/sheet-night-focus.webp",
+          "public/kit/ligne/sheet-night-hover.webp",
+          "public/kit/ligne/sheet-night-normal.webp",
+          "public/kit/ligne/sheet-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "da270413751ee6def5d3e965a5f967098bcdc4ffeca674f6a808cfe4ff4bed16",
+      "outputSha256": "1adf5001a819c37f3905e45680ae775d0f0f4ea6c60849701519bd3256ccab78",
+      "width": 1384,
+      "height": 1386,
+      "derivationDigest": "03cea87121bd6618842bcbe7093c6ddda993cd942f9d6220c56c6a4dfe9751e9"
     },
     "public/kit/ligne/sheet-strip-day-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
       "sourceSha256": "0d1ae9f5c7c99235c9cfe82d64ad221375682368c9ae89ed8276ff8665908a63",
       "factor": 2,
-      "model": "gpt-image-2.5-sunburst",
-      "cacheKey": "915699f8fff9fc3faa17b886aa71997560be618b82a2f7e9570762cdc9441932",
+      "model": "kit-native-ink-v1",
+      "cacheKey": "02fe966b39c2f39327f2277f8ed029ef8c87da441f0650d23af135f862c83e7a",
       "familyMembership": {
         "reference": "public/kit/ligne/sheet-strip-day-normal.webp",
         "members": [
           "public/kit/ligne/sheet-strip-day-normal.webp"
         ]
       },
-      "recipeDigest": "aed58babda7bba29acb78593cf9ca45bc93ed569876b92a93b01f0e6d047049e",
-      "outputSha256": "7a14d779ce1ff856ae2da724d8cc9e80442a8cf872e5beb251dd08d0b776a93e",
+      "recipeDigest": "b87cf821d517a97b0877317e03f9d618251d00620f794c3877d8006b5b1798cf",
+      "outputSha256": "bf73808d4b2a1b55e65147d8558f3ed1dae9aba0ba3d713ff727440dc5f8efa9",
       "width": 1584,
-      "height": 1586,
-      "settingsDigest": "b3ee2cfb2f5f01213adc0b28cc000286223ae66f2ac6218fcd5e18422a0fc8c4"
+      "height": 1586
     },
     "public/kit/ligne/sheet-strip-night-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
       "sourceSha256": "61ff1efe32151781d79025320cf0e92f8817b0f7b59baffc266ee7fa7c8b8b6a",
       "factor": 2,
-      "model": "gpt-image-2.5-sunburst",
-      "cacheKey": "6b35f53747104ff983af51c9c8110118519ace1d7456e80cc50d7aefd863d83c",
+      "model": "kit-native-ink-v1",
+      "cacheKey": "3b8287bf5e328e4ebf0603f0c5213c673bdc20a82e3af154b6910888c8a9c927",
       "familyMembership": {
         "reference": "public/kit/ligne/sheet-strip-night-normal.webp",
         "members": [
           "public/kit/ligne/sheet-strip-night-normal.webp"
         ]
       },
-      "recipeDigest": "596abab696893fec9234d8a62aeb391726de9d784e8c79a9c0cd8a73be0c8703",
-      "outputSha256": "f3447abc459e79af9004fdcf7a657030eb4bb15422fbdde6d388af07bf01a8a9",
+      "recipeDigest": "4fb3cede1f404ac20698f5070d743277b28bf9f9476a9af6b624a0504a971546",
+      "outputSha256": "d3fe207b2901ef66f5df4523a5fbb6082bdb0a5473e80c3a7e3f4dabdbd7429c",
       "width": 1584,
-      "height": 1586,
-      "settingsDigest": "b3ee2cfb2f5f01213adc0b28cc000286223ae66f2ac6218fcd5e18422a0fc8c4"
+      "height": 1586
     },
     "public/kit/ligne/tape-day@2x.webp": {
       "provider": "external",
@@ -19111,6 +18754,426 @@
       "width": 352,
       "height": 252,
       "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd"
+    },
+    "public/kit/ligne/tile-day-focus@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "d1fcfc51a8a1736b649ec6746827a78fb65c14f56eff8b0ac257e4280bb9b76f",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "c3ac3382fb73f9d26e16da70af786cbc8c2d63c61c1697b83a34e0227aac9368",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 28.158622111548546,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-day-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-day-focus.webp",
+          "public/kit/ligne/tile-day-hover.webp",
+          "public/kit/ligne/tile-day-normal.webp",
+          "public/kit/ligne/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "b7242373128620b449b3c421c25fa50ca4619c7b139470c74d8a39c52ce4e98d",
+      "outputSha256": "32f320ffa17fde65e15d15310cd1bebae442757b1cc45f9612a07e74d22de9f7",
+      "width": 1726,
+      "height": 320,
+      "derivationDigest": "f5a62ad778d674b4645035829b290e22eea1208232d660e010b88ba3ce9a0e1a"
+    },
+    "public/kit/ligne/tile-day-hover@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "0a6762075eb34f3e01f9f0fac6346885b66d64f2c634b25e42698ac95d28fb2b",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "b092e27413a2cb1b68b56efc7061f070d4f72b8b48b3fb1c7e361ad7330df8cf",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 5.779372767355088,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-day-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-day-focus.webp",
+          "public/kit/ligne/tile-day-hover.webp",
+          "public/kit/ligne/tile-day-normal.webp",
+          "public/kit/ligne/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "9fca21989801c80d3e568e7f9fa668a8d2c58182a8fb81734bdb3da6fffc7e57",
+      "outputSha256": "f693780b7b59b1951e921cd192fb8c0f57e5c516652beaac77b2ce0feaf5060b",
+      "width": 1726,
+      "height": 320,
+      "derivationDigest": "5d1e79d861a83eda63708eddbb888b762f1fb512e32c279c54533a1531c0f987"
+    },
+    "public/kit/ligne/tile-day-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "5ea111ed6277c9ef5306157c75b6cc5a76aaf72008dd4e6eebba2e7f896406f3",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "9afc04352c09e4eb54a577940447700af30a42be625b82922e4ec8a07cf320a1",
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-day-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-day-focus.webp",
+          "public/kit/ligne/tile-day-hover.webp",
+          "public/kit/ligne/tile-day-normal.webp",
+          "public/kit/ligne/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "076dba6fe119850211be541c431e63924f33126ab8b0231bbe8347b0de96b21d",
+      "outputSha256": "44c4ea6c6d87b6e82f3fea7cb3b576490245723e9a04a1048a65f04e73ec04d7",
+      "width": 1726,
+      "height": 320
+    },
+    "public/kit/ligne/tile-day-pressed@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "5ea111ed6277c9ef5306157c75b6cc5a76aaf72008dd4e6eebba2e7f896406f3",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "9dc0495dc0857c80ea92eca3ca02053fd8d6053a0e6084e53ca8f40a2a4447fb",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 0,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-day-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-day-focus.webp",
+          "public/kit/ligne/tile-day-hover.webp",
+          "public/kit/ligne/tile-day-normal.webp",
+          "public/kit/ligne/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "0063834525458608e24e9f9ee241178be0a449cc8d5ed558b6475cb683e2ed7b",
+      "outputSha256": "44c4ea6c6d87b6e82f3fea7cb3b576490245723e9a04a1048a65f04e73ec04d7",
+      "width": 1726,
+      "height": 320,
+      "derivationDigest": "b6c60377d02547a7ee9da649445f01a39d6b5e8f187f66bfbcff4d4f97815b28"
+    },
+    "public/kit/ligne/tile-night-focus@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "f7e6bff36869426c99d546203543df4c1e3db35688094fa1e1406141a034a071",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "5f6a61a48517bc2def88b76e3ad5c9b03f82b1a1c964e005283fc6611a122aa2",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 26.857436953606534,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-night-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-night-focus.webp",
+          "public/kit/ligne/tile-night-hover.webp",
+          "public/kit/ligne/tile-night-normal.webp",
+          "public/kit/ligne/tile-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "fa5e5fac4ff0d0dfedfb90bb5ebb4ee0cdb6dd96c3c501ab891897916b8ef8a6",
+      "outputSha256": "a3b64978cec258e60cb34037f4725bdbd10acadd13bea79678275e1dff828e0b",
+      "width": 1726,
+      "height": 320,
+      "derivationDigest": "291eb799c186be8d153dded037c40bca8dea46629548130e23a179d4007ef841"
+    },
+    "public/kit/ligne/tile-night-hover@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "830e302d142f8f77e951b20400022895ffe9cb9218dda8337c8c094021f826b6",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "8b22b7f7960018d835f9972a27f8bce2b938303fc93d19b34b89e2140b517157",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 15.457869983109282,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-night-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-night-focus.webp",
+          "public/kit/ligne/tile-night-hover.webp",
+          "public/kit/ligne/tile-night-normal.webp",
+          "public/kit/ligne/tile-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "da8fd2ea44a3d99cd2119405d1c6bf08743c28e2e90bd92eea655eb08d4b6b98",
+      "outputSha256": "78f74792e2d5c15b0eeefd72411d21e845c094b91ccaaaf856411fd13015d1fd",
+      "width": 1726,
+      "height": 320,
+      "derivationDigest": "e7feee7374368dd617c4a2eb88f1cf759e4b38cc5bad574ea118b2db3492d705"
+    },
+    "public/kit/ligne/tile-night-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "a176522b65fcdb03c34c7645e02a8e8e6681e918ab0ad65076393c89bcc69b5e",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "d7b5a8b62c83cba0daa8e7675f0b425f3c2e45433fc314002449fb030d9277e4",
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-night-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-night-focus.webp",
+          "public/kit/ligne/tile-night-hover.webp",
+          "public/kit/ligne/tile-night-normal.webp",
+          "public/kit/ligne/tile-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "3f4d7aeedf506255dc03c2fb70444b72a930497716e476e49a85bc2244ec093d",
+      "outputSha256": "16131e0952956c3f43e43f244e5f2d8a48df6a13063c0f36eb69f6562be2baf4",
+      "width": 1726,
+      "height": 320
+    },
+    "public/kit/ligne/tile-night-pressed@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "a176522b65fcdb03c34c7645e02a8e8e6681e918ab0ad65076393c89bcc69b5e",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "8b35e020bbe90be681d52185f7e9b198716eb1bdba5ef14c16d03ca2f6c67a14",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 0,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-night-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-night-focus.webp",
+          "public/kit/ligne/tile-night-hover.webp",
+          "public/kit/ligne/tile-night-normal.webp",
+          "public/kit/ligne/tile-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "56917ca2204c62ebec75477333b753586bc27244756054aec6b02d1495e2a41b",
+      "outputSha256": "16131e0952956c3f43e43f244e5f2d8a48df6a13063c0f36eb69f6562be2baf4",
+      "width": 1726,
+      "height": 320,
+      "derivationDigest": "1951effb18b36c96d96b14d241e14bc8e149b41ac6e55459b8554a6af33c88df"
+    },
+    "public/kit/ligne/tile-signal-focus@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "b15eeabc77d5635f23ad193313a605e31ab22eae0fc57d2c5882507e04733178",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "6ef2cf4fa4e7300e92b3ebf2a1486db0b2aad8f2c23ce68e97fab2921c176b08",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 25.910550566342103,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-signal-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-signal-focus.webp",
+          "public/kit/ligne/tile-signal-hover.webp",
+          "public/kit/ligne/tile-signal-normal.webp",
+          "public/kit/ligne/tile-signal-pressed.webp"
+        ]
+      },
+      "recipeDigest": "ae91fc8512d4e068a2645f1aa642c0202a369c6ab80dff50300864057bf678c4",
+      "outputSha256": "57c14ae0b7fae579b4ad12de985d9848b7bc5b9638b80199f356ab2b2de9c845",
+      "width": 1794,
+      "height": 320,
+      "derivationDigest": "1f3095cc516359b9689d22034e4eb47144d083f5d98cb36b5b13d949f5a908ab"
+    },
+    "public/kit/ligne/tile-signal-hover@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "e26be973e02f956f134e5d6e85a8e2c7187542408b33b4433b94e144f4990fbc",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "380879a314c9658cdf4be8123d99f67623c73d1c59ede2e17c06126e3b3f0070",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 5.781184053460141,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-signal-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-signal-focus.webp",
+          "public/kit/ligne/tile-signal-hover.webp",
+          "public/kit/ligne/tile-signal-normal.webp",
+          "public/kit/ligne/tile-signal-pressed.webp"
+        ]
+      },
+      "recipeDigest": "b364af0d2ea7683d68126f52a2394ae05e388b1d533bb52a68e22251c11e919a",
+      "outputSha256": "c906ee4b585883fad17a1a05044c413b7af765b9bd26203ed089a2efb4362d56",
+      "width": 1794,
+      "height": 320,
+      "derivationDigest": "9c5e74e76a3fda957759b502c38d84b27ad75cb0a1352ae3197558b7d57499b7"
+    },
+    "public/kit/ligne/tile-signal-night-focus@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "cb0035ef23d28291a2ca430407d94b846a34d52283d3b8d15849a16c002a5f56",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "355626f56a5bc8d12577b374df85515fccbbd49ecea3811119c82ce3622c4207",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 24.89902123274896,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-signal-night-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-signal-night-focus.webp",
+          "public/kit/ligne/tile-signal-night-hover.webp",
+          "public/kit/ligne/tile-signal-night-normal.webp",
+          "public/kit/ligne/tile-signal-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "813d58a82cd25c9cc4debfa2de822de252c0911774fdadd4e777ddfb6134d296",
+      "outputSha256": "a350823c1a122d2c33f6f0221c2bea2114567126f18af2152bac417c7a9039a9",
+      "width": 1794,
+      "height": 320,
+      "derivationDigest": "031f3269055ad67411b76482981d1aa540d077a1ffe0a8fcff398512ad2685d4"
+    },
+    "public/kit/ligne/tile-signal-night-hover@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "64c0ee7c5434af0fa88aba82494c2ab90dab0fa9b1e131007931e18325df649e",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "86c474b249177ce52a244c13bb8cdf6275863f584abd41eb13d2e167ea1793a9",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 15.463622834627825,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-signal-night-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-signal-night-focus.webp",
+          "public/kit/ligne/tile-signal-night-hover.webp",
+          "public/kit/ligne/tile-signal-night-normal.webp",
+          "public/kit/ligne/tile-signal-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "2ab439475274428ce34c1f6e38b386b919c0289bdcceb4172a7838f4d3d1c4c4",
+      "outputSha256": "8204e4584e4a6a67171657de4fa6bc91e1bde177baa8665511d9b2d8fe978854",
+      "width": 1794,
+      "height": 320,
+      "derivationDigest": "d60c9bd7237c5a5b97c1fe72e860d7e3573adef30497e6dbedcbedb82f15f248"
+    },
+    "public/kit/ligne/tile-signal-night-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "f85fde6f57915001809598c9a86687bcbc6e9ef636b39dbc2960e09c0f599884",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "a33e93ba89a5417cde040163b803a3370a557767cd998bc7e0e36080685b7a36",
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-signal-night-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-signal-night-focus.webp",
+          "public/kit/ligne/tile-signal-night-hover.webp",
+          "public/kit/ligne/tile-signal-night-normal.webp",
+          "public/kit/ligne/tile-signal-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "147239266a353445901d7476010f48f48ae6533fd320bfff9477886cf6e2a522",
+      "outputSha256": "7dc3c95a62bce77bca96bae6b9cba941136d90b8f0bee9cc160455fc46dd16f0",
+      "width": 1794,
+      "height": 320
+    },
+    "public/kit/ligne/tile-signal-night-pressed@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "f85fde6f57915001809598c9a86687bcbc6e9ef636b39dbc2960e09c0f599884",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "e05e891cdfe640b17dcec827874c63b713874ce389f3d0e92fce3a485cff47df",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 0,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-signal-night-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-signal-night-focus.webp",
+          "public/kit/ligne/tile-signal-night-hover.webp",
+          "public/kit/ligne/tile-signal-night-normal.webp",
+          "public/kit/ligne/tile-signal-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "fc611bf45989673fdaffdc482461402a3f855d3c903d976c2490eddbf33d2a53",
+      "outputSha256": "7dc3c95a62bce77bca96bae6b9cba941136d90b8f0bee9cc160455fc46dd16f0",
+      "width": 1794,
+      "height": 320,
+      "derivationDigest": "4c501eecfd77e3289593b8bb8aa8775f0d0b7260a45b63bf83d7ac188b3ebbdf"
+    },
+    "public/kit/ligne/tile-signal-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "f684cedbd3d2efa87f957e35e34dc0a2e59b6692044c350a0d2056376127c4b0",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "95015836fc3ea0b251f9d2a810a5f166ae2b5e82f344583eb82be57601010f01",
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-signal-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-signal-focus.webp",
+          "public/kit/ligne/tile-signal-hover.webp",
+          "public/kit/ligne/tile-signal-normal.webp",
+          "public/kit/ligne/tile-signal-pressed.webp"
+        ]
+      },
+      "recipeDigest": "0505c7a9687d7a2c266b956fd3c278b37881cf57aab1771cd6c525c0d764c484",
+      "outputSha256": "c9952fc65fe8689b33b412d35fa502752c83abc27babcc01dda94ff7ea75456a",
+      "width": 1794,
+      "height": 320
+    },
+    "public/kit/ligne/tile-signal-pressed@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "f684cedbd3d2efa87f957e35e34dc0a2e59b6692044c350a0d2056376127c4b0",
+      "factor": 2,
+      "model": "kit-native-ink-v1",
+      "cacheKey": "947b3c6f4e2408e59059d5ebf17d4fd6fb1783460b981b187d49263a80329d89",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 0,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/ligne/tile-signal-normal.webp",
+        "members": [
+          "public/kit/ligne/tile-signal-focus.webp",
+          "public/kit/ligne/tile-signal-hover.webp",
+          "public/kit/ligne/tile-signal-normal.webp",
+          "public/kit/ligne/tile-signal-pressed.webp"
+        ]
+      },
+      "recipeDigest": "fbdf7794b2a57d0b43d251faaaeda78e4e9547739a144014b6900cd2f760ccd3",
+      "outputSha256": "c9952fc65fe8689b33b412d35fa502752c83abc27babcc01dda94ff7ea75456a",
+      "width": 1794,
+      "height": 320,
+      "derivationDigest": "b59cc0c9827f1369a4eecb5c95cf616099b72b126c541f8557a2cdc832f681fe"
     },
     "public/kit/paper/band-left-day@2x.webp": {
       "provider": "external",
