@@ -198,7 +198,7 @@ test('deterministic family ships registered lossless outputs; CSS withholds ever
     const entries = family(), { assets } = validateManifest(input(entries));
     await writeFile(join(root, 'art/hires.json'), JSON.stringify(input(entries)));
     const normal = rgba(64, 64);
-    for (const [i, asset] of assets.entries()) await writeFile(join(root, asset.src), await encode(i ? rgba(64, 64, (x, y) => x >= 25 && x < 39 && y >= 25 && y < 39 ? [70 + 4 * i, 100, 130, 255] : [70, 100, 130, 255]) : normal));
+    for (const [i, asset] of assets.entries()) await writeFile(join(root, asset.src), await encode(i ? rgba(64, 64, (x, y) => x >= 25 && x < 39 && y >= 25 && y < 39 ? [70 + 8 * i, 100, 130, 255] : [70, 100, 130, 255]) : normal));
     await writeFile(join(root, 'src/app/kit.css'), `.key {\n  --key: url(/kit/key-normal.png);\n  --hover: url(/kit/key-hover.png);\n  border-image: var(--key) 8 fill / 4px;\n}`);
     expect(await main(['--only', 'key-hover', '--accept'], { root, invoke: neverInvoke })).toBe(0);
     const reference = await decode(await readFile(join(root, outputPath(assets[0]))));

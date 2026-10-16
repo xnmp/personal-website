@@ -4,7 +4,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { extname, resolve } from 'node:path';
 import sharp from 'sharp';
 import { recipeDigest, settingsDigest, validateProtection } from './manifest.mjs';
-import { derivationDigest, statePolicy } from './states.mjs';
+import { derivationDigest, statePolicy, STATE_RECIPE, PREVIOUS_STATE_RECIPE } from './states.mjs';
 
 export const outputPath = ({ src, factor }) => src.slice(0, -extname(src).length) + `@${factor}x.webp`;
 export const sourceSha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -37,11 +37,17 @@ export function lockMatches(entry, bytes, asset, proof = {}) {
   if (asset.generator?.type === 'smooth-field' && (!proof.dependencyBytes || !proof.dependencyValid || entry.dependencies?.[asset.generator.from] !== sourceSha256(proof.dependencyBytes))) return false;
   const recipe = recipeDigest(asset);
   if (!recipe && entry.recipeDigest) return false;
-  // Implicit auto is prospective: legacy registered recipes remain valid.
-  const legacyState = asset.family && asset.reference !== asset.src && !entry.stateDerivation && asset.stateDerivation === undefined && asset.stateResidualMaxHf === undefined && entry.recipeDigest === recipeDigest(asset, true);
-  if (recipe && !legacyState && entry.recipeDigest !== recipe) return false;
+  // Grandfather only a named recipe generation, recomputed with today's inputs.
+  // Implicit auto additionally permits the pre-routing registered recipe.
+  const implicitState = asset.family && asset.reference !== asset.src && !entry.stateDerivation && asset.stateDerivation === undefined && asset.stateResidualMaxHf === undefined;
+  const generations = [false, true].flatMap((previous) => [
+    { digest: recipeDigest(asset, false, previous), state: previous ? PREVIOUS_STATE_RECIPE : STATE_RECIPE },
+    ...(implicitState ? [{ digest: recipeDigest(asset, true, previous), state: previous ? PREVIOUS_STATE_RECIPE : STATE_RECIPE }] : []),
+  ]);
+  const generation = generations.find((g) => g.digest === entry.recipeDigest);
+  if (recipe && !generation) return false;
   if (asset.family && asset.reference !== asset.src) {
-    if (!proof.referenceValid || !proof.referenceBytes || !proof.referenceOutputBytes || entry.derivationDigest !== derivationDigest(bytes, proof.referenceBytes, proof.referenceOutputBytes, asset.sigma)) return false;
+    if (!proof.referenceValid || !proof.referenceBytes || !proof.referenceOutputBytes || entry.derivationDigest !== derivationDigest(bytes, proof.referenceBytes, proof.referenceOutputBytes, asset.sigma, generation.state)) return false;
   }
   return true;
 }

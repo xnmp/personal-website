@@ -70,8 +70,9 @@ digest. The implementation was run only against scratch copies, never features.
 Defaults and per-asset overrides resolve before hashing. The schema now permits
 sigma/model/apiQuality per asset and lossless in defaults. Historical family tile
 recipes retain the literal sigma-4 namespace; the settings digest tracks actual
-sigma. Registration/feather fixes apply prospectively without renaming already
-locked state recipes or paid tiles. Old derived PNGs are no longer reused;
+sigma. New publications use registered-v3/residual-v5. Explicit historical-recipe
+validation preserves unchanged registered-v2/residual-v4 locks and the legacy
+implicit-auto variant; paid tile identities retain their original namespace. Old derived PNGs are no longer reused;
 protection then registration is recomputed from the candidate.
 
 ## State gates
@@ -81,14 +82,35 @@ smoothstep ramp lies outside the mask and is clipped by the canonical-equality
 boundary, so no changed pixel is attenuated and unchanged pixels remain exact.
 Translucent residual replacement uses the same weights.
 
-Reproduction uses code-value threshold
-`min(24, maxDelta, max(6, 0.5 * maxDelta))`. Half the peak makes a +23 ring
-measurable; the 24 cap retains the existing strong-change ceiling. The 6 floor
-avoids selecting weak noise when stronger evidence exists; the maxDelta cap
-ensures every nonzero state, even +1, has evidence. Zero-delta states pass
-explicitly with zero evidence. At least 90% of selected pixels must retain the
-sign and half the magnitude of each selected channel. Suppression separately
-requires changes in at least 90% of changed source footprints.
+Reproduction low-passes the signed premultiplied RGBA delta with a sigma-1
+Gaussian. A MAD estimate of its high-frequency residual propagates through the
+Gaussian kernel; the noise floor is max(8/255, three estimated filtered standard
+deviations). Evidence exceeds that floor, with the existing peak-relative
+threshold capped at 24/255. Every selected channel must preserve its sign and
+half its magnitude in at least 90% of evidence pixels. A noise-only source passes
+only if the output-minus-canonical low-pass maximum stays within the same floor,
+even with --accept.
+
+Derivation and suppression use the same intended-change support: coherent
+Gaussian evidence plus three source pixels of contributing support, intersected
+with exact source differences. Noise-only footprints copy normal@2x exactly.
+Registration still uses the exact difference mask for canonical equality.
+
+Derived candidates inherit alignment from the locked canonical. They do not
+repeat median/p90 displacement or reliable-block-count gates; stats.json records
+`conformance.alignment.inherited`, the canonical path, and the reason. Colour
+MAE, canonical equality, change reproduction, and suppression remain enforced.
+Generated candidates retain all alignment gates.
+
+Auto mode derives when generation fails conformance or when a provider cannot
+supply a candidate (including unavailable external tiles). Provider fallback
+records `stateDerivation.method: residual` and `fallbackReason` in stats.json;
+the provider stderr tail is retained for actionable failures. Explicit generate
+mode retains provider failure behavior. Accepted fallback locks are final for
+--pending until their inputs change.
+
+See [follow-up verification](hires-followup-verification.md) for the noise model,
+calibration, diagnosis, and current counts. The snapshot below is historical.
 
 ## Verification snapshot
 

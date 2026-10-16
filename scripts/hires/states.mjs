@@ -3,10 +3,12 @@ import { validateImage, estimateFlow, colourStats, gaussianBlur } from './merge.
 
 import { bilinear2x } from './periodic.mjs';
 
-export const RESIDUAL_RECIPE = Object.freeze({ version: 'residual-v4', opaqueAlpha: 0.98, feather: 4, kernel: 'premultiplied-bilinear-v1', support: 'nearest-change-mask', clamp: 'premultiplied-rgba', hfSigma: 1 });
+export const PREVIOUS_RESIDUAL_RECIPE = Object.freeze({ version: 'residual-v4', opaqueAlpha: 0.98, feather: 4, kernel: 'premultiplied-bilinear-v1', support: 'nearest-change-mask', clamp: 'premultiplied-rgba', hfSigma: 1 });
 export const statePolicy = (asset) => ({ mode: asset.stateDerivation ?? 'auto', maxHf: asset.stateResidualMaxHf ?? 4 });
 
-export const STATE_RECIPE = Object.freeze({ version: 'registered-v2', mask: 'premultiplied-rgba-exact-nearest-2x', feather: 2, toneAlpha: 'conform-v1' });
+export const PREVIOUS_STATE_RECIPE = Object.freeze({ version: 'registered-v2', mask: 'premultiplied-rgba-exact-nearest-2x', feather: 2, toneAlpha: 'conform-v1' });
+export const STATE_RECIPE = Object.freeze({ ...PREVIOUS_STATE_RECIPE, version: 'registered-v3' });
+export const RESIDUAL_RECIPE = Object.freeze({ ...PREVIOUS_RESIDUAL_RECIPE, version: 'residual-v5', support: 'signed-gaussian-mad-intended-mask', noiseSigma: 1, noiseFloor: 8, noiseMultiplier: 3, supportMargin: 3 });
 const pair = (a, b) => {
   validateImage(a); validateImage(b);
   if ([a, b].some((img) => img.data instanceof Float32Array && img.data.some((v) => !Number.isFinite(v)))) throw new Error('State images require finite channels');
@@ -27,8 +29,9 @@ export function canonicaliseTransparent(img) {
   return { ...img, data };
 }
 
-export const derivationDigest = (stateBytes, normalBytes, referenceBytes, sigma) => createHash('sha256')
-  .update(JSON.stringify([...[stateBytes, normalBytes, referenceBytes].map((bytes) => createHash('sha256').update(bytes).digest('hex')), STATE_RECIPE, sigma])).digest('hex');
+/** @param {typeof STATE_RECIPE | typeof PREVIOUS_STATE_RECIPE} recipe */
+export const derivationDigest = (stateBytes, normalBytes, referenceBytes, sigma, recipe = STATE_RECIPE) => createHash('sha256')
+  .update(JSON.stringify([...[stateBytes, normalBytes, referenceBytes].map((bytes) => createHash('sha256').update(bytes).digest('hex')), recipe, sigma])).digest('hex');
 
 export function differenceMask(state, normal) {
   pair(state, normal);
@@ -129,10 +132,10 @@ export function stateRequestCrop(state, normal, margin = 16, maxArea = 0.25) {
   return w * h <= state.width * state.height * maxArea ? { x, y, w, h } : null;
 }
 
-export function stateStats(state, normal, reference, shipped, down) {
+export function stateStats(state, normal, reference, shipped, down, evidence = intendedChange(state, normal)) {
   pair(state, normal); pair(state, down); pair(reference, shipped);
-  const sourceMask = differenceMask(state, normal);
-  const mask = expandMask(sourceMask, state.width, state.height);
+  const sourceMask = evidence.mask;
+  const mask = expandMask(differenceMask(state, normal), state.width, state.height);
   const outsideDifferingPixels = outsideDifferences(shipped, reference, mask);
   let error = 0, count = 0, preservedSourcePixels = 0;
   for (let p = 0; p < sourceMask.length; p++) if (sourceMask[p]) {
@@ -173,8 +176,8 @@ export function residualRouting(state, normal, asset = {}) {
 }
 
 // Regions are classified at 1x, then replicated over each 2x footprint.
-export function stateRegions(state, normal) {
-  const changed = differenceMask(state, normal);
+export function stateRegions(state, normal, evidence = intendedChange(state, normal)) {
+  const changed = evidence.mask;
   const opaque = Uint8Array.from(changed, (v, p) => Number(!!v &&
     state.data[p * 4 + 3] >= 255 * RESIDUAL_RECIPE.opaqueAlpha && normal.data[p * 4 + 3] >= 255 * RESIDUAL_RECIPE.opaqueAlpha));
   return { changed, opaque, translucent: Uint8Array.from(changed, (v, p) => v && !opaque[p] ? 1 : 0) };
@@ -200,11 +203,11 @@ export function outwardWeights(mask, width, height, feather = Number(RESIDUAL_RE
   return Float32Array.from(distance, (d) => { const t = d / feather; return 1 - t * t * (3 - 2 * t); });
 }
 
-export function transferResidual(state, normal, reference, feather = Number(RESIDUAL_RECIPE.feather)) {
+export function transferResidual(state, normal, reference, feather = Number(RESIDUAL_RECIPE.feather), evidence = intendedChange(state, normal)) {
   const delta = stateResidual(state, normal);
   validateImage(reference);
   if (reference.channels !== 4 || reference.width !== state.width * 2 || reference.height !== state.height * 2) throw new Error('Residual reference output must be matching RGBA at exactly 2x');
-  const regions = stateRegions(state, normal);
+  const regions = stateRegions(state, normal, evidence);
   const mask = expandMask(regions.changed, state.width, state.height);
   const opaque = expandMask(regions.opaque, state.width, state.height);
   const weights = outwardWeights(mask, reference.width, reference.height, feather);
@@ -234,9 +237,9 @@ const errorSummary = (errors) => {
 
 // Code units (/255). Opaque paint reproduces the delta; translucent paint
 // is compared absolutely to the state. These are diagnostics, never gates.
-export function residualDiagnostics(state, normal, down, referenceDown) {
+export function residualDiagnostics(state, normal, down, referenceDown, evidence = intendedChange(state, normal)) {
   pair(state, normal); pair(state, down); pair(state, referenceDown);
-  const regions = stateRegions(state, normal), errors = { opaque: [], translucent: [] };
+  const regions = stateRegions(state, normal, evidence), errors = { opaque: [], translucent: [] };
   for (let p = 0; p < regions.changed.length; p++) if (regions.changed[p]) for (let c = 0; c < 4; c++) {
     const i = p * 4, value = (img) => premulValue(img, i, c);
     const region = regions.opaque[p] ? 'opaque' : 'translucent';
@@ -246,28 +249,56 @@ export function residualDiagnostics(state, normal, down, referenceDown) {
   return { opaque, translucent, ...errorSummary([...errors.opaque, ...errors.translucent]) };
 }
 
-export const CHANGE_GATE = Object.freeze({ threshold: 24, minimumMagnitude: 0.5, minimumShare: 0.9 });
-export function changeReproduction(state, normal, down, referenceDown) {
-  pair(state, normal); pair(state, down); pair(state, referenceDown);
+// Signed filtering cancels uncorrelated speckle instead of accumulating its
+// absolute magnitude. MAD estimates high-frequency noise on active pixels;
+// the 8-code floor accounts for quantisation/resampling and weak paint noise.
+export const CHANGE_GATE = Object.freeze({ threshold: 24, noiseFloor: RESIDUAL_RECIPE.noiseFloor, sigma: RESIDUAL_RECIPE.noiseSigma, minimumMagnitude: 0.5, minimumShare: 0.9 });
+const median = (values) => {
+  values.sort((a, b) => a - b);
+  const middle = Math.floor(values.length / 2);
+  return values.length ? (values[middle] + values[Math.max(0, Math.ceil(values.length / 2) - 1)]) / 2 : 0;
+};
+export function intendedChange(state, normal) {
+  const delta = stateResidual(state, normal), filtered = gaussianBlur(delta, CHANGE_GATE.sigma);
+  const exact = differenceMask(state, normal);
+  const noiseSigma = [0, 1, 2, 3].map((c) => {
+    const high = [];
+    for (let p = 0; p < exact.length; p++) if (exact[p]) high.push(delta.data[p * 4 + c] - filtered.data[p * 4 + c]);
+    const centre = median(high);
+    return 1.4826 * median(high.map((v) => Math.abs(v - centre)));
+  });
+  // ||G||2 = 0.28228, ||I-G||2 = 0.87252 for our separable sigma=1 kernel.
+  const noiseFloor = Math.max(CHANGE_GATE.noiseFloor, ...noiseSigma.map((s) => RESIDUAL_RECIPE.noiseMultiplier * s * 0.28228 / 0.87252));
   let maxDelta = 0;
-  for (let i = 0; i < state.data.length; i += 4) for (let c = 0; c < 4; c++)
-    maxDelta = Math.max(maxDelta, Math.abs(premulValue(state, i, c) - premulValue(normal, i, c)));
-  // Half the peak includes faint rings; cap at 24 for large changes. The 6-code
-  // floor excludes minor noise only when stronger evidence exists. Capping by
-  // maxDelta ensures even a sub-6-code state has a nonempty evidence set.
-  const threshold = Math.min(CHANGE_GATE.threshold, maxDelta, Math.max(6, 0.5 * maxDelta));
-  let strongPixels = 0, reproducedPixels = 0;
-  for (let i = 0; i < state.data.length; i += 4) {
+  for (const v of filtered.data) maxDelta = Math.max(maxDelta, Math.abs(v));
+  const threshold = Math.max(noiseFloor, Math.min(CHANGE_GATE.threshold, maxDelta / 2));
+  const seeds = Uint8Array.from(exact, (v, p) => Number(!!v && [0, 1, 2, 3].some((c) => Math.abs(filtered.data[p * 4 + c]) >= noiseFloor)));
+  // Retain the contributing source support of each Gaussian measurement. Cutting
+  // at the threshold contour itself removes neighbouring evidence on resample.
+  // Clip to exact differences to retain the canonical equality boundary.
+  const support = outwardWeights(seeds, state.width, state.height, RESIDUAL_RECIPE.supportMargin + 1);
+  const mask = Uint8Array.from(exact, (v, p) => Number(!!v && support[p] > 0));
+  return { filtered, mask, noiseSigma, noiseFloor, threshold, maxDelta };
+}
+
+export function changeReproduction(state, normal, down, referenceDown, intended = intendedChange(state, normal)) {
+  pair(state, normal); pair(state, down); pair(state, referenceDown);
+  const { filtered, mask, ...evidence } = intended;
+  const observed = gaussianBlur(stateResidual(down, referenceDown), CHANGE_GATE.sigma);
+  let strongPixels = 0, reproducedPixels = 0, outputMaxDelta = 0;
+  for (const v of observed.data) outputMaxDelta = Math.max(outputMaxDelta, Math.abs(v));
+  for (let p = 0; p < mask.length; p++) if (mask[p]) {
     let strong = false, reproduced = true;
     for (let c = 0; c < 4; c++) {
-      const delta = premulValue(state, i, c) - premulValue(normal, i, c);
-      if (!delta || Math.abs(delta) < threshold) continue;
+      const delta = filtered.data[p * 4 + c];
+      if (Math.abs(delta) < evidence.threshold) continue;
       strong = true;
-      const observed = premulValue(down, i, c) - premulValue(referenceDown, i, c);
-      if (Math.sign(delta) * observed < Math.abs(delta) * CHANGE_GATE.minimumMagnitude) reproduced = false;
+      if (Math.sign(delta) * observed.data[p * 4 + c] + 1e-5 < Math.abs(delta) * CHANGE_GATE.minimumMagnitude) reproduced = false;
     }
     if (strong) { strongPixels++; if (reproduced) reproducedPixels++; }
   }
   const share = strongPixels ? reproducedPixels / strongPixels : 1;
-  return { ...CHANGE_GATE, threshold, maxDelta, strongPixels, reproducedPixels, share, passes: share >= CHANGE_GATE.minimumShare };
+  const noiseOnly = !strongPixels;
+  return { ...CHANGE_GATE, ...evidence, noiseOnly, outputMaxDelta, strongPixels, reproducedPixels, share,
+    passes: noiseOnly ? outputMaxDelta <= evidence.noiseFloor : share >= CHANGE_GATE.minimumShare };
 }

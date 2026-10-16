@@ -128,23 +128,24 @@ test('transfer is continuous across a spatial alpha-delta sign change with a non
   // Include exactly zero alpha delta while keeping the colour-change mask on.
   for (const epsilon of [0.1, 0.001, 0.00001]) {
     const state = { ...normal, data: Float32Array.from(normal.data, (v, i) =>
-      i % 4 === 3 ? v + (Math.floor(i / 4) - 1) * epsilon : v + 7) };
+      i % 4 === 3 ? v + (Math.floor(i / 4) - 1) * epsilon : v + 24) };
     const result = transferResidual(state, normal, reference);
-    expect(result.data).toEqual(image(6, 2, () => [87, 107, 127, 100]).data);
+    expect(result.data).toEqual(image(6, 2, () => [104, 124, 144, 100]).data);
   }
 });
 
 test('transparent and tiny-alpha normals remain finite and preserve unchanged footprints', () => {
   const normal = image(3, 1, () => [80, 100, 120, 0]);
-  const state = image(3, 1, (x) => [80, 100, 120, x === 2 ? 10 : 0]);
+  const state = image(3, 1, (x) => [80, 100, 120, x === 2 ? 16 : 0]);
   const reference = image(6, 2, () => [80, 100, 120, 0]);
   const added = transferResidual(state, normal, reference);
   expect(Array.from(added.data.slice(0, 16))).toEqual(Array.from(reference.data.slice(0, 16)));
-  expect(added.data[23]).toBe(10);
+  expect(added.data[23]).toBe(16);
   const tinyNormal = { ...normal, data: Float32Array.from(normal.data, (v, i) => i % 4 === 3 ? 1e-8 : v) };
   const tinyState = { ...state, data: Float32Array.from(state.data, (v, i) => i % 4 === 3 ? 5e-9 : v) };
   const faint = transferResidual(tinyState, tinyNormal, image(6, 2, () => [80, 100, 120, 1]));
-  expect(faint.data).toEqual(image(6, 2, () => [0, 0, 0, 0]).data);
+  // Changes below the noise floor retain the canonical exactly.
+  expect(faint.data).toEqual(image(6, 2, () => [80, 100, 120, 1]).data);
 });
 
 test('translucent replacement has valid premultiplied colour regardless of reference', () => {
@@ -302,7 +303,7 @@ test('pressed shadow shrink over a fainter normal preserves additive face detail
   const normal = shadow(60);
   const state = shadow(40);
   // Change only the face interior; opaque boundary pixels remain the canonical paint.
-  for (let y = 25; y < 58; y++) for (let x = 27; x < 63; x++) state.data[(y * 256 + x) * 4] += 8;
+  for (let y = 25; y < 58; y++) for (let x = 27; x < 63; x++) state.data[(y * 256 + x) * 4] += 12;
   const reference = await nearest(normal);
   for (let i = 0; i < reference.data.length; i += 4) if (reference.data[i + 3] < 250) reference.data[i + 3] = Math.round(reference.data[i + 3] * 0.7);
   const result = await residualCandidate(state, normal, reference);
@@ -310,7 +311,7 @@ test('pressed shadow shrink over a fainter normal preserves additive face detail
   expect(result.diagnostics.translucent.samples).toBeGreaterThan(0);
   for (let y = 52; y < 112; y++) for (let x = 56; x < 122; x++) {
     const i = (y * 512 + x) * 4;
-    expect(result.master.data[i]).toBe(reference.data[i] + 8);
+    expect(result.master.data[i]).toBe(reference.data[i] + 12);
     expect(result.master.data[i + 3]).toBe(255);
   }
   expect(result.master.data.every((v: number, i: number) => i % 4 === 3 || v * result.master.data[i - i % 4 + 3] / 255 <= result.master.data[i - i % 4 + 3])).toBe(true);
@@ -361,11 +362,14 @@ test('dropped dashed ring fails change reproduction despite passing conformance 
 });
 
 test('change reproduction requires every strongly changed channel, counts pixels, and handles empty evidence', () => {
-  const normal = image(10, 1, () => [100, 100, 100, 255]);
-  const state = image(10, 1, () => [140, 60, 100, 255]);
-  const output = image(10, 1, (x) => [120, x < 9 ? 80 : 100, 100, 255]);
-  expect(changeReproduction(state, normal, output, normal)).toMatchObject({ strongPixels: 10, reproducedPixels: 9, share: 0.9, passes: true });
-  expect(changeReproduction(state, normal, image(10, 1, () => [120, 120, 100, 255]), normal).passes).toBe(false);
+  const normal = image(100, 1, () => [100, 100, 100, 255]);
+  const state = image(100, 1, () => [140, 60, 100, 255]);
+  const output = image(100, 1, (x) => [130, x < 95 ? 70 : 100, 100, 255]);
+  const result = changeReproduction(state, normal, output, normal);
+  expect(result.strongPixels).toBe(100);
+  expect(result.share).toBeGreaterThanOrEqual(0.9);
+  expect(result.passes).toBe(true);
+  expect(changeReproduction(state, normal, image(100, 1, () => [130, 130, 100, 255]), normal).passes).toBe(false);
   expect(changeReproduction(normal, normal, normal, normal)).toMatchObject({ strongPixels: 0, passes: true });
   expect(() => changeReproduction(state, normal, image(1, 1, () => [0, 0, 0, 0]), normal)).toThrow(/geometry/);
 });

@@ -98,12 +98,13 @@ test('subthreshold ring cannot pass reproduction or proportional suppression wit
   expect(stateStats(state, normal, reference, registered, down).suppressed).toBe(true);
 });
 
-test('zero delta and tiny changes including 1x1 have explicit nonvacuous verdicts', async () => {
+test('zero delta and sub-noise-floor changes including 1x1 assert no introduced change', async () => {
   const n = image(1, 1, () => [80, 90, 100, 255]);
   expect(changeReproduction(n, n, n, n)).toMatchObject({ strongPixels: 0, passes: true });
   for (const delta of [1, 5, 40]) {
     const s = image(1, 1, () => [80 + delta, 90, 100, 255]);
-    expect(changeReproduction(s, n, n, n)).toMatchObject({ strongPixels: 1, passes: false });
+    expect(changeReproduction(s, n, n, n)).toMatchObject({ strongPixels: delta > 6 ? 1 : 0, passes: delta <= 6 });
+    expect(changeReproduction(s, n, image(1, 1, () => [140, 90, 100, 255]), n).passes).toBe(delta > 6);
     const r = await scale(n, 2), own = await scale(s, 2);
     const fractional = { ...own, data: Float32Array.from(own.data, (v, i) => v + (i % 4 === 0 ? 0.6 : 0)) };
     expect(registerState(s, n, r, fractional).data[0]).toBe(s.data[0] + 1);

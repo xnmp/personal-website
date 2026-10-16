@@ -11,7 +11,7 @@ import { planExternalTiles } from './external.mjs';
 import { padRequestCanvas, extractRequestTile } from './canvas.mjs';
 import { blendTiles, colourStats, composeFlow, estimateFlow, padTransparent, placeRegion, toneMatch, warp } from './merge.mjs';
 import { resample, seamStats, wrapRegion, periodicHalo } from './periodic.mjs';
-import { canonicaliseTransparent, registerState, stateRequestCrop, stateStats, derivationDigest, stateGateWeights, cropWeights, stateEvidence, residualRouting, transferResidual, residualDiagnostics, changeReproduction, statePolicy } from './states.mjs';
+import { intendedChange, canonicaliseTransparent, registerState, stateRequestCrop, stateStats, derivationDigest, stateGateWeights, cropWeights, stateEvidence, residualRouting, transferResidual, residualDiagnostics, changeReproduction, statePolicy } from './states.mjs';
 import { protectGlyphs, protectedStats } from './protect.mjs';
 import { smoothField } from './generators.mjs';
 import { detailStats } from './detail.mjs';
@@ -37,9 +37,11 @@ const resize = (img, width, height) => raw(sharp(bytes(img), { raw: geometry(img
 const crop = (img, t) => raw(sharp(bytes(img), { raw: geometry(img) }).extract({ left: t.x, top: t.y, width: t.w, height: t.h }));
 const json = (path, value) => writeFile(path, JSON.stringify(value, null, 2) + '\n');
 const run = (command, args) => new Promise((done, reject) => {
-  const child = spawn(command, args, { stdio: ['ignore', 'inherit', 'inherit'] });
+  const child = spawn(command, args, { stdio: ['ignore', 'inherit', 'pipe'] });
+  let stderr = '';
+  child.stderr.on('data', (chunk) => { process.stderr.write(chunk); stderr = (stderr + chunk.toString()).slice(-4096); });
   child.on('error', reject);
-  child.on('exit', (code, signal) => code === 0 ? done() : reject(new Error(`image wrapper exited ${signal ?? code}`)));
+  child.on('close', (code, signal) => code === 0 ? done() : reject(new Error(`image wrapper exited ${signal ?? code}${stderr.trim() ? `: ${stderr.trim()}` : ''}`)));
 });
 
 export async function mapJobs(items, jobs, task) {
@@ -71,13 +73,13 @@ export function cliOptions(args) {
   return { ...values, jobs, maxMae, retryRejected };
 }
 
-export function acceptanceReasons(stats, label, maxMae) {
+export function acceptanceReasons(stats, label, maxMae, { alignment = true } = {}) {
   if (!stats.gateable) return [];
-  const { reliableBlocks = 0, visibleBlocks = 0 } = stats.postWarp;
+  const { reliableBlocks = 0, visibleBlocks = 0 } = stats.postWarp ?? {};
   const required = Math.max(3, Math.ceil(0.2 * visibleBlocks));
-  return [...(reliableBlocks < required ? [`${label}: cannot establish alignment (${reliableBlocks} reliable blocks; need ${required} of ${visibleBlocks} visible blocks)`] : []),
-    ...(stats.postWarp.median > 0.6 ? [`${label}: residual median ${stats.postWarp.median.toFixed(2)} source px > 0.6`] : []),
-    ...(stats.postWarp.p90 > 1 ? [`${label}: residual p90 ${stats.postWarp.p90.toFixed(2)} source px > 1.0`] : []),
+  return [...(alignment && reliableBlocks < required ? [`${label}: cannot establish alignment (${reliableBlocks} reliable blocks; need ${required} of ${visibleBlocks} visible blocks)`] : []),
+    ...(alignment && stats.postWarp.median > 0.6 ? [`${label}: residual median ${stats.postWarp.median.toFixed(2)} source px > 0.6`] : []),
+    ...(alignment && stats.postWarp.p90 > 1 ? [`${label}: residual p90 ${stats.postWarp.p90.toFixed(2)} source px > 1.0`] : []),
     ...(stats.blurredMae > maxMae ? [`${label}: blurred MAE ${stats.blurredMae.toFixed(2)} > ${maxMae}`] : [])];
 }
 
@@ -101,7 +103,7 @@ export async function alignTile(source, generated, factor, weights) {
 
 // Evaluate the delivered state with the generated path's evidence support,
 // tile plan, alignment/colour thresholds and registration invariants.
-export async function stateConformance(state, normal, reference, decoded, down, asset = {}, maxMae = 14) {
+export async function stateConformance(state, normal, reference, decoded, down, asset = {}, maxMae = 14, { derived = false, evidence = intendedChange(state, normal) } = {}) {
   const support = stateGateWeights(state, normal);
   const region = asset.stateCrop ? stateRequestCrop(state, normal) : null;
   const width = region?.w ?? state.width, height = region?.h ?? state.height;
@@ -109,25 +111,26 @@ export async function stateConformance(state, normal, reference, decoded, down, 
     ? planExternalTiles({ width, height, factor: 2, sizes: asset.external.sizes })
     : planTiles({ width, height, factor: 2 });
   const regions = plan.tiles.map((t) => ({ x: t.x + (region?.x ?? 0), y: t.y + (region?.y ?? 0), w: t.w, h: t.h }));
-  const wholeImage = protectedStats(state, down);
-  const whole = protectedStats(state, down, support);
-  const tiles = await Promise.all(regions.map(async (t) => protectedStats(await crop(state, t), await crop(down, t), cropWeights(support, state.width, t))));
-  const registration = stateStats(state, normal, reference, decoded, down);
-  const reasons = [wholeImage, whole, ...tiles].flatMap((s, i) => acceptanceReasons(s, i === 0 ? 'whole-image' : i === 1 ? 'state-region' : `state tile ${i - 2}`, maxMae));
+  const wholeImage = protectedStats(state, down, undefined, { alignment: !derived });
+  const whole = protectedStats(state, down, support, { alignment: !derived });
+  const tiles = await Promise.all(regions.map(async (t) => protectedStats(await crop(state, t), await crop(down, t), cropWeights(support, state.width, t), { alignment: !derived })));
+  const registration = stateStats(state, normal, reference, decoded, down, evidence);
+  const reasons = [wholeImage, whole, ...tiles].flatMap((s, i) => acceptanceReasons(s, i === 0 ? 'whole-image' : i === 1 ? 'state-region' : `state tile ${i - 2}`, maxMae, { alignment: !derived }));
   if (registration.stateMae > maxMae) reasons.push(`registered state premultiplied MAE ${registration.stateMae} > ${maxMae}`);
   if (registration.outsideDifferingPixels) reasons.push(`registered state differs outside S2 (${registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
   if (registration.suppressed) reasons.push('registration suppressed too many intended state changes');
-  return { wholeImage, whole, tiles, registration, reasons, passes: !reasons.length };
+  return { alignment: derived ? { inherited: true, reference: asset.reference ?? null, reason: 'Deterministic delta over the locked canonical; alignment accepted by its lock.' } : { inherited: false }, wholeImage, whole, tiles, registration, reasons, passes: !reasons.length };
 }
 
 export async function residualCandidate(state, normal, reference, asset = {}, maxMae = 14) {
-  const master = canonicaliseTransparent(transferResidual(state, normal, reference));
+  const evidence = intendedChange(state, normal);
+  const master = canonicaliseTransparent(transferResidual(state, normal, reference, undefined, evidence));
   const encoded = await sharp(bytes(master), { raw: geometry(master) }).webp({ lossless: true }).toBuffer();
   const decoded = await raw(sharp(encoded).toColourspace('srgb').ensureAlpha());
   const down = await resize(decoded, state.width, state.height);
-  const diagnostics = residualDiagnostics(state, normal, down, await resize(reference, state.width, state.height));
-  const conformance = await stateConformance(state, normal, reference, decoded, down, asset, maxMae);
-  const change = changeReproduction(state, normal, down, await resize(reference, state.width, state.height));
+  const diagnostics = residualDiagnostics(state, normal, down, await resize(reference, state.width, state.height), evidence);
+  const conformance = await stateConformance(state, normal, reference, decoded, down, asset, maxMae, { derived: true, evidence });
+  const change = changeReproduction(state, normal, down, await resize(reference, state.width, state.height), evidence);
   return { master, encoded, diagnostics, conformance, change };
 }
 
@@ -136,7 +139,8 @@ export async function residualCandidate(state, normal, reference, asset = {}, ma
 export function stateCandidateFailures(candidate, accept = false) {
   return [
     ...(candidate.conformance.registration?.suppressed ? ['registration suppressed too many intended state changes'] : []),
-    ...(!candidate.change.passes ? [`change reproduction ${candidate.change.reproducedPixels}/${candidate.change.strongPixels} (${(candidate.change.share * 100).toFixed(2)}%) < 90%`] : []),
+    ...(!candidate.change.passes && candidate.change.noiseOnly ? [`output low-passed delta ${candidate.change.outputMaxDelta} exceeds noise floor ${candidate.change.noiseFloor}`] : []),
+    ...(!candidate.change.passes && !candidate.change.noiseOnly ? [`change reproduction ${candidate.change.reproducedPixels}/${candidate.change.strongPixels} (${(candidate.change.share * 100).toFixed(2)}%) < 90%`] : []),
     ...(!accept ? candidate.conformance.reasons : []),
   ];
 }
@@ -156,6 +160,19 @@ export async function resolveStateCandidate(state, normal, reference, generated,
       failures: stateCandidateFailures(candidate, accept) };
   }
   return { ...original, master: generated, method: 'generate', failures: stateCandidateFailures(original, accept) };
+}
+
+// Only failures at the provider boundary qualify. Programming, filesystem and
+// invariant failures elsewhere must not silently change the route.
+export class ProviderUnavailable extends CandidateRejected {}
+export async function withStateProviderFallback(asset, generate, derive) {
+  try { return await generate(); }
+  catch (error) {
+    const errors = error instanceof AggregateError ? error.errors : [error];
+    if (!asset.family || asset.reference === asset.src || statePolicy(asset).mode !== 'auto' ||
+        !errors.some((e) => e instanceof ProviderUnavailable) || !errors.every((e) => e instanceof CandidateRejected)) throw error;
+    return derive(errors.map((e) => e.message).join('; '));
+  }
 }
 
 async function lockedReference(asset, root, assets) {
@@ -228,7 +245,7 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
     if (stats.registration.outsideDifferingPixels) invariantReasons.push(`registered state differs outside S2 (${stats.registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
     stats.changeReproduction = changeReproduction(rgba, normal, down, referenceDown);
     if (!stats.changeReproduction.passes) hardReasons.push(...stateCandidateFailures({ change: stats.changeReproduction, conformance: { reasons: [] } }));
-    stats.conformance = await stateConformance(rgba, normal, reference, decoded, down, asset, opts.maxMae);
+    stats.conformance = await stateConformance(rgba, normal, reference, decoded, down, asset, opts.maxMae, { derived: stats.stateDerivation?.method === 'residual' });
     reasons.push(...stats.conformance.reasons);
     if (stats.stateDerivation?.method === 'residual') {
       stats.stateDerivation.diagnostics = residualDiagnostics(rgba, normal, down, referenceDown);
@@ -360,13 +377,18 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
   }
   const requests = opts.remerge ? 0 : opts.force ? present.length : missing.length;
   console.log(`${asset.src}: ${metadata.width}x${metadata.height} -> ${plan.outW}x${plan.outH}; ${plan.tiles.length} tiles; ${external ? 'external' : 'API'} ${plan.tiles.map((t) => `${t.apiW}x${t.apiH}${t.requestW ? ` (padded input ${t.requestW}x${t.requestH}, offset ${t.padLeft},${t.padTop})` : ''}`).join(', ')}; estimated requests ${requests} ${external ? '' : `(up to ${requests + opts.retryRejected} including asset retry budget)`}`);
-  if (opts.remerge && missing.length) {
+  if (opts.remerge && missing.length && !(external && context.stateDerivation?.mode === 'auto')) {
     console.log(`${asset.src}: SKIPPED --remerge; missing cached tiles: ${missing.join(', ')}`);
     return;
+  }
+  if (opts.dry && external && missing.length && context.stateDerivation?.mode === 'auto') {
+    context.stateDerivation = { ...context.stateDerivation, method: 'residual', fallbackReason: `provider unavailable: missing external tiles: ${missing.join(', ')}` };
+    return processAttempt(asset, opts, promptText, root, invoke, context);
   }
   if (opts.dry) return { provider: asset.provider, requests, tiles: plan.tiles.length, stateDerivation: context.stateDerivation };
   await mkdir(cache, { recursive: true });
   context.cache = cache;
+  context.generationKey = key;
   if (context.stateDerivation) await json(resolve(cache, 'stats.json'), { stateDerivation: context.stateDerivation, status: 'generation-pending' });
   if (external && !context.loaded) {
     if (await exists(resolve(cache, 'attempts.json'))) context.attempts = JSON.parse(await readFile(resolve(cache, 'attempts.json'), 'utf8'));
@@ -400,6 +422,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     }
     await json(requestsPath, { version: 1, src: asset.src, provider: 'external', requests: pending });
     await json(resolve(cache, 'attempts.json'), context.attempts);
+    if (pending.length && context.stateDerivation?.mode === 'auto') throw new ProviderUnavailable(`provider unavailable: missing external tiles: ${missing.join(', ')}`, []);
     if (pending.length) {
       const statsPath = resolve(cache, 'stats.json');
       const stats = await exists(statsPath) ? JSON.parse(await readFile(statsPath, 'utf8')) : {};
@@ -431,7 +454,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
       ]);
     } catch (error) {
       if (deterministicError(error)) throw error;
-      throw new CandidateRejected(`tile ${i}: ${error.message}`, [i]);
+      throw new ProviderUnavailable(`provider unavailable, tile ${i}: ${error.message}`, [i]);
     }
     try {
       const info = await sharp(temporary).metadata();
@@ -521,7 +544,19 @@ export async function processAsset(asset, opts, promptText, root, invoke) {
   let first = true;
   while (true) {
     try {
-      const result = await processAttempt(asset, { ...opts, force: first && opts.force }, promptText, root, invoke, context);
+      const result = await withStateProviderFallback(asset,
+        () => processAttempt(asset, { ...opts, force: first && opts.force }, promptText, root, invoke, context),
+        async (fallbackReason) => {
+          // Provider errors can only arise after the dry/request return above.
+          const sourceBytes = await readFile(resolve(root, asset.src));
+          const state = await raw(sharp(sourceBytes).toColourspace('srgb').ensureAlpha());
+          const { normal, reference } = await lockedReference(asset, root, opts.assets);
+          const candidate = await residualCandidate(state, normal, reference, asset, opts.maxMae);
+          context.stateDerivation = { ...context.stateDerivation, method: 'residual', fallbackReason };
+          await finishAsset(asset, opts, root, sourceBytes, state, candidate.master, context.cache, context.generationKey, [],
+            { stateDerivation: context.stateDerivation, attempts: context.attempts });
+          return { provider: asset.provider, requests: context.attempts.requests, tiles: 0, stateDerivation: context.stateDerivation };
+        });
       if (context.cache) {
         await json(resolve(context.cache, 'attempts.json'), context.attempts);
         console.log(`${asset.src}: attempts ${context.attempts.requests}; extra requests ${context.attempts.retries}/${opts.retryRejected}`);

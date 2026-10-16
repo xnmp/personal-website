@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { outputSizes } from './external.mjs';
-import { STATE_RECIPE, RESIDUAL_RECIPE, statePolicy } from './states.mjs';
+import { STATE_RECIPE, RESIDUAL_RECIPE, PREVIOUS_STATE_RECIPE, PREVIOUS_RESIDUAL_RECIPE, statePolicy } from './states.mjs';
 import { PERIODIC_RECIPE, periodicHalo } from './periodic.mjs';
 import { posix } from 'node:path';
 
@@ -129,17 +129,17 @@ export const pixelSettings = (asset) => ({
 export const settingsDigest = (asset) => createHash('sha256').update(JSON.stringify(pixelSettings(asset))).digest('hex');
 
 // Preserve the original API digest byte-for-byte, including explicit provider: api.
-export const processingRecipe = (asset, legacyStates = false) => {
+export const processingRecipe = (asset, legacyStates = false, previous = false) => {
   const fields = {
-    ...(asset.family ? { family: asset.family, reference: asset.reference, familyMembership: asset.familyMembership, states: STATE_RECIPE, sigma: asset.sigma, stateCrop: asset.stateCrop ?? false } : {}),
-    ...(!legacyStates && asset.family && asset.src !== asset.reference ? { stateDerivation: { ...statePolicy(asset), recipe: RESIDUAL_RECIPE } } : {}),
+    ...(asset.family ? { family: asset.family, reference: asset.reference, familyMembership: asset.familyMembership, states: previous ? PREVIOUS_STATE_RECIPE : STATE_RECIPE, sigma: asset.sigma, stateCrop: asset.stateCrop ?? false } : {}),
+    ...(!legacyStates && asset.family && asset.src !== asset.reference ? { stateDerivation: { ...statePolicy(asset), recipe: previous ? PREVIOUS_RESIDUAL_RECIPE : RESIDUAL_RECIPE } } : {}),
     ...(asset.periodic ? { periodic: PERIODIC_RECIPE, halo: periodicHalo(asset.sigma), sigma: asset.sigma } : {}),
     ...(asset.provider === 'resample' ? { resample: 'premultiplied-bilinear-v1', generator: asset.generator ?? null, ...(asset.glyphs ? { glyphs: true } : {}) } : {}),
     ...(asset.protect ? { protect: asset.protect, protectFeather: asset.protectFeather ?? 6, protection: 'premultiplied-smoothstep-v1' } : {}),
   };
   return Object.keys(fields).length ? fields : null;
 };
-export const recipeDigest = (asset, legacyStates = false) => processingRecipe(asset, legacyStates) && createHash('sha256').update(JSON.stringify(processingRecipe(asset, legacyStates))).digest('hex');
+export const recipeDigest = (asset, legacyStates = false, previous = false) => processingRecipe(asset, legacyStates, previous) && createHash('sha256').update(JSON.stringify(processingRecipe(asset, legacyStates, previous))).digest('hex');
 export const assetCacheKey = (bytes, asset, prompt, requestIdentity = null) => {
   const original = asset.provider === 'external'
     ? createHash('sha256').update(bytes).update(JSON.stringify([asset.factor, asset.model, prompt, 'external', asset.external.sizes, 'padded-v1'])).digest('hex')
@@ -150,7 +150,7 @@ export const assetCacheKey = (bytes, asset, prompt, requestIdentity = null) => {
   // Protection changes delivered pixels only: paid tile identity must remain stable.
   // Non-periodic family sigma is post-processing only. Preserve the historical
   // sigma=4 tile namespace while allowing tone changes to reuse paid tiles.
-  const recipe = processingRecipe({ ...asset, ...(asset.family && !asset.periodic ? { sigma: 4 } : {}), protect: undefined, protectFeather: undefined }, true);
+  const recipe = processingRecipe({ ...asset, ...(asset.family && !asset.periodic ? { sigma: 4 } : {}), protect: undefined, protectFeather: undefined }, true, true);
   return recipe ? createHash('sha256').update(legacy).update(JSON.stringify([recipe, requestIdentity])).digest('hex') : legacy;
 };
 
