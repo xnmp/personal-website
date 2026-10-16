@@ -138,24 +138,36 @@ export function stateRequestCrop(state, normal, margin = 16, maxArea = 0.25) {
   return w * h <= state.width * state.height * maxArea ? { x, y, w, h } : null;
 }
 
-export function stateStats(state, normal, reference, shipped, down, evidence = intendedChange(state, normal)) {
+export function stateStats(state, normal, reference, shipped, down, evidence = intendedChange(state, normal), { native = false } = {}) {
   pair(state, normal); pair(state, down); pair(reference, shipped);
   const sourceMask = evidence.mask;
   const mask = expandMask(differenceMask(state, normal), state.width, state.height);
   const outsideDifferingPixels = outsideDifferences(shipped, reference, mask);
-  let error = 0, count = 0, preservedSourcePixels = 0;
+  let error = 0, count = 0, preservedSourcePixels = 0, intendedSourcePixels = 0, preservedIntendedPixels = 0;
   for (let p = 0; p < sourceMask.length; p++) if (sourceMask[p]) {
     for (let c = 0; c < 4; c++) {
       error += Math.abs(down.data[p * 4 + c] * (c < 3 ? down.data[p * 4 + 3] / 255 : 1) - state.data[p * 4 + c] * (c < 3 ? state.data[p * 4 + 3] / 255 : 1));
       count++;
     }
     const x = p % state.width * 2, y = Math.floor(p / state.width) * 2;
-    if ([0, 1].some((dy) => [0, 1].some((dx) => pixelDiffers(shipped, reference, ((y + dy) * shipped.width + x + dx) * 4)))) preservedSourcePixels++;
+    const preserved = [0, 1].some((dy) => [0, 1].some((dx) => pixelDiffers(shipped, reference, ((y + dy) * shipped.width + x + dx) * 4)));
+    if (preserved) preservedSourcePixels++;
+    // Native resampling can erase faint codec/shadow neighbours in expanded
+    // support. Count coherent changes at the noise floor, including changes
+    // below the strong-change threshold. Registered candidates keep the
+    // historical full-support statistic.
+    if ([0, 1, 2, 3].some((c) => Math.abs(evidence.filtered.data[p * 4 + c]) >= evidence.noiseFloor &&
+        Math.abs(premulValue(state, p * 4, c) - premulValue(normal, p * 4, c)) >= evidence.noiseFloor)) {
+      intendedSourcePixels++;
+      if (preserved) preservedIntendedPixels++;
+    }
   }
   const changedSourcePixels = count / 4;
   const preservedShare = changedSourcePixels ? preservedSourcePixels / changedSourcePixels : 1;
   return { outsideDifferingPixels, stateMae: error / (count || 1), changedSourcePixels, preservedSourcePixels, preservedShare,
-    suppressed: preservedShare < CHANGE_GATE.minimumShare };
+    intendedSourcePixels, preservedIntendedPixels,
+    suppressed: native ? intendedSourcePixels > 0 && preservedIntendedPixels / intendedSourcePixels < CHANGE_GATE.minimumShare
+      : preservedShare < CHANGE_GATE.minimumShare };
 }
 
 // Signed code values, before filtering: invisible RGB contributes exactly zero.
@@ -287,6 +299,8 @@ export function intendedChange(state, normal) {
   return { filtered, mask, noiseSigma, noiseFloor, threshold, maxDelta };
 }
 
+const strongChange = (evidence, p, c) => Math.abs(evidence.filtered.data[p * 4 + c]) >= evidence.threshold;
+
 export function changeReproduction(state, normal, down, referenceDown, intended = intendedChange(state, normal)) {
   pair(state, normal); pair(state, down); pair(state, referenceDown);
   const { filtered, mask, ...evidence } = intended;
@@ -297,7 +311,7 @@ export function changeReproduction(state, normal, down, referenceDown, intended 
     let strong = false, reproduced = true;
     for (let c = 0; c < 4; c++) {
       const delta = filtered.data[p * 4 + c];
-      if (Math.abs(delta) < evidence.threshold) continue;
+      if (!strongChange(intended, p, c)) continue;
       strong = true;
       if (Math.sign(delta) * observed.data[p * 4 + c] + 1e-5 < Math.abs(delta) * CHANGE_GATE.minimumMagnitude) reproduced = false;
     }

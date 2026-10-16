@@ -1219,33 +1219,36 @@ const screens = async () => {
   }
 };
 
-const cleaned = cleans();
-await Promise.all([
-  cleaned,
-  frame(),
-  notes(),
-  screens(),
-  paperTile(),
-  slip(),
-  stock(),
-  tapeClear().then(mounts),
-  printEdge(),
-  ornaments(),
-  fernBand(),
-  stripPhone(),
-  typeTile(),
-  // the home print and the two page prints: the mock's ground laid into the
-  // plate, the margins painted on, all onto the ramp (day), then each one's
-  // night
-  ...["home", "project", "launch"].map((id) =>
-    cleaned
-      .then(() => sky(PRINTS[id]))
-      .then(() => bleedRef(PRINTS[id]))
-      .then(() => bleed(PRINTS[id]))
-      .then(() => Promise.all([nightOf(PRINTS[id].out, PRINTS[id].night), nightOf(groundName(PRINTS[id].out), groundName(PRINTS[id].night))])),
-  ),
-  cleaned.then(() => sky(PRINTS.phone)).then(phone),
-]);
+// Raw preparation is explicit; importing recipes and scratch rebuilds are read-only.
+const prepareRaw = async () => {
+  const cleaned = cleans();
+  await Promise.all([
+    cleaned,
+    frame(),
+    notes(),
+    screens(),
+    paperTile(),
+    slip(),
+    stock(),
+    tapeClear().then(mounts),
+    printEdge(),
+    ornaments(),
+    fernBand(),
+    stripPhone(),
+    typeTile(),
+    // the home print and the two page prints: the mock's ground laid into the
+    // plate, the margins painted on, all onto the ramp (day), then each one's
+    // night
+    ...["home", "project", "launch"].map((id) =>
+      cleaned
+        .then(() => sky(PRINTS[id]))
+        .then(() => bleedRef(PRINTS[id]))
+        .then(() => bleed(PRINTS[id]))
+        .then(() => Promise.all([nightOf(PRINTS[id].out, PRINTS[id].night), nightOf(groundName(PRINTS[id].out), groundName(PRINTS[id].night))])),
+    ),
+    cleaned.then(() => sky(PRINTS.phone)).then(phone),
+  ]);
+};
 
 
 // a label's focus: a grease-pencil rule laid inside its edge, with ink
@@ -1337,6 +1340,8 @@ const NIGHTS = [...PRINT_FINISHES, ...GROUND_FINISHES].filter((f) => f.endsWith(
 
 const kit = {
   raw: "cyanotype",
+  prepareRaw,
+  rawHashes: { "card-stock": "41f9220ad56cdbdf3a2fa2da8a17e194ad3110e3cb39e4d9aec3fca13c0b4922" },
   sheet: {
     // the pane's sides on the lossy block grid (scripts/build-kit.mjs)
     alignPane: true,

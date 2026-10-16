@@ -18,14 +18,16 @@
 //
 // A style's config names its raws and tunes the light; see scripts/kits/.
 import sharp from "sharp";
+import { resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { liftSun } from "./lift-sun.mjs";
-import { clearWindow, fillet, frameMask, glaze, paneLight, sheen, temper } from "./framed-pane.mjs";
+import { clearWindow, fillet, frameMask, glaze, materialFrame, paneLight, sheen, temper } from "./framed-pane.mjs";
 import { drawInk, rings } from "./ink.mjs";
 import { lengthenRails, mirrorBottom, mitre, smoothRails, tileRails } from "./mitre.mjs";
 import { webpOptions } from "./webp.mjs";
-import { nativeKit } from "./kit-native.mjs";
+import { rasterBase } from "./kit-raster.mjs";
+import { nativeKit, scaleStateFlags } from "./kit-native.mjs";
 
 const style = process.argv[2];
 if (!style) {
@@ -34,9 +36,11 @@ if (!style) {
 }
 const options = Object.fromEntries(process.argv.slice(3).map((v) => v.replace(/^--/, "").split("=")));
 const density = Number(options.density ?? 1);
-if (!options.ink && density !== 1) throw new Error("density requires a restricted ink recipe");
-if (options.ink && (!options.out || !options.tmp || !options.raw)) throw new Error("ink render requires explicit out, tmp and raw directories");
-const kit = options.ink ? nativeKit({ type: "ink", kit: style, name: options.ink }, density) : (await import(`./kits/${style}.mjs`)).default;
+const nativeName = options.ink ?? options.kit;
+if (!nativeName && density !== 1) throw new Error("density requires a restricted ink recipe");
+if (nativeName && (!options.out || !options.tmp || !options.raw)) throw new Error("ink render requires explicit out, tmp and raw directories");
+const kit = nativeName ? nativeKit({ type: options.ink ? "ink" : "kit", kit: style, name: nativeName }, density, { rawRoot: resolve(options.raw, ".."), requireRaw: true }) : (await import(`./kits/${style}.mjs`)).default;
+if (!options.raw) await kit.prepareRaw?.();
 // flat colour in hard ink lines is encoded losslessly (scripts/webp.mjs), by
 // every step, those run as their own processes too
 if (kit.lossless) process.env.KIT_LOSSLESS = "1";
@@ -56,7 +60,7 @@ const raw = (name) => `${RAW}/${name}/${name}.png`;
 const geometry = ({ width, height, channels }) => ({ width, height, channels });
 const has = (name) => existsSync(raw(name));
 const node = (...args) => execFileSync("node", args, { stdio: ["ignore", "ignore", "inherit"] });
-const derive = (src, out, mode, ...flags) => node("scripts/derive-state.mjs", src, out, mode, ...flags);
+const derive = (src, out, mode, ...flags) => node("scripts/derive-state.mjs", src, out, mode, ...scaleStateFlags(flags, density), `--density=${density}`);
 const shadow = (src, out, pad, ambient, contact, ...flags) =>
   node("scripts/paper-shadow.mjs", src, out, `--pad=${pad}`, `--ambient=${ambient}`, `--contact=${contact}`, ...flags);
 // the outer rim takes the key light: lit along the top and left, shaded along
@@ -73,13 +77,13 @@ const floored = async (path, floor) => {
 };
 
 /** trim transparent margin, then resize; returns the path of a PNG base */
-const base = async (name, resize, { gain = 1, alphaFloor = 0 } = {}, out = `${TMP}/${name}.png`) => {
+const base = async (name, resize, { gain = 1, alphaFloor = 0 } = {}, out = `${TMP}/${name}.png`, sampleDensity = density) => {
   const g = Array.isArray(gain) ? gain : [gain, gain, gain];
   const src = alphaFloor ? await floored(raw(name), alphaFloor) : raw(name);
-  let trimmed = await sharp(src).trim({ threshold: 1 }).resize(resize).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let trimmed = options.kit ? await rasterBase(src, resize, sampleDensity) : await sharp(src).trim({ threshold: 1 }).resize(resize).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   // Resolve the original integer geometry before scaling: independently
   // rounding an aspect at 2x can add a pixel to an odd-sized 1x base.
-  if (density !== 1) trimmed = await sharp(trimmed.data, { raw: geometry(trimmed.info) }).resize(trimmed.info.width * density, trimmed.info.height * density).raw().toBuffer({ resolveWithObject: true });
+  if (density !== 1 && !options.kit) trimmed = await sharp(trimmed.data, { raw: geometry(trimmed.info) }).resize(trimmed.info.width * density, trimmed.info.height * density).raw().toBuffer({ resolveWithObject: true });
   // the generator leaves opaque material a hair translucent (alpha ~253); a
   // sheet is opaque, and a shadow must not show through it
   const px = trimmed.data;
@@ -115,7 +119,7 @@ const straighten = async (path, slice) => {
     const raw = Array.from({ length: W }, (_, x) => (x >= x0 && x <= x1 ? f(x) : 0));
     return raw.map((_, x) => {
       let [t, n] = [0, 0];
-      for (let i = -12; i <= 12; i++) if (x + i >= x0 && x + i <= x1) [t, n] = [t + raw[x + i], n + 1];
+      for (let i = -12 * density; i <= 12 * density; i++) if (x + i >= x0 && x + i <= x1) [t, n] = [t + raw[x + i], n + 1];
       return n ? t / n : 0;
     });
   };
@@ -372,7 +376,7 @@ const SHEET_PAD = 96 * density;
 // keeps as drawn (a glass pane, a silk mount) shows: those kits keep the
 // band against the frame and its lossy fringe.
 const lossy = process.env.KIT_LOSSLESS !== "1";
-const BLOCK = 8;
+const BLOCK = 8 * density;
 const MOUNT = kit.sheet?.mount ?? 14;
 for (const s of kit.sheets ?? []) {
   if (!has(s.src)) continue;
@@ -447,6 +451,7 @@ for (const s of kit.sheets ?? []) {
   shadow(b.path, dest("normal"), SHEET_PAD, ...p.normal);
   if (want("hover")) shadow(hover, dest("hover"), SHEET_PAD, ...(s.hover ?? p.hover));
   let keep = null;
+  let focusLightFrame = null;
   if (!want("focus")) {
     /* nothing to focus */
   } else if (mask && s.focusInk) {
@@ -459,7 +464,18 @@ for (const s of kit.sheets ?? []) {
   } else if (mask && p.fillet) {
     // focus: an enamel strip laid in along the pane's edge
     const focus = `${TMP}/${s.name}-focus.png`;
-    keep = await fillet(b.path, mask, p.fillet, focus);
+    let material = null;
+    if (density > 1) {
+      const logical = nativeKit({ type: options.ink ? "ink" : "kit", kit: style, name: nativeName }, 1, { rawRoot: resolve(options.raw, ".."), requireRaw: true });
+      const entry = logical.sheets[0], settings = { ...logical.sheet, ...entry };
+      const texture = await base(entry.src, { width: settings.width ?? 1000 }, { gain: entry.gain ?? 1, alphaFloor: entry.alphaFloor }, `${TMP}/${s.name}-material.png`, 1);
+      if (entry.turn) writeFileSync(texture.path, await sharp(texture.path).rotate(180).png().toBuffer());
+      if (entry.window) await clearWindow(texture.path, { ...(entry.window === true ? {} : entry.window), gain: entry.gain ?? 1 });
+      const textureMask = await frameMask(texture.path, settings.frame, { rivets: settings.rivets ?? true, feather: settings.feather ?? 0, cleared: Boolean(entry.window) });
+      await fillet(texture.path, textureMask, settings.fillet, `${TMP}/${s.name}-material-focus.png`, { captureMaterial: (field) => { material = field; } });
+    }
+    keep = await fillet(b.path, mask, p.fillet, focus, { density, material });
+    if (material) focusLightFrame = materialFrame(material, density);
     shadow(focus, dest("focus"), SHEET_PAD, ...p.normal);
   } else if (p.focusFlags) {
     // focus is drawn on the surface itself (an inlay in its frame), not a mount
@@ -480,11 +496,12 @@ for (const s of kit.sheets ?? []) {
   const ornament = p.decal ? await decals(states.map(dest), SHEET_PAD, b.width, b.height, [p.decal].flat(), s.gain ?? 1) : null;
   const union = (a, c) => (a && c ? a.map((v, i) => Math.max(v, c[i])) : (a ?? c));
   if (mask) {
-    const light = paneLight(mask, p.glass);
+    const light = paneLight(mask, p.glass, density);
     for (const st of states)
       await glaze(dest(st), `${OUT}/${s.name}-${st}.webp`, SHEET_PAD, mask, light, {
         ...p.glass,
         keep: union(st === "focus" ? keep : null, ornament),
+        ...(st === "focus" && focusLightFrame ? { lightFrame: focusLightFrame } : {}),
       });
     // the key light's pool on the pane, at rest and (stronger) lifted
     if (p.light) await sheen(256, p.light, `${OUT}/${s.name}-light.webp`);
@@ -521,7 +538,7 @@ for (const t of kit.tiles ?? []) {
   const b = await base(t.src, { height: 120 }, { gain: t.gain ?? 1 }, `${TMP}/${t.name}.png`);
   // drawn flat in the clear line (scripts/ink.mjs): its edges are straight
   if (t.ink) await drawInk(b.path, b.width, b.height, rings(b.width, b.height, t.ink, density));
-  else await straighten(b.path, 40); // kit.css slices the board 40px in
+  else await straighten(b.path, 40 * density); // kit.css slices the board 40px in
   // printed on the page's paper: its fibre in the flat colour (`grain`)
   await grainInto(b.path, t.grain);
   // a label whose printed rule fades or thins at its corners: the corners are

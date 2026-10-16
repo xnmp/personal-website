@@ -330,7 +330,7 @@ const seeded = (seed) => () => {
  * cleared for the page's own, scripts/framed-pane.mjs, so nothing of it
  * shows). Works on the base art, in place; returns its new size.
  */
-export async function lengthenRails(path, { corner = 56, length = [null, null], patch = 64, overlap = 20, tolerance = 0.2, seed = 1, pool = false, quiet = null, splice = [], spliceOverlap = 32 } = {}) {
+export async function lengthenRails(path, { corner = 56, length = [null, null], patch = 64, overlap = 20, tolerance = 0.2, seed = 1, pool = false, quiet = null, splice = [], spliceOverlap = 32, density = 1 } = {}) {
   const { data: src, info } = await sharp(path).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const { width: W, height: H } = info;
   const C = corner;
@@ -374,7 +374,7 @@ export async function lengthenRails(path, { corner = 56, length = [null, null], 
       const [mL, mA] = [median(L), median(A)];
       for (let i = 0; i < len; i++) dev[i] += Math.abs(L[i] - mL) + Math.abs(A[i] - mA);
     }
-    const w = Math.min(12, P);
+    const w = Math.min(12 * density, P);
     const chip = new Float64Array(len - w + 1);
     let run = 0;
     for (let i = 0; i < len; i++) {

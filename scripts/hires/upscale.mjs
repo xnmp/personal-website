@@ -13,7 +13,8 @@ import { blendTiles, colourStats, composeFlow, estimateFlow, padTransparent, pla
 import { resample, seamStats, wrapRegion, periodicHalo } from './periodic.mjs';
 import { intendedChange, canonicaliseTransparent, registerState, stateRequestCrop, stateStats, derivationDigest, stateGateWeights, cropWeights, stateEvidence, residualRouting, transferResidual, residualDiagnostics, changeReproduction, statePolicy } from './states.mjs';
 import { protectGlyphs, protectedStats } from './protect.mjs';
-import { smoothField, inkImage, inkConformance } from './generators.mjs';
+import { isNativeKit } from '../kit-native.mjs';
+import { smoothField, kitImage, kitConformance, kitRailSeams, kitRawProof } from './generators.mjs';
 import { detailStats } from './detail.mjs';
 import { CandidateRejected, retrySelection } from './retries.mjs';
 import { sheenImage } from '../framed-pane.mjs';
@@ -104,7 +105,7 @@ export async function alignTile(source, generated, factor, weights) {
 // Evaluate the delivered state with the generated path's evidence support,
 // tile plan, alignment/colour thresholds and registration invariants.
 export async function stateConformance(state, normal, reference, decoded, down, asset = {}, maxMae = 14, { derived = false, evidence = intendedChange(state, normal) } = {}) {
-  const native = asset.generator?.type === 'ink';
+  const native = isNativeKit(asset.generator);
   const alignment = !derived && !native;
   const support = stateGateWeights(state, normal);
   const region = asset.stateCrop ? stateRequestCrop(state, normal) : null;
@@ -116,12 +117,12 @@ export async function stateConformance(state, normal, reference, decoded, down, 
   const wholeImage = protectedStats(state, down, undefined, { alignment });
   const whole = protectedStats(state, down, support, { alignment });
   const tiles = await Promise.all(regions.map(async (t) => protectedStats(await crop(state, t), await crop(down, t), cropWeights(support, state.width, t), { alignment })));
-  const registration = stateStats(state, normal, reference, decoded, down, evidence);
+  const registration = stateStats(state, normal, reference, decoded, down, evidence, { native });
   const reasons = [wholeImage, whole, ...tiles].flatMap((s, i) => acceptanceReasons(s, i === 0 ? 'whole-image' : i === 1 ? 'state-region' : `state tile ${i - 2}`, maxMae, { alignment }));
   if (registration.stateMae > maxMae) reasons.push(`registered state premultiplied MAE ${registration.stateMae} > ${maxMae}`);
   if (registration.outsideDifferingPixels) reasons.push(`registered state differs outside S2 (${registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
   if (registration.suppressed) reasons.push('registration suppressed too many intended state changes');
-  return { alignment: native ? { analytic: true, reason: 'Kit-native geometry; gated by exact 2x dimensions and premultiplied MAE <= 1/255.' } : derived ? { inherited: true, reference: asset.reference ?? null, reason: 'Deterministic delta over the locked canonical; alignment accepted by its lock.' } : { inherited: false }, wholeImage, whole, tiles, registration, reasons, passes: !reasons.length };
+  return { alignment: native ? { analytic: true, reason: 'Kit-native geometry; gated by exact 2x dimensions and the kit premultiplied MAE gate.' } : derived ? { inherited: true, reference: asset.reference ?? null, reason: 'Deterministic delta over the locked canonical; alignment accepted by its lock.' } : { inherited: false }, wholeImage, whole, tiles, registration, reasons, passes: !reasons.length };
 }
 
 export async function residualCandidate(state, normal, reference, asset = {}, maxMae = 14) {
@@ -195,7 +196,7 @@ export function prepareGeneratedPixels(source, master, asset, normal, reference)
   return reference ? registerState(source, normal, reference, protectedMaster) : protectedMaster;
 }
 
-async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, reasons, stats) {
+export async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, reasons, stats) {
   const output = resolve(root, outputPath(asset));
   let derivation, reference, normal;
   if (asset.family && asset.reference !== asset.src) {
@@ -226,10 +227,6 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
   let encoded = await sharp(bytes(master), { raw: geometry(master) }).webp(asset.lossless || asset.family ? { lossless: true } : webpOptions(asset.quality)).toBuffer();
   let decoded = await raw(sharp(encoded).toColourspace('srgb').ensureAlpha());
   const hardReasons = [], invariantReasons = [];
-  if (asset.generator?.type === 'ink') {
-    stats.ink = await inkConformance(rgba, decoded);
-    if (!stats.ink.passes) invariantReasons.push(`ink premultiplied MAE ${stats.ink.mae}/255 exceeds 1/255`);
-  }
   if (decoded.width !== rgba.width * asset.factor || decoded.height !== rgba.height * asset.factor) invariantReasons.push('decoded output dimensions differ from exact scale');
   if (reference) {
     if (stats.stateDerivation?.method !== 'residual') {
@@ -246,22 +243,31 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
     }
     const down = await resize(decoded, rgba.width, rgba.height);
     const referenceDown = await resize(reference, rgba.width, rgba.height);
-    stats.registration = { ...stateStats(rgba, normal, reference, decoded, down), derivationDigest: derivation };
+    stats.conformance = await stateConformance(rgba, normal, reference, decoded, down, asset, opts.maxMae, { derived: stats.stateDerivation?.method === 'residual' });
+    stats.registration = { ...stats.conformance.registration, derivationDigest: derivation };
     if (stats.registration.suppressed) hardReasons.push('registration suppressed too many intended state changes');
     if (stats.registration.outsideDifferingPixels) invariantReasons.push(`registered state differs outside S2 (${stats.registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
     stats.changeReproduction = changeReproduction(rgba, normal, down, referenceDown);
     if (!stats.changeReproduction.passes) hardReasons.push(...stateCandidateFailures({ change: stats.changeReproduction, conformance: { reasons: [] } }));
-    stats.conformance = await stateConformance(rgba, normal, reference, decoded, down, asset, opts.maxMae, { derived: stats.stateDerivation?.method === 'residual' });
     reasons.push(...stats.conformance.reasons);
     if (stats.stateDerivation?.method === 'residual') {
       stats.stateDerivation.diagnostics = residualDiagnostics(rgba, normal, down, referenceDown);
       stats.stateDerivation.conformance = stats.conformance;
     }
   }
+  if (isNativeKit(asset.generator)) {
+    stats.ink = await kitConformance(rgba, decoded, asset.generator);
+    reasons.push(...stats.ink.reasons);
+    stats.railSeams = await kitRailSeams(rgba, decoded, asset.generator);
+    if (stats.railSeams && !stats.railSeams.passes) reasons.push('decoded native rail wrap jump or first derivative exceeds baseline tolerance');
+  }
   if (asset.periodic) {
     stats.seams = seamStats(decoded, resample(rgba, 2, true));
     if (!stats.seams.passes) reasons.push('decoded periodic wrap jump or first derivative exceeds baseline tolerance');
   }
+  const invariants = new Set([...hardReasons, ...invariantReasons]);
+  reasons = reasons.filter((reason) => !invariants.has(reason));
+  stats.gates = { conformance: reasons, invariants: [...invariants] };
   stats.reasons = [...reasons, ...hardReasons, ...invariantReasons];
   stats.rejected = stats.reasons.length > 0;
   stats.acceptedOverride = !!opts.accept && reasons.length > 0 && !hardReasons.length && !invariantReasons.length;
@@ -275,7 +281,7 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
     ...(derivation ? { derivationDigest: derivation } : {}),
     ...(stats.stateDerivation ? { stateDerivation: stats.stateDerivation } : {}),
     ...(stats.dependencies ? { dependencies: stats.dependencies } : {}) };
-  const entry = lockEntry(sourceBytes, asset, key, { ...proof, ...(stats.acceptedOverride ? { accepted: true } : {}) });
+  const entry = lockEntry(sourceBytes, asset, key, { ...proof, ...(stats.acceptedOverride ? { accepted: true, acceptedReasons: reasons } : {}) });
   if (opts.verify) {
     if (!await exists(output)) { console.log(`${relative(root, output)} not shipped; verified gates only`); return; }
     if (!encoded.equals(await readFile(output))) throw new Error('remerge differs from shipped bytes; output and lock left untouched');
@@ -353,6 +359,8 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     const detail = detailStats(rgba);
     // For seals, glyph fidelity outweighs recovered detail; generators synthesize their own field.
     if (!asset.generator && !asset.glyphs && !detail.passes) throw new Error(`resample refused: HF RMS ${detail.hfRms.toFixed(4)}/255 > ${detail.limit}/255; use a generative provider`);
+    const rawProof = asset.generator?.type === 'kit' ? await kitRawProof(asset.generator) : null;
+    if (rawProof) console.log(`${asset.src}: kit-native raw ${rawProof.rawSource}; sampled ${rawProof.sampled.width}x${rawProof.sampled.height}; ratio ${rawProof.ratio.toFixed(6)}`);
     const dependency = !opts.dry && asset.generator?.type === 'smooth-field' ? await generatorDependency(asset, root, opts.assets) : null;
     console.log(`${asset.src}: ${metadata.width}x${metadata.height} -> ${metadata.width * 2}x${metadata.height * 2}; resample; estimated requests 0`);
     if (opts.dry) return { provider: asset.provider, requests: 0, tiles: 0, stateDerivation: context.stateDerivation };
@@ -360,7 +368,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     const cache = resolve(root, process.env.HIRES_CACHE ?? 'art/raw/hires', asset.src.slice(7, -extname(asset.src).length), key.slice(0, 12));
     await mkdir(cache, { recursive: true });
     if (asset.generator?.type === 'sheen' && (rgba.width !== rgba.height || rgba.width !== 256)) throw new Error('sheen generator requires a 256px square source');
-    const master = asset.generator?.type === 'ink' ? await inkImage(asset.generator, { root, sourceBytes }) : dependency ? await smoothField(dependency.dependencyBytes, asset.generator) : asset.generator ? sheenImage(rgba.width * 2, asset.generator) : resample(rgba, 2, !!asset.periodic);
+    const master = isNativeKit(asset.generator) ? await kitImage(asset.generator, { root, sourceBytes }) : dependency ? await smoothField(dependency.dependencyBytes, asset.generator) : asset.generator ? sheenImage(rgba.width * 2, asset.generator) : resample(rgba, 2, !!asset.periodic);
     await finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, [], { detail, attempts: { requests: 0, retries: 0 }, generator: generatorName(asset), ...(context.stateDerivation ? { stateDerivation: context.stateDerivation } : {}), ...(dependency ? { dependencies: { [asset.generator.from]: sourceSha256(dependency.dependencyBytes) } } : {}) });
     return;
   }

@@ -3,7 +3,7 @@ import { outputSizes } from './external.mjs';
 import { CURRENT_DERIVATION_GENERATION, HISTORICAL_DERIVATION_GENERATIONS, statePolicy } from './states.mjs';
 import { PERIODIC_RECIPE, periodicHalo } from './periodic.mjs';
 import { posix } from 'node:path';
-import { inkRecipe } from '../kit-native.mjs';
+import { kitRecipe, isNativeKit } from '../kit-native.mjs';
 
 export const DEFAULTS = Object.freeze({ provider: 'api', factor: 2, quality: 82, model: 'gpt-image-2.5-sunburst', apiQuality: 'high', sigma: 4 });
 const object = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -87,9 +87,9 @@ export function validateManifest(value, dimensions = {}) {
     if ('generator' in entry) {
       const g = entry.generator;
       if (!object(g) || asset.provider !== 'resample') fail(where, 'invalid analytic generator');
-      if (g.type === 'ink') {
+      if (isNativeKit(g)) {
         keys(g, ['type', 'kit', 'name'], where + '.generator');
-        try { inkRecipe(g); } catch (error) { fail(where, error.message); }
+        try { kitRecipe(g); } catch (error) { fail(where, error.message); }
         if (entry.src !== `public/kit/${g.kit}/${g.name}.webp`) fail(where, 'ink generator must match its source path');
         if (entry.lossless === false || entry.stateCrop || entry.periodic || entry.glyphs) fail(where, 'ink requires lossless, uncropped, non-periodic art without glyph resampling');
         if (entry.stateDerivation && entry.stateDerivation !== 'generate') fail(where, 'ink states require generation');
@@ -144,7 +144,7 @@ export const processingRecipe = (asset, legacyStates = false, generation = CURRE
     ...(asset.family ? { family: asset.family, reference: asset.reference, familyMembership: asset.familyMembership, states: generation.state, sigma: asset.sigma, stateCrop: asset.stateCrop ?? false } : {}),
     ...(!legacyStates && asset.family && asset.src !== asset.reference ? { stateDerivation: { ...statePolicy(asset), recipe: generation.residual } } : {}),
     ...(asset.periodic ? { periodic: PERIODIC_RECIPE, halo: periodicHalo(asset.sigma), sigma: asset.sigma } : {}),
-    ...(asset.provider === 'resample' ? { resample: 'premultiplied-bilinear-v1', generator: asset.generator?.type === 'ink' ? { ...asset.generator, recipe: inkRecipe(asset.generator) } : asset.generator ?? null, ...(asset.glyphs ? { glyphs: true } : {}) } : {}),
+    ...(asset.provider === 'resample' ? { resample: 'premultiplied-bilinear-v1', generator: isNativeKit(asset.generator) ? { ...asset.generator, recipe: kitRecipe(asset.generator) } : asset.generator ?? null, ...(asset.glyphs ? { glyphs: true } : {}) } : {}),
     ...(asset.protect ? { protect: asset.protect, protectFeather: asset.protectFeather ?? 6, protection: 'premultiplied-smoothstep-v1' } : {}),
   };
   return Object.keys(fields).length ? fields : null;
