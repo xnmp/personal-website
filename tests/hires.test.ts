@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { createHash } from "node:crypto";
 import { API_LIMITS, planTiles } from "../scripts/hires/tiles.mjs";
 import { blendTiles, composeFlow, conformanceStats, estimateFlow, gaussianBlur, padTransparent, toneMatch, warp } from "../scripts/hires/merge.mjs";
-import { cacheKey, validateManifest } from "../scripts/hires/manifest.mjs";
+import { cacheKey, validateManifest, settingsDigest } from "../scripts/hires/manifest.mjs";
 import { acceptanceReasons, alignTile, cliOptions, main, mapJobs } from "../scripts/hires/upscale.mjs";
 import { outputPath } from "../scripts/hires/lock.mjs";
 
@@ -521,6 +521,7 @@ describe("hires offline shell", () => {
         const output = await readFile(join(root, outputPath(asset)));
         const { width, height } = await sharp(output).metadata();
         expect(lock.assets[outputPath(asset)]).toEqual({
+          settingsDigest: settingsDigest(asset),
           sourceSha256: createHash('sha256').update(source).digest('hex'), factor: 2, model: 'gpt-image-2.5-sunburst',
           cacheKey: cacheKey(source, asset.factor, asset.model, 'Faithful upscale.\n'),
           outputSha256: createHash('sha256').update(output).digest('hex'), width, height,

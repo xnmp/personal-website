@@ -31,12 +31,12 @@ export function protectGlyphs(source, master, rects, feather = 6) {
 // Keep the existing conformance contract: RGB error, alpha-weighted visibility,
 // and (for states) a grid fitted to the state's evidence support. Invisible RGB
 // must not dilute colour error or invent alignment evidence.
-export function protectedStats(source, down, stateWeights) {
+export function protectedStats(source, down, stateWeights, { alignment = true } = {}) {
   const a = padTransparent(source), b = padTransparent(down);
   if (stateWeights) {
-    const stats = stateEvidence(a, b, stateWeights);
+    const stats = stateEvidence(a, b, stateWeights, { displacement: alignment });
     return { ...stats, postWarp: stats.flow };
   }
   const weights = Float32Array.from({ length: source.width * source.height }, (_, p) => source.data[p * 4 + 3] / 255);
-  return { ...colourStats(a, b, weights), postWarp: estimateFlow(a, b, { weights }).diagnostics };
+  return { ...colourStats(a, b, weights), postWarp: alignment ? estimateFlow(a, b, { weights }).diagnostics : undefined };
 }

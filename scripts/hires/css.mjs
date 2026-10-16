@@ -5,7 +5,7 @@ import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
 import { extname, resolve, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { processingRecipe, validateManifest } from './manifest.mjs';
+import { validateManifest } from './manifest.mjs';
 import { familyMembershipMatches, lockMatches, outputPath, readLock, outputProof } from './lock.mjs';
 
 export const HIRES_MEDIA = '(min-resolution: 1.5dppx), (min-width: 2200px)';
@@ -288,11 +288,8 @@ export async function checkRepo(root = ROOT) {
     let valid = false;
     try {
       const bytes = await readFile(resolve(root, asset.src));
-      let proof = {};
-      if (processingRecipe(asset)) {
-        const outputBytes = await readFile(resolve(root, output));
-        proof = await outputProof(asset, bytes, outputBytes, root, manifest.assets);
-      }
+      const outputBytes = await readFile(resolve(root, output));
+      const proof = await outputProof(asset, bytes, outputBytes, root, manifest.assets, new Set(), lock);
       valid = !mismatchedFamilies.has(asset.family) && asset.factor === 2 && lockMatches(lock.assets[output], bytes, asset, proof);
     } catch { valid = false; }
     return { asset, url, valid, issue: valid ? null : {

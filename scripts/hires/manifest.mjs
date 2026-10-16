@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { outputSizes } from './external.mjs';
-import { STATE_RECIPE, RESIDUAL_RECIPE, statePolicy } from './states.mjs';
+import { STATE_RECIPE, RESIDUAL_RECIPE, PREVIOUS_STATE_RECIPE, PREVIOUS_RESIDUAL_RECIPE, statePolicy } from './states.mjs';
 import { PERIODIC_RECIPE, periodicHalo } from './periodic.mjs';
 import { posix } from 'node:path';
 
@@ -47,7 +47,7 @@ export function validateProtection(asset, width = Infinity, height = Infinity) {
 export function validateManifest(value, dimensions = {}) {
   keys(value, ['version', 'defaults', 'assets', 'families'], 'manifest');
   if (value.version !== 1) fail('manifest', 'version must be 1');
-  keys(value.defaults, [...Object.keys(DEFAULTS), 'provider', 'external'], 'defaults');
+  keys(value.defaults, [...Object.keys(DEFAULTS), 'provider', 'external', 'lossless'], 'defaults');
   options(value.defaults, 'defaults');
   if (!Array.isArray(value.assets)) fail('manifest', 'assets must be an array');
   const families = value.families ?? {};
@@ -60,7 +60,7 @@ export function validateManifest(value, dimensions = {}) {
   const seen = new Set();
   const assets = value.assets.map((entry, i) => {
     const where = `assets[${i}]${typeof entry?.src === 'string' ? ` (${entry.src})` : ''}`;
-    keys(entry, ['src', 'factor', 'quality', 'lossless', 'note', 'group', 'provider', 'external', 'family', 'reference', 'stateCrop', 'periodic', 'generator', 'protect', 'protectFeather', 'glyphs', 'stateDerivation', 'stateResidualMaxHf'], where);
+    keys(entry, ['src', 'factor', 'quality', 'sigma', 'model', 'apiQuality', 'lossless', 'note', 'group', 'provider', 'external', 'family', 'reference', 'stateCrop', 'periodic', 'generator', 'protect', 'protectFeather', 'glyphs', 'stateDerivation', 'stateResidualMaxHf'], where);
     if (typeof entry.src !== 'string' || !entry.src.startsWith('public/') || posix.normalize(entry.src) !== entry.src ||
         entry.src.includes('\\') || entry.src.includes('\0') || !/\.(webp|png|jpe?g|tiff?|avif|gif)$/i.test(entry.src)) fail(where, 'src must be a raster path inside public/');
     if (seen.has(entry.src)) fail(where, 'duplicate src');
@@ -116,24 +116,41 @@ export function validateManifest(value, dimensions = {}) {
 export const cacheKey = (bytes, factor, model, prompt) => createHash('sha256')
   .update(bytes).update(JSON.stringify([factor, model, prompt])).digest('hex');
 
+// Effective pixel/request settings, separate from paid tile identity. The recipe
+// covers family topology, crop, periodic halo, generators, glyphs and protection.
+// src bytes/factor/provider/model are also checked directly by lockMatches;
+// group is delivery-only. note changes the request; defaults are already resolved.
+export const pixelSettings = (asset) => ({
+  provider: asset.provider ?? 'api', factor: asset.factor, model: asset.model,
+  sigma: asset.sigma, quality: asset.quality, lossless: !!asset.lossless,
+  apiQuality: asset.apiQuality ?? DEFAULTS.apiQuality, note: asset.note ?? '',
+  external: asset.provider === 'external' ? asset.external : null,
+});
+export const settingsDigest = (asset) => createHash('sha256').update(JSON.stringify(pixelSettings(asset))).digest('hex');
+
 // Preserve the original API digest byte-for-byte, including explicit provider: api.
-export const processingRecipe = (asset, legacyStates = false) => {
+export const processingRecipe = (asset, legacyStates = false, previous = false) => {
   const fields = {
-    ...(asset.family ? { family: asset.family, reference: asset.reference, familyMembership: asset.familyMembership, states: STATE_RECIPE, sigma: asset.sigma, stateCrop: asset.stateCrop ?? false } : {}),
-    ...(!legacyStates && asset.family && asset.src !== asset.reference ? { stateDerivation: { ...statePolicy(asset), recipe: RESIDUAL_RECIPE } } : {}),
+    ...(asset.family ? { family: asset.family, reference: asset.reference, familyMembership: asset.familyMembership, states: previous ? PREVIOUS_STATE_RECIPE : STATE_RECIPE, sigma: asset.sigma, stateCrop: asset.stateCrop ?? false } : {}),
+    ...(!legacyStates && asset.family && asset.src !== asset.reference ? { stateDerivation: { ...statePolicy(asset), recipe: previous ? PREVIOUS_RESIDUAL_RECIPE : RESIDUAL_RECIPE } } : {}),
     ...(asset.periodic ? { periodic: PERIODIC_RECIPE, halo: periodicHalo(asset.sigma), sigma: asset.sigma } : {}),
     ...(asset.provider === 'resample' ? { resample: 'premultiplied-bilinear-v1', generator: asset.generator ?? null, ...(asset.glyphs ? { glyphs: true } : {}) } : {}),
     ...(asset.protect ? { protect: asset.protect, protectFeather: asset.protectFeather ?? 6, protection: 'premultiplied-smoothstep-v1' } : {}),
   };
   return Object.keys(fields).length ? fields : null;
 };
-export const recipeDigest = (asset, legacyStates = false) => processingRecipe(asset, legacyStates) && createHash('sha256').update(JSON.stringify(processingRecipe(asset, legacyStates))).digest('hex');
+export const recipeDigest = (asset, legacyStates = false, previous = false) => processingRecipe(asset, legacyStates, previous) && createHash('sha256').update(JSON.stringify(processingRecipe(asset, legacyStates, previous))).digest('hex');
 export const assetCacheKey = (bytes, asset, prompt, requestIdentity = null) => {
-  const legacy = asset.provider === 'external'
+  const original = asset.provider === 'external'
     ? createHash('sha256').update(bytes).update(JSON.stringify([asset.factor, asset.model, prompt, 'external', asset.external.sizes, 'padded-v1'])).digest('hex')
     : cacheKey(bytes, asset.factor, asset.model, prompt);
+  // Historical API requests used high quality. Keep those paid identities.
+  const legacy = (asset.provider ?? 'api') === 'api' && (asset.apiQuality ?? DEFAULTS.apiQuality) !== 'high'
+    ? createHash('sha256').update(original).update(JSON.stringify({ apiQuality: asset.apiQuality })).digest('hex') : original;
   // Protection changes delivered pixels only: paid tile identity must remain stable.
-  const recipe = processingRecipe({ ...asset, protect: undefined, protectFeather: undefined }, true);
+  // Non-periodic family sigma is post-processing only. Preserve the historical
+  // sigma=4 tile namespace while allowing tone changes to reuse paid tiles.
+  const recipe = processingRecipe({ ...asset, ...(asset.family && !asset.periodic ? { sigma: 4 } : {}), protect: undefined, protectFeather: undefined }, true, true);
   return recipe ? createHash('sha256').update(legacy).update(JSON.stringify([recipe, requestIdentity])).digest('hex') : legacy;
 };
 
