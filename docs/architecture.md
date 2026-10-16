@@ -822,6 +822,22 @@ selected shipped files through the API or an external generator and conforms the
   digests stay byte-identical. New external locks record `provider: "external"`;
   provider-less legacy locks continue to mean API. The candidate decisions and
   CSS reference locations are in `docs/hires-external-audit.json`.
+- **Kit-native ink**: `provider: "resample"` with
+  `generator: { "type": "ink", "kit": "ligne", "name": "mat-day" }`
+  runs the restricted density mode of `scripts/build-kit.mjs` in private scratch
+  directories. The normal kit build and hires use the same ink, grain, state,
+  shadow and lossless encoding operations. Geometry is resolved at 1x before
+  doubling; ink widths, radii, tails, frame insets, shadow offsets/blur, padding
+  and grain sampling scale together. `HIRES_KIT_RAW` optionally names the parent
+  raw directory; all raw inputs are read-only. The generator verifies a shared
+  1x render against the shipped bytes before generating a twin. Resolved kit
+  parameters and the renderer version enter the lock recipe/cache digest.
+  Family membership is unchanged; native states generate rather than derive
+  residuals. Delivered lossless pixels must pass exact dimensions and Lanczos3
+  downsampled premultiplied RGBA MAE <= 1/255. Native geometry replaces block
+  matching evidence; canonical equality and state-change gates still apply.
+  Grain rendering rejects source rasters smaller than the full seamless tile
+  including its quarter-tile margin. `scripts/hires/audit-ink.mjs` re-checks 1x byte identity and 2x MAE.
 - **Tiles**: a file larger than the API's output limits (3840px edge, 8.3 MP)
   is cut into overlapping tiles (`scripts/hires/tiles.mjs`) and feathered
   back together.

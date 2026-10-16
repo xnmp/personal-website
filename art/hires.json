@@ -1717,11 +1717,23 @@
     },
     {
       "src": "public/kit/ligne/caption-day.webp",
-      "provider": "external"
+      "provider": "resample",
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "caption-day"
+      },
+      "lossless": true
     },
     {
       "src": "public/kit/ligne/caption-night.webp",
-      "provider": "external"
+      "provider": "resample",
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "caption-night"
+      },
+      "lossless": true
     },
     {
       "src": "public/kit/ligne/fibre-day.webp",
@@ -1735,11 +1747,23 @@
     },
     {
       "src": "public/kit/ligne/mat-day.webp",
-      "provider": "api"
+      "provider": "resample",
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "mat-day"
+      },
+      "lossless": true
     },
     {
       "src": "public/kit/ligne/mat-night.webp",
-      "provider": "api"
+      "provider": "resample",
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "mat-night"
+      },
+      "lossless": true
     },
     {
       "src": "public/kit/ligne/paper-day.webp",
@@ -1761,95 +1785,159 @@
     },
     {
       "src": "public/kit/ligne/sheet-day-flat.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-day",
       "reference": "public/kit/ligne/sheet-day-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-day-flat"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/sheet-day-focus.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-day",
       "reference": "public/kit/ligne/sheet-day-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-day-focus"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/sheet-day-hover.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-day",
       "reference": "public/kit/ligne/sheet-day-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-day-hover"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/sheet-day-normal.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-day",
       "reference": "public/kit/ligne/sheet-day-normal.webp",
-      "lossless": true
+      "lossless": true,
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-day-normal"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/sheet-day-pressed.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-day",
       "reference": "public/kit/ligne/sheet-day-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-day-pressed"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/sheet-night-flat.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-night",
       "reference": "public/kit/ligne/sheet-night-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-night-flat"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/sheet-night-focus.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-night",
       "reference": "public/kit/ligne/sheet-night-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-night-focus"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/sheet-night-hover.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-night",
       "reference": "public/kit/ligne/sheet-night-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-night-hover"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/sheet-night-normal.webp",
-      "provider": "api",
-      "family": "ligne/sheet-night",
-      "reference": "public/kit/ligne/sheet-night-normal.webp",
-      "lossless": true
-    },
-    {
-      "src": "public/kit/ligne/sheet-night-pressed.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-night",
       "reference": "public/kit/ligne/sheet-night-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-night-normal"
+      },
+      "stateDerivation": "generate"
+    },
+    {
+      "src": "public/kit/ligne/sheet-night-pressed.webp",
+      "provider": "resample",
+      "family": "ligne/sheet-night",
+      "reference": "public/kit/ligne/sheet-night-normal.webp",
+      "lossless": true,
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-night-pressed"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/sheet-strip-day-normal.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-strip-day",
       "reference": "public/kit/ligne/sheet-strip-day-normal.webp",
-      "lossless": true
+      "lossless": true,
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-strip-day-normal"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/sheet-strip-night-normal.webp",
-      "provider": "api",
+      "provider": "resample",
       "family": "ligne/sheet-strip-night",
       "reference": "public/kit/ligne/sheet-strip-night-normal.webp",
-      "lossless": true
+      "lossless": true,
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "sheet-strip-night-normal"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tape-day.webp",
@@ -1861,127 +1949,211 @@
     },
     {
       "src": "public/kit/ligne/tile-day-focus.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-day",
       "reference": "public/kit/ligne/tile-day-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-day-focus"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-day-hover.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-day",
       "reference": "public/kit/ligne/tile-day-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-day-hover"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-day-normal.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-day",
       "reference": "public/kit/ligne/tile-day-normal.webp",
-      "lossless": true
+      "lossless": true,
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-day-normal"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-day-pressed.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-day",
       "reference": "public/kit/ligne/tile-day-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-day-pressed"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-night-focus.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-night",
       "reference": "public/kit/ligne/tile-night-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-night-focus"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-night-hover.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-night",
       "reference": "public/kit/ligne/tile-night-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-night-hover"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-night-normal.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-night",
       "reference": "public/kit/ligne/tile-night-normal.webp",
-      "lossless": true
+      "lossless": true,
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-night-normal"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-night-pressed.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-night",
       "reference": "public/kit/ligne/tile-night-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-night-pressed"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-signal-focus.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-signal",
       "reference": "public/kit/ligne/tile-signal-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-signal-focus"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-signal-hover.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-signal",
       "reference": "public/kit/ligne/tile-signal-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-signal-hover"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-signal-night-focus.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-signal-night",
       "reference": "public/kit/ligne/tile-signal-night-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-signal-night-focus"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-signal-night-hover.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-signal-night",
       "reference": "public/kit/ligne/tile-signal-night-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-signal-night-hover"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-signal-night-normal.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-signal-night",
       "reference": "public/kit/ligne/tile-signal-night-normal.webp",
-      "lossless": true
+      "lossless": true,
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-signal-night-normal"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-signal-night-pressed.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-signal-night",
       "reference": "public/kit/ligne/tile-signal-night-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-signal-night-pressed"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/ligne/tile-signal-normal.webp",
-      "provider": "external",
-      "family": "ligne/tile-signal",
-      "reference": "public/kit/ligne/tile-signal-normal.webp",
-      "lossless": true
-    },
-    {
-      "src": "public/kit/ligne/tile-signal-pressed.webp",
-      "provider": "external",
+      "provider": "resample",
       "family": "ligne/tile-signal",
       "reference": "public/kit/ligne/tile-signal-normal.webp",
       "lossless": true,
-      "stateCrop": true
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-signal-normal"
+      },
+      "stateDerivation": "generate"
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-pressed.webp",
+      "provider": "resample",
+      "family": "ligne/tile-signal",
+      "reference": "public/kit/ligne/tile-signal-normal.webp",
+      "lossless": true,
+      "generator": {
+        "type": "ink",
+        "kit": "ligne",
+        "name": "tile-signal-pressed"
+      },
+      "stateDerivation": "generate"
     },
     {
       "src": "public/kit/paper/band-day.webp",

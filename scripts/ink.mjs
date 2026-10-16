@@ -102,7 +102,7 @@ const give = (W, H, d, w, radius, { thin, seed = 1 }) => {
  * its own width. A band marked `keep` is one a framed sheet's glaze must
  * keep where it runs into the pane (a focus band: drawInk reports where).
  */
-export const rings = (W, H, { radius, bands, fill, tail }) => {
+export const rings = (W, H, { radius, bands, fill, tail }, density = 1) => {
   const outer = { W, H, R: radius };
   let gives = null;
   const at = (d, color, r) => (gives ? { outer, d, give: gives, color } : { x0: d, y0: d, x1: W - d, y1: H - d, r, color });
@@ -111,13 +111,13 @@ export const rings = (W, H, { radius, bands, fill, tail }) => {
   for (const [w, color, { hand, keep, round } = {}] of bands) {
     if (round !== undefined) r = round;
     out.push({ ...at(d, color, r), keep });
-    if (tail) out.push(tailAt(H, tail, d, color));
+    if (tail) out.push(tailAt(H, tail, d, color, density));
     d += w;
     r = Math.max(0, r - w);
     if (hand) gives = give(W, H, d, w, radius, hand);
   }
   out.push(at(d, fill, r));
-  if (tail) out.push(tailAt(H, tail, d, fill));
+  if (tail) out.push(tailAt(H, tail, d, fill, density));
   return out;
 };
 
@@ -129,7 +129,7 @@ export const rings = (W, H, { radius, bands, fill, tail }) => {
  * its base `d` up inside the box, so the bands run on round it and its fill
  * runs into the box's.
  */
-const tailAt = (H, { x, width, depth, tip }, d, color) => {
+const tailAt = (H, { x, width, depth, tip }, d, color, density) => {
   const [A, B, C] = [
     [x, H],
     [x + width, H],
@@ -149,7 +149,7 @@ const tailAt = (H, { x, width, depth, tip }, d, color) => {
     return [l.p[0] + t * l.v[0], l.p[1] + t * l.v[1]];
   };
   const [left, right] = [moved(A, C, B), moved(B, C, A)];
-  const top = { p: [0, H - d - 0.5], v: [1, 0] };
+  const top = { p: [0, H - d - 0.5 * density], v: [1, 0] };
   return { poly: [meet(top, left), meet(top, right), meet(left, right)], color };
 };
 

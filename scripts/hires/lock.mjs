@@ -8,7 +8,7 @@ import { derivationDigest, statePolicy, STATE_RECIPE, PREVIOUS_STATE_RECIPE } fr
 
 export const outputPath = ({ src, factor }) => src.slice(0, -extname(src).length) + `@${factor}x.webp`;
 export const sourceSha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
-export const generatorName = (asset) => asset.provider === 'external' ? 'codex-image_gen' : asset.provider === 'resample' ? asset.generator ? asset.generator.type === 'smooth-field' ? 'smooth-field-v1' : 'framed-pane/sheen-v1' : 'premultiplied-bilinear-v1' : asset.model;
+export const generatorName = (asset) => asset.provider === 'external' ? 'codex-image_gen' : asset.provider === 'resample' ? asset.generator ? asset.generator.type === 'ink' ? 'kit-native-ink-v1' : asset.generator.type === 'smooth-field' ? 'smooth-field-v1' : 'framed-pane/sheen-v1' : 'premultiplied-bilinear-v1' : asset.model;
 export const lockEntry = (bytes, asset, key, proof = {}) => ({
   ...(asset.provider && asset.provider !== 'api' ? { provider: asset.provider } : {}),
   settingsDigest: settingsDigest(asset),

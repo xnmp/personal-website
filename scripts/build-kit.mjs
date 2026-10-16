@@ -25,20 +25,25 @@ import { clearWindow, fillet, frameMask, glaze, paneLight, sheen, temper } from 
 import { drawInk, rings } from "./ink.mjs";
 import { lengthenRails, mirrorBottom, mitre, smoothRails, tileRails } from "./mitre.mjs";
 import { webpOptions } from "./webp.mjs";
+import { nativeKit } from "./kit-native.mjs";
 
 const style = process.argv[2];
 if (!style) {
   console.error("usage: build-kit.mjs <style>   (scripts/kits/<style>.mjs)");
   process.exit(1);
 }
-const { default: kit } = await import(`./kits/${style}.mjs`);
+const options = Object.fromEntries(process.argv.slice(3).map((v) => v.replace(/^--/, "").split("=")));
+const density = Number(options.density ?? 1);
+if (!options.ink && density !== 1) throw new Error("density requires a restricted ink recipe");
+if (options.ink && (!options.out || !options.tmp || !options.raw)) throw new Error("ink render requires explicit out, tmp and raw directories");
+const kit = options.ink ? nativeKit({ type: "ink", kit: style, name: options.ink }, density) : (await import(`./kits/${style}.mjs`)).default;
 // flat colour in hard ink lines is encoded losslessly (scripts/webp.mjs), by
 // every step, those run as their own processes too
 if (kit.lossless) process.env.KIT_LOSSLESS = "1";
 
-const RAW = `art/raw/${kit.raw}`;
-const OUT = kit.out ?? `public/kit/${style}`;
-const TMP = `${RAW}/.build`;
+const RAW = options.raw ?? `art/raw/${kit.raw}`;
+const OUT = options.out ?? kit.out ?? `public/kit/${style}`;
+const TMP = options.tmp ?? `${RAW}/.build`;
 mkdirSync(OUT, { recursive: true });
 mkdirSync(TMP, { recursive: true });
 
@@ -71,7 +76,10 @@ const floored = async (path, floor) => {
 const base = async (name, resize, { gain = 1, alphaFloor = 0 } = {}, out = `${TMP}/${name}.png`) => {
   const g = Array.isArray(gain) ? gain : [gain, gain, gain];
   const src = alphaFloor ? await floored(raw(name), alphaFloor) : raw(name);
-  const trimmed = await sharp(src).trim({ threshold: 1 }).resize(resize).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let trimmed = await sharp(src).trim({ threshold: 1 }).resize(resize).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  // Resolve the original integer geometry before scaling: independently
+  // rounding an aspect at 2x can add a pixel to an odd-sized 1x base.
+  if (density !== 1) trimmed = await sharp(trimmed.data, { raw: geometry(trimmed.info) }).resize(trimmed.info.width * density, trimmed.info.height * density).raw().toBuffer({ resolveWithObject: true });
   // the generator leaves opaque material a hair translucent (alpha ~253); a
   // sheet is opaque, and a shadow must not show through it
   const px = trimmed.data;
@@ -315,6 +323,11 @@ const report = [];
 /* ---------- fills: tiled materials a style paints itself (kit.css --plate-fill) ---------- */
 for (const f of kit.fills ?? []) {
   if (!has(f.src)) continue;
+  if (density > 1) {
+    const source = await sharp(raw(f.src)).metadata();
+    const required = f.size + Math.round(f.size / 4);
+    if (Math.min(source.width, source.height) < required) throw new Error(`${f.name}: raw ${source.width}x${source.height} is insufficient for native ${density}x grain; need ${required}x${required}`);
+  }
   await seamless(raw(f.src), f.size, f.alpha ?? 1, `${OUT}/${f.name}.webp`, f);
   report.push(`${f.name}: ${f.size}px seamless tile, alpha ${f.alpha ?? 1}`);
 }
@@ -348,7 +361,7 @@ const layGrain = async (path, { size, dev }, gain = 1) => {
 const grainInto = async (path, g) => g && layGrain(path, await grainOf(g.fill, Math.round(g.size / g.k)), g.gain ?? 1);
 
 /* ---------- sheets: the page's surfaces, lifted / flat / focused ---------- */
-const SHEET_PAD = 96;
+const SHEET_PAD = 96 * density;
 // Lossy WebP codes colour in blocks of 8x8 pixels (4x4 at half resolution):
 // a pane edge that splits a block lends the band laid in along it (a focus
 // glaze) to the frame's last pixels, a few px deep. A kit may have each
@@ -376,7 +389,7 @@ for (const s of kit.sheets ?? []) {
   if (s.turn) writeFileSync(b.path, await sharp(b.path).rotate(180).png().toBuffer());
   // drawn flat in the clear line, the art's shape and colours at an exact
   // ink width (scripts/ink.mjs)
-  const drawn = s.ink ? await drawInk(b.path, b.width, b.height, rings(b.width, b.height, s.ink)) : null;
+  const drawn = s.ink ? await drawInk(b.path, b.width, b.height, rings(b.width, b.height, s.ink, density)) : null;
   // a frame of the pane's own material: its light and shade held to the
   // face's colour (scripts/framed-pane.mjs temper). Encoded lossily, the
   // pane is moved in to the block grid (below), and the face the art then
@@ -441,7 +454,7 @@ for (const s of kit.sheets ?? []) {
     // ink line, following it (a hand-drawn line gives along its sides), so
     // drawn whole rather than laid along the pane's edge; the glaze keeps it
     const focus = `${TMP}/${s.name}-focus.png`;
-    ({ keep } = await drawInk(focus, b.width, b.height, rings(b.width, b.height, s.focusInk)));
+    ({ keep } = await drawInk(focus, b.width, b.height, rings(b.width, b.height, s.focusInk, density)));
     shadow(focus, dest("focus"), SHEET_PAD, ...p.normal);
   } else if (mask && p.fillet) {
     // focus: an enamel strip laid in along the pane's edge
@@ -499,7 +512,7 @@ for (const s of kit.sheets ?? []) {
 }
 
 /* ---------- tiles: the site's buttons and key legends ---------- */
-const TILE_PAD = 20;
+const TILE_PAD = 20 * density;
 for (const t of kit.tiles ?? []) {
   if (!has(t.src)) continue;
   // a plate may cast its own shadow (on a dark ground, a deeper one), and
@@ -507,7 +520,7 @@ for (const t of kit.tiles ?? []) {
   const p = { ...kit.tile, ...t.shadow, ...(t.hoverFlags && { hoverFlags: t.hoverFlags }) };
   const b = await base(t.src, { height: 120 }, { gain: t.gain ?? 1 }, `${TMP}/${t.name}.png`);
   // drawn flat in the clear line (scripts/ink.mjs): its edges are straight
-  if (t.ink) await drawInk(b.path, b.width, b.height, rings(b.width, b.height, t.ink));
+  if (t.ink) await drawInk(b.path, b.width, b.height, rings(b.width, b.height, t.ink, density));
   else await straighten(b.path, 40); // kit.css slices the board 40px in
   // printed on the page's paper: its fibre in the flat colour (`grain`)
   await grainInto(b.path, t.grain);
@@ -534,7 +547,7 @@ for (const t of kit.tiles ?? []) {
   // colour; a tile drawn in ink draws its focus bands too
   const focus = t.focusInk ? `${TMP}/${t.name}-focus.png` : st("focus");
   if (t.focusInk) {
-    await drawInk(focus, b.width, b.height, rings(b.width, b.height, t.focusInk));
+    await drawInk(focus, b.width, b.height, rings(b.width, b.height, t.focusInk, density));
     await grainInto(focus, t.grain);
   } else derive(b.path, focus, "focus", "--catch=0", "--sheen=0", ...(t.focusFlags ?? p.focusFlags ?? ["--ring=4:10"]), `--ring-color=${t.ring}`, ...(t.groove ?? []));
   derive(b.path, st("pressed"), "pressed", `--catch=${t.pressedCatch ?? 0.4}`, ...(p.pressedFlags ?? []));
@@ -566,11 +579,11 @@ const slimBoard = async (path, { at, cut }) => {
 };
 
 /* ---------- screen mounts ---------- */
-const MAT_PAD = 40;
+const MAT_PAD = 40 * density;
 for (const m of kit.mats ?? []) {
   if (!has(m.src)) continue;
   const b = await base(m.src, { width: 1200 }, { gain: m.gain ?? 1 });
-  if (m.ink) await drawInk(b.path, b.width, b.height, rings(b.width, b.height, m.ink));
+  if (m.ink) await drawInk(b.path, b.width, b.height, rings(b.width, b.height, m.ink, density));
   await grainInto(b.path, m.grain);
   if (m.slim) await slimBoard(b.path, m.slim);
   if (m.shade !== undefined) relight(b.path, m.shade, m.lift);
@@ -662,10 +675,10 @@ for (const t of kit.tapes ?? []) {
   if (t.ink) {
     const [w, h] = t.ink.size;
     [b.width, b.height] = [w, h + (t.ink.tail?.depth ?? 0)];
-    await drawInk(b.path, b.width, b.height, rings(w, h, t.ink));
+    await drawInk(b.path, b.width, b.height, rings(w, h, t.ink, density));
   }
   await grainInto(b.path, t.grain);
-  shadow(b.path, `${OUT}/${t.name}.webp`, 8, ...(t.shadow ?? ["0:1:2:0.18", "0:0.5:0.8:0.22"]));
+  shadow(b.path, `${OUT}/${t.name}.webp`, 8 * density, ...(t.shadow ?? ["0:1:2:0.18", "0:0.5:0.8:0.22"]));
   report.push(`${t.name}: ${b.width}x${b.height}, pad 8`);
 }
 
