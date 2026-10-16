@@ -898,6 +898,12 @@ selected shipped files through the API or an external generator and conforms the
   total suppression of an intended change also rejects, without `--accept`
   overriding either registration invariant. Changed-region premultiplied MAE is
   gated by `--max-mae` in addition to normal conformance gates.
+  Own-state alignment and displacement/evidence gates use only the visible
+  state-difference mask plus four source pixels of context (S2 plus eight output
+  pixels). Evidence grids fit that support's bounding box; discarded whole-sheet
+  paint cannot fail the member. Composite fidelity and decoded outside-mask
+  equality still gate the final registered image. A failed sibling does not
+  block other siblings; a failed canonical normal blocks its dependants.
   Optional `stateCrop: true` requests a difference bounding box plus 16 source
   pixels of margin when that rectangle covers at most 25% of the sheet. The
   request cache includes the normal-source hash and crop geometry. Model tiles
@@ -910,15 +916,25 @@ selected shipped files through the API or an external generator and conforms the
   conforming. External canvas padding repeats the original source period,
   including beyond the halo. Provider fit and tile counts include the halo.
   The decoded WebP is compared with a pixel-centred, premultiplied bilinear
-  periodic 1x baseline. For both signed wrap-edge jumps and the differences
-  between that jump and each adjacent first derivative, the error must have
-  RMS <=1 and p99 <=2 code values (0..255). Synthetic calibration covers
-  nonzero edge slopes, periodic smooth noise, one-code-value perturbations
-  (pass), and 12-code-value jumps/derivative kinks on either side (fail),
-  including after lossless encoding. These are conservative synthetic limits;
-  no newly generated production materials have been reviewed against them yet.
+  periodic 1x baseline. Signed wrap jumps and adjacent first-derivative errors
+  are measured separately for x/y. Model grain need not match baseline pixels:
+  each axis measures the same errors on 15 interior cuts, takes the 90th
+  percentile of their RMS/p99, and permits seam excess of 2 RMS / 5 p99 code
+  values (0..255). `SEAM_GATE` versions gate calibration separately from pixel
+  processing and cache identities. Twenty real-material controls (periodic
+  Lanczos 2x + manifest-quality WebP) need up to 1.89 RMS / 5 p99 excess;
+  synthetic ramps alone underestimated natural texture and codec tails.
+  Tests retain real controls and reject encoded 12/20-code boundary damage.
+  Enamel-day's reviewed 3x3 repeat has no obvious boundary seam: decoded error
+  jump RMS/p99 1.50/6, derivative 1.74/7; post-flow median/p90 0.25/0.35 source px.
 - **Deterministic maps**: `provider: "resample"` bypasses all model requests and
   produces exact 2x by deterministic premultiplied bilinear interpolation.
+  It first refuses detail with HF RMS above **0.6/255**, including in `--dry`;
+  `--accept` cannot override this provider constraint. HF is RMS(C - Gaussian
+  sigma=1(C)) over composited RGB, measured over black and white and taking
+  the worse result. Transparent RGB never counts as detail, but alpha texture
+  does. The source check also applies to analytic generators. Five cleared
+  Ligne/Cyanotype skies and phone grounds use resample alongside the light maps.
   The six analytic `sheet-{day,night}-light` maps instead supply
   `generator: { "type": "sheen", "color": "ffe6a8", "alpha": 0.3, "streak": 0.12 }`
   (settings vary per finish). They run the same pure `sheenImage` field used by
@@ -936,5 +952,28 @@ selected shipped files through the API or an external generator and conforms the
   Unextended API/external entries keep their original cache keys and lock
   validation contract; new recipe fields enter keys only for opted-in assets.
   `bun run hires --dry` is read-only and ends with asset counts per provider,
-  estimated uncached API requests (before the existing single retry), and pending
+  estimated uncached API requests (before optional retries), and pending
   external tiles. The current inventory adds 357 assets, excluding glyph art.
+
+- **Rejected candidates and budgets**: `--retry-rejected <n>` defaults to zero.
+  A gate/decode/provider failure can replace a candidate; missing sources,
+  process-launch errors, filesystem failures, stale provenance and publication
+  failures do not retry. Every replaced output is retained as
+  `tile-N.rejectedK.png` (including malformed returned PNGs). API replacements
+  run immediately; external replacements re-emit `requests.json` for the next
+  generation pass. `--remerge`/`--verify` never replace or request candidates.
+  `--verify` also leaves the lock untouched, even for byte-identical output.
+  There are at most n extra API calls per asset per invocation, shared across
+  tiles and transport/gate failures. Replacing a failed set requires enough
+  budget for the entire set; a multi-tile first generation still costs one
+  request per missing tile. External reservations persist in `attempts.json`
+  across passes of the same cache key, preventing budget reset on each pass.
+  Logs and `stats.json.attempts` record dispatched requests, extra requests,
+  per-tile attempt counts and rejection history; pending external requests also
+  have stats. Cached API outputs cost zero requests in a remerge's stats.
+- **Concurrent lock publication**: writers exclusively create
+  `art/hires.lock.json.writing`, then re-read, merge, sort and atomically rename
+  a unique pending file while holding that guard. Readers see complete snapshots.
+  Writers wait at most 30 seconds; locks are never stolen from slow writers.
+  If a writer crashes, confirm it has stopped before removing its `.writing`
+  file. Errors release ownership and leave the prior lock intact.

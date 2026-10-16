@@ -564,12 +564,11 @@ describe("hires offline shell", () => {
       expect((await sharp(join(root, 'public/sparse@2x.webp')).metadata()).hasAlpha).toBe(true);
     } finally { await rm(root, { recursive: true, force: true }); }
   });
-  test("rejects uncorrectable art, continues, retries once, restores alpha and reuses cache", async () => {
+  test("rejects uncorrectable art, continues, restores alpha and reuses cache", async () => {
     const root = await mkdtemp(join(tmpdir(), 'hires-'));
     const calls: string[] = [];
     const width = 64, height = 64;
     const painting = (x: number, y: number, c: number) => 120 + 40 * Math.sin(x * 0.15 + y * 0.1 + c) + 35 * Math.cos(y * 0.21 - x * 0.1 + c);
-    let retried = false;
     try {
       await mkdir(join(root, 'public'));
       await mkdir(join(root, 'art/prompts/hires'), { recursive: true });
@@ -591,14 +590,13 @@ describe("hires offline shell", () => {
         const [apiW, apiH] = argument('--size').split('x').map(Number);
         const info = await sharp(input).metadata();
         expect(info.channels).toBe(3);
-        if (input.includes('/good/') && !retried) { retried = true; throw new Error('temporary offline fixture failure'); }
         if (input.includes('/bad/')) {
           const shifted = rgb(apiW, apiH, (x, y) => 120 + 110 * Math.sin(((x + 0.5) * width / apiW - 0.5) * 0.55 + ((y + 0.5) * height / apiH - 0.5) * 0.4));
           await sharp(Buffer.from(Uint8Array.from(shifted.data, Math.round)), { raw: { width: apiW, height: apiH, channels: 3 } }).png().toFile(output);
         } else await sharp(input).resize(apiW, apiH, { fit: 'fill' }).png().toFile(output);
       };
       expect(await main([], { root, invoke })).toBe(1);
-      expect(calls).toEqual(['bad', 'good', 'good']);
+      expect(calls).toEqual(['bad', 'good']);
       expect((await readdir(join(root, 'public'))).toSorted()).toEqual(['bad.png', 'good.png', 'good@2x.webp']);
       const encoded = await sharp(join(root, 'public/good@2x.webp')).metadata();
       expect([encoded.width, encoded.height, encoded.hasAlpha]).toEqual([128, 128, true]);
@@ -611,11 +609,11 @@ describe("hires offline shell", () => {
       expect(stats.tiles[0].blurredMae).toBeGreaterThan(14);
       expect(stats.reasons.join(' ')).toMatch(/blurred MAE/);
       expect(await main(['--only', 'good'], { root, invoke })).toBe(0);
-      expect(calls).toHaveLength(3);
+      expect(calls).toHaveLength(2);
       expect(await main(['--only', 'good', '--force'], { root, invoke })).toBe(0);
-      expect(calls).toHaveLength(4);
+      expect(calls).toHaveLength(3);
       expect(await main(['--only', 'bad', '--accept'], { root, invoke })).toBe(0);
-      expect(calls).toHaveLength(4);
+      expect(calls).toHaveLength(3);
       expect(JSON.parse(await readFile(join(root, 'art/hires.lock.json'), 'utf8')).assets['public/bad@2x.webp'].accepted).toBe(true);
       expect((await readdir(join(root, 'public')))).toContain('bad@2x.webp');
       const goodKey = (await readdir(join(root, 'art/raw/hires/good')))[0];

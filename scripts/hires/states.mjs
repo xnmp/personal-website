@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { validateImage } from './merge.mjs';
+import { validateImage, estimateFlow, colourStats } from './merge.mjs';
 
 export const STATE_RECIPE = Object.freeze({ version: 'registered-v2', mask: 'premultiplied-rgba-exact-nearest-2x', feather: 2, toneAlpha: 'conform-v1' });
 const pair = (a, b) => {
@@ -27,6 +27,59 @@ export const derivationDigest = (stateBytes, normalBytes, referenceBytes, sigma)
 export function differenceMask(state, normal) {
   pair(state, normal);
   return Uint8Array.from({ length: state.width * state.height }, (_, p) => Number(pixelDiffers(state, normal, p * 4)));
+}
+
+// Source-resolution support of S2 plus four source pixels for registration
+// evidence. This is a gate mask only; the delivered S2 never expands.
+export function stateGateWeights(state, normal, margin = 4) {
+  const mask = differenceMask(state, normal);
+  if (!Number.isSafeInteger(margin) || margin < 0 || margin > 64) throw new Error('Invalid gate margin');
+  const { width, height } = state;
+  const horizontal = new Uint8Array(mask.length), expanded = new Float32Array(mask.length);
+  for (let y = 0; y < height; y++) {
+    let sum = 0;
+    for (let x = -margin; x < width; x++) {
+      if (x + margin < width) sum += mask[y * width + x + margin];
+      if (x - margin - 1 >= 0) sum -= mask[y * width + x - margin - 1];
+      if (x >= 0) horizontal[y * width + x] = Number(sum > 0);
+    }
+  }
+  for (let x = 0; x < width; x++) {
+    let sum = 0;
+    for (let y = -margin; y < height; y++) {
+      if (y + margin < height) sum += horizontal[(y + margin) * width + x];
+      if (y - margin - 1 >= 0) sum -= horizontal[(y - margin - 1) * width + x];
+      if (y >= 0 && sum) expanded[y * width + x] = state.data[(y * width + x) * 4 + 3] / 255;
+    }
+  }
+  return expanded;
+}
+
+export function cropWeights(weights, width, { x, y, w, h }) {
+  if (!(weights instanceof Float32Array || weights instanceof Float64Array) || !Number.isSafeInteger(width) || width < 1 || weights.length % width ||
+      ![x, y, w, h].every(Number.isSafeInteger) || x < 0 || y < 0 || w < 1 || h < 1 || x + w > width || y + h > weights.length / width) throw new Error('Invalid weight crop');
+  return Float32Array.from({ length: w * h }, (_, p) => weights[(y + Math.floor(p / w)) * width + x + p % w]);
+}
+
+// Fit the evidence grid to the contributing region, so a small state change
+// receives the same minimum evidence requirement as a small standalone asset.
+export function stateEvidence(source, target, weights, { displacement = true } = {}) {
+  validateImage(source); validateImage(target);
+  if (source.width !== target.width || source.height !== target.height || source.channels !== target.channels ||
+      !(weights instanceof Float32Array || weights instanceof Float64Array) || weights.length !== source.width * source.height) throw new Error('Invalid state evidence geometry');
+  let left = source.width, top = source.height, right = 0, bottom = 0;
+  weights.forEach((v, p) => {
+    if (!v) return;
+    const x = p % source.width, y = Math.floor(p / source.width);
+    left = Math.min(left, x); top = Math.min(top, y); right = Math.max(right, x + 1); bottom = Math.max(bottom, y + 1);
+  });
+  if (!right) return { ...colourStats(source, target, weights), ...(displacement ? { flow: estimateFlow(source, target, { weights }).diagnostics } : {}) };
+  const region = { x: left, y: top, w: right - left, h: bottom - top };
+  const extract = (img) => ({ width: region.w, height: region.h, channels: img.channels,
+    data: Float32Array.from({ length: region.w * region.h * img.channels }, (_, i) =>
+      img.data[((top + Math.floor(i / img.channels / region.w)) * img.width + left + Math.floor(i / img.channels) % region.w) * img.channels + i % img.channels]) });
+  const a = extract(source), b = extract(target), support = cropWeights(weights, source.width, region);
+  return { ...colourStats(a, b, support), ...(displacement ? { flow: estimateFlow(a, b, { weights: support }).diagnostics } : {}) };
 }
 
 export function expandMask(mask, width, height) {
