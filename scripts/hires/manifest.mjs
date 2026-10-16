@@ -3,6 +3,7 @@ import { outputSizes } from './external.mjs';
 import { STATE_RECIPE, RESIDUAL_RECIPE, PREVIOUS_STATE_RECIPE, PREVIOUS_RESIDUAL_RECIPE, statePolicy } from './states.mjs';
 import { PERIODIC_RECIPE, periodicHalo } from './periodic.mjs';
 import { posix } from 'node:path';
+import { inkRecipe } from '../kit-native.mjs';
 
 export const DEFAULTS = Object.freeze({ provider: 'api', factor: 2, quality: 82, model: 'gpt-image-2.5-sunburst', apiQuality: 'high', sigma: 4 });
 const object = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -86,7 +87,15 @@ export function validateManifest(value, dimensions = {}) {
     if ('generator' in entry) {
       const g = entry.generator;
       if (!object(g) || asset.provider !== 'resample') fail(where, 'invalid analytic generator');
-      if (g.type === 'sheen') {
+      if (g.type === 'ink') {
+        keys(g, ['type', 'kit', 'name'], where + '.generator');
+        try { inkRecipe(g); } catch (error) { fail(where, error.message); }
+        if (entry.src !== `public/kit/${g.kit}/${g.name}.webp`) fail(where, 'ink generator must match its source path');
+        if (entry.lossless === false || entry.stateCrop || entry.periodic || entry.glyphs) fail(where, 'ink requires lossless, uncropped, non-periodic art without glyph resampling');
+        if (entry.stateDerivation && entry.stateDerivation !== 'generate') fail(where, 'ink states require generation');
+        asset.lossless = true;
+        if (entry.family) asset.stateDerivation = 'generate';
+      } else if (g.type === 'sheen') {
         keys(g, ['type', 'color', 'alpha', 'streak'], where + '.generator');
         if (typeof g.color !== 'string' || !/^[a-f0-9]{6}$/i.test(g.color) || !Number.isFinite(g.alpha) || g.alpha < 0 || g.alpha > 1 || ('streak' in g && (!Number.isFinite(g.streak) || g.streak < 0 || g.streak > 1))) fail(where, 'invalid analytic generator');
       } else if (g.type === 'smooth-field') {
@@ -134,7 +143,7 @@ export const processingRecipe = (asset, legacyStates = false, previous = false) 
     ...(asset.family ? { family: asset.family, reference: asset.reference, familyMembership: asset.familyMembership, states: previous ? PREVIOUS_STATE_RECIPE : STATE_RECIPE, sigma: asset.sigma, stateCrop: asset.stateCrop ?? false } : {}),
     ...(!legacyStates && asset.family && asset.src !== asset.reference ? { stateDerivation: { ...statePolicy(asset), recipe: previous ? PREVIOUS_RESIDUAL_RECIPE : RESIDUAL_RECIPE } } : {}),
     ...(asset.periodic ? { periodic: PERIODIC_RECIPE, halo: periodicHalo(asset.sigma), sigma: asset.sigma } : {}),
-    ...(asset.provider === 'resample' ? { resample: 'premultiplied-bilinear-v1', generator: asset.generator ?? null, ...(asset.glyphs ? { glyphs: true } : {}) } : {}),
+    ...(asset.provider === 'resample' ? { resample: 'premultiplied-bilinear-v1', generator: asset.generator?.type === 'ink' ? { ...asset.generator, recipe: inkRecipe(asset.generator) } : asset.generator ?? null, ...(asset.glyphs ? { glyphs: true } : {}) } : {}),
     ...(asset.protect ? { protect: asset.protect, protectFeather: asset.protectFeather ?? 6, protection: 'premultiplied-smoothstep-v1' } : {}),
   };
   return Object.keys(fields).length ? fields : null;

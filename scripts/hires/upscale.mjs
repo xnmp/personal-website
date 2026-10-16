@@ -13,7 +13,7 @@ import { blendTiles, colourStats, composeFlow, estimateFlow, padTransparent, pla
 import { resample, seamStats, wrapRegion, periodicHalo } from './periodic.mjs';
 import { intendedChange, canonicaliseTransparent, registerState, stateRequestCrop, stateStats, derivationDigest, stateGateWeights, cropWeights, stateEvidence, residualRouting, transferResidual, residualDiagnostics, changeReproduction, statePolicy } from './states.mjs';
 import { protectGlyphs, protectedStats } from './protect.mjs';
-import { smoothField } from './generators.mjs';
+import { smoothField, inkImage, inkConformance } from './generators.mjs';
 import { detailStats } from './detail.mjs';
 import { CandidateRejected, retrySelection } from './retries.mjs';
 import { sheenImage } from '../framed-pane.mjs';
@@ -104,6 +104,8 @@ export async function alignTile(source, generated, factor, weights) {
 // Evaluate the delivered state with the generated path's evidence support,
 // tile plan, alignment/colour thresholds and registration invariants.
 export async function stateConformance(state, normal, reference, decoded, down, asset = {}, maxMae = 14, { derived = false, evidence = intendedChange(state, normal) } = {}) {
+  const native = asset.generator?.type === 'ink';
+  const alignment = !derived && !native;
   const support = stateGateWeights(state, normal);
   const region = asset.stateCrop ? stateRequestCrop(state, normal) : null;
   const width = region?.w ?? state.width, height = region?.h ?? state.height;
@@ -111,15 +113,15 @@ export async function stateConformance(state, normal, reference, decoded, down, 
     ? planExternalTiles({ width, height, factor: 2, sizes: asset.external.sizes })
     : planTiles({ width, height, factor: 2 });
   const regions = plan.tiles.map((t) => ({ x: t.x + (region?.x ?? 0), y: t.y + (region?.y ?? 0), w: t.w, h: t.h }));
-  const wholeImage = protectedStats(state, down, undefined, { alignment: !derived });
-  const whole = protectedStats(state, down, support, { alignment: !derived });
-  const tiles = await Promise.all(regions.map(async (t) => protectedStats(await crop(state, t), await crop(down, t), cropWeights(support, state.width, t), { alignment: !derived })));
+  const wholeImage = protectedStats(state, down, undefined, { alignment });
+  const whole = protectedStats(state, down, support, { alignment });
+  const tiles = await Promise.all(regions.map(async (t) => protectedStats(await crop(state, t), await crop(down, t), cropWeights(support, state.width, t), { alignment })));
   const registration = stateStats(state, normal, reference, decoded, down, evidence);
-  const reasons = [wholeImage, whole, ...tiles].flatMap((s, i) => acceptanceReasons(s, i === 0 ? 'whole-image' : i === 1 ? 'state-region' : `state tile ${i - 2}`, maxMae, { alignment: !derived }));
+  const reasons = [wholeImage, whole, ...tiles].flatMap((s, i) => acceptanceReasons(s, i === 0 ? 'whole-image' : i === 1 ? 'state-region' : `state tile ${i - 2}`, maxMae, { alignment }));
   if (registration.stateMae > maxMae) reasons.push(`registered state premultiplied MAE ${registration.stateMae} > ${maxMae}`);
   if (registration.outsideDifferingPixels) reasons.push(`registered state differs outside S2 (${registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
   if (registration.suppressed) reasons.push('registration suppressed too many intended state changes');
-  return { alignment: derived ? { inherited: true, reference: asset.reference ?? null, reason: 'Deterministic delta over the locked canonical; alignment accepted by its lock.' } : { inherited: false }, wholeImage, whole, tiles, registration, reasons, passes: !reasons.length };
+  return { alignment: native ? { analytic: true, reason: 'Kit-native geometry; gated by exact 2x dimensions and premultiplied MAE <= 1/255.' } : derived ? { inherited: true, reference: asset.reference ?? null, reason: 'Deterministic delta over the locked canonical; alignment accepted by its lock.' } : { inherited: false }, wholeImage, whole, tiles, registration, reasons, passes: !reasons.length };
 }
 
 export async function residualCandidate(state, normal, reference, asset = {}, maxMae = 14) {
@@ -224,6 +226,10 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
   let encoded = await sharp(bytes(master), { raw: geometry(master) }).webp(asset.lossless || asset.family ? { lossless: true } : webpOptions(asset.quality)).toBuffer();
   let decoded = await raw(sharp(encoded).toColourspace('srgb').ensureAlpha());
   const hardReasons = [], invariantReasons = [];
+  if (asset.generator?.type === 'ink') {
+    stats.ink = await inkConformance(rgba, decoded);
+    if (!stats.ink.passes) invariantReasons.push(`ink premultiplied MAE ${stats.ink.mae}/255 exceeds 1/255`);
+  }
   if (decoded.width !== rgba.width * asset.factor || decoded.height !== rgba.height * asset.factor) invariantReasons.push('decoded output dimensions differ from exact scale');
   if (reference) {
     if (stats.stateDerivation?.method !== 'residual') {
@@ -354,7 +360,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     const cache = resolve(root, process.env.HIRES_CACHE ?? 'art/raw/hires', asset.src.slice(7, -extname(asset.src).length), key.slice(0, 12));
     await mkdir(cache, { recursive: true });
     if (asset.generator?.type === 'sheen' && (rgba.width !== rgba.height || rgba.width !== 256)) throw new Error('sheen generator requires a 256px square source');
-    const master = dependency ? await smoothField(dependency.dependencyBytes, asset.generator) : asset.generator ? sheenImage(rgba.width * 2, asset.generator) : resample(rgba, 2, !!asset.periodic);
+    const master = asset.generator?.type === 'ink' ? await inkImage(asset.generator, { root, sourceBytes }) : dependency ? await smoothField(dependency.dependencyBytes, asset.generator) : asset.generator ? sheenImage(rgba.width * 2, asset.generator) : resample(rgba, 2, !!asset.periodic);
     await finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, [], { detail, attempts: { requests: 0, retries: 0 }, generator: generatorName(asset), ...(context.stateDerivation ? { stateDerivation: context.stateDerivation } : {}), ...(dependency ? { dependencies: { [asset.generator.from]: sourceSha256(dependency.dependencyBytes) } } : {}) });
     return;
   }
