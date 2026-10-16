@@ -1,6 +1,31 @@
 import { describe, expect, test } from "bun:test";
+import { readFile } from "node:fs/promises";
 import sharp from "sharp";
-import { ART_MAX_DIFFERENCE, compareArtwork } from "../e2e/hires-art-helpers";
+import { ART_MAX_DIFFERENCE, compareArtwork, resampleArtwork } from "../e2e/hires-art-helpers";
+
+describe("B-mode artwork resampling", () => {
+  test("preserves exact twin dimensions and deterministic lossless WebP bytes using sibling content", async () => {
+    const sibling = await sharp({ create: { width: 7, height: 5, channels: 4, background: "#3678ab" } }).webp({ lossless: true }).toBuffer();
+    // Deliberately not a 2x canvas: the served twin is the dimension authority.
+    const twin = await sharp({ create: { width: 19, height: 12, channels: 4, background: "red" } }).webp().toBuffer();
+    const first = await resampleArtwork(sibling, twin);
+    const second = await resampleArtwork(sibling, twin);
+    expect(first.equals(second)).toBe(true);
+    const metadata = await sharp(first).metadata();
+    expect([metadata.width, metadata.height, metadata.format]).toEqual([19, 12, "webp"]);
+    const { data, info } = await sharp(first).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    expect(info.channels).toBe(4);
+    for (let i = 0; i < data.length; i += 4) {
+      expect([...data.subarray(i, i + 4)]).toEqual([0x36, 0x78, 0xab, 255]);
+    }
+  });
+
+  test("rejects invalid sibling or twin bytes", async () => {
+    const valid = await scene();
+    await expect(resampleArtwork(valid, new Uint8Array())).rejects.toThrow();
+    await expect(resampleArtwork(new Uint8Array(), valid)).rejects.toThrow();
+  });
+});
 
 // A textured asymmetric sprite on a contrasting scene. Coordinates are CSS
 // pixels, matching screenshot({ scale: "css" }) at deviceScaleFactor 2.
@@ -47,22 +72,32 @@ describe("hires artwork geometry comparison", () => {
     await expect(compareArtwork(image, new Uint8Array())).rejects.toThrow();
   });
 
-  test("actual twin detail stays within tolerance at scene and small sprite sizes", async () => {
-    // Include the two worst native-size scene pairs observed during offline
-    // calibration, plus phone art and transparent foreground sprites. These
-    // exercise real upscale/encoding changes rather than only unsharp masks.
-    for (const [name, width] of [
-      ["atlas/sky-quiet-night", 1920],
-      ["paper/scene/alpenglow/sky", 1920],
-      ["solarpunk/phone-day", 390],
-      ["solarpunk/ivy-tuft-day", 232],
-      ["garden/mug-front-day", 36],
-      ["paper/pin-push", 32],
-    ] as const) {
-      const render = (suffix: string) => sharp(`public/kit/${name}${suffix}.webp`).resize({ width }).png().toBuffer();
-      const [one, two] = await Promise.all([render(""), render("@2x")]);
+  // Real generated detail versus the actual B pipeline, including all current
+  // border twins. Separate tests keep each resampling below Bun's timeout.
+  for (const [name, width] of [
+    ["atlas/sky-quiet-night", 1920],
+    ["paper/scene/alpenglow/sky", 1920],
+    ["solarpunk/phone-day", 390],
+    ["solarpunk/ivy-tuft-day", 232],
+    ["garden/mug-front-day", 36],
+    ["paper/pin-push", 32],
+    ["garden/sheet-day-normal", 600],
+    ["garden/sheet-day-hover", 600],
+    ["garden/sheet-day-pressed", 600],
+    ["garden/sheet-day-focus", 600],
+    ["garden/sheet-day-flat", 600],
+    ["atlas/tile-day-normal", 200],
+    ["atlas/tile-day-hover", 200],
+    ["atlas/tile-day-pressed", 200],
+    ["atlas/tile-day-focus", 200],
+    ["ligne/tape-day", 128],
+  ] as const) {
+    test(`actual twin versus resampled B stays within tolerance: ${name}`, async () => {
+      const [sibling, twin] = await Promise.all(["", "@2x"].map((suffix) => readFile(`public/kit/${name}${suffix}.webp`)));
+      const render = (input: Buffer) => sharp(input).resize({ width }).png().toBuffer();
+      const [one, two] = await Promise.all([render(await resampleArtwork(sibling, twin)), render(twin)]);
       const result = await compareArtwork(one, two);
       expect(result.maxDifference, name).toBeLessThanOrEqual(ART_MAX_DIFFERENCE);
-    }
-  });
+    });
+  }
 });

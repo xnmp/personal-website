@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import postcss from "postcss";
 import { expect, test, type Browser, type Page, type Request } from "@playwright/test";
 import { STYLES } from "../src/lib/styles";
-import { ART_MAX_DIFFERENCE, compareArtwork } from "./hires-art-helpers";
+import { ART_MAX_DIFFERENCE, compareArtwork, resampleArtwork } from "./hires-art-helpers";
 
 function inventory() {
   // Use the generator's manifest/lock/provenance/group policy, including its
@@ -48,6 +48,8 @@ function casesFor(kit: string) {
   if (["paper", "solarpunk", "cyanotype"].includes(kit)) {
     cases.push(...["/p/ashen-cathedral", "/p/tauri-explorer"].map((path) => ({ path, viewport: desktop })));
   }
+  // Garden's launch gallery adds normal and flat sheet borders at other sizes.
+  if (kit === "garden") cases.push({ path: "/p/tauri-explorer", viewport: desktop });
   if (["paper", "solarpunk", "ligne"].includes(kit)) {
     cases.push({ path: "/", viewport: { width: 390, height: 900 } });
   }
@@ -90,9 +92,23 @@ function watchImages(page: Page, seen: Set<string>) {
 
 let twins: Map<string, string>;
 const seenInA = new Set<string>();
+// Share in-flight work too: concurrent requests for a URL get identical bytes.
+const replacements = new Map<string, Promise<Buffer>>();
+function replacementFor(url: string) {
+  const sibling = twins.get(url);
+  if (!sibling) throw new Error(`Uninventoried @2x request: ${url}`);
+  let replacement = replacements.get(url);
+  if (!replacement) {
+    replacement = Promise.all([readFile(sibling), readFile(`public${url}`)])
+      .then(([one, two]) => resampleArtwork(one, two));
+    replacements.set(url, replacement);
+  }
+  return replacement;
+}
 test.beforeAll(() => { twins = inventory(); });
 
 type ArtCase = ReturnType<typeof casesFor>[number];
+type Capture = { state: string; png: Buffer };
 async function capture(
   browser: Browser, baseURL: string | undefined, id: string, rice: string,
   { path, viewport }: ArtCase, replaceTwins: boolean,
@@ -108,11 +124,11 @@ async function capture(
       localStorage.setItem("nb-scene", "flat");
     }, { style: id, rice });
     if (replaceTwins) {
-      // Context routing disables the HTTP cache. B always receives 1x bytes.
+      // Context routing disables the HTTP cache. Preserve @2x dimensions even
+      // for image-set(... 2x), whose density changes the natural image size.
       await context.route("**/*@2x.webp", async (route) => {
-        const sibling = twins.get(new URL(route.request().url()).pathname);
-        if (!sibling) throw new Error(`Uninventoried @2x request: ${route.request().url()}`);
-        await route.fulfill({ contentType: "image/webp", body: await readFile(sibling) });
+        const url = new URL(route.request().url()).pathname;
+        await route.fulfill({ contentType: "image/webp", body: await replacementFor(url) });
       });
     }
     const page = await context.newPage();
@@ -138,7 +154,42 @@ async function capture(
     await settle();
     await page.evaluate(() => scrollTo(0, 0));
     await settle();
-    return await page.screenshot({ type: "png", fullPage: true, scale: "css", animations: "disabled", caret: "hide" });
+    const captures: Capture[] = [];
+    const snapshot = async (state: string, fullPage = false) => {
+      await settle();
+      captures.push({ state, png: await page.screenshot({ type: "png", fullPage, scale: "css", animations: "disabled", caret: "hide" }) });
+    };
+    await snapshot("normal", true);
+    if (path === "/" && viewport.width === desktop.width) {
+      // Real links: never force pseudo-classes or swap tokens. A neutral key
+      // exercises Atlas's tile family; a shelf link exercises Garden's sheet
+      // family (the showcase uses different art in several styles).
+      for (const [name, control] of [
+        ["key", page.getByRole("link", { name: "Try it live", exact: true })],
+        ["sheet", page.locator("a.module.faceplate.is-live").first()],
+      ] as const) {
+        await control.hover();
+        await expect(control).toBeVisible();
+        expect(await control.evaluate((element) => element.matches(":hover"))).toBe(true);
+        await snapshot(`${name}-hover`);
+        await page.mouse.down();
+        try {
+          expect(await control.evaluate((element) => element.matches(":active"))).toBe(true);
+          await snapshot(`${name}-pressed`);
+        } finally {
+          // Release away from the link so the real press never navigates.
+          await page.mouse.move(0, 0);
+          await page.mouse.up();
+        }
+        // Keyboard modality makes focus-visible select the focus-state twin.
+        await page.keyboard.press("Tab");
+        await control.focus();
+        expect(await control.evaluate((element) => element.matches(":focus-visible"))).toBe(true);
+        await snapshot(`${name}-focus`);
+        await control.evaluate((element) => (element as HTMLElement).blur());
+      }
+    }
+    return captures;
   } finally {
     // Closing the context also closes its page, including on capture failure.
     await context.close();
@@ -153,13 +204,16 @@ for (const { id } of STYLES) {
         test.skip(isMobile, "owns a DPR 2 context, including narrow viewports");
         const normal = await capture(browser, baseURL, id, rice, artCase, false);
         const replacement = await capture(browser, baseURL, id, rice, artCase, true);
-        const result = await compareArtwork(normal, replacement);
-        if (!result.passes) {
-          await testInfo.attach("A", { body: normal, contentType: "image/png" });
-          await testInfo.attach("B", { body: replacement, contentType: "image/png" });
-          await testInfo.attach("diff-4x", { body: result.diff, contentType: "image/png" });
+        expect(replacement.map(({ state }) => state)).toEqual(normal.map(({ state }) => state));
+        for (const [index, { state, png }] of normal.entries()) {
+          const result = await compareArtwork(png, replacement[index].png);
+          if (!result.passes) {
+            await testInfo.attach(`${state}-A`, { body: png, contentType: "image/png" });
+            await testInfo.attach(`${state}-B`, { body: replacement[index].png, contentType: "image/png" });
+            await testInfo.attach(`${state}-diff-4x`, { body: result.diff, contentType: "image/png" });
+          }
+          expect.soft(result.maxDifference, `${state}: blurred max RGB difference (0–255)`).toBeLessThanOrEqual(ART_MAX_DIFFERENCE);
         }
-        expect.soft(result.maxDifference, "blurred max RGB difference (0–255)").toBeLessThanOrEqual(ART_MAX_DIFFERENCE);
       });
     }
   }
