@@ -13,6 +13,18 @@
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "31434e415b8fb9dc2ddf5bb50009f45af9674a89535b1ba7274a78773c8cec8d"
     },
+    "public/kit/atlas/sky-quiet-day@2x.webp": {
+      "sourceSha256": "92185810f1ebd4a5ac96e7b91f549af14a2746a80b2b4922cb025096e96e9780",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "bc121a49ce97e840a01972048edd6ed41e0b798d9f18015d6184db339f0dc929"
+    },
+    "public/kit/atlas/sky-quiet-night@2x.webp": {
+      "sourceSha256": "a57023adb1682e4e14f66e4b582ffd492e0229fd9bd27d851a327b1179bd5fe2",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "d3c53184f2849bade6053263d3e79c90d5331539b9e1353fadb178cfe7787364"
+    },
     "public/kit/cyanotype/scene/day/sky@2x.webp": {
       "sourceSha256": "9017f63eb89b416a2f5a4998c8abb47a9c7a4973e9b56a72a98771a06054d26d",
       "factor": 2,
@@ -24,6 +36,12 @@
       "factor": 2,
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "dc82f0391bdee28dff5d6b0f89eddb8540a7ed779d0ad6ecee13366f81a52511"
+    },
+    "public/kit/cyanotype/scene/launch-night/sky@2x.webp": {
+      "sourceSha256": "0081c44b39462404f3638cab240c661a1b79ef8b0134cab72976ab3b0193c215",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "a09910e827199092f94b2fc72e71ebb285f9f8bedecfaea480e89ad46079d26f"
     },
     "public/kit/cyanotype/scene/night/sky@2x.webp": {
       "sourceSha256": "ed90c97da49b733320c9596c8428df1d9d7c89e44d2c2bc4ca7443866a55dd9b",
@@ -103,6 +121,102 @@
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "dc99c5c2a1701ee7f3f97b302776a73f9ff54214b0eec3fc28cba9d02ad42773"
     },
+    "public/kit/paper/scene/launch-day/hills-far@2x.webp": {
+      "sourceSha256": "e2a2aac5ec61a207e746fdf7f68578e3621293b29284ab2b182d1026cfd06656",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "08156c99600e7d3857251f0bc9ef9ca49aea06144c87d1aa00d44a333dfcfd13"
+    },
+    "public/kit/paper/scene/launch-day/pines-left@2x.webp": {
+      "sourceSha256": "491d6f057421975d413dde2ee4ea87b9fef321c365fd3a4c94c5e6f44665070c",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "f8230441707462ff517d0c616bb7f21827804f958bb8e5758b9fdbd9417535e1"
+    },
+    "public/kit/paper/scene/launch-day/pines-right@2x.webp": {
+      "sourceSha256": "d06f7c395098396a5b1c6f6f0ccf7e01029f8aadde11571aa2213e0eee648c44",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "ba9863457375c8ee106c044745a2a6a148b14e2530af364d021edddff313749b"
+    },
+    "public/kit/paper/scene/launch-day/sky@2x.webp": {
+      "sourceSha256": "c33ab966c1eca854e286337c42fd4fb950d442b657611770a134e34ae2c6223a",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "17ced2093a71d26d5a8cd73ed1f2305b7655657a9764a354ca94f2ec1702029d"
+    },
+    "public/kit/paper/scene/launch-night/hills-far@2x.webp": {
+      "sourceSha256": "05ace61d1a571ac1a840af818bc0d22f5259f6dbecb6bb35c35db9d435397d90",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "a348fb1c4ddd00489ba003583db6a7d09b71e3d9128ec6708358bb248ff4d229"
+    },
+    "public/kit/paper/scene/launch-night/pines-left@2x.webp": {
+      "sourceSha256": "fffc4d6cfb210dab64ad56b6e017dce08a4542c91545af4482d7ebf5c0b3651e",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "7dc3e7a8bafa9c07bf3e1172c686b6791b87978a7fe977e47c6ec1e8450e1004"
+    },
+    "public/kit/paper/scene/launch-night/pines-right@2x.webp": {
+      "sourceSha256": "91e6627e35d5d8a4d4184c8456926af81659efa0da79dc6cc2fea50f1cb28a33",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "cedd4dfef77d7e1c0ab69854ef1cd19cd709c7d946d970dbcd271057d1963745"
+    },
+    "public/kit/paper/scene/launch-night/sky@2x.webp": {
+      "sourceSha256": "6b90c86cec34f76c48b1bd87db9825c41ea1ec618be9da4e406c4f8ffc8d63ed",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "7a204149b1ae94b66a8c895001935f4e9908b5d50736baa4eb8c2b7935dd981b"
+    },
+    "public/kit/paper/scene/night/hills-far@2x.webp": {
+      "sourceSha256": "1cdf732cf5a2afba2f0a868ec8e7564e2b45893a3045fd495d230b4f3ec9f0b8",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "9aaa11fa3a4c57ee82e7ed302e71c38360c503e632b2894bcc0fc6c7f1c66ad7"
+    },
+    "public/kit/paper/scene/night/hills-near@2x.webp": {
+      "sourceSha256": "07b13863991809b9967b784a584be856cc5b7dd96f4a84afb08bac0428682c10",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "175cf4f4550a6d35994ba746a960e29ecf264aa72679047cc987268e292078a0"
+    },
+    "public/kit/paper/scene/night/mountains@2x.webp": {
+      "sourceSha256": "b5e9e1db1a898f9752205b29d0464c249f9a261d033ec0fed7fa9cc0a3ea1a99",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "1ed94d18c5c7f03fd42252962649945fc3f18f8ed7dae21435e892d8532fa943"
+    },
+    "public/kit/paper/scene/night/pines-left-back@2x.webp": {
+      "sourceSha256": "428df2e0305d521aca910d1e0fbeba8b478fcfd9b5374101c1fd5b4d03078a29",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "d53faab1ba4b4e36b68b523cb91b0000489efabaf21a77d8adc1224a5e9ffdb2"
+    },
+    "public/kit/paper/scene/night/pines-left@2x.webp": {
+      "sourceSha256": "e790b0b92fd03a6eaed65e679826a67e89e18ef5922aa292602c46a904133f02",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "0f04538b396a01a33b74b4a37618c10144576a82ed4f86a199d25e4963283441"
+    },
+    "public/kit/paper/scene/night/pines-right-back@2x.webp": {
+      "sourceSha256": "32f0791a72aabed1d5f0374a3516b8b0469a1f9aea1fc9eed88c35546b11ef02",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "81a518997615ad95ec2b6ad7fd2c902f375401c2aeb8057ccf3101cc87e4a2cb"
+    },
+    "public/kit/paper/scene/night/pines-right@2x.webp": {
+      "sourceSha256": "4742dce47c74b0887463e929481253ede4c20ad9868aab8704cf4917c9e71312",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "1b47fc8e72d353877cea135559fc8a07fd28f1512c128b08fd03a5b99e994f48"
+    },
+    "public/kit/paper/scene/night/sky@2x.webp": {
+      "sourceSha256": "308805b441d2e5a4b620293f9ae244a47baec8c1b4e92c78c39d7c88e18f49aa",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "3c706c16111f3a58bc432399742a9d07b0caadb775f21cd65310db218559b87b"
+    },
     "public/kit/paper/scene/phone-day/hills-far@2x.webp": {
       "sourceSha256": "5750e877307ff971b0986ca1c735e782efe426271a0ab1d4fb8e10e53c9a4e57",
       "factor": 2,
@@ -126,6 +240,30 @@
       "factor": 2,
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "0ea677ef805ba4a760f79e67a5ed0d051b9da3ab06e388cefb33585f2b22ff08"
+    },
+    "public/kit/paper/scene/phone-night/hills-far@2x.webp": {
+      "sourceSha256": "6dac42b28f1bf8fa6f19f3023b70fd49a7e81aae46e7f65fd64ad8114ee15b5e",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "40502e3b8b9b47c36e4a214bb0ec18a7f5f7d44222a262f1ed405aa0e49eba78"
+    },
+    "public/kit/paper/scene/phone-night/pines-left@2x.webp": {
+      "sourceSha256": "c7391875a3eff21ed8521da7d157db57757774fe5ca218d5552436eab2f370c5",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "2d140ad98ebbb0ccb1783d6a04161ec07e5549acc49e9a1e67f58697308ff8a5"
+    },
+    "public/kit/paper/scene/phone-night/pines-right@2x.webp": {
+      "sourceSha256": "2047b5c747c42e79115fe5f91f779263e33b8545df3a6712924764b26baa2a3e",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "05ed18e8f70b705aea1bc2dfdd2899b609f0cef778a0fee3b89936338e8d6621"
+    },
+    "public/kit/paper/scene/phone-night/sky@2x.webp": {
+      "sourceSha256": "c13ae303cf167173c47fee810177bebde0924849b205f7362f08f6128656d657",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "748300827e1c89fe941f0f94edc3431dbb7da61fae988ba18dc88d5ab074961c"
     },
     "public/kit/paper/scene/project-day/hills-far@2x.webp": {
       "sourceSha256": "e9e91161b1819548687b3c79a838e4221faec5576921746c53e4aaea61e491a6",
@@ -151,6 +289,42 @@
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "e904699b47f2383dd8be206ce286f9886f75e63579f75392068c34bc8d50e9f9"
     },
+    "public/kit/paper/scene/project-night/hills-far@2x.webp": {
+      "sourceSha256": "be886fc16fe02141a42c8f55dab57ea79b59ca7f9cfa3ea8389619fb2bb404bd",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "dee927f53d753455fc160a202e61868ebd062fe44583d86727d6e1241654e54d"
+    },
+    "public/kit/paper/scene/project-night/pines-left@2x.webp": {
+      "sourceSha256": "8a3bf1b9034fc22ad5b853cb3b768e84bc831b156167262645f7ee1326fa7eee",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "ede0801d886c00bbc930d5432ba572be496395270734b65efad9688cd4b3be6f"
+    },
+    "public/kit/paper/scene/project-night/pines-right@2x.webp": {
+      "sourceSha256": "a26604128e4ad077af25ddb96c4c84611eefd7cd302dc31d4269ac0ddbe866f2",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "5777dcf4595a187904defd0b22d1b4875f850c3f8b6d0eae7c93535889cbc5a3"
+    },
+    "public/kit/paper/scene/project-night/sky@2x.webp": {
+      "sourceSha256": "2a8c7cd306e11196c66b1beda08dd88f4e18cfd1d254a388f5c77c3334aa84ad",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "54cbbfa01ed7178e23c937e76130c634e435ed1fdb9adfa2d5ef7eadc4b6e319"
+    },
+    "public/kit/solarpunk/phone-day@2x.webp": {
+      "sourceSha256": "96165d8de62874f6c04943dd077125376e0dc1ac37f2b1ac23c40d0fbe553a8f",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "bcbc249bfcea35cd718af49e4a70f77931602223ed61caff6ee5aef727d38ca8"
+    },
+    "public/kit/solarpunk/phone-night@2x.webp": {
+      "sourceSha256": "be0c623e3b70498543974ec1ec6f362995a60421de18c7e8ed5972c181f36340",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "80b92883246c54998a791241a9b4512b8b5b18ea9449a935b7d32f922481943f"
+    },
     "public/kit/solarpunk/scene/day/sky@2x.webp": {
       "sourceSha256": "63344c5d2f6f1e59b20ec491ce691e4ba3df66cbdcf37d74ed9b2ec5bbd348e5",
       "factor": 2,
@@ -162,6 +336,12 @@
       "factor": 2,
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "4bcfbf39f590932c847fc5e688e8d836c2a2a64cde5667325cc7ce4ed7d31429"
+    },
+    "public/kit/solarpunk/scene/launch-night/sky@2x.webp": {
+      "sourceSha256": "47e737b39bbd7d503b21c3a7c128e96c9d1f23f371f6f18edf67de07f96fcd5a",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "2499e45e4771a41e4f70a3bf62b1c216136ed78b403a03851995ae003dcad769"
     },
     "public/kit/solarpunk/scene/night/sky@2x.webp": {
       "sourceSha256": "acd854d57ed2f20be13f6a0c7b9ca0d3a25608a4c7f28fdd0d930d4e547e681d",
@@ -175,11 +355,23 @@
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "7121a6727fc30529debc762bc7465f039dc2174376ce5b372a83b0953deb7b0e"
     },
+    "public/kit/solarpunk/scene/project-night/sky@2x.webp": {
+      "sourceSha256": "6f1cccc795eb439b89c58f9204d50b52de15eaecf6c844e821657c94c9b9435f",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "1af6bb9e171fa69ca09c0e59a4be391027aa992279346c9787803fb777f395f2"
+    },
     "public/kit/sumi/scene/day/sky@2x.webp": {
       "sourceSha256": "0997c0bd35269dabef5f6f38c2a4caad2005e700fa31bea570cab0b9e66cedb8",
       "factor": 2,
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "651d703062ccffa6e827ecc4500d32378d95bcfca652996083ba0df4f1044dc2"
+    },
+    "public/kit/sumi/scene/night/sky@2x.webp": {
+      "sourceSha256": "fb38a1587ca6094db7e0f9fde858b81651ab871023a78fd48af21f264e5aefe9",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "6befabec3e3b3e52a371a2ae5512c90a12ed628480f36ab007517a8149400e5f"
     }
   }
 }

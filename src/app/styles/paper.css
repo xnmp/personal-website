@@ -168,25 +168,33 @@
 
 :root[data-style="paper"]:has(.detail-hero) {
   --k-sky: url(/kit/paper/scene/project-night/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/paper/scene/project-night/sky@2x.webp); }
   --k-far: none;
   --k-mid: url(/kit/paper/scene/project-night/hills-far.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mid: url(/kit/paper/scene/project-night/hills-far@2x.webp); }
   --k-near: none;
   --k-left-back: none;
   --k-right-back: none;
   --k-left: url(/kit/paper/scene/project-night/pines-left.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-left: url(/kit/paper/scene/project-night/pines-left@2x.webp); }
   --k-right: url(/kit/paper/scene/project-night/pines-right.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right: url(/kit/paper/scene/project-night/pines-right@2x.webp); }
   --left-anchor: 0;
 }
 
 :root[data-style="paper"]:has(.launch-hero) {
   --k-sky: url(/kit/paper/scene/launch-night/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/paper/scene/launch-night/sky@2x.webp); }
   --k-far: none;
   --k-mid: url(/kit/paper/scene/launch-night/hills-far.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mid: url(/kit/paper/scene/launch-night/hills-far@2x.webp); }
   --k-near: none;
   --k-left-back: none;
   --k-right-back: none;
   --k-left: url(/kit/paper/scene/launch-night/pines-left.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-left: url(/kit/paper/scene/launch-night/pines-left@2x.webp); }
   --k-right: url(/kit/paper/scene/launch-night/pines-right.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right: url(/kit/paper/scene/launch-night/pines-right@2x.webp); }
   --left-anchor: 0;
 }
 
@@ -203,9 +211,13 @@
 
 :root[data-style="paper"][data-rice="paper"]:has(.launch-hero) {
   --k-sky: url(/kit/paper/scene/launch-day/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/paper/scene/launch-day/sky@2x.webp); }
   --k-mid: url(/kit/paper/scene/launch-day/hills-far.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mid: url(/kit/paper/scene/launch-day/hills-far@2x.webp); }
   --k-left: url(/kit/paper/scene/launch-day/pines-left.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-left: url(/kit/paper/scene/launch-day/pines-left@2x.webp); }
   --k-right: url(/kit/paper/scene/launch-day/pines-right.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right: url(/kit/paper/scene/launch-day/pines-right@2x.webp); }
 }
 
 /* ---------- the interface's paper, at every width ---------- */
@@ -2082,13 +2094,17 @@
      any shape). The two further pages keep their own, above. */
   :root[data-style="paper"]:not(:has(.detail-hero, .launch-hero)) {
     --k-sky: url(/kit/paper/scene/phone-night/sky.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/paper/scene/phone-night/sky@2x.webp); }
     --k-far: none;
     --k-mid: url(/kit/paper/scene/phone-night/hills-far.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mid: url(/kit/paper/scene/phone-night/hills-far@2x.webp); }
     --k-near: none;
     --k-left-back: none;
     --k-right-back: none;
     --k-left: url(/kit/paper/scene/phone-night/pines-left.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-left: url(/kit/paper/scene/phone-night/pines-left@2x.webp); }
     --k-right: url(/kit/paper/scene/phone-night/pines-right.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right: url(/kit/paper/scene/phone-night/pines-right@2x.webp); }
     --left-anchor: 0;
     --right-anchor: 1;
   }

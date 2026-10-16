@@ -1727,6 +1727,7 @@
 
   :root[data-style="cyanotype"]:has(.launch-hero) {
     --k-sky: url(/kit/cyanotype/scene/launch-night/sky.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/launch-night/sky@2x.webp); }
     --k-ground: url(/kit/cyanotype/scene/ground-launch-night/sky.webp);
   }
 

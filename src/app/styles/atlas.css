@@ -35,6 +35,7 @@
   --a-compass: url(/kit/atlas/compass.webp);
   /* the sky with its glints and lines taken out, behind the words on it */
   --a-quiet: url(/kit/atlas/sky-quiet-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --a-quiet: url(/kit/atlas/sky-quiet-night@2x.webp); }
 
   /* gold: the primary button, the links, focus */
   --signal: #e9c578;
@@ -237,6 +238,7 @@
   --a-dial-br: url(/kit/atlas/dial-br-day.webp);
   --a-compass: url(/kit/atlas/compass-day.webp);
   --a-quiet: url(/kit/atlas/sky-quiet-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --a-quiet: url(/kit/atlas/sky-quiet-day@2x.webp); }
   --signal: #7a5718;
   --signal-ink: #6e4c12;
   --signal-rule: #9a7430;

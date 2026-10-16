@@ -27,6 +27,7 @@
   --scene-ground: #161b26;
   --k-scene-flat: url(/kit/sumi/scene-night.webp);
   --k-sky: url(/kit/sumi/scene/night/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/sumi/scene/night/sky@2x.webp); }
   /* the moon in the sun's place, inked off white in gofun (see the sun below) */
   --k-sun: url(/kit/sumi/moon-night.webp);
   --sun-sw: 240;
