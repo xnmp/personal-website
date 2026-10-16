@@ -837,7 +837,7 @@ selected shipped files through the API or an external generator and conforms the
   downsampled premultiplied RGBA MAE <= 1/255. Native geometry replaces block
   matching evidence; canonical equality and state-change gates still apply.
   Grain rendering rejects source rasters smaller than the full seamless tile
-  including its quarter-tile margin. See [ink verification and inventory](hires-ink.md).
+  including its quarter-tile margin. `scripts/hires/audit-ink.mjs` re-checks 1x byte identity and 2x MAE.
 - **Tiles**: a file larger than the API's output limits (3840px edge, 8.3 MP)
   is cut into overlapping tiles (`scripts/hires/tiles.mjs`) and feathered
   back together.
