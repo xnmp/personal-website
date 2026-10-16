@@ -22,11 +22,12 @@ import { resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { liftSun } from "./lift-sun.mjs";
-import { clearWindow, fillet, frameMask, glaze, materialFrame, paneLight, sheen, temper } from "./framed-pane.mjs";
+import { clearWindow, fillet, frameMask, glaze, materialFrame, paneLight, scaleField, sheen, temper } from "./framed-pane.mjs";
 import { drawInk, rings } from "./ink.mjs";
 import { lengthenRails, mirrorBottom, mitre, smoothRails, tileRails } from "./mitre.mjs";
 import { webpOptions } from "./webp.mjs";
-import { rasterBase } from "./kit-raster.mjs";
+import { straightenPixels } from "./straighten.mjs";
+import { applyRasterEffect, rasterBase } from "./kit-raster.mjs";
 import { nativeKit, scaleStateFlags } from "./kit-native.mjs";
 
 const style = process.argv[2];
@@ -95,61 +96,9 @@ const base = async (name, resize, { gain = 1, alphaFloor = 0 } = {}, out = `${TM
   return { path: out, width: info.width, height: info.height };
 };
 
-/** Straighten a tile's long edges across the span a 9-slice stretches.
- * The generated board's top and bottom edges wander by a pixel or two. A
- * 9-slice stretches the middle columns but keeps the corners, so wherever the
- * edge at the slice line differs from the edge just inside it, a 1px step
- * shows: invisible on a plain edge, plain on a focus line drawn along it.
- * Each middle column's top half (and bottom half) is shifted so its edge
- * runs straight from the left slice line to the right one, keeping the
- * material's texture. The edge is read to a fraction of a pixel and smoothed
- * along its length, and the shift is fractional, so neighbouring columns
- * move together: a whole-pixel shift that changes from one column to the
- * next breaks every highlight running along the bezel into a seam. */
 const straighten = async (path, slice) => {
-  const { data, info } = await sharp(path).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  const { width: W, height: H } = info;
-  const a = (x, y) => data[(y * W + x) * 4 + 3];
-  // where the alpha crosses half, between the two pixels either side
-  const cross = (x, y0, y1) => y0 + (128 - a(x, y0)) / Math.max(1, a(x, y1) - a(x, y0)) * (y1 - y0);
-  const top = (x) => { for (let y = 1; y < H; y++) if (a(x, y) >= 128) return cross(x, y - 1, y); return 0; };
-  const bot = (x) => { for (let y = H - 2; y >= 0; y--) if (a(x, y) >= 128) return cross(x, y + 1, y); return H - 1; };
-  const [x0, x1] = [slice, W - 1 - slice];
-  const along = (f) => {
-    const raw = Array.from({ length: W }, (_, x) => (x >= x0 && x <= x1 ? f(x) : 0));
-    return raw.map((_, x) => {
-      let [t, n] = [0, 0];
-      for (let i = -12 * density; i <= 12 * density; i++) if (x + i >= x0 && x + i <= x1) [t, n] = [t + raw[x + i], n + 1];
-      return n ? t / n : 0;
-    });
-  };
-  const [topS, botS] = [along(top), along(bot)];
-  const line = (e) => (x) => e[x0] + ((e[x1] - e[x0]) * (x - x0)) / (x1 - x0);
-  const [topAt, botAt] = [line(topS), line(botS)];
-  const out = Buffer.from(data);
-  const mid = H >> 1;
-  for (let x = x0 + 1; x < x1; x++) {
-    const [dt, db] = [topAt(x) - topS[x], botAt(x) - botS[x]];
-    for (let y = 0; y < H; y++) {
-      // sample within the row's own half: what would come in from the other
-      // half is more board, off the canvas more clear
-      const [lo, hi] = y < mid ? [0, mid - 1] : [mid, H - 1];
-      const sy = Math.min(hi, Math.max(lo, y - (y < mid ? dt : db)));
-      const ya = Math.floor(sy);
-      const yb = Math.min(hi, ya + 1);
-      const f = sy - ya;
-      const [pa, pb] = [(ya * W + x) * 4, (yb * W + x) * 4];
-      const [wa, wb] = [data[pa + 3] * (1 - f), data[pb + 3] * f];
-      const o = (y * W + x) * 4;
-      // the colour moves by the fraction (premultiplied, so a soft edge
-      // doesn't pick up the clear pixels' colour); the silhouette by the
-      // nearest row, so the edge stays as crisp as the art drew it and a
-      // state's shadow can't show through a half-clear edge
-      for (let k = 0; k < 3; k++) out[o + k] = wa + wb > 0 ? Math.round((data[pa + k] * wa + data[pb + k] * wb) / (wa + wb)) : 0;
-      out[o + 3] = data[(f < 0.5 ? pa : pb) + 3];
-    }
-  }
-  await sharp(out, { raw: geometry(info) }).png().toFile(path);
+  const image = await sharp(path).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  await sharp(straightenPixels(image, slice, density), { raw: geometry(image.info) }).png().toFile(path);
 };
 
 /** A mat's window: the transparent hole inside its board, as the 9-slice
@@ -421,6 +370,19 @@ for (const s of kit.sheets ?? []) {
   if (s.mitre) await mitre(b.path, { ...(s.mitre === true ? {} : s.mitre), frame: s.frame });
   // a bottom edge drawn as a regular motif: the top edge, mirrored
   if (s.mirror) await mirrorBottom(b.path);
+  // Cleared-window membership and lighting normals are material decisions.
+  // Resolve them on the logical grid, then interpolate the fields; evaluating
+  // alpha thresholds again on native samples turns faint edge pixels into holes.
+  let logicalWindow = null;
+  if (density > 1 && s.window) {
+    const logical = nativeKit({ type: options.ink ? "ink" : "kit", kit: style, name: nativeName }, 1, { rawRoot: resolve(options.raw, ".."), requireRaw: true });
+    const entry = logical.sheets[0], settings = { ...logical.sheet, ...entry };
+    const texture = await base(entry.src, { width: settings.width ?? 1000 }, { gain: entry.gain ?? 1, alphaFloor: entry.alphaFloor }, `${TMP}/${s.name}-material.png`, 1);
+    if (entry.turn) writeFileSync(texture.path, await sharp(texture.path).rotate(180).png().toBuffer());
+    await clearWindow(texture.path, { ...(entry.window === true ? {} : entry.window), gain: entry.gain ?? 1 });
+    const mask = await frameMask(texture.path, settings.frame, { rivets: settings.rivets ?? true, feather: settings.feather ?? 0, cleared: true });
+    logicalWindow = { texture, settings, mask };
+  }
   // a round-cornered window's face cleared to the metal, so the page's
   // face (another colour by night) runs right up to the frame
   if (s.window) await clearWindow(b.path, { ...(s.window === true ? {} : s.window), gain: s.gain ?? 1 });
@@ -435,7 +397,7 @@ for (const s of kit.sheets ?? []) {
   if (s.soften) writeFileSync(b.path, await sharp(b.path).blur(s.soften).png().toBuffer());
   if (s.shade !== undefined) relight(b.path, s.shade, s.lift, s.band);
   const hover = `${TMP}/${s.name}-hover.webp`;
-  derive(b.path, hover, "hover", ...(p.hoverFlags ?? ["--catch=0", "--sheen=0.08"]));
+  derive(b.path, hover, "hover", ...(p.hoverFlags ?? ["--catch=0", "--sheen=0.08"]), ...(logicalWindow ? [`--geometry=${logicalWindow.texture.path}`] : []));
   // a frame round a pane (scripts/framed-pane.mjs): the page paints the
   // pane, the art keeps the frame and the light it throws on the glass. Its
   // states are finished losslessly and glazed into the kit, so the frame is
@@ -443,7 +405,7 @@ for (const s of kit.sheets ?? []) {
   // (the pane's sides moved in to the block grid: see `near`, above)
   const far = (v, span) => (align ? v + (((span - v) % BLOCK) + BLOCK) % BLOCK : v);
   const frame = p.frame && { t: near(p.frame.t), l: near(p.frame.l), b: far(p.frame.b, b.height), r: far(p.frame.r, b.width) };
-  const mask = p.frame ? await frameMask(b.path, frame, { rivets: p.rivets ?? true, feather: p.feather ?? 0, cleared: Boolean(s.window), field: drawn?.field }) : null;
+  const mask = p.frame ? await frameMask(b.path, frame, { rivets: p.rivets ?? true, feather: p.feather ?? 0, cleared: Boolean(s.window), field: drawn?.field, coverage: logicalWindow ? scaleField(logicalWindow.mask.band, logicalWindow.mask.W, logicalWindow.mask.H, 1, density) : null }) : null;
   const dest = (st) => (mask ? `${TMP}/${s.name}-${st}-shadowed.png` : `${OUT}/${s.name}-${st}.webp`);
   // a sheet that is never pressed or focused (a strip) builds only what it shows
   const states = p.states ?? ["normal", "hover", "focus", "pressed", "flat"];
@@ -468,15 +430,21 @@ for (const s of kit.sheets ?? []) {
     if (density > 1) {
       const logical = nativeKit({ type: options.ink ? "ink" : "kit", kit: style, name: nativeName }, 1, { rawRoot: resolve(options.raw, ".."), requireRaw: true });
       const entry = logical.sheets[0], settings = { ...logical.sheet, ...entry };
-      const texture = await base(entry.src, { width: settings.width ?? 1000 }, { gain: entry.gain ?? 1, alphaFloor: entry.alphaFloor }, `${TMP}/${s.name}-material.png`, 1);
-      if (entry.turn) writeFileSync(texture.path, await sharp(texture.path).rotate(180).png().toBuffer());
-      if (entry.window) await clearWindow(texture.path, { ...(entry.window === true ? {} : entry.window), gain: entry.gain ?? 1 });
-      const textureMask = await frameMask(texture.path, settings.frame, { rivets: settings.rivets ?? true, feather: settings.feather ?? 0, cleared: Boolean(entry.window) });
-      await fillet(texture.path, textureMask, settings.fillet, `${TMP}/${s.name}-material-focus.png`, { captureMaterial: (field) => { material = field; } });
+      const texture = logicalWindow?.texture ?? await base(entry.src, { width: settings.width ?? 1000 }, { gain: entry.gain ?? 1, alphaFloor: entry.alphaFloor }, `${TMP}/${s.name}-material.png`, 1);
+      if (!logicalWindow && entry.turn) writeFileSync(texture.path, await sharp(texture.path).rotate(180).png().toBuffer());
+      const textureMask = logicalWindow?.mask ?? await frameMask(texture.path, settings.frame, { rivets: settings.rivets ?? true, feather: settings.feather ?? 0 });
+      const logicalKeep = await fillet(texture.path, textureMask, settings.fillet, `${TMP}/${s.name}-material-focus.png`, { captureMaterial: (field) => { material = field; } });
+      if (logicalWindow) logicalWindow.keep = logicalKeep;
     }
-    keep = await fillet(b.path, mask, p.fillet, focus, { density, material });
-    if (material) focusLightFrame = materialFrame(material, density);
-    shadow(focus, dest("focus"), SHEET_PAD, ...p.normal);
+    if (logicalWindow) {
+      // Start with the native normal. The complete logical focus treatment is
+      // applied after glazing below, rather than recomposing thresholded fields.
+      shadow(b.path, dest("focus"), SHEET_PAD, ...p.normal);
+    } else {
+      keep = await fillet(b.path, mask, p.fillet, focus, { density, material });
+      if (material) focusLightFrame = materialFrame(material, density);
+      shadow(focus, dest("focus"), SHEET_PAD, ...p.normal);
+    }
   } else if (p.focusFlags) {
     // focus is drawn on the surface itself (an inlay in its frame), not a mount
     const focus = `${TMP}/${s.name}-focus.webp`;
@@ -503,6 +471,17 @@ for (const s of kit.sheets ?? []) {
         keep: union(st === "focus" ? keep : null, ornament),
         ...(st === "focus" && focusLightFrame ? { lightFrame: focusLightFrame } : {}),
       });
+    if (logicalWindow && p.fillet && want("focus")) {
+      const { texture, settings, mask: logicalMask, keep: logicalKeep } = logicalWindow;
+      const logicalLight = paneLight(logicalMask, settings.glass);
+      for (const state of ["normal", "focus"]) {
+        const source = state === "normal" ? texture.path : `${TMP}/${s.name}-material-focus.png`;
+        const shadowed = `${TMP}/${s.name}-logical-${state}.png`;
+        shadow(source, shadowed, 96, ...settings.normal);
+        await glaze(shadowed, `${TMP}/${s.name}-logical-${state}.webp`, 96, logicalMask, logicalLight, { ...settings.glass, keep: state === "focus" ? logicalKeep : null });
+      }
+      await applyRasterEffect(`${OUT}/${s.name}-normal.webp`, `${TMP}/${s.name}-logical-normal.webp`, `${TMP}/${s.name}-logical-focus.webp`, `${OUT}/${s.name}-focus.webp`);
+    }
     // the key light's pool on the pane, at rest and (stronger) lifted
     if (p.light) await sheen(256, p.light, `${OUT}/${s.name}-light.webp`);
     if (p.sheen) await sheen(256, p.sheen, `${OUT}/${s.name}-sheen.webp`);

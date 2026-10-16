@@ -1,5 +1,6 @@
 // Restricted, side-effect-free recipe resolution for the shared kit builder.
 import ligne from './kits/ligne.mjs';
+import { KIT_STRUCTURE_LIMIT } from './hires/structure.mjs';
 import sumi from './kits/sumi.mjs';
 import solarpunk from './kits/solarpunk.mjs';
 import cyanotype from './kits/cyanotype.mjs';
@@ -9,7 +10,7 @@ import { resolve } from 'node:path';
 
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 export const isNativeKit = (generator) => ['ink', 'kit'].includes(generator?.type);
-export const KIT_RECIPE_VERSION = 'kit-raster-v2';
+export const KIT_RECIPE_VERSION = 'kit-raster-v3';
 // Enabled families peak at 1.025/255 versus a 2.047/255 Lanczos round-trip.
 // One global 1.1/255 ceiling, including delivered states; no per-asset override.
 export const KIT_MAE_LIMIT = 1.1;
@@ -18,7 +19,7 @@ export const KIT_MAE_LIMIT = 1.1;
 // Retain the existing p99.9 guard too: local averaging must not relax it.
 export const KIT_PIXEL_TAIL_LIMIT = 60;
 export const KIT_TAIL_LIMIT = 45;
-const rendererFiles = ['build-kit.mjs', 'kit-native.mjs', 'kit-raster.mjs', 'derive-state.mjs', 'paper-shadow.mjs', 'framed-pane.mjs', 'mitre.mjs', 'webp.mjs'];
+const rendererFiles = ['build-kit.mjs', 'kit-native.mjs', 'kit-raster.mjs', 'straighten.mjs', 'state-light.mjs', 'derive-state.mjs', 'paper-shadow.mjs', 'framed-pane.mjs', 'mitre.mjs', 'webp.mjs', 'hires/structure.mjs'];
 const rendererDigest = () => sha(rendererFiles.map((file) => sha(readFileSync(new URL(file, import.meta.url)))).join(':'));
 
 export function kitRecipe(generator, { rawBytes, rawRoot = process.env.HIRES_KIT_RAW ?? resolve('art/raw'), requireRaw = false } = {}) {
@@ -47,7 +48,7 @@ export function kitRecipe(generator, { rawBytes, rawRoot = process.env.HIRES_KIT
     return { version: KIT_RECIPE_VERSION, kit: generator.kit, raw: config.raw, kind, state, entry,
       defaults: config[kind === 'sheets' ? 'sheet' : 'tile'], rawSource,
       rawSha256,
-      rendererDigest: rendererDigest(), gate: { limit: KIT_MAE_LIMIT, kernel: 'lanczos3', channels: 'premultiplied-rgba', tail: 'max-3x3-mean-premultiplied-error', tailLimit: KIT_TAIL_LIMIT, pixelTailLimit: KIT_PIXEL_TAIL_LIMIT } };
+      rendererDigest: rendererDigest(), gate: { limit: KIT_MAE_LIMIT, kernel: 'lanczos3', channels: 'premultiplied-rgba', tail: 'max-3x3-mean-premultiplied-error', tailLimit: KIT_TAIL_LIMIT, pixelTailLimit: KIT_PIXEL_TAIL_LIMIT, structure: 'max-excess-tangential-curvature', structureLimit: KIT_STRUCTURE_LIMIT } };
   }
   throw new Error(`unknown kit name: ${generator?.name}`);
 }

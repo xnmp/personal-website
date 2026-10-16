@@ -133,3 +133,34 @@ for (const accept of [false, true]) {
     await expect(access(join(root, outputPath(hover)))).rejects.toThrow();
   }));
 }
+
+for (const accept of [false, true]) {
+  test(`structure-only rejection ${accept ? 'is overridable and recorded' : 'prevents publication'}`, () => fixture(async (root, asset) => {
+    const width = 400, height = 400, data = Buffer.alloc(width * height * 4, 255);
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+      const value = y < 100 ? 40 : 160;
+      data.fill(value, (y * width + x) * 4, (y * width + x) * 4 + 3);
+    }
+    const rgba = { data, width, height, channels: 4 };
+    const source = await sharp(data, { raw: { width, height, channels: 4 } }).webp({ lossless: true }).toBuffer();
+    const enlarged = await sharp(data, { raw: { width, height, channels: 4 } }).resize(width * 2, height * 2, { kernel: 'lanczos3' }).raw().toBuffer();
+    // One cross-notch, fully within the sheet's rail span. Only 3 pixels,
+    // but a strong tangential discontinuity; all old fidelity gates pass.
+    for (let y = 199; y < 202; y++) enlarged.fill(40, (y * width * 2 + 400) * 4, (y * width * 2 + 400) * 4 + 3);
+    const master = { data: enlarged, width: width * 2, height: height * 2, channels: 4 };
+    const work = finishAsset(asset, cliOptions(accept ? ['--accept'] : []), root, source, rgba, master, join(root, 'cache'), 'c'.repeat(64), [], {});
+    if (accept) await work;
+    else await expect(work).rejects.toThrow(/structure/);
+    const stats = JSON.parse(await readFile(join(root, 'cache/stats.json'), 'utf8'));
+    expect(stats.ink.mae).toBeLessThanOrEqual(stats.ink.limit);
+    expect(stats.ink.tail).toBeLessThanOrEqual(stats.ink.tailLimit);
+    expect(stats.ink.pixelTail).toBeLessThanOrEqual(stats.ink.pixelTailLimit);
+    expect(stats.ink.structure.passes).toBe(false);
+    expect(stats.gates.invariants).toEqual([]);
+    expect(stats.acceptedOverride).toBe(accept);
+    if (accept) {
+      const lock = JSON.parse(await readFile(join(root, 'art/hires.lock.json'), 'utf8'));
+      expect(lock.assets[outputPath(asset)].acceptedReasons).toEqual(stats.ink.reasons);
+    } else await expect(access(join(root, outputPath(asset)))).rejects.toThrow();
+  }));
+}

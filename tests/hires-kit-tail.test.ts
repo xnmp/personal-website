@@ -25,8 +25,7 @@ test('native tail gate rejects a half-width hairline that passes MAE', async () 
   expect(bad.mae).toBeLessThan(bad.limit);
   expect(bad.tail).toBeLessThanOrEqual(bad.tailLimit);
   expect(bad.pixelTail).toBeGreaterThan(bad.pixelTailLimit);
-  expect(bad.reasons).toHaveLength(1);
-  expect(bad.reasons[0]).toContain('p99.9');
+  expect(bad.reasons.some((reason: string) => reason.includes('p99.9'))).toBe(true);
   expect(bad.passes).toBe(false);
 });
 

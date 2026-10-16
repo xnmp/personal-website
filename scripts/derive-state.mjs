@@ -20,6 +20,7 @@
 //          brightness) and the bevels that faced the light fall into the shade
 //          of the surround
 import sharp from "sharp";
+import { chamferDistance, edgeCatch } from "./state-light.mjs";
 import { webpOptions } from "./webp.mjs";
 
 const [, , src, out, mode = "hover", ...flags] = process.argv;
@@ -62,23 +63,14 @@ const { data, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWi
 const { width: W, height: H } = info;
 const N = W * H;
 
-// Chamfer (3-4) distance from each opaque pixel to the nearest transparent one.
-const INF = 1e9;
-const dist = new Float32Array(N);
-for (let i = 0; i < N; i++) dist[i] = data[i * 4 + 3] > 127 ? INF : 0;
-const at = (x, y) => (x < 0 || y < 0 || x >= W || y >= H ? 0 : dist[y * W + x]);
-for (let y = 0; y < H; y++)
-  for (let x = 0; x < W; x++) {
-    const i = y * W + x;
-    if (!dist[i]) continue;
-    dist[i] = Math.min(dist[i], at(x - 1, y) + 3, at(x, y - 1) + 3, at(x - 1, y - 1) + 4, at(x + 1, y - 1) + 4);
-  }
-for (let y = H - 1; y >= 0; y--)
-  for (let x = W - 1; x >= 0; x--) {
-    const i = y * W + x;
-    if (!dist[i]) continue;
-    dist[i] = Math.min(dist[i], at(x + 1, y) + 3, at(x, y + 1) + 3, at(x + 1, y + 1) + 4, at(x - 1, y + 1) + 4);
-  }
+const dist = chamferDistance(data, W, H);
+const at = (x, y) => x < 0 || y < 0 || x >= W || y >= H ? 0 : dist[y * W + x];
+let logicalCatch = null;
+if (opt.geometry) {
+  const geometry = await sharp(opt.geometry).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  if (geometry.info.width * density !== W || geometry.info.height * density !== H) throw new Error("state geometry must match the logical dimensions");
+  logicalCatch = edgeCatch(geometry.data, geometry.info.width, geometry.info.height, CATCH_W / density, density);
+}
 
 const smooth = (a, b, v) => {
   const t = Math.min(1, Math.max(0, (v - a) / (b - a)));
@@ -126,12 +118,13 @@ for (let y = 0; y < H; y++)
     const gl = Math.hypot(gx, gy) || 1;
     const facing = Math.max(0, (gx + gy) / gl / Math.SQRT2); // n = -grad, L = (-1,-1)/sqrt2
     const bevel = 1 - smooth(Math.min(2 * density, CATCH_W / 3), CATCH_W, d);
+    const catchLight = logicalCatch ? logicalCatch[i] : bevel * facing;
     let rgb;
     if (mode === "pressed") {
-      const shade = DIM * (1 - CATCH * bevel * facing);
+      const shade = DIM * (1 - CATCH * catchLight);
       rgb = [0, 1, 2].map((k) => data[p + k] * shade);
     } else {
-      const light = 255 * (SHEEN * fall + CATCH * bevel * facing);
+      const light = 255 * (SHEEN * fall + CATCH * catchLight);
       rgb = [0, 1, 2].map((k) => screen(data[p + k], Math.min(255, light * LIGHT[k])));
     }
     if (mode === "focus") {

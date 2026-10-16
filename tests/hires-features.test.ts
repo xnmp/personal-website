@@ -232,7 +232,7 @@ test('external state requests crop only the changed region; dry plans do not wri
     const state = { ...normal, data: normal.data.slice() }; state.data[(128 * 256 + 128) * 4] += 30;
     await writeFile(join(root, entries[1].src), await encode(state));
     expect(await main(['--dry'], { root, invoke: neverInvoke })).toBe(0);
-    expect(await readdir(join(root, 'art'))).toEqual(['hires.json', 'prompts']);
+    expect((await readdir(join(root, 'art'))).sort()).toEqual(['hires.json', 'prompts']);
     expect(logs.at(-1)).toMatch(/2 assets; api 0, external 2, resample 0; estimated API requests 0; external tiles 5/);
     expect(await main([], { root, invoke: neverInvoke })).toBe(0);
     const awaiting = logs.filter((s) => s.startsWith('AWAITING'));

@@ -210,7 +210,12 @@ export async function clearWindow(path, { metal = 0.3, soft = 0.08, gain = 1 } =
   renameSync(path + ".tmp.png", path);
 }
 
-export async function frameMask(path, frame, { rivets = true, feather = 0, cleared = false, field = null } = {}) {
+/**
+ * @param {*} path
+ * @param {*} frame
+ * @param {{ rivets?: boolean, feather?: number, cleared?: boolean, field?: Float32Array | null, coverage?: Float32Array | null }} [options]
+ */
+export async function frameMask(path, frame, { rivets = true, feather = 0, cleared = false, field = null, coverage = null } = {}) {
   const { data, W, H } = await load(path);
   const band = new Float32Array(W * H);
   for (let y = 0; y < H; y++)
@@ -221,7 +226,7 @@ export async function frameMask(path, frame, { rivets = true, feather = 0, clear
       // the frame is the art's own metal wherever it reaches, past the
       // frame's line too (a window's rounded corner, an arc engraved into
       // it), so no state cuts it square
-      const own = cleared && data[(y * W + x) * 4 + 3] > 0 ? 1 : 0;
+      const own = cleared ? (coverage ? coverage[y * W + x] : data[(y * W + x) * 4 + 3] > 0 ? 1 : 0) : 0;
       band[y * W + x] = d <= 0 ? 1 : Math.max(own, feather > 0 ? 1 - smooth(0, feather, d) : 0);
       // a frame drawn round its field (scripts/ink.mjs, `field` its
       // coverage): the frame is all that is not the field, wherever the
@@ -261,7 +266,7 @@ export async function frameMask(path, frame, { rivets = true, feather = 0, clear
 
 // Resolve nonlinear material and lighting decisions on the logical grid, then
 // interpolate the resulting fields at output pixel centres. Geometry stays native.
-const scaleField = (data, width, height, channels, density) => {
+export const scaleField = (data, width, height, channels, density) => {
   const W = width * density, H = height * density;
   const out = new Float32Array(W * H * channels);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {

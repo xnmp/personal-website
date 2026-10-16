@@ -134,7 +134,7 @@ for (const [kit, family] of [['sumi', 'tile-day'], ['sumi', 'tile-night'], ['sol
         const s = await decode(source), t = await decode(two);
         expect([t.width, t.height]).toEqual([s.width * 2, s.height * 2]);
         const nativeGate = await kitConformance(s, t, g);
-        const passes = family !== 'tile-night' && !(kit === 'solarpunk' && state === 'focus');
+        const passes = family !== 'tile-night';
         expect(nativeGate.passes).toBe(passes);
         if (family === 'tile-night') {
           expect(nativeGate.mae).toBeLessThanOrEqual(nativeGate.limit);
