@@ -92,9 +92,13 @@
   /* the secondary: a rectangle drawn in a line of gofun white, the painting
      showing inside it */
   --k-key: url(/kit/sumi/tile-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key: image-set(url(/kit/sumi/tile-night-normal@2x.webp) 2x); }
   --k-key-hover: url(/kit/sumi/tile-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-hover: image-set(url(/kit/sumi/tile-night-hover@2x.webp) 2x); }
   --k-key-pressed: url(/kit/sumi/tile-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-pressed: image-set(url(/kit/sumi/tile-night-pressed@2x.webp) 2x); }
   --k-key-focus: url(/kit/sumi/tile-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-focus: image-set(url(/kit/sumi/tile-night-focus@2x.webp) 2x); }
   --key-inset: 0px;
   --key-lift: 0px; /* a line has no thickness to lift the label off */
   /* a label and inline code: a slip of ink-dyed washi */

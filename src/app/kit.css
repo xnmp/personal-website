@@ -74,10 +74,15 @@
   --k-right: url(/kit/paper/scene/night/pines-right.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right: url(/kit/paper/scene/night/pines-right@2x.webp); }
   --k-plate: url(/kit/paper/sheet-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/paper/sheet-night-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/paper/sheet-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/paper/sheet-night-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/paper/sheet-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/paper/sheet-night-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/paper/sheet-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/paper/sheet-night-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/paper/sheet-night-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/paper/sheet-night-flat@2x.webp) 2x); }
   --k-bezel: url(/kit/paper/mat-night.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-bezel: image-set(url(/kit/paper/mat-night@2x.webp) 2x); }
   --mat-t: 159;
@@ -85,9 +90,13 @@
   --mat-b: 160;
   --mat-l: 181;
   --k-key: url(/kit/paper/tile-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key: image-set(url(/kit/paper/tile-night-normal@2x.webp) 2x); }
   --k-key-hover: url(/kit/paper/tile-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-hover: image-set(url(/kit/paper/tile-night-hover@2x.webp) 2x); }
   --k-key-pressed: url(/kit/paper/tile-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-pressed: image-set(url(/kit/paper/tile-night-pressed@2x.webp) 2x); }
   --k-key-focus: url(/kit/paper/tile-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-focus: image-set(url(/kit/paper/tile-night-focus@2x.webp) 2x); }
   --k-tape: url(/kit/paper/tape-sage-night.webp); /* the same tape by moonlight */
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/paper/tape-sage-night@2x.webp) 2x); }
   --tape-ink: #ece3d1;

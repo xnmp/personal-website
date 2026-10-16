@@ -53,10 +53,15 @@
   --k-left: none;
   --k-right: none;
   --k-plate: url(/kit/solarpunk/sheet-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/solarpunk/sheet-night-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/solarpunk/sheet-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/solarpunk/sheet-night-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/solarpunk/sheet-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/solarpunk/sheet-night-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/solarpunk/sheet-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/solarpunk/sheet-night-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/solarpunk/sheet-night-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/solarpunk/sheet-night-flat@2x.webp) 2x); }
   /* the sheets are brass frames with their panes cleared (scripts/framed-pane.mjs):
      the glass is painted here, frost tiled over the scene, blurred */
   --plate-slice: var(--slice-plate);
@@ -100,9 +105,13 @@
   --mat-b: 98;
   --mat-l: 97;
   --k-key: url(/kit/solarpunk/tile-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key: image-set(url(/kit/solarpunk/tile-night-normal@2x.webp) 2x); }
   --k-key-hover: url(/kit/solarpunk/tile-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-hover: image-set(url(/kit/solarpunk/tile-night-hover@2x.webp) 2x); }
   --k-key-pressed: url(/kit/solarpunk/tile-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-pressed: image-set(url(/kit/solarpunk/tile-night-pressed@2x.webp) 2x); }
   --k-key-focus: url(/kit/solarpunk/tile-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-focus: image-set(url(/kit/solarpunk/tile-night-focus@2x.webp) 2x); }
   --key-inset: 6px; /* the legend clears the plate's brass bezel */
   --key-lift: 0px; /* the bezel is even all round: the label centres in the box */
   --k-tape: url(/kit/solarpunk/tape-night.webp); /* a bronze name-plate */
@@ -123,9 +132,13 @@
   /* the call to act is a pill of bottle-green enamel in a brass rim, as
      every mock's is; cream on it (9:1) */
   --k-key-signal: url(/kit/solarpunk/tile-pill-green-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal: image-set(url(/kit/solarpunk/tile-pill-green-normal@2x.webp) 2x); }
   --k-key-signal-hover: url(/kit/solarpunk/tile-pill-green-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-hover: image-set(url(/kit/solarpunk/tile-pill-green-hover@2x.webp) 2x); }
   --k-key-signal-pressed: url(/kit/solarpunk/tile-pill-green-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-pressed: image-set(url(/kit/solarpunk/tile-pill-green-pressed@2x.webp) 2x); }
   --k-key-signal-focus: url(/kit/solarpunk/tile-pill-green-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-focus: image-set(url(/kit/solarpunk/tile-pill-green-focus@2x.webp) 2x); }
   --key-signal-ink: #f6eedb;
   --key-signal-under: #163a27;
   --k-pin-brass: url(/kit/solarpunk/pin-brass.webp);
@@ -165,10 +178,15 @@
   --k-left: none;
   --k-right: none;
   --k-plate: url(/kit/solarpunk/sheet-day-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/solarpunk/sheet-day-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/solarpunk/sheet-day-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/solarpunk/sheet-day-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/solarpunk/sheet-day-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/solarpunk/sheet-day-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/solarpunk/sheet-day-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/solarpunk/sheet-day-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/solarpunk/sheet-day-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/solarpunk/sheet-day-flat@2x.webp) 2x); }
   --plate-fill: url(/kit/solarpunk/frost-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --plate-fill: url(/kit/solarpunk/frost-day@2x.webp); }
   --plate-light: url(/kit/solarpunk/sheet-day-light.webp);
@@ -182,13 +200,21 @@
   --mat-b: 95;
   --mat-l: 95;
   --k-key: url(/kit/solarpunk/tile-day-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key: image-set(url(/kit/solarpunk/tile-day-normal@2x.webp) 2x); }
   --k-key-hover: url(/kit/solarpunk/tile-day-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-hover: image-set(url(/kit/solarpunk/tile-day-hover@2x.webp) 2x); }
   --k-key-pressed: url(/kit/solarpunk/tile-day-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-pressed: image-set(url(/kit/solarpunk/tile-day-pressed@2x.webp) 2x); }
   --k-key-focus: url(/kit/solarpunk/tile-day-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-focus: image-set(url(/kit/solarpunk/tile-day-focus@2x.webp) 2x); }
   --k-key-signal: url(/kit/solarpunk/tile-pill-green-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal: image-set(url(/kit/solarpunk/tile-pill-green-normal@2x.webp) 2x); }
   --k-key-signal-hover: url(/kit/solarpunk/tile-pill-green-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-hover: image-set(url(/kit/solarpunk/tile-pill-green-hover@2x.webp) 2x); }
   --k-key-signal-pressed: url(/kit/solarpunk/tile-pill-green-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-pressed: image-set(url(/kit/solarpunk/tile-pill-green-pressed@2x.webp) 2x); }
   --k-key-signal-focus: url(/kit/solarpunk/tile-pill-green-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-focus: image-set(url(/kit/solarpunk/tile-pill-green-focus@2x.webp) 2x); }
   --k-drift-cloud: none;
   --motes: #ffe2a8;
   --motes-kind: dust;
@@ -2704,9 +2730,13 @@
    sans is the nearest face it loads) */
 :root[data-style="solarpunk"] :is(.reflexes, .launch-shot-cap) .key.cap {
   --k-key: url(/kit/solarpunk/tile-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key: image-set(url(/kit/solarpunk/tile-night-normal@2x.webp) 2x); }
   --k-key-hover: url(/kit/solarpunk/tile-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-hover: image-set(url(/kit/solarpunk/tile-night-hover@2x.webp) 2x); }
   --k-key-pressed: url(/kit/solarpunk/tile-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-pressed: image-set(url(/kit/solarpunk/tile-night-pressed@2x.webp) 2x); }
   --k-key-focus: url(/kit/solarpunk/tile-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-focus: image-set(url(/kit/solarpunk/tile-night-focus@2x.webp) 2x); }
   --key-ink: #f1e8d0;
   --key-under: #293a26;
   --key-k: 0.42;

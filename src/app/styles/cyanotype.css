@@ -52,44 +52,80 @@
   --k-left: none;
   --k-right: none;
   --k-plate: url(/kit/cyanotype/sheet-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/cyanotype/sheet-night-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/cyanotype/sheet-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/cyanotype/sheet-night-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/cyanotype/sheet-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/cyanotype/sheet-night-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/cyanotype/sheet-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/cyanotype/sheet-night-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/cyanotype/sheet-night-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/cyanotype/sheet-night-flat@2x.webp) 2x); }
   /* the other three sheets, hung in turn with the first (below) */
   --k-plate-b: url(/kit/cyanotype/sheet-night-b-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b: image-set(url(/kit/cyanotype/sheet-night-b-normal@2x.webp) 2x); }
   --k-plate-b-hover: url(/kit/cyanotype/sheet-night-b-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b-hover: image-set(url(/kit/cyanotype/sheet-night-b-hover@2x.webp) 2x); }
   --k-plate-b-pressed: url(/kit/cyanotype/sheet-night-b-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b-pressed: image-set(url(/kit/cyanotype/sheet-night-b-pressed@2x.webp) 2x); }
   --k-plate-b-focus: url(/kit/cyanotype/sheet-night-b-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b-focus: image-set(url(/kit/cyanotype/sheet-night-b-focus@2x.webp) 2x); }
   --k-plate-b-flat: url(/kit/cyanotype/sheet-night-b-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b-flat: image-set(url(/kit/cyanotype/sheet-night-b-flat@2x.webp) 2x); }
   --k-plate-c: url(/kit/cyanotype/sheet-night-c-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-c: image-set(url(/kit/cyanotype/sheet-night-c-normal@2x.webp) 2x); }
   --k-plate-c-hover: url(/kit/cyanotype/sheet-night-c-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-c-hover: image-set(url(/kit/cyanotype/sheet-night-c-hover@2x.webp) 2x); }
   --k-plate-c-pressed: url(/kit/cyanotype/sheet-night-c-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-c-pressed: image-set(url(/kit/cyanotype/sheet-night-c-pressed@2x.webp) 2x); }
   --k-plate-c-focus: url(/kit/cyanotype/sheet-night-c-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-c-focus: image-set(url(/kit/cyanotype/sheet-night-c-focus@2x.webp) 2x); }
   --k-plate-c-flat: url(/kit/cyanotype/sheet-night-c-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-c-flat: image-set(url(/kit/cyanotype/sheet-night-c-flat@2x.webp) 2x); }
   --k-plate-d: url(/kit/cyanotype/sheet-night-d-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-d: image-set(url(/kit/cyanotype/sheet-night-d-normal@2x.webp) 2x); }
   --k-plate-d-hover: url(/kit/cyanotype/sheet-night-d-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-d-hover: image-set(url(/kit/cyanotype/sheet-night-d-hover@2x.webp) 2x); }
   --k-plate-d-pressed: url(/kit/cyanotype/sheet-night-d-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-d-pressed: image-set(url(/kit/cyanotype/sheet-night-d-pressed@2x.webp) 2x); }
   --k-plate-d-focus: url(/kit/cyanotype/sheet-night-d-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-d-focus: image-set(url(/kit/cyanotype/sheet-night-d-focus@2x.webp) 2x); }
   --k-plate-d-flat: url(/kit/cyanotype/sheet-night-d-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-d-flat: image-set(url(/kit/cyanotype/sheet-night-d-flat@2x.webp) 2x); }
   /* the home page's cards: the same sheets untaped (each card is taped
      once, at a corner of its own: .card-mark below) */
   --k-card: url(/kit/cyanotype/sheet-night-card-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card: image-set(url(/kit/cyanotype/sheet-night-card-normal@2x.webp) 2x); }
   --k-card-hover: url(/kit/cyanotype/sheet-night-card-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-hover: image-set(url(/kit/cyanotype/sheet-night-card-hover@2x.webp) 2x); }
   --k-card-pressed: url(/kit/cyanotype/sheet-night-card-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-pressed: image-set(url(/kit/cyanotype/sheet-night-card-pressed@2x.webp) 2x); }
   --k-card-focus: url(/kit/cyanotype/sheet-night-card-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-focus: image-set(url(/kit/cyanotype/sheet-night-card-focus@2x.webp) 2x); }
   --k-card-b: url(/kit/cyanotype/sheet-night-card-b-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-b: image-set(url(/kit/cyanotype/sheet-night-card-b-normal@2x.webp) 2x); }
   --k-card-b-hover: url(/kit/cyanotype/sheet-night-card-b-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-b-hover: image-set(url(/kit/cyanotype/sheet-night-card-b-hover@2x.webp) 2x); }
   --k-card-b-pressed: url(/kit/cyanotype/sheet-night-card-b-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-b-pressed: image-set(url(/kit/cyanotype/sheet-night-card-b-pressed@2x.webp) 2x); }
   --k-card-b-focus: url(/kit/cyanotype/sheet-night-card-b-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-b-focus: image-set(url(/kit/cyanotype/sheet-night-card-b-focus@2x.webp) 2x); }
   --k-card-c: url(/kit/cyanotype/sheet-night-card-c-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-c: image-set(url(/kit/cyanotype/sheet-night-card-c-normal@2x.webp) 2x); }
   --k-card-c-hover: url(/kit/cyanotype/sheet-night-card-c-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-c-hover: image-set(url(/kit/cyanotype/sheet-night-card-c-hover@2x.webp) 2x); }
   --k-card-c-pressed: url(/kit/cyanotype/sheet-night-card-c-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-c-pressed: image-set(url(/kit/cyanotype/sheet-night-card-c-pressed@2x.webp) 2x); }
   --k-card-c-focus: url(/kit/cyanotype/sheet-night-card-c-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-c-focus: image-set(url(/kit/cyanotype/sheet-night-card-c-focus@2x.webp) 2x); }
   --k-card-d: url(/kit/cyanotype/sheet-night-card-d-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-d: image-set(url(/kit/cyanotype/sheet-night-card-d-normal@2x.webp) 2x); }
   --k-card-d-hover: url(/kit/cyanotype/sheet-night-card-d-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-d-hover: image-set(url(/kit/cyanotype/sheet-night-card-d-hover@2x.webp) 2x); }
   --k-card-d-pressed: url(/kit/cyanotype/sheet-night-card-d-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-d-pressed: image-set(url(/kit/cyanotype/sheet-night-card-d-pressed@2x.webp) 2x); }
   --k-card-d-focus: url(/kit/cyanotype/sheet-night-card-d-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-d-focus: image-set(url(/kit/cyanotype/sheet-night-card-d-focus@2x.webp) 2x); }
   /* The paper inside a sheet's deckle is the page's own tile
      (scripts/kits/cyanotype.mjs fills), so its fibres keep their scale on a
      card and on a page-wide sheet alike: the tile is 640 of the generated
@@ -315,10 +351,15 @@
   --k-right: none;
   --k-drift-cloud: none;
   --k-plate: url(/kit/cyanotype/sheet-day-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/cyanotype/sheet-day-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/cyanotype/sheet-day-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/cyanotype/sheet-day-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/cyanotype/sheet-day-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/cyanotype/sheet-day-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/cyanotype/sheet-day-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/cyanotype/sheet-day-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/cyanotype/sheet-day-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/cyanotype/sheet-day-flat@2x.webp) 2x); }
   --k-plate-b: url(/kit/cyanotype/sheet-day-b-normal.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b: image-set(url(/kit/cyanotype/sheet-day-b-normal@2x.webp) 2x); }
   --k-plate-b-hover: url(/kit/cyanotype/sheet-day-b-hover.webp);
@@ -330,31 +371,57 @@
   --k-plate-b-flat: url(/kit/cyanotype/sheet-day-b-flat.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b-flat: image-set(url(/kit/cyanotype/sheet-day-b-flat@2x.webp) 2x); }
   --k-plate-c: url(/kit/cyanotype/sheet-day-c-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-c: image-set(url(/kit/cyanotype/sheet-day-c-normal@2x.webp) 2x); }
   --k-plate-c-hover: url(/kit/cyanotype/sheet-day-c-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-c-hover: image-set(url(/kit/cyanotype/sheet-day-c-hover@2x.webp) 2x); }
   --k-plate-c-pressed: url(/kit/cyanotype/sheet-day-c-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-c-pressed: image-set(url(/kit/cyanotype/sheet-day-c-pressed@2x.webp) 2x); }
   --k-plate-c-focus: url(/kit/cyanotype/sheet-day-c-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-c-focus: image-set(url(/kit/cyanotype/sheet-day-c-focus@2x.webp) 2x); }
   --k-plate-c-flat: url(/kit/cyanotype/sheet-day-c-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-c-flat: image-set(url(/kit/cyanotype/sheet-day-c-flat@2x.webp) 2x); }
   --k-plate-d: url(/kit/cyanotype/sheet-day-d-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-d: image-set(url(/kit/cyanotype/sheet-day-d-normal@2x.webp) 2x); }
   --k-plate-d-hover: url(/kit/cyanotype/sheet-day-d-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-d-hover: image-set(url(/kit/cyanotype/sheet-day-d-hover@2x.webp) 2x); }
   --k-plate-d-pressed: url(/kit/cyanotype/sheet-day-d-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-d-pressed: image-set(url(/kit/cyanotype/sheet-day-d-pressed@2x.webp) 2x); }
   --k-plate-d-focus: url(/kit/cyanotype/sheet-day-d-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-d-focus: image-set(url(/kit/cyanotype/sheet-day-d-focus@2x.webp) 2x); }
   --k-plate-d-flat: url(/kit/cyanotype/sheet-day-d-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-d-flat: image-set(url(/kit/cyanotype/sheet-day-d-flat@2x.webp) 2x); }
   --k-card: url(/kit/cyanotype/sheet-day-card-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card: image-set(url(/kit/cyanotype/sheet-day-card-normal@2x.webp) 2x); }
   --k-card-hover: url(/kit/cyanotype/sheet-day-card-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-hover: image-set(url(/kit/cyanotype/sheet-day-card-hover@2x.webp) 2x); }
   --k-card-pressed: url(/kit/cyanotype/sheet-day-card-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-pressed: image-set(url(/kit/cyanotype/sheet-day-card-pressed@2x.webp) 2x); }
   --k-card-focus: url(/kit/cyanotype/sheet-day-card-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-focus: image-set(url(/kit/cyanotype/sheet-day-card-focus@2x.webp) 2x); }
   --k-card-b: url(/kit/cyanotype/sheet-day-card-b-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-b: image-set(url(/kit/cyanotype/sheet-day-card-b-normal@2x.webp) 2x); }
   --k-card-b-hover: url(/kit/cyanotype/sheet-day-card-b-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-b-hover: image-set(url(/kit/cyanotype/sheet-day-card-b-hover@2x.webp) 2x); }
   --k-card-b-pressed: url(/kit/cyanotype/sheet-day-card-b-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-b-pressed: image-set(url(/kit/cyanotype/sheet-day-card-b-pressed@2x.webp) 2x); }
   --k-card-b-focus: url(/kit/cyanotype/sheet-day-card-b-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-b-focus: image-set(url(/kit/cyanotype/sheet-day-card-b-focus@2x.webp) 2x); }
   --k-card-c: url(/kit/cyanotype/sheet-day-card-c-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-c: image-set(url(/kit/cyanotype/sheet-day-card-c-normal@2x.webp) 2x); }
   --k-card-c-hover: url(/kit/cyanotype/sheet-day-card-c-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-c-hover: image-set(url(/kit/cyanotype/sheet-day-card-c-hover@2x.webp) 2x); }
   --k-card-c-pressed: url(/kit/cyanotype/sheet-day-card-c-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-c-pressed: image-set(url(/kit/cyanotype/sheet-day-card-c-pressed@2x.webp) 2x); }
   --k-card-c-focus: url(/kit/cyanotype/sheet-day-card-c-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-c-focus: image-set(url(/kit/cyanotype/sheet-day-card-c-focus@2x.webp) 2x); }
   --k-card-d: url(/kit/cyanotype/sheet-day-card-d-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-d: image-set(url(/kit/cyanotype/sheet-day-card-d-normal@2x.webp) 2x); }
   --k-card-d-hover: url(/kit/cyanotype/sheet-day-card-d-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-d-hover: image-set(url(/kit/cyanotype/sheet-day-card-d-hover@2x.webp) 2x); }
   --k-card-d-pressed: url(/kit/cyanotype/sheet-day-card-d-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-d-pressed: image-set(url(/kit/cyanotype/sheet-day-card-d-pressed@2x.webp) 2x); }
   --k-card-d-focus: url(/kit/cyanotype/sheet-day-card-d-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-card-d-focus: image-set(url(/kit/cyanotype/sheet-day-card-d-focus@2x.webp) 2x); }
   --print-ground: rgb(12 53 90);
   --plate-fill: url(/kit/cyanotype/paper-day.webp);
   /* the other pages' sheets are a warmer cream than the cards' (the original's
@@ -1770,6 +1837,7 @@
     --k-sky: url(/kit/cyanotype/scene/launch-night/sky.webp);
     @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/launch-night/sky@2x.webp); }
     --k-ground: url(/kit/cyanotype/scene/ground-launch-night/sky.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ground: url(/kit/cyanotype/scene/ground-launch-night/sky@2x.webp); }
   }
 
   :root[data-style="cyanotype"][data-rice="paper"]:has(.launch-hero) {

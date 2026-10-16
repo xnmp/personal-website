@@ -78,10 +78,15 @@
   --k-left: none;
   --k-right: none;
   --k-plate: url(/kit/atlas/sheet-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/atlas/sheet-night-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/atlas/sheet-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/atlas/sheet-night-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/atlas/sheet-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/atlas/sheet-night-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/atlas/sheet-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/atlas/sheet-night-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/atlas/sheet-night-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/atlas/sheet-night-flat@2x.webp) 2x); }
   /* the frames are rules with their field cleared (scripts/framed-pane.mjs):
      the field is painted here, tiled, so its fine surface keeps its scale
      at any size */
@@ -291,10 +296,15 @@
   --k-left: none;
   --k-right: none;
   --k-plate: url(/kit/atlas/sheet-day-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/atlas/sheet-day-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/atlas/sheet-day-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/atlas/sheet-day-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/atlas/sheet-day-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/atlas/sheet-day-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/atlas/sheet-day-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/atlas/sheet-day-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/atlas/sheet-day-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/atlas/sheet-day-flat@2x.webp) 2x); }
   --plate-fill: url(/kit/atlas/enamel-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --plate-fill: url(/kit/atlas/enamel-day@2x.webp); }
   --plate-light: url(/kit/atlas/sheet-day-light.webp);

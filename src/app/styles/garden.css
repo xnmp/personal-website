@@ -45,10 +45,15 @@
   --k-left: none;
   --k-right: none;
   --k-plate: url(/kit/garden/sheet-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/garden/sheet-night-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/garden/sheet-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/garden/sheet-night-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/garden/sheet-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/garden/sheet-night-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/garden/sheet-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/garden/sheet-night-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/garden/sheet-night-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/garden/sheet-night-flat@2x.webp) 2x); }
   /* a card is its own board, the centre slice and all */
   --plate-slice: var(--slice-plate) fill;
   --plate-fill: linear-gradient(var(--plate-under), var(--plate-under));
@@ -61,6 +66,7 @@
   --plate-inset: 0px; /* a card has no frame: content is set in from its corner */
   /* the strips (masthead, shelf heads, feet) are the same card */
   --k-strip: url(/kit/garden/sheet-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip: image-set(url(/kit/garden/sheet-night-normal@2x.webp) 2x); }
   /* a card stands against the wall, it is not pinned */
   --k-pin-hold: none;
   --k-pin-hold-signal: none;

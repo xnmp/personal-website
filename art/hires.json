@@ -693,11 +693,27 @@
     },
     {
       "src": "public/kit/cyanotype/scene/ground-launch-day/sky.webp",
-      "provider": "api"
+      "provider": "api",
+      "protect": [
+        {
+          "x": 540,
+          "y": 585,
+          "w": 600,
+          "h": 375
+        }
+      ]
     },
     {
       "src": "public/kit/cyanotype/scene/ground-launch-night/sky.webp",
-      "provider": "api"
+      "provider": "api",
+      "protect": [
+        {
+          "x": 540,
+          "y": 585,
+          "w": 600,
+          "h": 375
+        }
+      ]
     },
     {
       "src": "public/kit/cyanotype/scene/ground-night/sky.webp",

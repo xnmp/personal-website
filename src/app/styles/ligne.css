@@ -283,10 +283,15 @@
   --k-hero-phone: url(/kit/ligne/hero-day-phone.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-hero-phone: url(/kit/ligne/hero-day-phone@2x.webp); }
   --k-plate: url(/kit/ligne/sheet-day-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/ligne/sheet-day-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/ligne/sheet-day-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/ligne/sheet-day-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/ligne/sheet-day-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/ligne/sheet-day-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/ligne/sheet-day-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/ligne/sheet-day-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/ligne/sheet-day-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/ligne/sheet-day-flat@2x.webp) 2x); }
   --plate-field: #f9f3e2;
   --plate-fill: url(/kit/ligne/paper-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --plate-fill: url(/kit/ligne/paper-day@2x.webp); }
