@@ -32,6 +32,7 @@
   --k-card-focus: url(/kit/paper/sheet-card-night-focus.webp);
   --card-under: #353c52;
   --k-band: url(/kit/paper/band-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-band: image-set(url(/kit/paper/band-night@2x.webp) 2x); }
   --k-band-left: url(/kit/paper/band-left-night.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-band-left: image-set(url(/kit/paper/band-left-night@2x.webp) 2x); }
   --k-strip: url(/kit/paper/strip-night.webp);
@@ -43,6 +44,7 @@
   --k-label: url(/kit/paper/label-night.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-label: url(/kit/paper/label-night@2x.webp); }
   --k-ribbon: url(/kit/paper/ribbon-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ribbon: image-set(url(/kit/paper/ribbon-night@2x.webp) 2x); }
   --k-ledge: url(/kit/paper/ledge-night.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ledge: image-set(url(/kit/paper/ledge-night@2x.webp) 2x); }
   --k-foreground: url(/kit/paper/foreground-night.webp);
@@ -136,6 +138,7 @@
   --bezel-under: #d0c1ad;
   --scene-ground: #63604e;
   --k-band: url(/kit/paper/band-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-band: image-set(url(/kit/paper/band-day@2x.webp) 2x); }
   --k-band-left: url(/kit/paper/band-left-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-band-left: image-set(url(/kit/paper/band-left-day@2x.webp) 2x); }
   --k-strip: url(/kit/paper/strip-day.webp);
@@ -147,6 +150,7 @@
   --k-label: url(/kit/paper/label-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-label: url(/kit/paper/label-day@2x.webp); }
   --k-ribbon: url(/kit/paper/ribbon-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ribbon: image-set(url(/kit/paper/ribbon-day@2x.webp) 2x); }
   --k-ledge: url(/kit/paper/ledge-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ledge: image-set(url(/kit/paper/ledge-day@2x.webp) 2x); }
   --k-foreground: url(/kit/paper/foreground-day.webp);

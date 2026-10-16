@@ -15560,6 +15560,30 @@
       "width": 2528,
       "height": 848
     },
+    "public/kit/cyanotype/strip-phone-day@2x.webp": {
+      "provider": "external",
+      "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd",
+      "sourceSha256": "e1aaa081a648db9d6a1c076bc5890fda9c20ce5ef8a63bfddb6b1cd1ee14caea",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "01959bea3f315bfd987baba9f80d32bc46ffdf1310c9206ec72e61291eadd8a9",
+      "recipeDigest": "b23838bb25edb66bf568bb52dd9552dabdd46e1ac3142bb25c856195644ad9f4",
+      "outputSha256": "ab177a76e0937d5c7535c747c0a0ffecb114d2084dff9c130590bfe8ca35ea01",
+      "width": 1766,
+      "height": 368
+    },
+    "public/kit/cyanotype/strip-phone-night@2x.webp": {
+      "provider": "external",
+      "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd",
+      "sourceSha256": "a099b5603db2c1874ebccf333607701d6582405e467c67d9cbc31f70bf6b03fe",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "5fd08e956c97d2afa1be803c0109e4df5dfc2f67913e18a0eaa099fc36456056",
+      "recipeDigest": "b23838bb25edb66bf568bb52dd9552dabdd46e1ac3142bb25c856195644ad9f4",
+      "outputSha256": "1bd6094214fcea0e6afd4f8a808e488c8716130ccb02a4ce6f0d3e59dc9d271a",
+      "width": 1766,
+      "height": 368
+    },
     "public/kit/cyanotype/tape-day@2x.webp": {
       "provider": "external",
       "sourceSha256": "7b9ff9aaa77465afc97c2fce4dfd2c9afbcbe088987cdeba31b1be311b8314a3",
@@ -19211,6 +19235,17 @@
       "height": 320,
       "derivationDigest": "b59cc0c9827f1369a4eecb5c95cf616099b72b126c541f8557a2cdc832f681fe"
     },
+    "public/kit/paper/band-day@2x.webp": {
+      "provider": "external",
+      "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd",
+      "sourceSha256": "dcbdca98a1e132af2223a411e1f498e7e1e2378db90f06fe1091e6def254a4ef",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "5a0ca78ae8a79ae327422682a006fa4b5ad88bc3078a172b34ac6ebc8bb60682",
+      "outputSha256": "9dda9cd22c254ec2c8f467513c846230b2bf7a26bdd4aa8e7793f18b6627f2a9",
+      "width": 3376,
+      "height": 280
+    },
     "public/kit/paper/band-left-day@2x.webp": {
       "provider": "external",
       "sourceSha256": "41c475cdb3285dd3876d4ef78beea2afc6e325a484a3aa544df5e45acf786a19",
@@ -19232,6 +19267,17 @@
       "width": 2112,
       "height": 280,
       "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd"
+    },
+    "public/kit/paper/band-night@2x.webp": {
+      "provider": "external",
+      "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd",
+      "sourceSha256": "07efe0cfe271dc4a0bfe6646f6ea65ac0f136e51c08b1b16573cbc0fef71cb67",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "5002b74c6577d876cc20e415bcbefe80291f10e07208e67da7b89d9435346a02",
+      "outputSha256": "c146700eaa1e1a55e7fefae905f16edd5c394586b2149d282feb74b026ebfdb3",
+      "width": 3376,
+      "height": 280
     },
     "public/kit/paper/foreground-day@2x.webp": {
       "provider": "external",
@@ -19416,6 +19462,28 @@
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "8fca30e989b79a8de3eaf88e4508b98545e1d9519463cf5afbe2b6c7ab2df3ca",
       "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd"
+    },
+    "public/kit/paper/ribbon-day@2x.webp": {
+      "provider": "external",
+      "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd",
+      "sourceSha256": "fe98b2247129eacfabe25c80e3767b4a1b3959600f62b8ac1b030eef4e22b9a8",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "786eb86ba5aa0519e2a1e97a082bd8de6f6d4c4c668e7622c67ce0c540a4a4fd",
+      "outputSha256": "1dd6d8c9da341d564153f4b872ceffa2a1d22fe35dce5ee7bcf7b471092c79f0",
+      "width": 3376,
+      "height": 540
+    },
+    "public/kit/paper/ribbon-night@2x.webp": {
+      "provider": "external",
+      "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd",
+      "sourceSha256": "ca42515422c021fd2b0fd132d54ee898a7a49808a558cc7e057fe76e92c80805",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "5e98a68e778d4741c12bc4ff29f17cbfb176bac604488e017b94d0d0d571df6d",
+      "outputSha256": "9017a8ab6156681731b5db2c755dfaad4f4d011f41dbd9d488d697fa7c5ef42b",
+      "width": 3376,
+      "height": 540
     },
     "public/kit/paper/scene/alpenglow/hills-far@2x.webp": {
       "sourceSha256": "802ffd6772dabac4d0c8786afe176a4b0be72107cd826fccf13e8a856ea017fc",

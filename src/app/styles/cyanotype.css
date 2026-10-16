@@ -262,6 +262,7 @@
   --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-night.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-night@2x.webp); }
   --k-strip-phone: url(/kit/cyanotype/strip-phone-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip-phone: url(/kit/cyanotype/strip-phone-night@2x.webp); }
   /* the print's chalk: the white of its type, and of its notes, which are
      printed in it and dim with it after dark */
   --l-ink: #e7ddc9;
@@ -503,6 +504,7 @@
   --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-day@2x.webp); }
   --k-strip-phone: url(/kit/cyanotype/strip-phone-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip-phone: url(/kit/cyanotype/strip-phone-day@2x.webp); }
   --k-type: url(/kit/cyanotype/type-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-type: url(/kit/cyanotype/type-day@2x.webp); }
   --k-type-clean: url(/kit/cyanotype/type-clean-day.webp);

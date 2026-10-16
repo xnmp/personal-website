@@ -2167,7 +2167,7 @@
     },
     {
       "src": "public/kit/paper/band-day.webp",
-      "provider": "api"
+      "provider": "external"
     },
     {
       "src": "public/kit/paper/band-left-day.webp",
@@ -2179,7 +2179,7 @@
     },
     {
       "src": "public/kit/paper/band-night.webp",
-      "provider": "api"
+      "provider": "external"
     },
     {
       "src": "public/kit/paper/glass-glare.webp",
@@ -2228,11 +2228,11 @@
     },
     {
       "src": "public/kit/paper/ribbon-day.webp",
-      "provider": "api"
+      "provider": "external"
     },
     {
       "src": "public/kit/paper/ribbon-night.webp",
-      "provider": "api"
+      "provider": "external"
     },
     {
       "src": "public/kit/paper/sheet-alpenglow-flat.webp",
@@ -3139,7 +3139,7 @@
     },
     {
       "src": "public/kit/cyanotype/strip-phone-day.webp",
-      "provider": "api",
+      "provider": "external",
       "protect": [
         {
           "x": 395,
@@ -3151,7 +3151,7 @@
     },
     {
       "src": "public/kit/cyanotype/strip-phone-night.webp",
-      "provider": "api",
+      "provider": "external",
       "protect": [
         {
           "x": 395,
