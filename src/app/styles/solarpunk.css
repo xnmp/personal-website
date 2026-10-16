@@ -1378,10 +1378,15 @@
    light, so no pool is laid on it. */
 :root[data-style="solarpunk"] .card.faceplate {
   --k-plate: url(/kit/solarpunk/sheet-card-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/solarpunk/sheet-card-night-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/solarpunk/sheet-card-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/solarpunk/sheet-card-night-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/solarpunk/sheet-card-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/solarpunk/sheet-card-night-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/solarpunk/sheet-card-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/solarpunk/sheet-card-night-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/solarpunk/sheet-card-night-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/solarpunk/sheet-card-night-flat@2x.webp) 2x); }
   --plate-sheen: url(/kit/solarpunk/sheet-card-night-sheen.webp);
   --plate-fill: url(/kit/solarpunk/lacquer-night.webp);
   --plate-fill-size: 200% 100%;
@@ -1397,10 +1402,15 @@
 
 :root[data-style="solarpunk"][data-rice="paper"] .card.faceplate {
   --k-plate: url(/kit/solarpunk/sheet-card-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/solarpunk/sheet-card-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/solarpunk/sheet-card-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/solarpunk/sheet-card-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/solarpunk/sheet-card-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/solarpunk/sheet-card-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/solarpunk/sheet-card-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/solarpunk/sheet-card-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/solarpunk/sheet-card-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/solarpunk/sheet-card-flat@2x.webp) 2x); }
   --plate-sheen: url(/kit/solarpunk/sheet-card-sheen.webp);
   --plate-fill: url(/kit/solarpunk/lacquer-day.webp);
   /* the night's cream inks on the lacquer, by day too */

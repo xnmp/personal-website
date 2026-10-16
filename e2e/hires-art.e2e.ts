@@ -58,6 +58,8 @@ const unrenderedTwins: Readonly<Record<string, string>> = {
   "/kit/cyanotype/sheet-day-w-b-flat@2x.webp": "Odd wide page sheets never use flat art; flat sections are even siblings, and Cyanotype's tier/shot cuts are hidden.",
   "/kit/cyanotype/sheet-night-c-flat@2x.webp": "No flat consumer is sibling 4n+3: shelves are even, launch flat sections are 4/6, the colophon is second, and the gallery shot is first; tier/shot cuts are hidden.",
   "/kit/cyanotype/sheet-day-c-flat@2x.webp": "No flat consumer is sibling 4n+3: shelves are even, launch flat sections are 4/6, the colophon is second, and the gallery shot is first; tier/shot cuts are hidden.",
+  "/kit/solarpunk/sheet-card-flat@2x.webp": "Solarpunk sets --k-plate-flat on showcase cards (.card.faceplate), but no flat selector (.shelf > :nth-child(even), .section.sheet-flat, .sheet-row > :nth-child(2), .shot-tier:nth-child(2) > .shot) matches a card; the flat art only completes the state family.",
+  "/kit/solarpunk/sheet-card-night-flat@2x.webp": "Solarpunk sets --k-plate-flat on showcase cards (.card.faceplate), but no flat selector (.shelf > :nth-child(even), .section.sheet-flat, .sheet-row > :nth-child(2), .shot-tier:nth-child(2) > .shot) matches a card; the flat art only completes the state family.",
 };
 
 const desktop = { width: 1440, height: 900 };
@@ -198,6 +200,9 @@ async function capture(
           required: path === "/",
         }))
         : [{ name: "sheet", control: sheets.first(), required: path === "/" }]),
+      ...(id !== "cyanotype" && path === "/"
+        ? [{ name: "card", control: page.locator(".showcase-row a.card.faceplate.is-live").first(), required: true }]
+        : []),
       ...(id === "cyanotype" && path === "/"
         ? ["4n + 1", "4n + 2", "4n + 3", "4n"].map((nth, index) => ({
           name: `card-${"abcd"[index]}`,

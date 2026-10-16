@@ -25542,6 +25542,282 @@
       "cacheKey": "1af6bb9e171fa69ca09c0e59a4be391027aa992279346c9787803fb777f395f2",
       "settingsDigest": "7cf4aa35c1d9c4aef8a5cf18d8c0ffa186dd9e6a4f988f0f04bc68c540bbf08b"
     },
+    "public/kit/solarpunk/sheet-card-flat@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "59dd626c6d03596789e41a5afb33c605cd7dc78323af00ef556af8f2f9e6d9a4",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "5b14b0363a74507b1cc90dc88f6cce68412a5b2c7f73bf5ad4f9557b3b8f01d2",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 0.7029982901060692,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-card-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-card-flat.webp",
+          "public/kit/solarpunk/sheet-card-focus.webp",
+          "public/kit/solarpunk/sheet-card-hover.webp",
+          "public/kit/solarpunk/sheet-card-normal.webp",
+          "public/kit/solarpunk/sheet-card-pressed.webp"
+        ]
+      },
+      "recipeDigest": "7662c32d055b05b9c9de76b65b2476e5076d1b315d256e9b5b89a7dd3e6eabe3",
+      "outputSha256": "a0e9471727d8c5cda494a03595b4144212fb5cc6e2e91e24267aae9ef6c360d0",
+      "width": 1304,
+      "height": 920,
+      "derivationDigest": "3a7579ffd4b6efd4c669d6db967897426ea0a29c84a226e5de3d3447df434662"
+    },
+    "public/kit/solarpunk/sheet-card-focus@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "e964b438d342683804069c2c534ef02cff8c81aa2aed1473be02ea4169ce47a8",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "13b316f59dfac60de568d6b6821f53c7a8de51eaeadbd6e2c7f991f6451d4719",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 15.769140709364057,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-card-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-card-flat.webp",
+          "public/kit/solarpunk/sheet-card-focus.webp",
+          "public/kit/solarpunk/sheet-card-hover.webp",
+          "public/kit/solarpunk/sheet-card-normal.webp",
+          "public/kit/solarpunk/sheet-card-pressed.webp"
+        ]
+      },
+      "recipeDigest": "bffcce22f2541b42131aa0fdb5db3900ba213634729b68881de9a2fd107f2449",
+      "outputSha256": "48a66e79500abbcadfab959f436ab4095472d0104fd9c887229e66ed2eaed64d",
+      "width": 1304,
+      "height": 920,
+      "derivationDigest": "6ea5ab968ddd4efbb5865c471383406652641f064caf127d3c510c246a29a5e7"
+    },
+    "public/kit/solarpunk/sheet-card-hover@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "c1014b7aa1af9f089c7475c54bff4bda0b5341a91514e9a2a0f2c9f61d184cc0",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "1af888dd0be6c4dcff8891f90bd0593692bfcfad208047e193c9c298c40231f1",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 4.983799340832728,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-card-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-card-flat.webp",
+          "public/kit/solarpunk/sheet-card-focus.webp",
+          "public/kit/solarpunk/sheet-card-hover.webp",
+          "public/kit/solarpunk/sheet-card-normal.webp",
+          "public/kit/solarpunk/sheet-card-pressed.webp"
+        ]
+      },
+      "recipeDigest": "c823b53d856d41eb3bdc0ffd8fbe4c44c1173db359b8c4585c411849562c076c",
+      "outputSha256": "54b8dac778815331eecc3aee3d6a3ce61c58723f52502bf2c584d20662295df7",
+      "width": 1304,
+      "height": 920,
+      "derivationDigest": "22b1c359087944c2eda6ddd24d1bafacdf45903f5c8cacf67262f0aebcd1b357"
+    },
+    "public/kit/solarpunk/sheet-card-night-flat@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "f8cdb1ec8cbb6c6cb3ead95e4d1848606eaf363b763b8bb5a4f0471afa6ab00a",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "905606a306751098cdc8ddba4e7ab58430b444884fe39746e51cfbe771fc1063",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 0.6945331026063667,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-card-night-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-card-night-flat.webp",
+          "public/kit/solarpunk/sheet-card-night-focus.webp",
+          "public/kit/solarpunk/sheet-card-night-hover.webp",
+          "public/kit/solarpunk/sheet-card-night-normal.webp",
+          "public/kit/solarpunk/sheet-card-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "b2a7e822e8d5b4b890027964cc226a72bb7fbc019997b48712746cb9f4a1f67b",
+      "outputSha256": "c80dee1bf7f41a9ed7591dfbf75ffd4bdaaecff0275ccaf5af66ba991763006d",
+      "width": 1304,
+      "height": 920,
+      "derivationDigest": "9f70d1efcfe41a3af1b0707c34789fafb4ec8d4fce4f649a7248f0712e9647ad"
+    },
+    "public/kit/solarpunk/sheet-card-night-focus@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "6125ffcda4f6b807bf2721c277629f056c8a909b5eb9188f8f7c085fa7198d27",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "95e3a47240f24280aeb240b1d56882fc26108510fcbcd37bb4a39cac7e3ed324",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 15.30877047529691,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-card-night-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-card-night-flat.webp",
+          "public/kit/solarpunk/sheet-card-night-focus.webp",
+          "public/kit/solarpunk/sheet-card-night-hover.webp",
+          "public/kit/solarpunk/sheet-card-night-normal.webp",
+          "public/kit/solarpunk/sheet-card-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "2157fa15844d28f787b508e03ae008d7cd5cf14f0bf5dd3267fa690ffe92c4cf",
+      "outputSha256": "4fa445085ffe0eff02c75ed988515f21e352ea3f1c072788d357e67c70b5562f",
+      "width": 1304,
+      "height": 920,
+      "derivationDigest": "9d653872a0cc0853bc8942c1330b6a4ec3781b959fb6fec8a46f2287695ae4dd"
+    },
+    "public/kit/solarpunk/sheet-card-night-hover@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "179ba39365782fb883b94e6788af43bc043369bb09b086bd7f3f66bbc02477b5",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "5f57930a6099efdeed83ef4198fc6f35cf49b994b71d9b96922e79a7e43a2991",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 5.452785217699792,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-card-night-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-card-night-flat.webp",
+          "public/kit/solarpunk/sheet-card-night-focus.webp",
+          "public/kit/solarpunk/sheet-card-night-hover.webp",
+          "public/kit/solarpunk/sheet-card-night-normal.webp",
+          "public/kit/solarpunk/sheet-card-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "ecda058b776c4821e7b2b81974c721a22f3a693a7bacb4b25296e260ecb3dab3",
+      "outputSha256": "8dc600db5f1d77403e56ebef72dae6bf88964cbfa4be882fa87535a2bc51095c",
+      "width": 1304,
+      "height": 920,
+      "derivationDigest": "2f714c1491d42c1e8826c2c8b74cee8401628536ca5624dde99f0f0a22457f67"
+    },
+    "public/kit/solarpunk/sheet-card-night-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "28f0219e3a791af58ba337be5635ebf49f91c06aa23726a16e0c6f9f919da705",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "7a86cdd2ceadc94ebbc2db14c8d70cdfb60acb3c832c434167cd6403d3dce488",
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-card-night-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-card-night-flat.webp",
+          "public/kit/solarpunk/sheet-card-night-focus.webp",
+          "public/kit/solarpunk/sheet-card-night-hover.webp",
+          "public/kit/solarpunk/sheet-card-night-normal.webp",
+          "public/kit/solarpunk/sheet-card-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "faca2d3b7d2b51bdc22942cc0db0a92aa505de7394e6c110e619c72d5e7a66a8",
+      "outputSha256": "2b82bdf480f909ecf3c990da6324c4a1bc804dcadcbc4248caba98b3fd90246e",
+      "width": 1304,
+      "height": 920
+    },
+    "public/kit/solarpunk/sheet-card-night-pressed@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "4fc29c7d6829b1d1651370f5343d29add4db105e37a327a5722e2ab90ff25b60",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "5c6974044d689d3b9ae74e28b18691fcf5c056e17b7a43ce8dec63426f7ba50a",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 1.8299141880416447,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-card-night-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-card-night-flat.webp",
+          "public/kit/solarpunk/sheet-card-night-focus.webp",
+          "public/kit/solarpunk/sheet-card-night-hover.webp",
+          "public/kit/solarpunk/sheet-card-night-normal.webp",
+          "public/kit/solarpunk/sheet-card-night-pressed.webp"
+        ]
+      },
+      "recipeDigest": "e46a0b1a0629972af04b986fd6dce090c594eb1e7644014f92492fad19e41cde",
+      "outputSha256": "dea4d617cdb3aefc8d5a90736e25a79d7234e525602337113ae43105b0ec7d94",
+      "width": 1304,
+      "height": 920,
+      "derivationDigest": "7475f91be259710744e2cb89b2edf550ae4c0c5f7c54d93d8ef5164cefa096c3"
+    },
+    "public/kit/solarpunk/sheet-card-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "b6dbd3607dd51b9888395d9886de89894f867784789605dab882580d5c96a6a3",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "39d736c756bf0fffaa218c2b84b5313c424a1dced9ed7688b1aaf847861b71c3",
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-card-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-card-flat.webp",
+          "public/kit/solarpunk/sheet-card-focus.webp",
+          "public/kit/solarpunk/sheet-card-hover.webp",
+          "public/kit/solarpunk/sheet-card-normal.webp",
+          "public/kit/solarpunk/sheet-card-pressed.webp"
+        ]
+      },
+      "recipeDigest": "f60cee4f4f1343f2864f31194fc6802e14190090895dfdb47373fe9790b46eae",
+      "outputSha256": "87e50bb53ec133ef3c1dbb693290d5f7e36f1354c42349b2d5f0794d761892e2",
+      "width": 1304,
+      "height": 920
+    },
+    "public/kit/solarpunk/sheet-card-pressed@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "f4e8c095873905956f9b1c98af00af9fb285c5b49679687bbcba09133e8c1e4f",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "65c92bf73d5bc557eae2aa2cbda3d6c7f4b7b899a98c4787145342ddb612b665",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 2.451468988994527,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-card-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-card-flat.webp",
+          "public/kit/solarpunk/sheet-card-focus.webp",
+          "public/kit/solarpunk/sheet-card-hover.webp",
+          "public/kit/solarpunk/sheet-card-normal.webp",
+          "public/kit/solarpunk/sheet-card-pressed.webp"
+        ]
+      },
+      "recipeDigest": "f93cfd00c344a7766c822b6653e8bd3df9c02a5ee95ee66911e1bcd3a8d660c9",
+      "outputSha256": "a781629061f9dad465c89c93002e8f61af4a52331bb9f91fb45c5bdecf1d0dcd",
+      "width": 1304,
+      "height": 920,
+      "derivationDigest": "93b0bb1af712341f8f98fba454f82d43d9a739a36f10d44c87fa897cca85caad"
+    },
     "public/kit/solarpunk/sheet-day-flat@2x.webp": {
       "provider": "external",
       "sourceSha256": "b75150d034152f7d31f2bb673e85de741f6f2364fb7f3f2a805cb5e973fd337f",
@@ -29492,6 +29768,111 @@
       "model": "gpt-image-2.5-sunburst",
       "cacheKey": "6befabec3e3b3e52a371a2ae5512c90a12ed628480f36ab007517a8149400e5f",
       "settingsDigest": "7cf4aa35c1d9c4aef8a5cf18d8c0ffa186dd9e6a4f988f0f04bc68c540bbf08b"
+    },
+    "public/kit/sumi/tile-day-focus@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "c90127397cecfdb1d965c9d9fc040f15384cea99da202a890287b85e2de6a672",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "0b44cccd73e6881946e2c33bd77754b6afbf4b8fa4e43959e9077e9e14bd5b33",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 10.240507631499078,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/sumi/tile-day-normal.webp",
+        "members": [
+          "public/kit/sumi/tile-day-focus.webp",
+          "public/kit/sumi/tile-day-hover.webp",
+          "public/kit/sumi/tile-day-normal.webp",
+          "public/kit/sumi/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "0e3f1ebff8abe78460a2431e1ff1ae14707b9479b9083c352be39c4ad3b4ce72",
+      "outputSha256": "59b8850b3dc596d3df9ec03e2e2497ee560fefd0d66c6d170fdbf4104fe44762",
+      "width": 970,
+      "height": 320,
+      "derivationDigest": "3b36d4a534241a10c69ddd8d7941a4896ad2d3f64dd372c0fa1cda6603ba3445"
+    },
+    "public/kit/sumi/tile-day-hover@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "a3502fe012243d34d0dd493eeb7f85079ab7dc76549c1dc1ee0d59a33f35c9f7",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "09f7a64e9cf2b654a0f0586c27c2ce7c4a9d4be185db8a4bb0da17ce87c1d540",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 1.3069280286203828,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/sumi/tile-day-normal.webp",
+        "members": [
+          "public/kit/sumi/tile-day-focus.webp",
+          "public/kit/sumi/tile-day-hover.webp",
+          "public/kit/sumi/tile-day-normal.webp",
+          "public/kit/sumi/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "bcae980d771ff32f167e387c82bcedd90b9dd955b17fbc7e05565b032a0f3afa",
+      "outputSha256": "00e597a77d3fa524d35e525d6bd2bdb368723c2ead7875131848bda4a113e08c",
+      "width": 970,
+      "height": 320,
+      "derivationDigest": "6614e925b4cafc58b494dbaf283f6f939ccb8c6c49414b7e70f37cb937523158"
+    },
+    "public/kit/sumi/tile-day-normal@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "71c9cacdc131f4c20256e2445ab926ac75b78d9b7f740fc8ad778d9fe71e0da2",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "ceec3775f1a80e58e5c676e8fd104dda2a30ff8934854b8481b7a0ba75807b38",
+      "familyMembership": {
+        "reference": "public/kit/sumi/tile-day-normal.webp",
+        "members": [
+          "public/kit/sumi/tile-day-focus.webp",
+          "public/kit/sumi/tile-day-hover.webp",
+          "public/kit/sumi/tile-day-normal.webp",
+          "public/kit/sumi/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "257d09f3ffca035802b599d863fdd6617cfccc9527de8d1df156a013e7d4a3f6",
+      "outputSha256": "411e3db761c511e45d0e81bb47e6366fe143c4bdf268ea1e600dd055cf4bbc6a",
+      "width": 970,
+      "height": 320
+    },
+    "public/kit/sumi/tile-day-pressed@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "cb4f5906c9ebcfe11c9dd7d3b9723936023575326d75778a67aa039da3538d77",
+      "sourceSha256": "a14fd9560027e24fe71d043be7f5b1531a29bece0dafe034a94dd904e64a98e2",
+      "factor": 2,
+      "model": "kit-native-raster-v1",
+      "cacheKey": "5896e8282abc9c7d93805247b1587320290b01e5d5727bad72a9d0c555e138b6",
+      "stateDerivation": {
+        "mode": "generate",
+        "maxHf": 4,
+        "hfRms": 1.06884484798377,
+        "method": "generate"
+      },
+      "familyMembership": {
+        "reference": "public/kit/sumi/tile-day-normal.webp",
+        "members": [
+          "public/kit/sumi/tile-day-focus.webp",
+          "public/kit/sumi/tile-day-hover.webp",
+          "public/kit/sumi/tile-day-normal.webp",
+          "public/kit/sumi/tile-day-pressed.webp"
+        ]
+      },
+      "recipeDigest": "cc98c7250421a2c7f2e6101478f5c8c381290214321f986d99a3ab8dae0cbfcc",
+      "outputSha256": "d6c9e5bcb00c32ae5c42fbef4bf8fdde237adf3666fe36427dcedca56b64d8e5",
+      "width": 970,
+      "height": 320,
+      "derivationDigest": "d080a9ba0c7f6e60a761b85be27d197f474cb50021d7ffc861db41376d90e763"
     },
     "public/kit/sumi/tile-night-focus@2x.webp": {
       "provider": "external",
