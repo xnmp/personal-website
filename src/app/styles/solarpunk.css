@@ -1551,6 +1551,7 @@
 @media (max-width: 899px) {
   :root[data-style="solarpunk"] {
     --sp-ivy-k: 0.55;
+    --sp-ivy-right: 0px; /* the corner's fringe stays within the phone's card */
   }
 
   :root[data-style="solarpunk"] .showcase-row > li .card-title::after,
@@ -1600,7 +1601,7 @@
   width: calc(var(--sp-corner-b-w) * var(--u) * var(--sp-ivy-k, 1));
   aspect-ratio: var(--sp-corner-b-r);
   top: calc(-40 * var(--u));
-  right: calc(-25 * var(--u));
+  right: var(--sp-ivy-right, calc(-25 * var(--u)));
 }
 
 :root[data-style="solarpunk"] .showcase-row > li:nth-child(4n + 2) .card-title::after {
@@ -2769,6 +2770,13 @@
   mask-image: linear-gradient(90deg, transparent, #000 13%, #000 87%, transparent), linear-gradient(transparent, #000 38%, #000 62%, transparent);
   mask-composite: intersect;
   pointer-events: none;
+}
+
+@media (max-width: 899px) {
+  /* The frost feathers inside the keys' row, within the phone's gutter. */
+  :root[data-style="solarpunk"] .running-head .instruments::before {
+    inset-inline: 0;
+  }
 }
 
 :root[data-style="solarpunk"] .running-head .head-nav {

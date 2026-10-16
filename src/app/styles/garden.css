@@ -423,6 +423,12 @@
    mock's (686, 396), the window's corner at (691, 71). A phone stacks the
    window, with no wall behind it. */
 @media (min-width: 900px) {
+  /* The wall follows the grid row's foot. The monitor shares that foot,
+     even when wrapped copy makes the row taller than the monitor. */
+  :root[data-style="garden"] .launchpad-window {
+    align-self: end;
+  }
+
   :root[data-style="garden"] .launchpad-window::after {
     content: "";
     position: absolute;
@@ -992,7 +998,7 @@
   }
 
   /* The wall stands across the top of the row, its ledge under the window:
-     drawn wider than the screen (the body clips it), centred on the things
+     drawn wider than the screen, centred on the things
      on its ledge (mock x 1045), so the cat is not lost on a phone. The row's
      name is set on the wall's top course, the cards against its face. */
   :root[data-style="garden"] .showcase {
@@ -1003,10 +1009,14 @@
 
   :root[data-style="garden"] .showcase::before {
     clip-path: none;
-    left: calc(50% - var(--wall-w) * 1045 / 1672);
+    /* The wall's paint is cropped by its page-width box; its wide source
+       keeps the cat in view without widening the layout viewport. */
+    left: calc((100% - 100vw) / 2);
     top: 0;
-    width: var(--wall-w);
+    width: 100vw;
     height: calc(var(--wall-w) * var(--wall-h) / 1672);
+    background-size: var(--wall-w) 100%;
+    background-position: calc(50% + var(--wall-w) * (0.5 - 1045 / 1672)) 0;
   }
 
   :root[data-style="garden"] .showcase-title {

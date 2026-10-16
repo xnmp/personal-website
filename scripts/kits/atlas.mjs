@@ -231,6 +231,9 @@ const kit = {
     { name: "card-mat-day", srcs: [{ src: "card-mat-day" }], resize: { width: 640, height: 640, fit: "fill" }, pad: 0, shadow: ENGRAVED },
     { name: "sky-quiet-night", srcs: [{ src: "sky-quiet-night" }], resize: { width: 1920, height: 1080, fit: "fill" }, pad: 0, shadow: ENGRAVED },
     { name: "sky-quiet-day", srcs: [{ src: "sky-quiet-day" }], resize: { width: 1920, height: 1080, fit: "fill" }, pad: 0, shadow: ENGRAVED },
+    // Copy-only ground has no residual chart ink; keep the core's aspect.
+    { name: "sky-copy-night", srcs: [{ src: "sky-copy-night" }], resize: { width: 1920, height: 1080, fit: "fill" }, pad: 0, shadow: ENGRAVED },
+    { name: "sky-copy-day", srcs: [{ src: "sky-copy-day" }], resize: { width: 1920, height: 1080, fit: "fill" }, pad: 0, shadow: ENGRAVED },
   ],
   // The scene is the plate alone, but for its moon. Fitted to cover, the
   // plate drifts against the page at another aspect than the mock's (at 2:1

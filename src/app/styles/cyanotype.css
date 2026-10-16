@@ -2223,7 +2223,9 @@
   }
 }
 
-@media (min-width: 1100px) {
+/* The home print remains below the inner stage's 1100px breakpoint; its
+   fern and rules need the same clean ground wherever desktop type flows. */
+@media (min-width: 900px) {
   :root[data-style="cyanotype"][data-scene-art="plate"] :is(
       .detail-hero:is(:has(.tags), .solo) :is(.kicker, h1, p, .tags),
       .launch-copy :is(.kicker, h1, .launch-sub, .launch-keys, .launch-keys-note, .launch-proof),
@@ -2245,7 +2247,7 @@
   /* (a block that is not already positioned is the patch's box) */
   :root[data-style="cyanotype"][data-scene-art="plate"] :is(
       .detail-hero:is(:has(.tags), .solo) :is(.kicker, h1, p, .tags),
-      .launch-copy :is(h1, .launch-sub, .launch-keys, .launch-keys-note, .launch-proof)
+      .launch-copy :is(.kicker, h1, .launch-sub, .launch-keys, .launch-keys-note, .launch-proof)
     ) {
     position: relative;
   }

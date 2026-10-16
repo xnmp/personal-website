@@ -5,6 +5,11 @@ import { ExplorerWindow } from "@/components/landing/ExplorerWindow";
 import { ShowcaseCard } from "@/components/landing/ShowcaseCard";
 import { FEATURED, FLAGSHIP, project, projects, shelves } from "@/data/projects";
 
+// Atlas clips a viewport-sized sky to each text block; other styles hide it.
+function CopySky() {
+  return <span className="launchpad-sky" aria-hidden="true"><span /></span>;
+}
+
 export default function Home() {
   const flagship = project(FLAGSHIP);
   const featured = FEATURED.map(project);
@@ -24,10 +29,11 @@ export default function Home() {
             <div className="launchpad-copy">
               {/* data-text: a style that letters the name as art keys it to the word it paints */}
               <h2 id="flagship-title" className="launchpad-title" data-text={flagship.title}>
-                {flagship.title}
+                <CopySky />
+                <span className="launchpad-title-ink">{flagship.title}</span>
               </h2>
-              <p className="launchpad-pitch">A keyboard-first file manager.</p>
-              <p className="launchpad-call">Alpha testers wanted.</p>
+              <p className="launchpad-pitch"><CopySky />A keyboard-first file manager.</p>
+              <p className="launchpad-call"><CopySky />Alpha testers wanted.</p>
               <div className="keys launchpad-keys">
                 <Key href={`${flagship.href}#alpha`} tone="signal" size="lg" ariaLabel={`Join the ${flagship.title} alpha`}>
                   Join the alpha <span className="key-arrow" aria-hidden>{"\u2192"}</span>
