@@ -31,7 +31,9 @@
   --a-title-shadow: drop-shadow(0 0 calc(0.7 * var(--u)) rgb(14 9 2 / 0.9)) drop-shadow(calc(0.5 * var(--u)) calc(1 * var(--u)) calc(0.6 * var(--u)) rgb(20 12 2 / 0.75)) drop-shadow(0 calc(3 * var(--u)) calc(5 * var(--u)) rgb(4 10 22 / 0.5));
   --a-frame: url(/kit/atlas/page-frame.webp);
   --a-dial-bl: url(/kit/atlas/dial-bl.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --a-dial-bl: url(/kit/atlas/dial-bl@2x.webp); }
   --a-dial-br: url(/kit/atlas/dial-br.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --a-dial-br: url(/kit/atlas/dial-br@2x.webp); }
   --a-compass: url(/kit/atlas/compass.webp);
   /* the sky with its glints and lines taken out, behind the words on it */
   --a-quiet: url(/kit/atlas/sky-quiet-night.webp);
@@ -235,7 +237,9 @@
   --a-title-shadow: drop-shadow(calc(0.6 * var(--u)) calc(1 * var(--u)) 0 rgb(255 250 235 / 0.7)) drop-shadow(0 0 calc(4 * var(--u)) rgb(240 244 246 / 0.9));
   --a-frame: url(/kit/atlas/page-frame-day.webp);
   --a-dial-bl: url(/kit/atlas/dial-bl-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --a-dial-bl: url(/kit/atlas/dial-bl-day@2x.webp); }
   --a-dial-br: url(/kit/atlas/dial-br-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --a-dial-br: url(/kit/atlas/dial-br-day@2x.webp); }
   --a-compass: url(/kit/atlas/compass-day.webp);
   --a-quiet: url(/kit/atlas/sky-quiet-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --a-quiet: url(/kit/atlas/sky-quiet-day@2x.webp); }

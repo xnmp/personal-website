@@ -1,0 +1,248 @@
+{
+  "tool": "Built-in image_gen; two probe calls and one proof call; only public/kit-derived images sent",
+  "directory": "art/raw/hires/probe/",
+  "preparation": "Hiker RGBA is push-pull filled to opaque RGB exactly as API inputs. Square probe centres the prepared 408x257 image in a 512x512 canvas with edge-copy padding (52/52 horizontal, 127/128 vertical). Production external padding instead uses push-pull fill on transparent canvas margins.",
+  "observations": "Neither exact requested pixel size was honoured. Landscape aspect differs by 0.0246%; square aspect exact. Visual inspection shows no crop, extra padding or reframing; fine shapes, highlights and texture are redrawn and colours shift. Drift metrics use original alpha weights, in source pixels, after normalizing output to 2x input. Square metrics refer to the padded 512x512 source.",
+  "metrics": [
+    {
+      "name": "hiker",
+      "input": [
+        408,
+        257
+      ],
+      "requested": [
+        816,
+        514
+      ],
+      "actual": [
+        1580,
+        995
+      ],
+      "preWarp": {
+        "weightedArea": 26433.74907404557,
+        "visibleFraction": 0.2520957224579001,
+        "gateable": true,
+        "reliableShare": 0.7333333333333333,
+        "reliableBlocks": 11,
+        "totalBlocks": 15,
+        "visibleBlocks": 12,
+        "measuredReliableBlocks": 11,
+        "outlierBlocks": 0,
+        "median": 0.7905694150420949,
+        "p90": 1.0307764064044151,
+        "max": 1.25,
+        "registrationMetric": "block-luminance-dog-zncc",
+        "registrationSigmas": [
+          1,
+          4
+        ],
+        "registrationStep": 0.25
+      },
+      "postWarp": {
+        "weightedArea": 26433.74907404557,
+        "visibleFraction": 0.2520957224579001,
+        "gateable": true,
+        "reliableShare": 0.7333333333333333,
+        "reliableBlocks": 11,
+        "totalBlocks": 15,
+        "visibleBlocks": 12,
+        "measuredReliableBlocks": 11,
+        "outlierBlocks": 0,
+        "median": 0,
+        "p90": 0.25,
+        "max": 0.25,
+        "registrationMetric": "block-luminance-dog-zncc",
+        "registrationSigmas": [
+          1,
+          4
+        ],
+        "registrationStep": 0.25
+      },
+      "colour": {
+        "mae": [
+          19.251749447803395,
+          11.907089324422271,
+          8.379362463123634
+        ],
+        "meanColourDelta": [
+          18.93526451591349,
+          11.399891040897616,
+          7.22855376296792
+        ],
+        "blurredMae": 13.1794004117831,
+        "weightedArea": 26433.74907404557,
+        "visibleFraction": 0.2520957224579001,
+        "gateable": true
+      }
+    },
+    {
+      "name": "hiker-square",
+      "input": [
+        512,
+        512
+      ],
+      "requested": [
+        1024,
+        1024
+      ],
+      "actual": [
+        1254,
+        1254
+      ],
+      "preWarp": {
+        "weightedArea": 26433.74907404557,
+        "visibleFraction": 0.100836750312979,
+        "gateable": true,
+        "reliableShare": 0.3888888888888889,
+        "reliableBlocks": 14,
+        "totalBlocks": 36,
+        "visibleBlocks": 16,
+        "measuredReliableBlocks": 14,
+        "outlierBlocks": 0,
+        "median": 0.3535533905932738,
+        "p90": 0.5590169943749475,
+        "max": 0.7905694150420949,
+        "registrationMetric": "block-luminance-dog-zncc",
+        "registrationSigmas": [
+          1,
+          4
+        ],
+        "registrationStep": 0.25
+      },
+      "postWarp": {
+        "weightedArea": 26433.74907404557,
+        "visibleFraction": 0.100836750312979,
+        "gateable": true,
+        "reliableShare": 0.3888888888888889,
+        "reliableBlocks": 14,
+        "totalBlocks": 36,
+        "visibleBlocks": 16,
+        "measuredReliableBlocks": 14,
+        "outlierBlocks": 0,
+        "median": 0.25,
+        "p90": 0.3535533905932738,
+        "max": 0.3535533905932738,
+        "registrationMetric": "block-luminance-dog-zncc",
+        "registrationSigmas": [
+          1,
+          4
+        ],
+        "registrationStep": 0.25
+      },
+      "colour": {
+        "mae": [
+          21.469392276401774,
+          17.513113825756086,
+          14.098845318997995
+        ],
+        "meanColourDelta": [
+          21.32115821327853,
+          17.166004100925715,
+          13.351489121466265
+        ],
+        "blurredMae": 17.69378380705195,
+        "weightedArea": 26433.74907404557,
+        "visibleFraction": 0.100836750312979,
+        "gateable": true
+      }
+    }
+  ],
+  "proof": {
+    "src": "public/kit/garden/mug-front-day.webp",
+    "input": [
+      42,
+      28
+    ],
+    "request": [
+      627,
+      627
+    ],
+    "requestedOutput": [
+      1254,
+      1254
+    ],
+    "actualOutput": [
+      1254,
+      1254
+    ],
+    "output": [
+      84,
+      56
+    ],
+    "cache": "art/raw/hires/kit/garden/mug-front-day/2fa786fac3c5/",
+    "stats": {
+      "mae": [
+        1.6118175119994838,
+        1.7692161257298884,
+        2.6340215237228404
+      ],
+      "meanColourDelta": [
+        0.26879597037213915,
+        0.12962331098094196,
+        -0.0011332350964118572
+      ],
+      "blurredMae": 2.0050183871507374,
+      "weightedArea": 670.5647081080824,
+      "visibleFraction": 0.5702080851259205,
+      "gateable": true,
+      "beforeTone": {
+        "mae": [
+          1.9295031766670703,
+          2.3322609811746475,
+          4.061073596055148
+        ],
+        "meanColourDelta": [
+          0.6998774623840371,
+          -0.2722556169126124,
+          -0.790384657140911
+        ],
+        "blurredMae": 2.7742792512989554,
+        "weightedArea": 670.5647081080824,
+        "visibleFraction": 0.5702080851259205,
+        "gateable": true
+      },
+      "preWarp": {
+        "weightedArea": 670.5647081080824,
+        "visibleFraction": 0.5702080851259205,
+        "gateable": true,
+        "reliableShare": 0.7777777777777778,
+        "reliableBlocks": 7,
+        "totalBlocks": 9,
+        "visibleBlocks": 9,
+        "measuredReliableBlocks": 7,
+        "outlierBlocks": 0,
+        "median": 0.25,
+        "p90": 0.5590169943749475,
+        "max": 0.5590169943749475,
+        "registrationMetric": "block-luminance-dog-zncc",
+        "registrationSigmas": [
+          1,
+          4
+        ],
+        "registrationStep": 0.25
+      },
+      "postWarp": {
+        "weightedArea": 670.5647081080824,
+        "visibleFraction": 0.5702080851259205,
+        "gateable": true,
+        "reliableShare": 0.7777777777777778,
+        "reliableBlocks": 7,
+        "totalBlocks": 9,
+        "visibleBlocks": 9,
+        "measuredReliableBlocks": 7,
+        "outlierBlocks": 0,
+        "median": 0.25,
+        "p90": 0.5590169943749475,
+        "max": 0.5590169943749475,
+        "registrationMetric": "block-luminance-dog-zncc",
+        "registrationSigmas": [
+          1,
+          4
+        ],
+        "registrationStep": 0.25
+      }
+    },
+    "rejected": false,
+    "css": "Reconciliation made zero CSS changes: garden/foreground-day awaits wall-day. No other candidates generated."
+  }
+}

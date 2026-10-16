@@ -401,6 +401,7 @@
   /* the phone's desk, with the mug and the books that stand in front of its
      window's lower corners (cut from the phone mock) */
   --sp-phone-desk: url(/kit/solarpunk/phone-desk-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --sp-phone-desk: url(/kit/solarpunk/phone-desk-night@2x.webp); }
   --sp-phone-mug: url(/kit/solarpunk/phone-mug-night.webp);
   --sp-phone-books: url(/kit/solarpunk/phone-books-night.webp);
   --sp-drape: url(/kit/solarpunk/ivy-drape-night.webp);
@@ -444,10 +445,12 @@
   --sp-still: url(/kit/solarpunk/still-life-day.webp);
   --sp-deck: url(/kit/solarpunk/laptop-deck-day.webp);
   --sp-phone-desk: url(/kit/solarpunk/phone-desk-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --sp-phone-desk: url(/kit/solarpunk/phone-desk-day@2x.webp); }
   --sp-phone-mug: url(/kit/solarpunk/phone-mug-day.webp);
   --sp-phone-books: url(/kit/solarpunk/phone-books-day.webp);
   --sp-drape: url(/kit/solarpunk/ivy-drape-day.webp);
   --sp-tuft: url(/kit/solarpunk/ivy-tuft-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --sp-tuft: url(/kit/solarpunk/ivy-tuft-day@2x.webp); }
   --sp-corner-a: url(/kit/solarpunk/ivy-corner-a-day.webp);
   --sp-corner-b: url(/kit/solarpunk/ivy-corner-b-day.webp);
   --sp-corner-c: url(/kit/solarpunk/ivy-corner-c-day.webp);

@@ -3,6 +3,7 @@ import { checkRepo, diagnostics, HIRES_MEDIA, main, transformCss } from "../scri
 import { layerBitmap, layerTextureWidth } from "../src/components/rack/scene3d/layer-bitmap";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { lockEntry, outputPath, writeLockEntry } from "../scripts/hires/lock.mjs";
 import { validateManifest } from "../scripts/hires/manifest.mjs";
 
@@ -14,11 +15,24 @@ describe("hires CSS reconciliation", () => {
   test("writes exactly one adjacent twin, preserving comments and later overrides; a second write is a no-op", () => {
     expect(HIRES_MEDIA).toBe(media);
     const input = `/* art */\n.a {\n  --sky: url(/kit/a.webp); /* keep */\n  --sky: none;\n}\n`;
-    const expected = `/* art */\n.a {\n  --sky: url(/kit/a.webp);\n  ${twin("--sky", "url(/kit/a@2x.webp)")} /* keep */\n  --sky: none;\n}\n`;
+    const expected = `/* art */\n.a {\n  --sky: url(/kit/a.webp); /* keep */\n  ${twin("--sky", "url(/kit/a@2x.webp)")}\n  --sky: none;\n}\n`;
     const written = transformCss(input, available);
     expect(written.css).toBe(expected);
     expect(written.issues.map((i: { kind: string }) => i.kind)).toEqual(["missing"]);
     expect(transformCss(expected, available)).toEqual({ css: expected, issues: [] });
+  });
+
+  test("keeps trailing block comments on the source declaration and leaves uncommented declarations intact", () => {
+    for (const newline of ["\n", "\r\n"]) {
+      for (const comment of ["", " /* painted moon */", " /* first */ /* second */", " /* multi\n     line */"]) {
+        const input = `.a {\n  --sky: url(/kit/a.webp);${comment}\n  color: red;\n}\n`.replaceAll("\n", newline);
+        const expected = `.a {\n  --sky: url(/kit/a.webp);${comment}\n  ${twin("--sky", "url(/kit/a@2x.webp)")}\n  color: red;\n}\n`.replaceAll("\n", newline);
+        const written = transformCss(input, available);
+        expect(written.css).toBe(expected);
+        expect(written.issues.map((i: { kind: string }) => i.kind)).toEqual(["missing"]);
+        expect(transformCss(written.css, available)).toEqual({ css: expected, issues: [] });
+      }
+    }
   });
 
   test("replaces quoted and unquoted URLs in a multi-URL value, only where an @2x file is available", () => {
@@ -134,7 +148,7 @@ describe("hires CSS reconciliation", () => {
 
 describe("hires provenance and whole groups", () => {
   test("withholds partial groups, ships complete groups, and rejects every stale or unlocked sibling", async () => {
-    const root = await mkdtemp(join(process.cwd(), 'tests/.hires-css-'));
+    const root = await mkdtemp(join(tmpdir(), 'hires-css-'));
     try {
       await Promise.all(['art', 'src/app', 'public/kit'].map((dir) => mkdir(join(root, dir), { recursive: true })));
       const manifest = { version: 1, defaults: {}, assets: [

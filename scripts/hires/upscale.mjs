@@ -7,8 +7,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { webpOptions } from '../webp.mjs';
 import { planTiles } from './tiles.mjs';
+import { planExternalTiles, normalizationSize } from './external.mjs';
 import { blendTiles, colourStats, composeFlow, estimateFlow, padTransparent, toneMatch, warp } from './merge.mjs';
-import { cacheKey, validateManifest } from './manifest.mjs';
+import { assetCacheKey, validateManifest } from './manifest.mjs';
 import { lockEntry, writeLockEntry } from './lock.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
@@ -50,11 +51,12 @@ export async function mapJobs(items, jobs, task) {
 export function cliOptions(args) {
   const { values } = parseArgs({ args, options: {
     manifest: { type: 'string', default: 'art/hires.json' }, only: { type: 'string' }, dry: { type: 'boolean' },
-    force: { type: 'boolean' }, remerge: { type: 'boolean' }, verify: { type: 'boolean' }, accept: { type: 'boolean' }, jobs: { type: 'string', default: '4' }, 'max-mae': { type: 'string', default: '14' },
+    requests: { type: 'boolean' }, force: { type: 'boolean' }, remerge: { type: 'boolean' }, verify: { type: 'boolean' }, accept: { type: 'boolean' }, jobs: { type: 'string', default: '4' }, 'max-mae': { type: 'string', default: '14' },
   } });
   const jobs = Number(values.jobs), maxMae = Number(values['max-mae']);
   if (!Number.isSafeInteger(jobs) || jobs < 1) throw new Error('--jobs must be a positive integer');
   if (!Number.isFinite(maxMae) || maxMae < 0) throw new Error('--max-mae must be non-negative');
+  if (values.requests && ['dry', 'force', 'remerge', 'verify', 'accept'].some((key) => values[key])) throw new Error('--requests cannot be combined with processing flags');
   if (values.verify && !values.remerge) throw new Error('--verify requires --remerge');
   return { ...values, jobs, maxMae };
 }
@@ -96,16 +98,26 @@ async function processAsset(asset, opts, promptText, root, invoke) {
   const sourceBytes = await readFile(srcPath);
   const metadata = await sharp(sourceBytes).metadata();
   if ((metadata.pages ?? 1) > 1) throw new Error('animated or multi-page sources are not supported');
-  const plan = planTiles({ width: metadata.width, height: metadata.height, factor: asset.factor });
-  const prompt = [promptText.trim(), ...(plan.tiles.length > 1 ? ['Image 1 is a crop of a larger painting: keep its edges continuous; no border, vignette or frame at the edges.'] : []), ...(asset.note ? [asset.note] : [])].join('\n') + '\n';
-  const key = cacheKey(sourceBytes, asset.factor, asset.model, prompt);
+  const external = asset.provider === 'external';
+  if (opts.requests && !external) return;
+  if (external && opts.force) throw new Error('--force is not supported for external assets; remove the cached tile to request a replacement');
+  const plan = external
+    ? planExternalTiles({ width: metadata.width, height: metadata.height, factor: asset.factor, sizes: asset.external.sizes })
+    : planTiles({ width: metadata.width, height: metadata.height, factor: asset.factor });
+  const prompt = [promptText.trim(), ...(plan.tiles.length > 1 ? ['Image 1 is a crop of a larger painting: keep its edges continuous; no border, vignette or frame at the edges.'] : []), ...(external ? ['The input includes padding. Preserve the entire canvas and padding exactly; do not crop, reframe or enlarge the subject.'] : []), ...(asset.note ? [asset.note] : [])].join('\n') + '\n';
+  const key = assetCacheKey(sourceBytes, asset, prompt);
   const sourceStem = asset.src.slice('public/'.length, -extname(asset.src).length);
   const cache = resolve(root, process.env.HIRES_CACHE ?? 'art/raw/hires', sourceStem, key.slice(0, 12));
   const output = srcPath.slice(0, -extname(srcPath).length) + `@${asset.factor}x.webp`;
   const present = await Promise.all(plan.tiles.map((_, i) => exists(resolve(cache, `tile-${i}.png`))));
   const missing = present.flatMap((found, i) => found ? [] : [`tile-${i}.png`]);
+  const requestsPath = resolve(cache, 'requests.json');
+  if (opts.requests) {
+    if (missing.length && await exists(requestsPath)) console.log(requestsPath);
+    return;
+  }
   const requests = opts.remerge ? 0 : opts.force ? present.length : missing.length;
-  console.log(`${asset.src}: ${metadata.width}x${metadata.height} -> ${plan.outW}x${plan.outH}; ${plan.tiles.length} tiles; API ${plan.tiles.map((t) => `${t.apiW}x${t.apiH}`).join(', ')}; estimated requests ${requests} (up to ${requests * 2} with retries)`);
+  console.log(`${asset.src}: ${metadata.width}x${metadata.height} -> ${plan.outW}x${plan.outH}; ${plan.tiles.length} tiles; ${external ? 'external' : 'API'} ${plan.tiles.map((t) => `${t.apiW}x${t.apiH}`).join(', ')}; estimated requests ${requests} ${external ? '' : `(up to ${requests * 2} with retries)`}`);
   if (opts.remerge && missing.length) {
     console.log(`${asset.src}: SKIPPED --remerge; missing cached tiles: ${missing.join(', ')}`);
     return;
@@ -118,7 +130,28 @@ async function processAsset(asset, opts, promptText, root, invoke) {
   const rgba = await raw(sharp(sourceBytes).toColourspace('srgb').ensureAlpha());
   const padded = padTransparent(rgba);
   timing('source prepared');
-  await mapJobs(plan.tiles, opts.jobs, async (t, i) => {
+  if (external) {
+    const pending = [];
+    for (const [i, t] of plan.tiles.entries()) {
+      const requestPath = resolve(cache, `tile-${i}-in.png`), outputPath = resolve(cache, `tile-${i}.png`);
+      if (present[i]) continue;
+      const tile = await crop(padded, t);
+      const canvas = await raw(sharp(bytes(tile), { raw: geometry(tile) }).ensureAlpha().extend({
+        left: t.padLeft, right: t.requestW - t.w - t.padLeft,
+        top: t.padTop, bottom: t.requestH - t.h - t.padTop, background: { r: 0, g: 0, b: 0, alpha: 0 },
+      }));
+      const filled = padTransparent(canvas);
+      await sharp(bytes(filled), { raw: geometry(filled) }).png().toFile(requestPath);
+      pending.push({ requestPath, outputPath, prompt, allowedSizes: asset.external.sizes,
+        factor: asset.factor, width: t.apiW, height: t.apiH });
+    }
+    await json(requestsPath, { version: 1, src: asset.src, provider: 'external', requests: pending });
+    if (pending.length) {
+      console.log(`AWAITING ${pending.length} external tiles: ${requestsPath}`);
+      return;
+    }
+  }
+  if (!external) await mapJobs(plan.tiles, opts.jobs, async (t, i) => {
     const input = resolve(cache, `tile-${i}-in.png`), output = resolve(cache, `tile-${i}.png`);
     if (opts.remerge || (!opts.force && await exists(output))) return;
     const inputBytes = await sharp(bytes(await crop(padded, t)), { raw: { width: t.w, height: t.h, channels: 3 } }).png().toBuffer();
@@ -152,7 +185,21 @@ async function processAsset(asset, opts, promptText, root, invoke) {
   for (const [i, t] of plan.tiles.entries()) {
     const source = await crop(padded, t);
     const base = await resize(source, t.ow, t.oh);
-    const generated = await raw(sharp(resolve(cache, `tile-${i}.png`)).toColourspace('srgb').removeAlpha().resize(t.ow, t.oh, { fit: 'fill', kernel: 'lanczos3' }));
+    let generated;
+    const tilePath = resolve(cache, `tile-${i}.png`);
+    if (external) {
+      const info = await sharp(tilePath).metadata();
+      if ((info.pages ?? 1) > 1) throw new Error(`tile ${i}: animated external output is not supported`);
+      let size;
+      try { size = normalizationSize(info.width, info.height, t); }
+      catch (error) { throw new Error(`tile ${i}: ${error.message}`); }
+      // Resize the complete request canvas, then remove only our known padding.
+      const normalized = await sharp(tilePath).toColourspace('srgb').removeAlpha()
+        .resize(size.width, size.height, { fit: 'fill', kernel: 'lanczos3' }).png().toBuffer();
+      generated = await raw(sharp(normalized).extract({ left: t.padLeft * asset.factor, top: t.padTop * asset.factor, width: t.ow, height: t.oh }));
+    } else {
+      generated = await raw(sharp(tilePath).toColourspace('srgb').removeAlpha().resize(t.ow, t.oh, { fit: 'fill', kernel: 'lanczos3' }));
+    }
     const tileWeights = weights ? alpha(await crop(rgba, t)) : undefined;
     timing(`tile ${i} decoded`);
     const { down, aligned, alignedDown, preWarp, postWarp, iterations, history } = await alignTile(source, generated, asset.factor, tileWeights);
@@ -216,7 +263,7 @@ export async function main(args = process.argv.slice(2), { root = ROOT, invoke =
   const manifest = validateManifest(JSON.parse(await readFile(resolve(root, opts.manifest), 'utf8')));
   const prompt = await readFile(resolve(root, 'art/prompts/hires/upscale.txt'), 'utf8');
   const assets = manifest.assets.filter((a) => !opts.only || a.src.includes(opts.only));
-  if (!assets.length) console.log('No matching hires assets; estimated requests 0.');
+  if (!assets.length && !opts.requests) console.log('No matching hires assets; estimated requests 0.');
   let failed = false;
   for (const asset of assets) {
     try { await processAsset(asset, opts, prompt, root, invoke); }

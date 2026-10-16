@@ -782,7 +782,7 @@ The build works in mock pixels (1672x941 sources), so a scene drawn at the
 stage's scale on a large or HiDPI screen (`--u` times the device pixel ratio,
 about 2 on a 3440px monitor or a 2x laptop) shows each file pixel twice over.
 Rather than re-plumb the derive scripts, a last stage makes a 2x sibling of
-selected shipped files with the OpenAI image edit API and conforms it to the
+selected shipped files through the API or an external generator and conforms them to the
 1x file, which stays the source of truth.
 
 - **List**: `art/hires.json` names the shipped files (`src` under `public/`)
@@ -791,6 +791,37 @@ selected shipped files with the OpenAI image edit API and conforms it to the
   `<name>@2x.webp` beside each; the prompt is `art/prompts/hires/upscale.txt`.
   It calls the imagegen skill's keyring wrapper (`HIRES_PYTHON`,
   `HIRES_IMAGEGEN` override the paths); `--dry` makes no requests.
+- **External generation**: `provider` is `"api"` by default, or `"external"`,
+  in `defaults` or an asset. `external: { "sizes": ["1254x1254"] }` in either
+  place declares allowed output canvases; the asset setting replaces the default.
+  These sizes are configuration, not tool guarantees. External factors must be
+  integers from 1 to 8 and divide both dimensions of every allowed size. The
+  built-in tool probes returned 1580x995 for an 816x514 request, and 1254x1254
+  for a square 1024x1024 request; only the observed square size is enabled.
+  Source tiles are exactly the allowed canvas divided by the factor, with
+  64-source-pixel overlaps. Small/edge tiles are centred without scaling and
+  their padding uses the same push-pull colour fill as transparent pixels.
+  Thus 42x28 uses one padded request; 644x119 uses two square requests.
+  Run `bun run hires --only public/kit/<source>.webp` to emit missing request
+  images and `requests.json` in that asset's cache. It reports
+  `AWAITING <n> external tiles: <path>` and never invokes the API for that asset.
+  `bun run hires --requests [--only <source>]` lists already-emitted pending
+  request files, one absolute path per line, without processing or generation.
+  Each JSON request gives absolute `requestPath` and `outputPath`, complete
+  `prompt`, `allowedSizes`, `factor`, and expected output `width`/`height`.
+  View each request, pass only that website-derived image and its prompt to
+  built-in image_gen, and copy its output to the exact `outputPath`. Re-run the
+  first command to conform, gate and publish. Returned aspects must be within
+  1% relative error of the request; other aspects are rejected before resizing.
+  Matching outputs are resized to the full expected canvas, then only the known
+  padding is removed. Existing alignment, tone, alpha, feathering and gates follow.
+  `--remerge` works from cached outputs; external `--force` is rejected (remove
+  a cached tile explicitly to request a replacement). After a pass run
+  `bun run hires:css --write`; incomplete groups keep their 1x CSS.
+  External cache keys include provider, allowed sizes and padding version; API
+  digests stay byte-identical. New external locks record `provider: "external"`;
+  provider-less legacy locks continue to mean API. The candidate decisions and
+  CSS reference locations are in `docs/hires-external-audit.json`.
 - **Tiles**: a file larger than the API's output limits (3840px edge, 8.3 MP)
   is cut into overlapping tiles (`scripts/hires/tiles.mjs`) and feathered
   back together.

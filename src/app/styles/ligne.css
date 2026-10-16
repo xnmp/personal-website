@@ -54,6 +54,7 @@
      flat scene the social cards print is that picture. */
   --scene-ground: #1b2047;
   --k-scene-flat: url(/kit/ligne/hero-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-scene-flat: url(/kit/ligne/hero-night@2x.webp); }
   --k-sky: url(/kit/ligne/scene/night/sky.webp);
   --k-sun: none;
   --sun-sw: 1;
@@ -69,7 +70,9 @@
   --k-left: none;
   --k-right: none;
   --k-hero: url(/kit/ligne/hero-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-hero: url(/kit/ligne/hero-night@2x.webp); }
   --k-hero-phone: url(/kit/ligne/hero-night-phone.webp); /* its moon painted out */
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-hero-phone: url(/kit/ligne/hero-night-phone@2x.webp); }
   --k-plate: url(/kit/ligne/sheet-night-normal.webp);
   --k-plate-hover: url(/kit/ligne/sheet-night-hover.webp);
   --k-plate-pressed: url(/kit/ligne/sheet-night-pressed.webp);

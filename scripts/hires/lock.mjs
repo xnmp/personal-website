@@ -4,9 +4,9 @@ import { extname, resolve } from 'node:path';
 
 export const outputPath = ({ src, factor }) => src.slice(0, -extname(src).length) + `@${factor}x.webp`;
 export const sourceSha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
-export const lockEntry = (bytes, { factor, model }, key) => ({ sourceSha256: sourceSha256(bytes), factor, model, cacheKey: key });
-export const lockMatches = (entry, bytes, { factor, model }) =>
-  !!entry && entry.sourceSha256 === sourceSha256(bytes) && entry.factor === factor && entry.model === model &&
+export const lockEntry = (bytes, { factor, model, provider }, key) => ({ ...(provider === 'external' ? { provider } : {}), sourceSha256: sourceSha256(bytes), factor, model, cacheKey: key });
+export const lockMatches = (entry, bytes, { factor, model, provider }) =>
+  !!entry && (entry.provider ?? 'api') === (provider ?? 'api') && entry.sourceSha256 === sourceSha256(bytes) && entry.factor === factor && entry.model === model &&
   typeof entry.cacheKey === 'string' && /^[a-f0-9]{64}$/.test(entry.cacheKey);
 
 export async function readLock(root) {

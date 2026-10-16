@@ -1,0 +1,1967 @@
+{
+  "source": "/home/chong/Repos/personal-website/art/raw/hires/zoom-audit/scratch/resolution-table.md",
+  "scope": "All rows whose kind contains background. Other rows are border sheets, img elements or masks and are outside the requested candidate kind.",
+  "grouping": "Paper launch-stage pieces share one layered background per theme (paper.css:2036). Garden mug-front overlays the same mug in wall (garden.css:405); paired per theme. Other pictures and props are independent.",
+  "assets": [
+    {
+      "src": "public/kit/solarpunk/sheet-day-light.webp",
+      "width": 256,
+      "height": 256,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:165"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-night-light.webp",
+      "width": 256,
+      "height": 256,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:77"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-light.webp",
+      "width": 256,
+      "height": 256,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:340"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-light.webp",
+      "width": 256,
+      "height": 256,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:122"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/atlas/sheet-day-light.webp",
+      "width": 256,
+      "height": 256,
+      "cssReferences": [
+        "src/app/styles/atlas.css:271"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/atlas/sheet-night-light.webp",
+      "width": 256,
+      "height": 256,
+      "cssReferences": [
+        "src/app/styles/atlas.css:96"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/paper/strip-day.webp",
+      "width": 889,
+      "height": 118,
+      "cssReferences": [
+        "src/app/styles/paper.css:120"
+      ],
+      "decision": "excluded",
+      "reason": "Nine-slice paper strip: paper.css:778 uses 30 60 36 60 file-pixel slices; also stretched as a background"
+    },
+    {
+      "src": "public/kit/paper/strip-night.webp",
+      "width": 889,
+      "height": 118,
+      "cssReferences": [
+        "src/app/styles/paper.css:36"
+      ],
+      "decision": "excluded",
+      "reason": "Nine-slice paper strip: paper.css:778 uses 30 60 36 60 file-pixel slices; also stretched as a background"
+    },
+    {
+      "src": "public/kit/ligne/fibre-day.webp",
+      "width": 384,
+      "height": 384,
+      "cssReferences": [
+        "src/app/styles/ligne.css:293"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/ligne/fibre-night.webp",
+      "width": 384,
+      "height": 384,
+      "cssReferences": [
+        "src/app/styles/ligne.css:153"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/solarpunk/frost-day.webp",
+      "width": 512,
+      "height": 512,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:164"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/solarpunk/frost-night.webp",
+      "width": 512,
+      "height": 512,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:63"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/sumi/washi-day.webp",
+      "width": 512,
+      "height": 512,
+      "cssReferences": [
+        "src/app/styles/sumi.css:162"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/sumi/washi-night.webp",
+      "width": 512,
+      "height": 512,
+      "cssReferences": [
+        "src/app/styles/sumi.css:57"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/type-clean-day.webp",
+      "width": 384,
+      "height": 384,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:401"
+      ],
+      "decision": "excluded",
+      "reason": "Repeating ink texture clipped to text; type-* excluded (cyanotype.css:592 and :1620 use 384px repeat)"
+    },
+    {
+      "src": "public/kit/cyanotype/type-clean-night.webp",
+      "width": 384,
+      "height": 384,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:183"
+      ],
+      "decision": "excluded",
+      "reason": "Repeating ink texture clipped to text; type-* excluded (cyanotype.css:592 and :1620 use 384px repeat)"
+    },
+    {
+      "src": "public/kit/paper/glass-glare.webp",
+      "width": 900,
+      "height": 600,
+      "cssReferences": [
+        "src/app/styles/atlas.css:162",
+        "src/app/styles/solarpunk.css:130",
+        "src/app/styles/cyanotype.css:179",
+        "src/app/styles/garden.css:110",
+        "src/app/styles/sumi.css:125",
+        "src/app/kit.css:114"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/paper/mount-day.webp",
+      "width": 729,
+      "height": 428,
+      "cssReferences": [
+        "src/app/styles/paper.css:122"
+      ],
+      "decision": "excluded",
+      "reason": "Paper mount fill and nine-slice sheet: paper.css:2370 uses 28 27 41 36 file-pixel slices"
+    },
+    {
+      "src": "public/kit/paper/mount-night.webp",
+      "width": 729,
+      "height": 428,
+      "cssReferences": [
+        "src/app/styles/paper.css:38"
+      ],
+      "decision": "excluded",
+      "reason": "Paper mount fill and nine-slice sheet: paper.css:2370 uses 28 27 41 36 file-pixel slices"
+    },
+    {
+      "src": "public/kit/atlas/enamel-day.webp",
+      "width": 768,
+      "height": 768,
+      "cssReferences": [
+        "src/app/styles/atlas.css:270"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/atlas/enamel-night.webp",
+      "width": 768,
+      "height": 768,
+      "cssReferences": [
+        "src/app/styles/atlas.css:83"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/solarpunk/scene/launch-night/sky.webp",
+      "width": 2654,
+      "height": 1447,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:204"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/solarpunk/scene/project-night/sky.webp",
+      "width": 2654,
+      "height": 1447,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:200"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/launch-day/hills-far.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:206"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/launch-day/pines-left.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:207"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/launch-day/pines-right.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:208"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/launch-day/sky.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:205"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/launch-night/hills-far.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:184"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/launch-night/pines-left.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:188"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/launch-night/pines-right.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:189"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/launch-night/sky.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:182"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/project-night/hills-far.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:172"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/project-night/pines-left.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:176"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/project-night/pines-right.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:177"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/project-night/sky.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:170"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/phone-night/hills-far.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:2086"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/phone-night/pines-left.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:2090"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/phone-night/pines-right.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:2091"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/phone-night/sky.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/paper.css:2084"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/atlas/card-mat-day.webp",
+      "width": 640,
+      "height": 640,
+      "cssReferences": [
+        "src/app/styles/atlas.css:315"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/atlas/card-mat-night.webp",
+      "width": 640,
+      "height": 640,
+      "cssReferences": [
+        "src/app/styles/atlas.css:214"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/tauri/live-app-solarized.webp",
+      "width": 1440,
+      "height": 900,
+      "cssReferences": [],
+      "decision": "excluded",
+      "reason": "UI screenshot; LiveDemo.tsx:83 supplies computed path to inline CSS background and <img>, beyond css.mjs static stylesheet URL scope"
+    },
+    {
+      "src": "public/tauri/live-app-tokyo-night.webp",
+      "width": 1440,
+      "height": 900,
+      "cssReferences": [],
+      "decision": "excluded",
+      "reason": "UI screenshot; LiveDemo.tsx:83 supplies computed path to inline CSS background and <img>, beyond css.mjs static stylesheet URL scope"
+    },
+    {
+      "src": "public/kit/atlas/dial-bl-day.webp",
+      "width": 184,
+      "height": 153,
+      "cssReferences": [
+        "src/app/styles/atlas.css:236"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/atlas/dial-bl.webp",
+      "width": 184,
+      "height": 153,
+      "cssReferences": [
+        "src/app/styles/atlas.css:33"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/atlas/dial-br-day.webp",
+      "width": 188,
+      "height": 241,
+      "cssReferences": [
+        "src/app/styles/atlas.css:237"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/atlas/dial-br.webp",
+      "width": 188,
+      "height": 241,
+      "cssReferences": [
+        "src/app/styles/atlas.css:34"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/paper/scene/night/hills-far.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/kit.css:62"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/night/hills-near.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/kit.css:63"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/night/mountains.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/kit.css:61"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/night/pines-left-back.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/kit.css:64"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/night/pines-left.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/kit.css:66"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/night/pines-right-back.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/kit.css:65"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/night/pines-right.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/kit.css:67"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/paper/scene/night/sky.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/kit.css:56"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/ligne/scene/day/sky.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/ligne.css:257"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/ligne/scene/night/sky.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/ligne.css:57"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/paper/label-day.webp",
+      "width": 321,
+      "height": 105,
+      "cssReferences": [
+        "src/app/styles/paper.css:123"
+      ],
+      "decision": "excluded",
+      "reason": "Blank paper label material stretched 100% 100% no-repeat (paper.css:245), not a discrete picture"
+    },
+    {
+      "src": "public/kit/paper/label-night.webp",
+      "width": 321,
+      "height": 105,
+      "cssReferences": [
+        "src/app/styles/paper.css:39"
+      ],
+      "decision": "excluded",
+      "reason": "Blank paper label material stretched 100% 100% no-repeat (paper.css:245), not a discrete picture"
+    },
+    {
+      "src": "public/kit/paper/foreground-day.webp",
+      "width": 1688,
+      "height": 699,
+      "cssReferences": [
+        "src/app/styles/paper.css:126"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/paper/foreground-night.webp",
+      "width": 1688,
+      "height": 699,
+      "cssReferences": [
+        "src/app/styles/paper.css:42"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-hiker-day.webp",
+      "width": 408,
+      "height": 257,
+      "cssReferences": [
+        "src/app/styles/paper.css:128"
+      ],
+      "decision": "added",
+      "group": "paper/launch-stage-day"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-hiker-night.webp",
+      "width": 408,
+      "height": 257,
+      "cssReferences": [
+        "src/app/styles/paper.css:45"
+      ],
+      "decision": "added",
+      "group": "paper/launch-stage-night"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-pines-left-day.webp",
+      "width": 340,
+      "height": 489,
+      "cssReferences": [
+        "src/app/styles/paper.css:129"
+      ],
+      "decision": "added",
+      "group": "paper/launch-stage-day"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-pines-left-night.webp",
+      "width": 340,
+      "height": 489,
+      "cssReferences": [
+        "src/app/styles/paper.css:46"
+      ],
+      "decision": "added",
+      "group": "paper/launch-stage-night"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-pines-right-day.webp",
+      "width": 296,
+      "height": 393,
+      "cssReferences": [
+        "src/app/styles/paper.css:130"
+      ],
+      "decision": "added",
+      "group": "paper/launch-stage-day"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-pines-right-night.webp",
+      "width": 296,
+      "height": 393,
+      "cssReferences": [
+        "src/app/styles/paper.css:47"
+      ],
+      "decision": "added",
+      "group": "paper/launch-stage-night"
+    },
+    {
+      "src": "public/kit/cyanotype/type-day.webp",
+      "width": 384,
+      "height": 384,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:400"
+      ],
+      "decision": "excluded",
+      "reason": "Repeating ink texture clipped to text; type-* excluded (cyanotype.css:592 and :1620 use 384px repeat)"
+    },
+    {
+      "src": "public/kit/cyanotype/type-night.webp",
+      "width": 384,
+      "height": 384,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:182"
+      ],
+      "decision": "excluded",
+      "reason": "Repeating ink texture clipped to text; type-* excluded (cyanotype.css:592 and :1620 use 384px repeat)"
+    },
+    {
+      "src": "public/kit/garden/mug-front-day.webp",
+      "width": 42,
+      "height": 28,
+      "cssReferences": [
+        "src/app/styles/garden.css:191"
+      ],
+      "decision": "added",
+      "group": "garden/foreground-day"
+    },
+    {
+      "src": "public/kit/garden/mug-front-night.webp",
+      "width": 42,
+      "height": 28,
+      "cssReferences": [
+        "src/app/styles/garden.css:119"
+      ],
+      "decision": "added",
+      "group": "garden/foreground-night"
+    },
+    {
+      "src": "public/kit/garden/wall-day.webp",
+      "width": 1672,
+      "height": 670,
+      "cssReferences": [
+        "src/app/styles/garden.css:190"
+      ],
+      "decision": "added",
+      "group": "garden/foreground-day"
+    },
+    {
+      "src": "public/kit/garden/wall-night.webp",
+      "width": 1672,
+      "height": 680,
+      "cssReferences": [
+        "src/app/styles/garden.css:118"
+      ],
+      "decision": "added",
+      "group": "garden/foreground-night"
+    },
+    {
+      "src": "public/kit/ligne/hero-day.webp",
+      "width": 1672,
+      "height": 941,
+      "cssReferences": [
+        "src/app/styles/ligne.css:256",
+        "src/app/styles/ligne.css:270"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/ligne/hero-night.webp",
+      "width": 1672,
+      "height": 941,
+      "cssReferences": [
+        "src/app/styles/ligne.css:56",
+        "src/app/styles/ligne.css:71"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/paper/tips-day.webp",
+      "width": 156,
+      "height": 90,
+      "cssReferences": [
+        "src/app/styles/paper.css:127"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/paper/tips-night.webp",
+      "width": 156,
+      "height": 90,
+      "cssReferences": [
+        "src/app/styles/paper.css:43"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/atlas/foil-day.webp",
+      "width": 512,
+      "height": 512,
+      "cssReferences": [
+        "src/app/styles/atlas.css:232"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/atlas/foil-night.webp",
+      "width": 512,
+      "height": 512,
+      "cssReferences": [
+        "src/app/styles/atlas.css:29"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/sumi/scene/night/sky.webp",
+      "width": 2654,
+      "height": 1447,
+      "cssReferences": [
+        "src/app/styles/sumi.css:29"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-day/sky.webp",
+      "width": 2654,
+      "height": 1447,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:285"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-launch-day/sky.webp",
+      "width": 2654,
+      "height": 1447,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:1736"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-launch-night/sky.webp",
+      "width": 2654,
+      "height": 1447,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:1730"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-night/sky.webp",
+      "width": 2654,
+      "height": 1447,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:38"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-project-day/sky.webp",
+      "width": 2654,
+      "height": 1447,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:1725"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-project-night/sky.webp",
+      "width": 2654,
+      "height": 1447,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:1719"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/launch-night/sky.webp",
+      "width": 2654,
+      "height": 1447,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:1729"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/solarpunk/phone-day.webp",
+      "width": 927,
+      "height": 1697,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:923"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/solarpunk/phone-night.webp",
+      "width": 927,
+      "height": 1697,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:897"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/cyanotype/screen-grain-day.webp",
+      "width": 512,
+      "height": 512,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:377"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/screen-grain-night.webp",
+      "width": 512,
+      "height": 512,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:195"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/ligne/paper-day.webp",
+      "width": 768,
+      "height": 768,
+      "cssReferences": [
+        "src/app/styles/ligne.css:278"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/ligne/paper-night.webp",
+      "width": 768,
+      "height": 768,
+      "cssReferences": [
+        "src/app/styles/ligne.css:89"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/atlas/sky-quiet-day.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/atlas.css:239"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/atlas/sky-quiet-night.webp",
+      "width": 1920,
+      "height": 1080,
+      "cssReferences": [
+        "src/app/styles/atlas.css:37"
+      ],
+      "decision": "excluded",
+      "reason": "Already in art/hires.json; existing provider and grouping retained"
+    },
+    {
+      "src": "public/kit/solarpunk/ivy-tuft-day.webp",
+      "width": 644,
+      "height": 119,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:448"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/solarpunk/ivy-tuft-night.webp",
+      "width": 644,
+      "height": 119,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:405"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/paper/pin-push.webp",
+      "width": 97,
+      "height": 97,
+      "cssReferences": [
+        "src/app/styles/paper.css:55"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/sumi/pin-signal.webp",
+      "width": 88,
+      "height": 89,
+      "cssReferences": [
+        "src/app/styles/sumi.css:122",
+        "src/app/styles/sumi.css:124"
+      ],
+      "decision": "excluded",
+      "reason": "Seal glyphs, not a plain pin"
+    },
+    {
+      "src": "public/kit/sumi/pin-brass.webp",
+      "width": 88,
+      "height": 90,
+      "cssReferences": [
+        "src/app/styles/sumi.css:121"
+      ],
+      "decision": "excluded",
+      "reason": "Seal glyphs, not a plain pin"
+    },
+    {
+      "src": "public/kit/cyanotype/strip-phone-day.webp",
+      "width": 883,
+      "height": 184,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:399"
+      ],
+      "decision": "excluded",
+      "reason": "Text, glyphs or command symbols are part of the image"
+    },
+    {
+      "src": "public/kit/cyanotype/strip-phone-night.webp",
+      "width": 883,
+      "height": 184,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:210"
+      ],
+      "decision": "excluded",
+      "reason": "Text, glyphs or command symbols are part of the image"
+    },
+    {
+      "src": "public/kit/cyanotype/plate-phone-day.webp",
+      "width": 900,
+      "height": 2273,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:397"
+      ],
+      "decision": "excluded",
+      "reason": "Text, glyphs or command symbols are part of the image"
+    },
+    {
+      "src": "public/kit/cyanotype/plate-phone-ground-day.webp",
+      "width": 900,
+      "height": 2273,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:398"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/plate-phone-ground-night.webp",
+      "width": 900,
+      "height": 2273,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:209"
+      ],
+      "decision": "excluded",
+      "reason": "Material, grain, light/glare map or cleared paper/print ground used as a fill"
+    },
+    {
+      "src": "public/kit/cyanotype/plate-phone-night.webp",
+      "width": 900,
+      "height": 2273,
+      "cssReferences": [
+        "src/app/styles/cyanotype.css:206"
+      ],
+      "decision": "excluded",
+      "reason": "Text, glyphs or command symbols are part of the image"
+    },
+    {
+      "src": "public/kit/ligne/hero-day-phone.webp",
+      "width": 1672,
+      "height": 941,
+      "cssReferences": [
+        "src/app/styles/ligne.css:271"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/ligne/hero-night-phone.webp",
+      "width": 1672,
+      "height": 941,
+      "cssReferences": [
+        "src/app/styles/ligne.css:72"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/solarpunk/phone-desk-day.webp",
+      "width": 927,
+      "height": 134,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:444"
+      ],
+      "decision": "added"
+    },
+    {
+      "src": "public/kit/solarpunk/phone-desk-night.webp",
+      "width": 927,
+      "height": 134,
+      "cssReferences": [
+        "src/app/styles/solarpunk.css:401"
+      ],
+      "decision": "added"
+    }
+  ],
+  "outsideBackground": [
+    {
+      "src": "public/kit/solarpunk/sheet-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-day-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-night-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/sheet-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/sheet-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/sheet-day-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/sheet-night-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/tape-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/tape-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/caption-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/caption-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/sheet-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/sheet-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/tape-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/tape-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/sheet-day-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/sheet-night-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/sheet-strip-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/sheet-strip-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/ribbon-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/ribbon-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/sheet-alpenglow-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/sheet-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/label-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/label-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/sheet-strip-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/sheet-strip-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/sheet-day-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/sheet-night-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/chip-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/chip-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/tile-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/tile-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/mat-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/mat-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/sheet-alpenglow-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/sheet-night-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/frame-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/frame-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/mat-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/mat-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/mat-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/mat-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/mat-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/mat-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-strip-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-strip-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/chip-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/tile-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/tile-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/tile-signal-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/tile-signal-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/tape-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/tape-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/chip-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/tile-clay-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/tile-clay-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/hero-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/hero-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/sumi/chip-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/tape-sage.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/tape-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/tape-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/tape-sage-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/sumi/chip-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/tape-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/tape-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/sumi/tile-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/sumi/tile-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/chip-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/chip-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/tile-alpenglow-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/tile-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/band-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/band-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/ledge-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/ledge-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/sumi/mat-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/sumi/mat-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/mat-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/mat-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/band-left-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/band-left-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-b-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-b-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-c-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-b-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-c-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-d-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-d-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-b-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-b-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-c-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-b-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-c-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-d-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-d-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-d-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-d-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/tile-signal-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/page-frame-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/page-frame.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/sumi/tile-signal-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/sumi/tile-signal-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/tile-signal-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/tile-signal-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/tile-signal-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/atlas/tile-signal-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/tile-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/tile-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/solarpunk/tile-pill-green-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-w-b-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-w-c-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-w-c-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-w-b-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-w-c-flat.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-w-c-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/chip-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/garden/chip-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/tauri/crop-git-graph-phone-solarized.webp",
+      "kind": "img",
+      "reason": "UI screenshot displayed by <picture>/<source srcSet> and <img src>; not a static stylesheet url()",
+      "reference": "src/components/launch/appTheme.ts:53 computes phone paths; ShotGallery.tsx:76 uses source srcSet"
+    },
+    {
+      "src": "public/tauri/crop-git-graph-phone-tokyo-night.webp",
+      "kind": "img",
+      "reason": "UI screenshot displayed by <picture>/<source srcSet> and <img src>; not a static stylesheet url()",
+      "reference": "src/components/launch/appTheme.ts:53 computes phone paths; ShotGallery.tsx:76 uses source srcSet"
+    },
+    {
+      "src": "public/kit/paper/torn-green-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/paper/torn-green-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-strip-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-strip-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/cap-day.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/cap-night.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/tile-day-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/tile-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-night-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-normal.webp",
+      "kind": "border",
+      "reason": "Border-image/sliced sheet, tape, chip, frame or other file-pixel slice geometry; kind border is outside discrete background-picture candidates",
+      "reference": "CSS border-image URLs"
+    },
+    {
+      "src": "public/tauri/crop-content-search-phone-solarized.webp",
+      "kind": "img",
+      "reason": "UI screenshot displayed by <picture>/<source srcSet> and <img src>; not a static stylesheet url()",
+      "reference": "src/components/launch/appTheme.ts:53 computes phone paths; ShotGallery.tsx:76 uses source srcSet"
+    },
+    {
+      "src": "public/tauri/crop-content-search-phone-tokyo-night.webp",
+      "kind": "img",
+      "reason": "UI screenshot displayed by <picture>/<source srcSet> and <img src>; not a static stylesheet url()",
+      "reference": "src/components/launch/appTheme.ts:53 computes phone paths; ShotGallery.tsx:76 uses source srcSet"
+    },
+    {
+      "src": "public/screens/automatedspike.png",
+      "kind": "mask",
+      "reason": "Screen alpha-mask, not a background picture; URL set dynamically through inline style",
+      "reference": "src/components/rack/Screen.tsx:13 sets --art: url(...); src/app/kit.css:900 uses it as CSS mask"
+    }
+  ],
+  "renderingEvidence": {
+    "stretched light/glare": "src/app/kit.css:666 (plate-light, 100% dimensions, no-repeat); :942 (glass, 100% 100% no-repeat)",
+    "repeat materials": "src/app/styles/ligne.css:90-91 (384px repeat), :1289 (fibre); solarpunk.css:64-65 (512px repeat); sumi.css:58-59 (512px repeat); atlas.css:84-85 (640px repeat), :1164 (card mat, 640*u repeat), :686 (foil repeat); cyanotype.css:1102 (screen grain, 256px repeat)",
+    "cleared ground": "scripts/kits/cyanotype-ground.mjs:1-16 explains removal of all linework; cyanotype.css:1518 uses phone ground as 100% auto no-repeat fixed fill",
+    "ligne scene sky": "scripts/kits/ligne.mjs:284-288 applies paper grain to sky; image inspection shows a blank paper field, no picture",
+    "selection": "All 27 added assets have stylesheet url() references; none is consumed solely through runtime URL, img or mask. Full exact paths and declarations above."
+  },
+  "counts": {
+    "backgroundAssets": 110,
+    "added": 27,
+    "excludedBackgrounds": 83,
+    "excludedOtherKinds": 143
+  }
+}

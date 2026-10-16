@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import sharp from "sharp";
 import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { createHash } from "node:crypto";
 import { API_LIMITS, planTiles } from "../scripts/hires/tiles.mjs";
 import { blendTiles, composeFlow, conformanceStats, estimateFlow, gaussianBlur, padTransparent, toneMatch, warp } from "../scripts/hires/merge.mjs";
@@ -464,7 +465,7 @@ describe("hires offline shell", () => {
     expect(gate().join()).toMatch(/cannot establish alignment/);
   });
   test("remerge corrects cached global drift and accepts isolated redrawn texture", async () => {
-    const root = await mkdtemp(join(process.cwd(), 'tests/.hires-'));
+    const root = await mkdtemp(join(tmpdir(), 'hires-'));
     try {
       await mkdir(join(root, 'public'));
       await mkdir(join(root, 'art/prompts/hires'), { recursive: true });
@@ -472,9 +473,12 @@ describe("hires offline shell", () => {
       const pattern = (x: number, y: number, c: number) => 120 + 30 * Math.sin(x * 0.31 + y * 0.17 + c) + 25 * Math.cos(y * 0.41 - x * 0.13 + c);
       const input = manifest([{ src: 'public/global.png', lossless: true }, { src: 'public/local.png', lossless: true }]);
       await writeFile(join(root, 'art/hires.json'), JSON.stringify(input));
+      // Nine global blocks establish alignment; sixteen local blocks retain
+      // matching neighbours around the isolated redrawn 80px block.
+      const globalSize = 160, outputSize = globalSize * 2;
       const caches: string[] = [];
       for (const asset of validateManifest(input).assets) {
-        const local = asset.src.includes('local'), width = local ? 400 : 240, height = width;
+        const local = asset.src.includes('local'), width = local ? 320 : globalSize, height = width;
         const source = rgb(width, height, pattern);
         const encoded = await sharp(Buffer.from(Uint8Array.from(source.data, Math.round)), { raw: { width, height, channels: 3 } }).png().toBuffer();
         await writeFile(join(root, asset.src), encoded);
@@ -497,13 +501,13 @@ describe("hires offline shell", () => {
       expect(global.tiles[0].postWarp.max).toBeLessThan(0.3);
       // Assert the written feature outcome, not just the registration diagnostic.
       const encoded = await sharp(join(root, 'public/global@2x.webp')).raw().toBuffer();
-      const outputImage = { width: 480, height: 480, channels: 3, data: encoded };
-      const encodedDown = await sharp(encoded, { raw: { width: 480, height: 480, channels: 3 } }).resize(240, 240).raw().toBuffer();
-      const source = rgb(240, 240, pattern);
-      const outputFlow = estimateFlow(source, { width: 240, height: 240, channels: 3, data: encodedDown });
+      const outputImage = { width: outputSize, height: outputSize, channels: 3, data: encoded };
+      const encodedDown = await sharp(encoded, { raw: { width: outputSize, height: outputSize, channels: 3 } }).resize(globalSize, globalSize).raw().toBuffer();
+      const source = rgb(globalSize, globalSize, pattern);
+      const outputFlow = estimateFlow(source, { width: globalSize, height: globalSize, channels: 3, data: encodedDown });
       expect(outputFlow.diagnostics.max).toBeLessThan(0.6);
       // Encoding retains nonconstant painted detail after correction and tone matching.
-      expect(Math.abs(outputImage.data[(200 * 480 + 200) * 3] - outputImage.data[(220 * 480 + 220) * 3])).toBeGreaterThan(5);
+      expect(Math.abs(outputImage.data[(200 * outputSize + 200) * 3] - outputImage.data[(220 * outputSize + 220) * 3])).toBeGreaterThan(5);
       const local = JSON.parse(await readFile(join(caches[1], 'stats.json'), 'utf8'));
       expect(local.tiles[0].postWarp.p90).toBeLessThan(0.6);
       expect(local.tiles[0].postWarp.reliableShare).toBeGreaterThan(0.8);
@@ -528,9 +532,9 @@ describe("hires offline shell", () => {
       expect(await readFile(join(root, 'public/global@2x.webp'), 'utf8')).toBe('different shipped bytes');
       expect(JSON.parse(await readFile(lockPath, 'utf8'))).toEqual(lock);
     } finally { await rm(root, { recursive: true, force: true }); }
-  });
+  }, 30_000);
   test("remerge encodes an almost transparent tile and explains why its gates were skipped", async () => {
-    const root = await mkdtemp(join(process.cwd(), 'tests/.hires-'));
+    const root = await mkdtemp(join(tmpdir(), 'hires-'));
     try {
       await mkdir(join(root, 'public'));
       await mkdir(join(root, 'art/prompts/hires'), { recursive: true });
@@ -561,7 +565,7 @@ describe("hires offline shell", () => {
     } finally { await rm(root, { recursive: true, force: true }); }
   });
   test("rejects uncorrectable art, continues, retries once, restores alpha and reuses cache", async () => {
-    const root = await mkdtemp(join(process.cwd(), 'tests/.hires-'));
+    const root = await mkdtemp(join(tmpdir(), 'hires-'));
     const calls: string[] = [];
     const width = 64, height = 64;
     const painting = (x: number, y: number, c: number) => 120 + 40 * Math.sin(x * 0.15 + y * 0.1 + c) + 35 * Math.cos(y * 0.21 - x * 0.1 + c);

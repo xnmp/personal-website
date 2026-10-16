@@ -33,6 +33,13 @@ function urls(value) {
 const rawValue = (decl) => decl.raws.value?.raw ?? decl.value;
 const hasQuery = (decl) => urls(rawValue(decl)).found.some((n) => n.value.startsWith('/kit/') && n.value.includes('?'));
 const twinDecl = (node) => node.nodes.find((n) => n.type === 'decl');
+// PostCSS represents comments after a semicolon as siblings. Keep comments
+// starting on the declaration's line attached to it when inserting its twin.
+function trailingCommentAnchor(decl) {
+  let anchor = decl;
+  while (anchor.next()?.type === 'comment' && /^[\t ]*$/.test(anchor.next().raws.before ?? '')) anchor = anchor.next();
+  return anchor;
+}
 
 // These small nested blocks are reserved for twins. Recognising @2x even
 // outside today's manifest lets a removed asset leave no override behind.
@@ -128,6 +135,7 @@ export function transformCss(text, available) {
         }
         continue;
       }
+      const anchor = trailingCommentAnchor(decl);
       const expected = twinFor(decl, value, newline);
       if (!twin) report(decl, 'missing', `${decl.prop}: missing twin`);
       else {
@@ -136,7 +144,7 @@ export function transformCss(text, available) {
         if (twin.params !== HIRES_MEDIA) report(twin, 'stale', `${decl.prop}: media must be ${HIRES_MEDIA}`);
         if (rawValue(twinDecl(twin)) !== rawValue(expected.first) || !!twinDecl(twin).important !== !!decl.important)
           report(twin, 'stale', `${decl.prop}: twin value differs from the 1x replacement`);
-        if (twin.toString() !== expected.toString() || twin.raws.before !== expected.raws.before || decl.next() !== twin)
+        if (twin.toString() !== expected.toString() || twin.raws.before !== expected.raws.before || anchor.next() !== twin)
           report(twin, 'stale', `${decl.prop}: twin must be one line immediately after its declaration, with matching indentation`);
         remove(twin);
       }
@@ -149,7 +157,7 @@ export function transformCss(text, available) {
         decl.value = decl.value.trimEnd();
         if (decl.raws.value) decl.raws.value = { raw: raw.trimEnd(), value: decl.value };
       }
-      container.insertAfter(decl, expected);
+      container.insertAfter(anchor, expected);
     }
     for (const twin of twins) {
       if (paired.has(twin)) continue;

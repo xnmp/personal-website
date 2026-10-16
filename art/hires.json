@@ -5,7 +5,12 @@
     "quality": 75,
     "model": "gpt-image-2.5-sunburst",
     "apiQuality": "high",
-    "sigma": 4
+    "sigma": 4,
+    "external": {
+      "sizes": [
+        "1254x1254"
+      ]
+    }
   },
   "assets": [
     {
@@ -233,6 +238,124 @@
     {
       "src": "public/kit/paper/scene/phone-night/sky.webp",
       "group": "paper/phone-night"
+    },
+    {
+      "src": "public/kit/atlas/dial-bl-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/atlas/dial-bl.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/atlas/dial-br-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/atlas/dial-br.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/foreground-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/foreground-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-hiker-day.webp",
+      "provider": "external",
+      "group": "paper/launch-stage-day"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-hiker-night.webp",
+      "provider": "external",
+      "group": "paper/launch-stage-night"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-pines-left-day.webp",
+      "provider": "external",
+      "group": "paper/launch-stage-day"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-pines-left-night.webp",
+      "provider": "external",
+      "group": "paper/launch-stage-night"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-pines-right-day.webp",
+      "provider": "external",
+      "group": "paper/launch-stage-day"
+    },
+    {
+      "src": "public/kit/paper/launch-stage-pines-right-night.webp",
+      "provider": "external",
+      "group": "paper/launch-stage-night"
+    },
+    {
+      "src": "public/kit/garden/mug-front-day.webp",
+      "provider": "external",
+      "group": "garden/foreground-day"
+    },
+    {
+      "src": "public/kit/garden/mug-front-night.webp",
+      "provider": "external",
+      "group": "garden/foreground-night"
+    },
+    {
+      "src": "public/kit/garden/wall-day.webp",
+      "provider": "external",
+      "group": "garden/foreground-day"
+    },
+    {
+      "src": "public/kit/garden/wall-night.webp",
+      "provider": "external",
+      "group": "garden/foreground-night"
+    },
+    {
+      "src": "public/kit/ligne/hero-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/ligne/hero-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/tips-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/tips-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/solarpunk/ivy-tuft-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/solarpunk/ivy-tuft-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/pin-push.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/ligne/hero-day-phone.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/ligne/hero-night-phone.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/solarpunk/phone-desk-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/solarpunk/phone-desk-night.webp",
+      "provider": "external"
     }
   ]
 }

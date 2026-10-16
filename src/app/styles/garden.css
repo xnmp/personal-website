@@ -188,7 +188,9 @@
   --k-label: url(/kit/garden/label-day.webp);
   --label-ink: #1c1a12;
   --k-wall: url(/kit/garden/wall-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-wall: url(/kit/garden/wall-day@2x.webp); }
   --k-mug-front: url(/kit/garden/mug-front-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-mug-front: url(/kit/garden/mug-front-day@2x.webp); }
   --wall-top: 193;
   --wall-h: 670;
 }
