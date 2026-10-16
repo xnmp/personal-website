@@ -1,12 +1,13 @@
 import postcss from 'postcss';
+import sharp from 'sharp';
 // Next ships this parser; reuse the installed copy so this tool also works offline.
 import valueParser from 'next/dist/compiled/postcss-value-parser/index.js';
 import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
 import { extname, resolve, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { validateManifest } from './manifest.mjs';
-import { lockMatches, outputPath, readLock } from './lock.mjs';
+import { processingRecipe, validateManifest } from './manifest.mjs';
+import { familyMembershipMatches, lockMatches, outputPath, readLock } from './lock.mjs';
 
 export const HIRES_MEDIA = '(min-resolution: 1.5dppx), (min-width: 2200px)';
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
@@ -57,17 +58,81 @@ function isTwin(node) {
     found.some((n) => n.value.startsWith('/kit/'));
 }
 
-function replacement(decl, available) {
+// Resolve all possible assignments, including aliases supplied by other theme
+// files. Over-approximating the cascade is safe: mixed-use assets need density too.
+export function borderSources(texts) {
+  const declarations = texts.flatMap((text) => {
+    const found = [];
+    postcss.parse(text).walkDecls((decl) => { if (!isTwin(decl.parent)) found.push(decl); });
+    return found;
+  });
+  const sources = new Set();
+  const constraints = (decl) => {
+    let contexts = [{}];
+    for (let node = decl.parent; node; node = node.parent) {
+      if (!node.selector) continue;
+      const alternatives = postcss.list.comma(node.selector).map((selector) => {
+        const scope = {};
+        // Functional pseudos can contain alternatives, negations or descendant
+        // attributes. Only attributes outside those functions constrain scope.
+        const outer = valueParser.stringify(valueParser(selector).nodes.filter((n) => n.type !== 'function'));
+        for (const match of outer.matchAll(/\[(data-[\w-]+)=["']?([\w-]+)["']?\]/g)) scope[match[1]] = match[2];
+        return scope;
+      });
+      contexts = contexts.flatMap((context) => alternatives.map((scope) => ({ ...context, ...scope })));
+    }
+    return contexts;
+  };
+  const assignments = declarations.filter((d) => d.prop.startsWith('--'));
+  const visited = new Set();
+  const collect = (value, context) => {
+    for (const node of urls(value).found) sources.add(withoutFragment(node.value));
+    valueParser(value).walk((node) => {
+      if (node.type !== 'function' || node.value.toLowerCase() !== 'var') return;
+      const name = node.nodes.find((n) => n.type === 'word')?.value;
+      for (const decl of assignments.filter((d) => d.prop === name)) {
+        for (const scope of constraints(decl)) {
+          if (Object.keys(scope).some((key) => context[key] && context[key] !== scope[key])) continue;
+          const merged = { ...context, ...scope };
+          const key = `${declarations.indexOf(decl)}:${JSON.stringify(Object.entries(merged).sort())}`;
+          if (visited.has(key)) continue;
+          visited.add(key);
+          collect(rawValue(decl), merged);
+        }
+      }
+    });
+  };
+  declarations.filter((d) => /^(?:-webkit-)?border-image(?:-source)?$/i.test(d.prop)).forEach((d) => constraints(d).forEach((context) => collect(rawValue(d), context)));
+  return sources;
+}
+
+function replacement(decl, available, borders) {
   const { parsed, found } = urls(rawValue(decl));
+  const borderNodes = new Set();
   let changed = false;
   for (const node of found) {
     const source = withoutFragment(node.value);
     if (source.startsWith('/kit/') && !node.value.includes('?') && available.has(hiresUrl(source))) {
       node.value = hiresUrl(source) + node.value.slice(source.length);
+      if (borders.has(source)) borderNodes.add(node);
       changed = true;
     }
   }
   if (!changed) return null;
+  // Wrap the URL function, never its argument. Collapse an authored image-set
+  // to the single density-correct candidate when it feeds a border.
+  const wrap = (nodes) => nodes.flatMap((node) => {
+    if (node.type !== 'function') return [node];
+    if (/^(?:-webkit-)?image-set$/i.test(node.value)) {
+      const candidate = node.nodes.find((n) => n.type === 'function' && n.value.toLowerCase() === 'url' && n.nodes.some((n) => borderNodes.has(n)));
+      if (candidate) return valueParser(`image-set(${valueParser.stringify(candidate)} 2x)`).nodes;
+    }
+    if (node.value.toLowerCase() === 'url' && node.nodes.some((n) => borderNodes.has(n)))
+      return valueParser(`image-set(${valueParser.stringify(node)} 2x)`).nodes;
+    node.nodes = wrap(node.nodes);
+    return [node];
+  });
+  parsed.nodes = wrap(parsed.nodes);
   // A twin is one physical line; folding whitespace leaves its CSS tokens intact.
   const fold = (s) => s.replace(/\r?\n[\t ]*/g, ' ');
   parsed.walk((node) => {
@@ -77,6 +142,20 @@ function replacement(decl, available) {
     if (node.after) node.after = fold(node.after);
   });
   return parsed.toString().trimEnd();
+}
+
+function invalidBorderDensity(value, borders) {
+  const visit = (nodes, sets = []) => nodes.some((node) => {
+    if (node.type !== 'function') return false;
+    if (node.value.toLowerCase() === 'url') {
+      const url = node.nodes.find((n) => ['word', 'string'].includes(n.type))?.value;
+      if (!url || !isHires(url) || !borders.has(withoutFragment(url))) return false;
+      const tokens = sets[0]?.nodes.filter((n) => !['space', 'comment'].includes(n.type));
+      return sets.length !== 1 || tokens.length !== 2 || tokens[0] !== node || tokens[1].value !== '2x';
+    }
+    return visit(node.nodes, /^(?:-webkit-)?image-set$/i.test(node.value) ? [...sets, node] : sets);
+  });
+  return visit(valueParser(value).nodes);
 }
 
 function twinFor(decl, value, newline) {
@@ -92,7 +171,7 @@ function twinFor(decl, value, newline) {
 
 /** Pure reconciliation: available contains manifest-filtered /kit/...@2x.webp URLs.
  * Issues describe the input; css is the repaired text. Queries are never edited. */
-export function transformCss(text, available) {
+export function transformCss(text, available, borders = borderSources([text])) {
   const bom = text.startsWith('\uFEFF') ? '\uFEFF' : '';
   const input = text.slice(bom.length);
   const root = postcss.parse(input);
@@ -117,6 +196,12 @@ export function transformCss(text, available) {
     };
     for (const decl of nodes) {
       if (decl.type !== 'decl') continue;
+      if (invalidBorderDensity(rawValue(decl), borders)) report(decl, 'border', `${decl.prop}: @2x border sources require one single-candidate image-set with density 2x`);
+      if (urls(rawValue(decl)).found.some((n) => isHires(n.value) && borders.has(withoutFragment(n.value)))) {
+        let node = decl.parent;
+        while (node && !(node.type === 'atrule' && node.name === 'media' && node.params === HIRES_MEDIA)) node = node.parent;
+        if (!node) report(decl, 'border', `${decl.prop}: @2x border source must be under @media ${HIRES_MEDIA}`);
+      }
       let next = decl.next();
       while (next?.type === 'comment') next = next.next();
       const twin = twins.includes(next) && twinDecl(next).prop === decl.prop ? next : null;
@@ -125,7 +210,7 @@ export function transformCss(text, available) {
         report(decl, 'query', `${decl.prop}: query-string kit URLs are out of scope; left untouched`);
         continue;
       }
-      const value = replacement(decl, available);
+      const value = replacement(decl, available, borders);
       if (!value) {
         if (twin) {
           const missing = unavailable(twinDecl(twin), available);
@@ -189,6 +274,10 @@ export async function checkRepo(root = ROOT) {
   const lock = await readLock(root);
   const available = new Set();
   const issues = [];
+  const mismatchedFamilies = new Set(manifest.assets.filter((asset) => asset.family && lock.assets[outputPath(asset)] &&
+    !familyMembershipMatches(lock.assets[outputPath(asset)], asset)).map((asset) => asset.family));
+  for (const family of [...mismatchedFamilies].sort()) issues.push({ kind: 'family',
+    message: `${family}: manifest family membership differs from locked membership; using 1x for every member; regenerate the complete family` });
   const states = await Promise.all(manifest.assets.map(async (asset) => {
     const output = outputPath({ src: asset.src, factor: 2 });
     const url = output.slice('public'.length);
@@ -198,25 +287,43 @@ export async function checkRepo(root = ROOT) {
     // A missing sibling is normal; an existing one must prove its provenance,
     // even when its group is incomplete or no CSS declaration uses it yet.
     let valid = false;
-    try { valid = asset.factor === 2 && lockMatches(lock.assets[output], await readFile(resolve(root, asset.src)), asset); }
-    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    try {
+      const bytes = await readFile(resolve(root, asset.src));
+      let proof = {};
+      if (processingRecipe(asset)) {
+        const outputBytes = await readFile(resolve(root, output));
+        const sourceInfo = await sharp(bytes).metadata(), outputInfo = await sharp(outputBytes).metadata();
+        proof = { outputBytes, width: outputInfo.width, height: outputInfo.height, sourceWidth: sourceInfo.width, sourceHeight: sourceInfo.height,
+          ...(asset.family && asset.reference !== asset.src ? { referenceBytes: await readFile(resolve(root, asset.reference)),
+            referenceOutputBytes: await readFile(resolve(root, outputPath({ src: asset.reference, factor: 2 }))) } : {}) };
+      }
+      valid = !mismatchedFamilies.has(asset.family) && asset.factor === 2 && lockMatches(lock.assets[output], bytes, asset, proof);
+    } catch { valid = false; }
     return { asset, url, valid, issue: valid ? null : {
       kind: 'provenance', message: `${output}: stale or unlocked @2x; run bun run hires --only ${asset.src}`,
     } };
   }));
-  const incomplete = new Set(states.filter((s) => s.asset.group && !s.valid).map((s) => s.asset.group));
+  // Group and family constraints compose: propagate a missing member through
+  // every overlapping set before making any sibling available.
+  const memberships = (asset) => [asset.group && `group:${asset.group}`, asset.family && `family:${asset.family}`].filter(Boolean);
+  const incomplete = new Set(states.filter((s) => !s.valid).flatMap((s) => memberships(s.asset)));
+  let size;
+  do {
+    size = incomplete.size;
+    for (const { asset } of states) if (memberships(asset).some((m) => incomplete.has(m))) memberships(asset).forEach((m) => incomplete.add(m));
+  } while (size !== incomplete.size);
   for (const { asset, url, valid, issue } of states) {
     if (issue) issues.push(issue);
-    if (valid && !incomplete.has(asset.group)) available.add(url);
+    if (valid && !memberships(asset).some((m) => incomplete.has(m))) available.add(url);
   }
-  for (const group of [...incomplete].sort()) {
-    const missing = states.filter((s) => s.asset.group === group && !s.valid).map((s) => s.asset.src);
-    issues.push({ kind: 'group', severity: 'info', message: `${group}: incomplete group; using 1x for every member (unavailable: ${missing.join(', ')})` });
+  for (const membership of [...incomplete].sort()) {
+    const [kind, name] = membership.split(':');
+    const missing = states.filter((s) => memberships(s.asset).includes(membership) && !s.valid).map((s) => s.asset.src);
+    issues.push({ kind: 'group', severity: 'info', message: `${name}: incomplete ${kind}; using 1x for every member (unavailable: ${missing.join(', ')})` });
   }
-  const results = await Promise.all((await cssFiles(resolve(root, 'src/app'))).map(async (path) => {
-    const original = await readFile(path, 'utf8');
-    return { path: relative(root, path), original, ...transformCss(original, available) };
-  }));
+  const files = await Promise.all((await cssFiles(resolve(root, 'src/app'))).map(async (path) => ({ path: relative(root, path), original: await readFile(path, 'utf8') })));
+  const borders = borderSources(files.map((f) => f.original));
+  const results = files.map((f) => ({ ...f, ...transformCss(f.original, available, borders) }));
   return [{ path: 'art/hires.lock.json', original: '', css: '', issues }, ...results];
 }
 
@@ -240,7 +347,7 @@ export async function main(args = process.argv.slice(2), { root = ROOT, log = co
     log(`${path}: updated hires twins`);
   }
   // Rewriting twins cannot repair query URLs or provenance; groups stay info.
-  const unresolved = results.map((r) => ({ ...r, issues: r.issues.filter((i) => ['query', 'provenance', 'group'].includes(i.kind)) }));
+  const unresolved = results.map((r) => ({ ...r, issues: r.issues.filter((i) => ['query', 'provenance', 'family', 'group', 'border'].includes(i.kind)) }));
   diagnostics(unresolved, true).forEach((message) => log(message));
   return diagnostics(unresolved).length ? 1 : 0;
 }

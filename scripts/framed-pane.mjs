@@ -500,7 +500,9 @@ export async function glaze(file, out, pad, mask, light, { keep, shadeColor, sha
  * (no edge of the layer shows on the glass). With `streak`, glass also
  * carries a soft diagonal reflection across it, `alpha` strong.
  */
-export async function sheen(size, { color, alpha, streak = 0 }, out) {
+export function sheenImage(size, { color, alpha, streak = 0 }) {
+  if (!Number.isSafeInteger(size) || size < 2 || size > 8192 || typeof color !== 'string' || !/^[a-f0-9]{6}$/i.test(color) ||
+      ![alpha, streak].every((v) => Number.isFinite(v) && v >= 0 && v <= 1)) throw new Error('Invalid sheen geometry or settings');
   const [C] = [hex(color)];
   const buf = Buffer.alloc(size * size * 4);
   const fadeIn = (u) => smooth(0, 0.14, u) * smooth(0, 0.14, 1 - u);
@@ -516,5 +518,10 @@ export async function sheen(size, { color, alpha, streak = 0 }, out) {
       buf[p + 2] = C[2];
       buf[p + 3] = Math.round(a * 255);
     }
-  await sharp(buf, { raw: { width: size, height: size, channels: 4 } }).webp(webpOptions(90)).toFile(out);
+  return { width: size, height: size, channels: 4, data: buf };
+}
+
+export async function sheen(size, settings, out) {
+  const { data, width, height, channels } = sheenImage(size, settings);
+  await sharp(data, { raw: { width, height, channels } }).webp(webpOptions(90)).toFile(out);
 }

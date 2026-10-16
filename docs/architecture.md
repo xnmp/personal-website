@@ -869,3 +869,72 @@ selected shipped files through the API or an external generator and conforms the
   has a lock-valid @2x; incomplete groups stay at 1x and `--check` reports
   them as info. Manually held files are unnecessary; existing files in
   `art/raw/hires/held/` can stay there.
+- **Borders**: CSS discovers `border-image` and `border-image-source` inputs,
+  following custom-property aliases across stylesheets and theme/finish scopes.
+  Border assets (including assets also used as backgrounds) get
+  `image-set(url(...@2x.webp) 2x)` inside the same twin query. Numeric slices,
+  widths and outsets stay authored. Ordinary background twins keep raw URLs.
+  Reconciliation rejects raw density substitutions, nested image-sets and wrong
+  media queries. Existing background twins are unchanged.
+- **Registered states**: each interaction-state entry has `family` (an id like
+  `paper/sheet-night`) and `reference` (the normal state's `public/...` path).
+  The canonical normal is also a member and references itself. Families require
+  exact 2x, enforce lossless WebP and compose with existing groups: every member
+  must be valid before CSS delivers any member. Every member's lock recipe records
+  the sorted member paths and canonical reference; removing or adding a manifest
+  member invalidates the entire family and fails CSS `--check`, even after twin
+  reconciliation. `--only` includes the complete
+  matching family and processes canonical normals first.
+  `scripts/hires/states.mjs` compares decoded 1x premultiplied RGBA exactly
+  (invisible RGB does not count), expands that difference mask by nearest-neighbour
+  2x, and copies canonical RGBA everywhere outside it **after** tone and alpha
+  processing. Within the mask it blends the state's own conformed upscale with
+  a two-output-pixel inward Manhattan feather in premultiplied space, then
+  unpremultiplies and rounds back to RGBA. Even one-source-pixel changes
+  retain half-strength support; no feather extends outside the mask.
+  Transparent RGB is canonicalised to zero before encoding. Decoded shipped
+  outputs must have zero differing premultiplied RGBA pixels outside the mask
+  (alpha-zero pixels compare equal regardless of encoder RGB rewrites);
+  total suppression of an intended change also rejects, without `--accept`
+  overriding either registration invariant. Changed-region premultiplied MAE is
+  gated by `--max-mae` in addition to normal conformance gates.
+  Optional `stateCrop: true` requests a difference bounding box plus 16 source
+  pixels of margin when that rectangle covers at most 25% of the sheet. The
+  request cache includes the normal-source hash and crop geometry. Model tiles
+  remain reusable; derived PNGs are keyed separately by the dependency digest
+  and the conformed own-state pixels, so refreshed tiles refresh derivations too.
+- **Periodic materials**: `periodic: true` preserves modular source context
+  through request padding, alignment, resampling, tone matching and restored
+  alpha. It starts with a 32-source-pixel halo (larger when needed by sigma), uses
+  a wrapping Gaussian, and crops the exact central 2x rectangle only after
+  conforming. External canvas padding repeats the original source period,
+  including beyond the halo. Provider fit and tile counts include the halo.
+  The decoded WebP is compared with a pixel-centred, premultiplied bilinear
+  periodic 1x baseline. For both signed wrap-edge jumps and the differences
+  between that jump and each adjacent first derivative, the error must have
+  RMS <=1 and p99 <=2 code values (0..255). Synthetic calibration covers
+  nonzero edge slopes, periodic smooth noise, one-code-value perturbations
+  (pass), and 12-code-value jumps/derivative kinks on either side (fail),
+  including after lossless encoding. These are conservative synthetic limits;
+  no newly generated production materials have been reviewed against them yet.
+- **Deterministic maps**: `provider: "resample"` bypasses all model requests and
+  produces exact 2x by deterministic premultiplied bilinear interpolation.
+  The six analytic `sheet-{day,night}-light` maps instead supply
+  `generator: { "type": "sheen", "color": "ffe6a8", "alpha": 0.3, "streak": 0.12 }`
+  (settings vary per finish). They run the same pure `sheenImage` field used by
+  `scripts/framed-pane.mjs` / `scripts/build-kit.mjs`, directly at 512px.
+  Locks name `premultiplied-bilinear-v1` or `framed-pane/sheen-v1` respectively.
+- **New provenance**: the manifest and lock remain version 1. New external
+  locks name the real tool, `codex-image_gen`, in `model`; historical external
+  entries carrying the API model still validate. An overridden conformance or
+  seam gate records `accepted: true`; merely supplying `--accept` on a passing
+  asset does not. New processing recipes add `recipeDigest`, `outputSha256`,
+  `width` and `height`; derived states also add `derivationDigest`. `lockMatches`
+  recomputes recipe/dependency digests from state bytes, normal bytes, canonical
+  shipped bytes and the versioned mask/feather/tone/alpha recipe, and validates
+  shipped hashes and exact decoded dimensions before CSS makes them available.
+  Unextended API/external entries keep their original cache keys and lock
+  validation contract; new recipe fields enter keys only for opted-in assets.
+  `bun run hires --dry` is read-only and ends with asset counts per provider,
+  estimated uncached API requests (before the existing single retry), and pending
+  external tiles. The current inventory adds 357 assets, excluding glyph art.

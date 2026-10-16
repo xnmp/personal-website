@@ -62,7 +62,7 @@ export function padTransparent(rgba) {
   return filled;
 }
 
-export function gaussianBlur(img, sigma) {
+export function gaussianBlur(img, sigma, periodic = false) {
   image(img);
   if (!Number.isFinite(sigma) || sigma < 0) throw new Error('Invalid blur sigma');
   if (!sigma) return { ...img, data: new Float32Array(img.data) };
@@ -76,7 +76,7 @@ export function gaussianBlur(img, sigma) {
     const extent = horizontal ? width : height, stride = horizontal ? channels : width * channels;
     const taps = weights.length, offsets = new Int32Array(extent * taps);
     for (let p = 0; p < extent; p++) for (let k = 0; k < taps; k++)
-      offsets[p * taps + k] = (clamp(p + k - radius, 0, extent - 1) - p) * stride;
+      offsets[p * taps + k] = ((periodic ? ((p + k - radius) % extent + extent) % extent : clamp(p + k - radius, 0, extent - 1)) - p) * stride;
     for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) for (let c = 0; c < channels; c++) {
       const p = (y * width + x) * channels + c, offset = (horizontal ? x : y) * taps;
       let sum = 0;
@@ -88,9 +88,9 @@ export function gaussianBlur(img, sigma) {
   return { width, height, channels, data: pass(pass(img.data, true), false) };
 }
 
-export function toneMatch(up, base, sigma) {
+export function toneMatch(up, base, sigma, periodic = false) {
   same(up, base);
-  const a = gaussianBlur(up, sigma), b = gaussianBlur(base, sigma);
+  const a = gaussianBlur(up, sigma, periodic), b = gaussianBlur(base, sigma, periodic);
   const data = new Float32Array(up.data.length);
   for (let i = 0; i < data.length; i++) data[i] = clamp(up.data[i] + b.data[i] - a.data[i], 0, 255);
   return { ...up, data };
@@ -476,4 +476,15 @@ export function conformanceStats(src, upDownscaled, weights) {
   for (let y = Math.max(-3, dy - 0.5); y <= Math.min(3, dy + 0.5); y += 0.25)
     for (let x = Math.max(-3, dx - 0.5); x <= Math.min(3, dx + 0.5); x += 0.25) consider(x, y);
   return { ...stats, ...registration, bestShift, drift: Math.hypot(bestShift.dx, bestShift.dy), registrationReliable };
+}
+
+export { image as validateImage };
+
+export function placeRegion(canvas, region, patch) {
+  image(canvas); image(patch);
+  if (!region || ![region.x, region.y].every((n) => Number.isSafeInteger(n) && n >= 0) || patch.width + region.x > canvas.width || patch.height + region.y > canvas.height || patch.channels !== canvas.channels) throw new Error('Invalid patch region');
+  const data = new Float32Array(canvas.data);
+  for (let y = 0; y < patch.height; y++) for (let x = 0; x < patch.width; x++) for (let c = 0; c < patch.channels; c++)
+    data[((region.y + y) * canvas.width + region.x + x) * patch.channels + c] = patch.data[(y * patch.width + x) * patch.channels + c];
+  return { ...canvas, data };
 }

@@ -616,6 +616,7 @@ describe("hires offline shell", () => {
       expect(calls).toHaveLength(4);
       expect(await main(['--only', 'bad', '--accept'], { root, invoke })).toBe(0);
       expect(calls).toHaveLength(4);
+      expect(JSON.parse(await readFile(join(root, 'art/hires.lock.json'), 'utf8')).assets['public/bad@2x.webp'].accepted).toBe(true);
       expect((await readdir(join(root, 'public')))).toContain('bad@2x.webp');
       const goodKey = (await readdir(join(root, 'art/raw/hires/good')))[0];
       const cache = join(root, 'art/raw/hires/good', goodKey);

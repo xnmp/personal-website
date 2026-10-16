@@ -356,6 +356,2465 @@
     {
       "src": "public/kit/solarpunk/phone-desk-night.webp",
       "provider": "external"
+    },
+    {
+      "src": "public/kit/atlas/card-mat-day.webp",
+      "provider": "api",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/atlas/card-mat-night.webp",
+      "provider": "api",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/atlas/chip-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/atlas/chip-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/atlas/enamel-day.webp",
+      "provider": "api",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/atlas/enamel-night.webp",
+      "provider": "api",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/atlas/foil-day.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/atlas/foil-night.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/atlas/mat-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/atlas/mat-night.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/atlas/page-frame-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/atlas/page-frame.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/atlas/sheet-day-flat.webp",
+      "provider": "api",
+      "family": "atlas/sheet-day",
+      "reference": "public/kit/atlas/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-day-focus.webp",
+      "provider": "api",
+      "family": "atlas/sheet-day",
+      "reference": "public/kit/atlas/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-day-hover.webp",
+      "provider": "api",
+      "family": "atlas/sheet-day",
+      "reference": "public/kit/atlas/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-day-light.webp",
+      "provider": "resample",
+      "lossless": true,
+      "generator": {
+        "type": "sheen",
+        "color": "fff3d6",
+        "alpha": 0.12
+      }
+    },
+    {
+      "src": "public/kit/atlas/sheet-day-normal.webp",
+      "provider": "api",
+      "family": "atlas/sheet-day",
+      "reference": "public/kit/atlas/sheet-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-day-pressed.webp",
+      "provider": "api",
+      "family": "atlas/sheet-day",
+      "reference": "public/kit/atlas/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-night-flat.webp",
+      "provider": "api",
+      "family": "atlas/sheet-night",
+      "reference": "public/kit/atlas/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-night-focus.webp",
+      "provider": "api",
+      "family": "atlas/sheet-night",
+      "reference": "public/kit/atlas/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-night-hover.webp",
+      "provider": "api",
+      "family": "atlas/sheet-night",
+      "reference": "public/kit/atlas/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-night-light.webp",
+      "provider": "resample",
+      "lossless": true,
+      "generator": {
+        "type": "sheen",
+        "color": "ffd9a0",
+        "alpha": 0.06
+      }
+    },
+    {
+      "src": "public/kit/atlas/sheet-night-normal.webp",
+      "provider": "api",
+      "family": "atlas/sheet-night",
+      "reference": "public/kit/atlas/sheet-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-night-pressed.webp",
+      "provider": "api",
+      "family": "atlas/sheet-night",
+      "reference": "public/kit/atlas/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-strip-day-normal.webp",
+      "provider": "api",
+      "family": "atlas/sheet-strip-day",
+      "reference": "public/kit/atlas/sheet-strip-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/atlas/sheet-strip-night-normal.webp",
+      "provider": "api",
+      "family": "atlas/sheet-strip-night",
+      "reference": "public/kit/atlas/sheet-strip-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/atlas/tape-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/atlas/tape-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/atlas/tile-day-focus.webp",
+      "provider": "external",
+      "family": "atlas/tile-day",
+      "reference": "public/kit/atlas/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-day-hover.webp",
+      "provider": "external",
+      "family": "atlas/tile-day",
+      "reference": "public/kit/atlas/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-day-normal.webp",
+      "provider": "external",
+      "family": "atlas/tile-day",
+      "reference": "public/kit/atlas/tile-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/atlas/tile-day-pressed.webp",
+      "provider": "external",
+      "family": "atlas/tile-day",
+      "reference": "public/kit/atlas/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-night-focus.webp",
+      "provider": "external",
+      "family": "atlas/tile-night",
+      "reference": "public/kit/atlas/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-night-hover.webp",
+      "provider": "external",
+      "family": "atlas/tile-night",
+      "reference": "public/kit/atlas/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-night-normal.webp",
+      "provider": "external",
+      "family": "atlas/tile-night",
+      "reference": "public/kit/atlas/tile-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/atlas/tile-night-pressed.webp",
+      "provider": "external",
+      "family": "atlas/tile-night",
+      "reference": "public/kit/atlas/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-signal-focus.webp",
+      "provider": "external",
+      "family": "atlas/tile-signal",
+      "reference": "public/kit/atlas/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-signal-hover.webp",
+      "provider": "external",
+      "family": "atlas/tile-signal",
+      "reference": "public/kit/atlas/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-signal-night-focus.webp",
+      "provider": "external",
+      "family": "atlas/tile-signal-night",
+      "reference": "public/kit/atlas/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-signal-night-hover.webp",
+      "provider": "external",
+      "family": "atlas/tile-signal-night",
+      "reference": "public/kit/atlas/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-signal-night-normal.webp",
+      "provider": "external",
+      "family": "atlas/tile-signal-night",
+      "reference": "public/kit/atlas/tile-signal-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/atlas/tile-signal-night-pressed.webp",
+      "provider": "external",
+      "family": "atlas/tile-signal-night",
+      "reference": "public/kit/atlas/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/atlas/tile-signal-normal.webp",
+      "provider": "external",
+      "family": "atlas/tile-signal",
+      "reference": "public/kit/atlas/tile-signal-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/atlas/tile-signal-pressed.webp",
+      "provider": "external",
+      "family": "atlas/tile-signal",
+      "reference": "public/kit/atlas/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/chip-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/cyanotype/chip-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/cyanotype/frame-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/frame-night.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/mat-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/mat-night.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/plate-phone-ground-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/plate-phone-ground-night.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-day/sky.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-launch-day/sky.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-launch-night/sky.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-night/sky.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-project-day/sky.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/scene/ground-project-night/sky.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/cyanotype/screen-grain-day.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/cyanotype/screen-grain-night.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-b-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-b",
+      "reference": "public/kit/cyanotype/sheet-day-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-b-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-b",
+      "reference": "public/kit/cyanotype/sheet-day-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-b-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-b",
+      "reference": "public/kit/cyanotype/sheet-day-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-b-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-b",
+      "reference": "public/kit/cyanotype/sheet-day-b-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-b-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-b",
+      "reference": "public/kit/cyanotype/sheet-day-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-c-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-c",
+      "reference": "public/kit/cyanotype/sheet-day-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-c-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-c",
+      "reference": "public/kit/cyanotype/sheet-day-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-c-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-c",
+      "reference": "public/kit/cyanotype/sheet-day-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-c-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-c",
+      "reference": "public/kit/cyanotype/sheet-day-c-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-c-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-c",
+      "reference": "public/kit/cyanotype/sheet-day-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-b-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-b",
+      "reference": "public/kit/cyanotype/sheet-day-card-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-b-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-b",
+      "reference": "public/kit/cyanotype/sheet-day-card-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-b-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-b",
+      "reference": "public/kit/cyanotype/sheet-day-card-b-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-b-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-b",
+      "reference": "public/kit/cyanotype/sheet-day-card-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-c-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-c",
+      "reference": "public/kit/cyanotype/sheet-day-card-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-c-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-c",
+      "reference": "public/kit/cyanotype/sheet-day-card-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-c-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-c",
+      "reference": "public/kit/cyanotype/sheet-day-card-c-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-c-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-c",
+      "reference": "public/kit/cyanotype/sheet-day-card-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-d-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-d",
+      "reference": "public/kit/cyanotype/sheet-day-card-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-d-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-d",
+      "reference": "public/kit/cyanotype/sheet-day-card-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-d-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-d",
+      "reference": "public/kit/cyanotype/sheet-day-card-d-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-d-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card-d",
+      "reference": "public/kit/cyanotype/sheet-day-card-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card",
+      "reference": "public/kit/cyanotype/sheet-day-card-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card",
+      "reference": "public/kit/cyanotype/sheet-day-card-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card",
+      "reference": "public/kit/cyanotype/sheet-day-card-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-card-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-card",
+      "reference": "public/kit/cyanotype/sheet-day-card-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-d-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-d",
+      "reference": "public/kit/cyanotype/sheet-day-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-d-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-d",
+      "reference": "public/kit/cyanotype/sheet-day-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-d-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-d",
+      "reference": "public/kit/cyanotype/sheet-day-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-d-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-d",
+      "reference": "public/kit/cyanotype/sheet-day-d-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-d-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-d",
+      "reference": "public/kit/cyanotype/sheet-day-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day",
+      "reference": "public/kit/cyanotype/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day",
+      "reference": "public/kit/cyanotype/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day",
+      "reference": "public/kit/cyanotype/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-light.webp",
+      "provider": "resample",
+      "lossless": true,
+      "generator": {
+        "type": "sheen",
+        "color": "ffffff",
+        "alpha": 0.05
+      }
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day",
+      "reference": "public/kit/cyanotype/sheet-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day",
+      "reference": "public/kit/cyanotype/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-w-b-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-w-b",
+      "reference": "public/kit/cyanotype/sheet-day-w-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-w-b-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-w-b",
+      "reference": "public/kit/cyanotype/sheet-day-w-b-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-w-c-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-w-c",
+      "reference": "public/kit/cyanotype/sheet-day-w-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-day-w-c-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-day-w-c",
+      "reference": "public/kit/cyanotype/sheet-day-w-c-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-b-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-b",
+      "reference": "public/kit/cyanotype/sheet-night-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-b-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-b",
+      "reference": "public/kit/cyanotype/sheet-night-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-b-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-b",
+      "reference": "public/kit/cyanotype/sheet-night-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-b-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-b",
+      "reference": "public/kit/cyanotype/sheet-night-b-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-b-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-b",
+      "reference": "public/kit/cyanotype/sheet-night-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-c-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-c",
+      "reference": "public/kit/cyanotype/sheet-night-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-c-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-c",
+      "reference": "public/kit/cyanotype/sheet-night-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-c-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-c",
+      "reference": "public/kit/cyanotype/sheet-night-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-c-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-c",
+      "reference": "public/kit/cyanotype/sheet-night-c-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-c-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-c",
+      "reference": "public/kit/cyanotype/sheet-night-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-b-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-b",
+      "reference": "public/kit/cyanotype/sheet-night-card-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-b-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-b",
+      "reference": "public/kit/cyanotype/sheet-night-card-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-b-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-b",
+      "reference": "public/kit/cyanotype/sheet-night-card-b-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-b-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-b",
+      "reference": "public/kit/cyanotype/sheet-night-card-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-c-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-c",
+      "reference": "public/kit/cyanotype/sheet-night-card-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-c-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-c",
+      "reference": "public/kit/cyanotype/sheet-night-card-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-c-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-c",
+      "reference": "public/kit/cyanotype/sheet-night-card-c-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-c-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-c",
+      "reference": "public/kit/cyanotype/sheet-night-card-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-d-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-d",
+      "reference": "public/kit/cyanotype/sheet-night-card-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-d-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-d",
+      "reference": "public/kit/cyanotype/sheet-night-card-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-d-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-d",
+      "reference": "public/kit/cyanotype/sheet-night-card-d-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-d-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card-d",
+      "reference": "public/kit/cyanotype/sheet-night-card-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card",
+      "reference": "public/kit/cyanotype/sheet-night-card-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card",
+      "reference": "public/kit/cyanotype/sheet-night-card-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card",
+      "reference": "public/kit/cyanotype/sheet-night-card-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-card-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-card",
+      "reference": "public/kit/cyanotype/sheet-night-card-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-d-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-d",
+      "reference": "public/kit/cyanotype/sheet-night-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-d-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-d",
+      "reference": "public/kit/cyanotype/sheet-night-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-d-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-d",
+      "reference": "public/kit/cyanotype/sheet-night-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-d-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-d",
+      "reference": "public/kit/cyanotype/sheet-night-d-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-d-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-d",
+      "reference": "public/kit/cyanotype/sheet-night-d-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night",
+      "reference": "public/kit/cyanotype/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-focus.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night",
+      "reference": "public/kit/cyanotype/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-hover.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night",
+      "reference": "public/kit/cyanotype/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-light.webp",
+      "provider": "resample",
+      "lossless": true,
+      "generator": {
+        "type": "sheen",
+        "color": "ffd9a0",
+        "alpha": 0.12
+      }
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night",
+      "reference": "public/kit/cyanotype/sheet-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-pressed.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night",
+      "reference": "public/kit/cyanotype/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-w-b-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-w-b",
+      "reference": "public/kit/cyanotype/sheet-night-w-b-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-w-b-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-w-b",
+      "reference": "public/kit/cyanotype/sheet-night-w-b-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-w-c-flat.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-w-c",
+      "reference": "public/kit/cyanotype/sheet-night-w-c-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-night-w-c-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-night-w-c",
+      "reference": "public/kit/cyanotype/sheet-night-w-c-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-strip-day-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-strip-day",
+      "reference": "public/kit/cyanotype/sheet-strip-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/sheet-strip-night-normal.webp",
+      "provider": "api",
+      "family": "cyanotype/sheet-strip-night",
+      "reference": "public/kit/cyanotype/sheet-strip-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/tape-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/cyanotype/tape-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/cyanotype/tile-signal-focus.webp",
+      "provider": "external",
+      "family": "cyanotype/tile-signal",
+      "reference": "public/kit/cyanotype/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/tile-signal-hover.webp",
+      "provider": "external",
+      "family": "cyanotype/tile-signal",
+      "reference": "public/kit/cyanotype/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/tile-signal-night-focus.webp",
+      "provider": "external",
+      "family": "cyanotype/tile-signal-night",
+      "reference": "public/kit/cyanotype/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/tile-signal-night-hover.webp",
+      "provider": "external",
+      "family": "cyanotype/tile-signal-night",
+      "reference": "public/kit/cyanotype/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/tile-signal-night-normal.webp",
+      "provider": "external",
+      "family": "cyanotype/tile-signal-night",
+      "reference": "public/kit/cyanotype/tile-signal-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/tile-signal-night-pressed.webp",
+      "provider": "external",
+      "family": "cyanotype/tile-signal-night",
+      "reference": "public/kit/cyanotype/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/tile-signal-normal.webp",
+      "provider": "external",
+      "family": "cyanotype/tile-signal",
+      "reference": "public/kit/cyanotype/tile-signal-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/cyanotype/tile-signal-pressed.webp",
+      "provider": "external",
+      "family": "cyanotype/tile-signal",
+      "reference": "public/kit/cyanotype/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/cyanotype/type-clean-day.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/cyanotype/type-clean-night.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/cyanotype/type-day.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/cyanotype/type-night.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/garden/chip-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/garden/chip-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/garden/label-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/garden/label-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/garden/sheet-day-flat.webp",
+      "provider": "api",
+      "family": "garden/sheet-day",
+      "reference": "public/kit/garden/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/sheet-day-focus.webp",
+      "provider": "api",
+      "family": "garden/sheet-day",
+      "reference": "public/kit/garden/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/sheet-day-hover.webp",
+      "provider": "api",
+      "family": "garden/sheet-day",
+      "reference": "public/kit/garden/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/sheet-day-normal.webp",
+      "provider": "api",
+      "family": "garden/sheet-day",
+      "reference": "public/kit/garden/sheet-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/garden/sheet-day-pressed.webp",
+      "provider": "api",
+      "family": "garden/sheet-day",
+      "reference": "public/kit/garden/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/sheet-night-flat.webp",
+      "provider": "api",
+      "family": "garden/sheet-night",
+      "reference": "public/kit/garden/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/sheet-night-focus.webp",
+      "provider": "api",
+      "family": "garden/sheet-night",
+      "reference": "public/kit/garden/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/sheet-night-hover.webp",
+      "provider": "api",
+      "family": "garden/sheet-night",
+      "reference": "public/kit/garden/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/sheet-night-normal.webp",
+      "provider": "api",
+      "family": "garden/sheet-night",
+      "reference": "public/kit/garden/sheet-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/garden/sheet-night-pressed.webp",
+      "provider": "api",
+      "family": "garden/sheet-night",
+      "reference": "public/kit/garden/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tape-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/garden/tape-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/garden/tile-day-focus.webp",
+      "provider": "external",
+      "family": "garden/tile-day",
+      "reference": "public/kit/garden/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-day-hover.webp",
+      "provider": "external",
+      "family": "garden/tile-day",
+      "reference": "public/kit/garden/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-day-normal.webp",
+      "provider": "external",
+      "family": "garden/tile-day",
+      "reference": "public/kit/garden/tile-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/garden/tile-day-pressed.webp",
+      "provider": "external",
+      "family": "garden/tile-day",
+      "reference": "public/kit/garden/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-night-focus.webp",
+      "provider": "external",
+      "family": "garden/tile-night",
+      "reference": "public/kit/garden/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-night-hover.webp",
+      "provider": "external",
+      "family": "garden/tile-night",
+      "reference": "public/kit/garden/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-night-normal.webp",
+      "provider": "external",
+      "family": "garden/tile-night",
+      "reference": "public/kit/garden/tile-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/garden/tile-night-pressed.webp",
+      "provider": "external",
+      "family": "garden/tile-night",
+      "reference": "public/kit/garden/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-signal-focus.webp",
+      "provider": "external",
+      "family": "garden/tile-signal",
+      "reference": "public/kit/garden/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-signal-hover.webp",
+      "provider": "external",
+      "family": "garden/tile-signal",
+      "reference": "public/kit/garden/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-signal-night-focus.webp",
+      "provider": "external",
+      "family": "garden/tile-signal-night",
+      "reference": "public/kit/garden/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-signal-night-hover.webp",
+      "provider": "external",
+      "family": "garden/tile-signal-night",
+      "reference": "public/kit/garden/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-signal-night-normal.webp",
+      "provider": "external",
+      "family": "garden/tile-signal-night",
+      "reference": "public/kit/garden/tile-signal-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/garden/tile-signal-night-pressed.webp",
+      "provider": "external",
+      "family": "garden/tile-signal-night",
+      "reference": "public/kit/garden/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/garden/tile-signal-normal.webp",
+      "provider": "external",
+      "family": "garden/tile-signal",
+      "reference": "public/kit/garden/tile-signal-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/garden/tile-signal-pressed.webp",
+      "provider": "external",
+      "family": "garden/tile-signal",
+      "reference": "public/kit/garden/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/cap-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/ligne/cap-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/ligne/caption-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/ligne/caption-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/ligne/fibre-day.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/ligne/fibre-night.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/ligne/mat-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/ligne/mat-night.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/ligne/paper-day.webp",
+      "provider": "api",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/ligne/paper-night.webp",
+      "provider": "api",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/ligne/scene/day/sky.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/ligne/scene/night/sky.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/ligne/sheet-day-flat.webp",
+      "provider": "api",
+      "family": "ligne/sheet-day",
+      "reference": "public/kit/ligne/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-day-focus.webp",
+      "provider": "api",
+      "family": "ligne/sheet-day",
+      "reference": "public/kit/ligne/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-day-hover.webp",
+      "provider": "api",
+      "family": "ligne/sheet-day",
+      "reference": "public/kit/ligne/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-day-normal.webp",
+      "provider": "api",
+      "family": "ligne/sheet-day",
+      "reference": "public/kit/ligne/sheet-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-day-pressed.webp",
+      "provider": "api",
+      "family": "ligne/sheet-day",
+      "reference": "public/kit/ligne/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-night-flat.webp",
+      "provider": "api",
+      "family": "ligne/sheet-night",
+      "reference": "public/kit/ligne/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-night-focus.webp",
+      "provider": "api",
+      "family": "ligne/sheet-night",
+      "reference": "public/kit/ligne/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-night-hover.webp",
+      "provider": "api",
+      "family": "ligne/sheet-night",
+      "reference": "public/kit/ligne/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-night-normal.webp",
+      "provider": "api",
+      "family": "ligne/sheet-night",
+      "reference": "public/kit/ligne/sheet-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-night-pressed.webp",
+      "provider": "api",
+      "family": "ligne/sheet-night",
+      "reference": "public/kit/ligne/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-strip-day-normal.webp",
+      "provider": "api",
+      "family": "ligne/sheet-strip-day",
+      "reference": "public/kit/ligne/sheet-strip-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/ligne/sheet-strip-night-normal.webp",
+      "provider": "api",
+      "family": "ligne/sheet-strip-night",
+      "reference": "public/kit/ligne/sheet-strip-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/ligne/tape-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/ligne/tape-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/ligne/tile-day-focus.webp",
+      "provider": "external",
+      "family": "ligne/tile-day",
+      "reference": "public/kit/ligne/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-day-hover.webp",
+      "provider": "external",
+      "family": "ligne/tile-day",
+      "reference": "public/kit/ligne/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-day-normal.webp",
+      "provider": "external",
+      "family": "ligne/tile-day",
+      "reference": "public/kit/ligne/tile-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/ligne/tile-day-pressed.webp",
+      "provider": "external",
+      "family": "ligne/tile-day",
+      "reference": "public/kit/ligne/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-night-focus.webp",
+      "provider": "external",
+      "family": "ligne/tile-night",
+      "reference": "public/kit/ligne/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-night-hover.webp",
+      "provider": "external",
+      "family": "ligne/tile-night",
+      "reference": "public/kit/ligne/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-night-normal.webp",
+      "provider": "external",
+      "family": "ligne/tile-night",
+      "reference": "public/kit/ligne/tile-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/ligne/tile-night-pressed.webp",
+      "provider": "external",
+      "family": "ligne/tile-night",
+      "reference": "public/kit/ligne/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-focus.webp",
+      "provider": "external",
+      "family": "ligne/tile-signal",
+      "reference": "public/kit/ligne/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-hover.webp",
+      "provider": "external",
+      "family": "ligne/tile-signal",
+      "reference": "public/kit/ligne/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-night-focus.webp",
+      "provider": "external",
+      "family": "ligne/tile-signal-night",
+      "reference": "public/kit/ligne/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-night-hover.webp",
+      "provider": "external",
+      "family": "ligne/tile-signal-night",
+      "reference": "public/kit/ligne/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-night-normal.webp",
+      "provider": "external",
+      "family": "ligne/tile-signal-night",
+      "reference": "public/kit/ligne/tile-signal-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-night-pressed.webp",
+      "provider": "external",
+      "family": "ligne/tile-signal-night",
+      "reference": "public/kit/ligne/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-normal.webp",
+      "provider": "external",
+      "family": "ligne/tile-signal",
+      "reference": "public/kit/ligne/tile-signal-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/ligne/tile-signal-pressed.webp",
+      "provider": "external",
+      "family": "ligne/tile-signal",
+      "reference": "public/kit/ligne/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/band-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/paper/band-left-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/band-left-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/band-night.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/paper/glass-glare.webp",
+      "provider": "resample",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/paper/hero-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/hero-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/label-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/label-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/ledge-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/paper/ledge-night.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/paper/mat-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/paper/mat-night.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/paper/mount-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/mount-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/ribbon-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/paper/ribbon-night.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/paper/sheet-alpenglow-flat.webp",
+      "provider": "api",
+      "family": "paper/sheet-alpenglow",
+      "reference": "public/kit/paper/sheet-alpenglow-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/sheet-alpenglow-focus.webp",
+      "provider": "api",
+      "family": "paper/sheet-alpenglow",
+      "reference": "public/kit/paper/sheet-alpenglow-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/sheet-alpenglow-hover.webp",
+      "provider": "api",
+      "family": "paper/sheet-alpenglow",
+      "reference": "public/kit/paper/sheet-alpenglow-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/sheet-alpenglow-normal.webp",
+      "provider": "api",
+      "family": "paper/sheet-alpenglow",
+      "reference": "public/kit/paper/sheet-alpenglow-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/paper/sheet-alpenglow-pressed.webp",
+      "provider": "api",
+      "family": "paper/sheet-alpenglow",
+      "reference": "public/kit/paper/sheet-alpenglow-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/sheet-night-flat.webp",
+      "provider": "api",
+      "family": "paper/sheet-night",
+      "reference": "public/kit/paper/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/sheet-night-focus.webp",
+      "provider": "api",
+      "family": "paper/sheet-night",
+      "reference": "public/kit/paper/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/sheet-night-hover.webp",
+      "provider": "api",
+      "family": "paper/sheet-night",
+      "reference": "public/kit/paper/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/sheet-night-normal.webp",
+      "provider": "api",
+      "family": "paper/sheet-night",
+      "reference": "public/kit/paper/sheet-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/paper/sheet-night-pressed.webp",
+      "provider": "api",
+      "family": "paper/sheet-night",
+      "reference": "public/kit/paper/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/strip-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/strip-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/tape-sage-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/tape-sage.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/paper/tile-alpenglow-focus.webp",
+      "provider": "external",
+      "family": "paper/tile-alpenglow",
+      "reference": "public/kit/paper/tile-alpenglow-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-alpenglow-hover.webp",
+      "provider": "external",
+      "family": "paper/tile-alpenglow",
+      "reference": "public/kit/paper/tile-alpenglow-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-alpenglow-normal.webp",
+      "provider": "external",
+      "family": "paper/tile-alpenglow",
+      "reference": "public/kit/paper/tile-alpenglow-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/paper/tile-alpenglow-pressed.webp",
+      "provider": "external",
+      "family": "paper/tile-alpenglow",
+      "reference": "public/kit/paper/tile-alpenglow-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-clay-focus.webp",
+      "provider": "external",
+      "family": "paper/tile-clay",
+      "reference": "public/kit/paper/tile-clay-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-clay-hover.webp",
+      "provider": "external",
+      "family": "paper/tile-clay",
+      "reference": "public/kit/paper/tile-clay-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-clay-night-focus.webp",
+      "provider": "external",
+      "family": "paper/tile-clay-night",
+      "reference": "public/kit/paper/tile-clay-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-clay-night-hover.webp",
+      "provider": "external",
+      "family": "paper/tile-clay-night",
+      "reference": "public/kit/paper/tile-clay-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-clay-night-normal.webp",
+      "provider": "external",
+      "family": "paper/tile-clay-night",
+      "reference": "public/kit/paper/tile-clay-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/paper/tile-clay-night-pressed.webp",
+      "provider": "external",
+      "family": "paper/tile-clay-night",
+      "reference": "public/kit/paper/tile-clay-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-clay-normal.webp",
+      "provider": "external",
+      "family": "paper/tile-clay",
+      "reference": "public/kit/paper/tile-clay-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/paper/tile-clay-pressed.webp",
+      "provider": "external",
+      "family": "paper/tile-clay",
+      "reference": "public/kit/paper/tile-clay-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-night-focus.webp",
+      "provider": "external",
+      "family": "paper/tile-night",
+      "reference": "public/kit/paper/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-night-hover.webp",
+      "provider": "external",
+      "family": "paper/tile-night",
+      "reference": "public/kit/paper/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-night-normal.webp",
+      "provider": "external",
+      "family": "paper/tile-night",
+      "reference": "public/kit/paper/tile-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/paper/tile-night-pressed.webp",
+      "provider": "external",
+      "family": "paper/tile-night",
+      "reference": "public/kit/paper/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-signal-focus.webp",
+      "provider": "external",
+      "family": "paper/tile-signal",
+      "reference": "public/kit/paper/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-signal-hover.webp",
+      "provider": "external",
+      "family": "paper/tile-signal",
+      "reference": "public/kit/paper/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/tile-signal-normal.webp",
+      "provider": "external",
+      "family": "paper/tile-signal",
+      "reference": "public/kit/paper/tile-signal-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/paper/tile-signal-pressed.webp",
+      "provider": "external",
+      "family": "paper/tile-signal",
+      "reference": "public/kit/paper/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/torn-green-focus.webp",
+      "provider": "external",
+      "family": "paper/torn-green",
+      "reference": "public/kit/paper/torn-green-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/torn-green-hover.webp",
+      "provider": "external",
+      "family": "paper/torn-green",
+      "reference": "public/kit/paper/torn-green-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/torn-green-night-focus.webp",
+      "provider": "external",
+      "family": "paper/torn-green-night",
+      "reference": "public/kit/paper/torn-green-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/torn-green-night-hover.webp",
+      "provider": "external",
+      "family": "paper/torn-green-night",
+      "reference": "public/kit/paper/torn-green-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/torn-green-night-normal.webp",
+      "provider": "external",
+      "family": "paper/torn-green-night",
+      "reference": "public/kit/paper/torn-green-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/paper/torn-green-night-pressed.webp",
+      "provider": "external",
+      "family": "paper/torn-green-night",
+      "reference": "public/kit/paper/torn-green-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/paper/torn-green-normal.webp",
+      "provider": "external",
+      "family": "paper/torn-green",
+      "reference": "public/kit/paper/torn-green-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/paper/torn-green-pressed.webp",
+      "provider": "external",
+      "family": "paper/torn-green",
+      "reference": "public/kit/paper/torn-green-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/chip-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/solarpunk/chip-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/solarpunk/frost-day.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/solarpunk/frost-night.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/solarpunk/mat-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/solarpunk/mat-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-flat.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-card",
+      "reference": "public/kit/solarpunk/sheet-card-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-focus.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-card",
+      "reference": "public/kit/solarpunk/sheet-card-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-hover.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-card",
+      "reference": "public/kit/solarpunk/sheet-card-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-night-flat.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-card-night",
+      "reference": "public/kit/solarpunk/sheet-card-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-night-focus.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-card-night",
+      "reference": "public/kit/solarpunk/sheet-card-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-night-hover.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-card-night",
+      "reference": "public/kit/solarpunk/sheet-card-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-night-normal.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-card-night",
+      "reference": "public/kit/solarpunk/sheet-card-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-night-pressed.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-card-night",
+      "reference": "public/kit/solarpunk/sheet-card-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-normal.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-card",
+      "reference": "public/kit/solarpunk/sheet-card-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-card-pressed.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-card",
+      "reference": "public/kit/solarpunk/sheet-card-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-day-flat.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-day",
+      "reference": "public/kit/solarpunk/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-day-focus.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-day",
+      "reference": "public/kit/solarpunk/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-day-hover.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-day",
+      "reference": "public/kit/solarpunk/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-day-light.webp",
+      "provider": "resample",
+      "lossless": true,
+      "generator": {
+        "type": "sheen",
+        "color": "ffe6a8",
+        "alpha": 0.3,
+        "streak": 0.12
+      }
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-day-normal.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-day",
+      "reference": "public/kit/solarpunk/sheet-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-day-pressed.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-day",
+      "reference": "public/kit/solarpunk/sheet-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-night-flat.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-night",
+      "reference": "public/kit/solarpunk/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-night-focus.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-night",
+      "reference": "public/kit/solarpunk/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-night-hover.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-night",
+      "reference": "public/kit/solarpunk/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-night-light.webp",
+      "provider": "resample",
+      "lossless": true,
+      "generator": {
+        "type": "sheen",
+        "color": "c9d6e8",
+        "alpha": 0.14,
+        "streak": 0.1
+      }
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-night-normal.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-night",
+      "reference": "public/kit/solarpunk/sheet-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-night-pressed.webp",
+      "provider": "external",
+      "family": "solarpunk/sheet-night",
+      "reference": "public/kit/solarpunk/sheet-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-strip-day-normal.webp",
+      "provider": "api",
+      "family": "solarpunk/sheet-strip-day",
+      "reference": "public/kit/solarpunk/sheet-strip-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/solarpunk/sheet-strip-night-normal.webp",
+      "provider": "api",
+      "family": "solarpunk/sheet-strip-night",
+      "reference": "public/kit/solarpunk/sheet-strip-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/solarpunk/tape-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/solarpunk/tape-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/solarpunk/tile-day-focus.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-day",
+      "reference": "public/kit/solarpunk/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-day-hover.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-day",
+      "reference": "public/kit/solarpunk/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-day-normal.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-day",
+      "reference": "public/kit/solarpunk/tile-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-day-pressed.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-day",
+      "reference": "public/kit/solarpunk/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-night-focus.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-night",
+      "reference": "public/kit/solarpunk/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-night-hover.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-night",
+      "reference": "public/kit/solarpunk/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-night-normal.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-night",
+      "reference": "public/kit/solarpunk/tile-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-night-pressed.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-night",
+      "reference": "public/kit/solarpunk/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-pill-green-focus.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-pill-green",
+      "reference": "public/kit/solarpunk/tile-pill-green-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-pill-green-hover.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-pill-green",
+      "reference": "public/kit/solarpunk/tile-pill-green-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-pill-green-normal.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-pill-green",
+      "reference": "public/kit/solarpunk/tile-pill-green-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/solarpunk/tile-pill-green-pressed.webp",
+      "provider": "external",
+      "family": "solarpunk/tile-pill-green",
+      "reference": "public/kit/solarpunk/tile-pill-green-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/chip-day.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/sumi/chip-night.webp",
+      "provider": "external"
+    },
+    {
+      "src": "public/kit/sumi/mat-day.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/sumi/mat-night.webp",
+      "provider": "api"
+    },
+    {
+      "src": "public/kit/sumi/tile-day-focus.webp",
+      "provider": "external",
+      "family": "sumi/tile-day",
+      "reference": "public/kit/sumi/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-day-hover.webp",
+      "provider": "external",
+      "family": "sumi/tile-day",
+      "reference": "public/kit/sumi/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-day-normal.webp",
+      "provider": "external",
+      "family": "sumi/tile-day",
+      "reference": "public/kit/sumi/tile-day-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/sumi/tile-day-pressed.webp",
+      "provider": "external",
+      "family": "sumi/tile-day",
+      "reference": "public/kit/sumi/tile-day-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-night-focus.webp",
+      "provider": "external",
+      "family": "sumi/tile-night",
+      "reference": "public/kit/sumi/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-night-hover.webp",
+      "provider": "external",
+      "family": "sumi/tile-night",
+      "reference": "public/kit/sumi/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-night-normal.webp",
+      "provider": "external",
+      "family": "sumi/tile-night",
+      "reference": "public/kit/sumi/tile-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/sumi/tile-night-pressed.webp",
+      "provider": "external",
+      "family": "sumi/tile-night",
+      "reference": "public/kit/sumi/tile-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-signal-focus.webp",
+      "provider": "external",
+      "family": "sumi/tile-signal",
+      "reference": "public/kit/sumi/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-signal-hover.webp",
+      "provider": "external",
+      "family": "sumi/tile-signal",
+      "reference": "public/kit/sumi/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-signal-night-focus.webp",
+      "provider": "external",
+      "family": "sumi/tile-signal-night",
+      "reference": "public/kit/sumi/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-signal-night-hover.webp",
+      "provider": "external",
+      "family": "sumi/tile-signal-night",
+      "reference": "public/kit/sumi/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-signal-night-normal.webp",
+      "provider": "external",
+      "family": "sumi/tile-signal-night",
+      "reference": "public/kit/sumi/tile-signal-night-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/sumi/tile-signal-night-pressed.webp",
+      "provider": "external",
+      "family": "sumi/tile-signal-night",
+      "reference": "public/kit/sumi/tile-signal-night-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/tile-signal-normal.webp",
+      "provider": "external",
+      "family": "sumi/tile-signal",
+      "reference": "public/kit/sumi/tile-signal-normal.webp",
+      "lossless": true
+    },
+    {
+      "src": "public/kit/sumi/tile-signal-pressed.webp",
+      "provider": "external",
+      "family": "sumi/tile-signal",
+      "reference": "public/kit/sumi/tile-signal-normal.webp",
+      "lossless": true,
+      "stateCrop": true
+    },
+    {
+      "src": "public/kit/sumi/washi-day.webp",
+      "provider": "external",
+      "periodic": true
+    },
+    {
+      "src": "public/kit/sumi/washi-night.webp",
+      "provider": "external",
+      "periodic": true
     }
   ]
 }

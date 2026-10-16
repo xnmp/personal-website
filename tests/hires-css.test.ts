@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { checkRepo, diagnostics, HIRES_MEDIA, main, transformCss } from "../scripts/hires/css.mjs";
+import { borderSources, checkRepo, diagnostics, HIRES_MEDIA, main, transformCss } from "../scripts/hires/css.mjs";
 import { layerBitmap, layerTextureWidth } from "../src/components/rack/scene3d/layer-bitmap";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -12,6 +12,60 @@ const media = "(min-resolution: 1.5dppx), (min-width: 2200px)";
 const twin = (prop: string, value: string) => `@media ${media} { ${prop}: ${value}; }`;
 
 describe("hires CSS reconciliation", () => {
+  test("density-corrects border assets through cross-file aliases, including mixed backgrounds", () => {
+    const consumers = `.key { --kn: var(--key, var(--fallback)); border-image: var(--kn) 60 fill / 12px / 2px round; }
+.balloon { --balloon: var(--tape); border-image-source: var(--balloon); }
+.cycle { --x: var(--y); --y: var(--x); border-image-source: var(--x); }`;
+    const input = `.day {\n  --key: url(/kit/a.webp);\n  --tape: url(/kit/b.webp);\n  background: url(/kit/a.webp);\n  --sky: url(/kit/sky.webp);\n}`;
+    const files = [consumers, input];
+    const borders = borderSources(files);
+    const result = transformCss(input, new Set([...available, '/kit/sky@2x.webp']), borders);
+    expect(result.css).toContain(twin('--key', 'image-set(url(/kit/a@2x.webp) 2x)'));
+    expect(result.css).toContain(twin('--tape', 'image-set(url(/kit/b@2x.webp) 2x)'));
+    expect(result.css).toContain(twin('background', 'image-set(url(/kit/a@2x.webp) 2x)'));
+    expect(result.css).toContain(twin('--sky', 'url(/kit/sky@2x.webp)'));
+    expect(transformCss(result.css, new Set([...available, '/kit/sky@2x.webp']), borders).issues).toEqual([]);
+    expect(transformCss(consumers, available).css).toBe(consumers);
+  });
+
+  test("selector-list theme alternatives register every border source", () => {
+    const input = `:root[data-style="a"] { --k: url(/kit/a.webp); }
+:root[data-style="b"] { --k: url(/kit/b.webp); }
+[data-style="a"] .x, [data-style="b"] .x { border-image: var(--k) 1; }`;
+    const result = transformCss(input, available);
+    expect(result.css).toContain(twin('--k', 'image-set(url(/kit/a@2x.webp) 2x)'));
+    expect(result.css).toContain(twin('--k', 'image-set(url(/kit/b@2x.webp) 2x)'));
+    expect(transformCss(result.css, available).issues).toEqual([]);
+  });
+
+  test("attributes inside functional pseudos cannot hide border consumers", () => {
+    for (const selector of [':root:not([data-style="a"])', ':root:has([data-style="a"])', ':is([data-style="a"], [data-style="b"])', ':where(:not([data-style="a"]))']) {
+      const input = `:root[data-style="a"] { --k: url(/kit/a.webp); }
+:root[data-style="b"] { --k: url(/kit/b.webp); }
+${selector} .x { border-image: var(--k) 1; }`;
+      const result = transformCss(input, available);
+      expect(result.css).toContain(twin('--k', 'image-set(url(/kit/b@2x.webp) 2x)'));
+      expect(transformCss(result.css, available).issues).toEqual([]);
+    }
+  });
+
+  test("rejects direct raw or nested @2x border sources even without a paired twin", () => {
+    for (const value of ['url(/kit/a@2x.webp)', 'image-set(image-set(url(/kit/a@2x.webp) 2x) 2x)', 'image-set(url(/kit/a@2x.webp) 1x)']) {
+      const css = `.a { --key: ${value}; border-image-source: var(--key); }`;
+      expect(transformCss(css, available).issues.some((i: { kind: string }) => i.kind === 'border')).toBe(true);
+    }
+  });
+
+  test("repairs raw border twins, double wrapping and wrong queries without changing geometry", () => {
+    const base = `  border-image: url(/kit/a.webp) 8 48 fill / 0 14.4px / 0 2px stretch;`;
+    for (const value of ['url(/kit/a@2x.webp)', 'image-set(image-set(url(/kit/a@2x.webp) 2x) 2x)']) {
+      const input = `.a {\n${base}\n  @media (min-resolution: 2dppx) { border-image: ${value} 8 48 fill / 0 14.4px / 0 2px stretch; }\n}`;
+      const result = transformCss(input, available);
+      expect(result.issues.some((i: { kind: string }) => i.kind === 'stale')).toBe(true);
+      expect(result.css).toBe(`.a {\n${base}\n  ${twin('border-image', 'image-set(url(/kit/a@2x.webp) 2x) 8 48 fill / 0 14.4px / 0 2px stretch')}\n}`);
+      expect(transformCss(result.css, available).issues).toEqual([]);
+    }
+  });
   test("writes exactly one adjacent twin, preserving comments and later overrides; a second write is a no-op", () => {
     expect(HIRES_MEDIA).toBe(media);
     const input = `/* art */\n.a {\n  --sky: url(/kit/a.webp); /* keep */\n  --sky: none;\n}\n`;

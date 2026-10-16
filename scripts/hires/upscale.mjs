@@ -8,9 +8,12 @@ import { parseArgs } from 'node:util';
 import { webpOptions } from '../webp.mjs';
 import { planTiles } from './tiles.mjs';
 import { planExternalTiles, normalizationSize } from './external.mjs';
-import { blendTiles, colourStats, composeFlow, estimateFlow, padTransparent, toneMatch, warp } from './merge.mjs';
-import { assetCacheKey, validateManifest } from './manifest.mjs';
-import { lockEntry, writeLockEntry } from './lock.mjs';
+import { blendTiles, colourStats, composeFlow, estimateFlow, padTransparent, placeRegion, toneMatch, warp } from './merge.mjs';
+import { resample, seamStats, wrapRegion, periodicHalo } from './periodic.mjs';
+import { canonicaliseTransparent, registerState, stateRequestCrop, stateStats, derivationDigest } from './states.mjs';
+import { sheenImage } from '../framed-pane.mjs';
+import { assetCacheKey, validateManifest, processingRecipe } from './manifest.mjs';
+import { lockEntry, lockMatches, outputPath, readLock, sourceSha256, writeLockEntry } from './lock.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const exists = async (path) => access(path).then(() => true, () => false);
@@ -89,6 +92,70 @@ export async function alignTile(source, generated, factor, weights) {
   return { down, aligned, alignedDown, preWarp: pre.diagnostics, postWarp: residual.diagnostics, iterations: history.length - 1, history };
 }
 
+async function outputProof(asset, sourceBytes, outputBytes, root) {
+  const source = await sharp(sourceBytes).metadata(), output = await sharp(outputBytes).metadata();
+  const reference = asset.family && asset.reference !== asset.src;
+  return { outputBytes, width: output.width, height: output.height, sourceWidth: source.width, sourceHeight: source.height,
+    ...(reference ? { referenceBytes: await readFile(resolve(root, asset.reference)),
+      referenceOutputBytes: await readFile(resolve(root, outputPath({ src: asset.reference, factor: 2 }))) } : {}) };
+}
+
+async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, reasons, stats) {
+  const output = resolve(root, outputPath(asset));
+  let derivation, reference, normal;
+  if (asset.family && asset.reference !== asset.src) {
+    const normalAsset = opts.assets.find((a) => a.src === asset.reference);
+    const normalBytes = await readFile(resolve(root, asset.reference));
+    const referenceBytes = await readFile(resolve(root, outputPath(normalAsset)));
+    const lock = await readLock(root);
+    if (!lockMatches(lock.assets[outputPath(normalAsset)], normalBytes, normalAsset, await outputProof(normalAsset, normalBytes, referenceBytes, root))) throw new Error('canonical reference is stale or unlocked');
+    normal = await raw(sharp(normalBytes).toColourspace('srgb').ensureAlpha());
+    reference = await raw(sharp(referenceBytes).toColourspace('srgb').ensureAlpha());
+    derivation = derivationDigest(sourceBytes, normalBytes, referenceBytes, asset.sigma);
+    const derivedPath = resolve(cache, `derived-${derivation}-${sourceSha256(bytes(master))}.png`);
+    if (await exists(derivedPath)) master = await raw(sharp(derivedPath).ensureAlpha());
+    else {
+      master = registerState(rgba, normal, reference, master);
+      await sharp(bytes(master), { raw: geometry(master) }).png().toFile(derivedPath);
+    }
+  }
+  if (asset.family) master = canonicaliseTransparent(master);
+  const encoded = await sharp(bytes(master), { raw: geometry(master) }).webp(asset.lossless || asset.family ? { lossless: true } : webpOptions(asset.quality)).toBuffer();
+  const decoded = await raw(sharp(encoded).toColourspace('srgb').ensureAlpha());
+  const hardReasons = [];
+  if (decoded.width !== rgba.width * asset.factor || decoded.height !== rgba.height * asset.factor) hardReasons.push('decoded output dimensions differ from exact scale');
+  if (reference) {
+    stats.registration = { ...stateStats(rgba, normal, reference, decoded, await resize(decoded, rgba.width, rgba.height)), derivationDigest: derivation };
+    if (stats.registration.outsideDifferingPixels) hardReasons.push(`registered state differs outside S2 (${stats.registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
+    if (stats.registration.suppressed) hardReasons.push('registration suppressed every intended state change');
+    if (stats.registration.stateMae > opts.maxMae) reasons.push(`registered state premultiplied MAE ${stats.registration.stateMae} > ${opts.maxMae}`);
+  }
+  if (asset.periodic) {
+    stats.seams = seamStats(decoded, resample(rgba, 2, true));
+    if (!stats.seams.passes) reasons.push('decoded periodic wrap jump or first derivative exceeds baseline tolerance');
+  }
+  stats.reasons = [...reasons, ...hardReasons];
+  stats.rejected = stats.reasons.length > 0;
+  stats.acceptedOverride = !!opts.accept && reasons.length > 0 && !hardReasons.length;
+  await json(resolve(cache, 'stats.json'), stats);
+  await sharp(bytes(master), { raw: geometry(master) }).png().toFile(resolve(cache, 'master.png'));
+  if (hardReasons.length || (reasons.length && !opts.accept)) throw new Error(`REJECTED: ${stats.reasons.join('; ')} (review stats.json; --accept overrides conformance gates only)`);
+  const proof = processingRecipe(asset) ? { outputSha256: sourceSha256(encoded), width: decoded.width, height: decoded.height,
+    ...(derivation ? { derivationDigest: derivation } : {}) } : {};
+  const entry = lockEntry(sourceBytes, asset, key, { ...proof, ...(stats.acceptedOverride ? { accepted: true } : {}) });
+  if (opts.verify) {
+    if (!await exists(output)) { console.log(`${relative(root, output)} not shipped; verified gates only`); return; }
+    if (!encoded.equals(await readFile(output))) throw new Error('remerge differs from shipped bytes; output and lock left untouched');
+    await writeLockEntry(root, asset, entry);
+    console.log(`${relative(root, output)} byte-identical; provenance locked`);
+    return;
+  }
+  await writeFile(output + '.pending', encoded);
+  await rename(output + '.pending', output);
+  await writeLockEntry(root, asset, entry);
+  console.log(`${relative(root, output)} written${stats.acceptedOverride ? ' (--accept)' : ''}`);
+}
+
 async function processAsset(asset, opts, promptText, root, invoke) {
   const started = performance.now();
   const timing = (label) => { if (process.env.HIRES_TIMING) console.log(`${label}: ${((performance.now() - started) / 1000).toFixed(2)}s`); };
@@ -99,16 +166,38 @@ async function processAsset(asset, opts, promptText, root, invoke) {
   const metadata = await sharp(sourceBytes).metadata();
   if ((metadata.pages ?? 1) > 1) throw new Error('animated or multi-page sources are not supported');
   const external = asset.provider === 'external';
+  const deterministic = asset.provider === 'resample';
+  const halo = asset.periodic ? periodicHalo(asset.sigma) : 0;
+  let original, region, normalBytes;
+  if (asset.stateCrop && asset.reference !== asset.src) {
+    original = await raw(sharp(sourceBytes).toColourspace('srgb').ensureAlpha());
+    normalBytes = await readFile(resolve(root, asset.reference));
+    region = stateRequestCrop(original, await raw(sharp(normalBytes).toColourspace('srgb').ensureAlpha()));
+  }
+  const width = region?.w ?? metadata.width, height = region?.h ?? metadata.height;
+  if (deterministic) {
+    if (opts.requests) return;
+    console.log(`${asset.src}: ${metadata.width}x${metadata.height} -> ${metadata.width * 2}x${metadata.height * 2}; resample; estimated requests 0`);
+    if (opts.dry) return { provider: asset.provider, requests: 0, tiles: 0 };
+    const key = assetCacheKey(sourceBytes, asset, promptText);
+    const cache = resolve(root, process.env.HIRES_CACHE ?? 'art/raw/hires', asset.src.slice(7, -extname(asset.src).length), key.slice(0, 12));
+    await mkdir(cache, { recursive: true });
+    const rgba = await raw(sharp(sourceBytes).toColourspace('srgb').ensureAlpha());
+    if (asset.generator && (rgba.width !== rgba.height || rgba.width !== 256)) throw new Error('sheen generator requires a 256px square source');
+    const master = asset.generator ? sheenImage(rgba.width * 2, asset.generator) : resample(rgba, 2, !!asset.periodic);
+    await finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, [], { generator: asset.generator ? 'framed-pane/sheen-v1' : 'premultiplied-bilinear-v1' });
+    return;
+  }
   if (opts.requests && !external) return;
   if (external && opts.force) throw new Error('--force is not supported for external assets; remove the cached tile to request a replacement');
   const plan = external
-    ? planExternalTiles({ width: metadata.width, height: metadata.height, factor: asset.factor, sizes: asset.external.sizes })
-    : planTiles({ width: metadata.width, height: metadata.height, factor: asset.factor });
+    ? planExternalTiles({ width: width + 2 * halo, height: height + 2 * halo, factor: asset.factor, sizes: asset.external.sizes })
+    : planTiles({ width: width + 2 * halo, height: height + 2 * halo, factor: asset.factor });
   const prompt = [promptText.trim(), ...(plan.tiles.length > 1 ? ['Image 1 is a crop of a larger painting: keep its edges continuous; no border, vignette or frame at the edges.'] : []), ...(external ? ['The input includes padding. Preserve the entire canvas and padding exactly; do not crop, reframe or enlarge the subject.'] : []), ...(asset.note ? [asset.note] : [])].join('\n') + '\n';
-  const key = assetCacheKey(sourceBytes, asset, prompt);
+  const requestIdentity = normalBytes ? { normalSha256: sourceSha256(normalBytes), region: region ?? null } : null;
+  const key = assetCacheKey(sourceBytes, asset, prompt, requestIdentity);
   const sourceStem = asset.src.slice('public/'.length, -extname(asset.src).length);
   const cache = resolve(root, process.env.HIRES_CACHE ?? 'art/raw/hires', sourceStem, key.slice(0, 12));
-  const output = srcPath.slice(0, -extname(srcPath).length) + `@${asset.factor}x.webp`;
   const present = await Promise.all(plan.tiles.map((_, i) => exists(resolve(cache, `tile-${i}.png`))));
   const missing = present.flatMap((found, i) => found ? [] : [`tile-${i}.png`]);
   const requestsPath = resolve(cache, 'requests.json');
@@ -122,13 +211,16 @@ async function processAsset(asset, opts, promptText, root, invoke) {
     console.log(`${asset.src}: SKIPPED --remerge; missing cached tiles: ${missing.join(', ')}`);
     return;
   }
-  if (opts.dry) return;
+  if (opts.dry) return { provider: asset.provider, requests, tiles: plan.tiles.length };
   await mkdir(cache, { recursive: true });
   const promptPath = resolve(cache, 'prompt.txt');
   await writeFile(promptPath, prompt);
-  await json(resolve(cache, 'request.json'), { src: asset.src, key, ...asset, prompt, plan });
-  const rgba = await raw(sharp(sourceBytes).toColourspace('srgb').ensureAlpha());
-  const padded = padTransparent(rgba);
+  await json(resolve(cache, 'request.json'), { src: asset.src, key, ...asset, prompt, plan, ...(region ? { requestCrop: region } : {}) });
+  const full = original ?? await raw(sharp(sourceBytes).toColourspace('srgb').ensureAlpha());
+  const selected = region ? await crop(full, region) : full;
+  const rgba = halo ? wrapRegion(selected, -halo, -halo, width + halo * 2, height + halo * 2) : selected;
+  const periodicSource = asset.periodic ? { ...selected, channels: 3, data: Float32Array.from({ length: selected.width * selected.height * 3 }, (_, i) => selected.data[Math.floor(i / 3) * 4 + i % 3]) } : null;
+  const padded = periodicSource ? wrapRegion(periodicSource, -halo, -halo, rgba.width, rgba.height) : padTransparent(rgba);
   timing('source prepared');
   if (external) {
     const pending = [];
@@ -140,7 +232,7 @@ async function processAsset(asset, opts, promptText, root, invoke) {
         left: t.padLeft, right: t.requestW - t.w - t.padLeft,
         top: t.padTop, bottom: t.requestH - t.h - t.padTop, background: { r: 0, g: 0, b: 0, alpha: 0 },
       }));
-      const filled = padTransparent(canvas);
+      const filled = asset.periodic ? wrapRegion(periodicSource, t.x - t.padLeft - halo, t.y - t.padTop - halo, t.requestW, t.requestH) : padTransparent(canvas);
       await sharp(bytes(filled), { raw: geometry(filled) }).png().toFile(requestPath);
       pending.push({ requestPath, outputPath, prompt, allowedSizes: asset.external.sizes,
         factor: asset.factor, width: t.apiW, height: t.apiH });
@@ -205,7 +297,7 @@ async function processAsset(asset, opts, promptText, root, invoke) {
     const { down, aligned, alignedDown, preWarp, postWarp, iterations, history } = await alignTile(source, generated, asset.factor, tileWeights);
     timing(`tile ${i} warped + residual`);
     const beforeTone = colourStats(source, alignedDown, tileWeights);
-    const matched = toneMatch(aligned, base, asset.sigma);
+    const matched = toneMatch(aligned, base, asset.sigma, !!asset.periodic);
     timing(`tile ${i} tone matched`);
     tileStats.push({ ...colourStats(source, await resize(matched, t.w, t.h), tileWeights), beforeTone,
       preWarp, postWarp, iterations, alignmentHistory: history });
@@ -229,46 +321,42 @@ async function processAsset(asset, opts, promptText, root, invoke) {
   const reasons = [whole, ...tileStats].flatMap((s, i) => acceptanceReasons(s, i === 0 ? 'whole' : `tile ${i - 1}`, opts.maxMae));
   const fmt = (n) => n.toFixed(2);
   console.log(`${asset.src}: pre median/p90 ${fmt(preWarp.median)}/${fmt(preWarp.p90)}; post median/p90/max ${fmt(postWarp.median)}/${fmt(postWarp.p90)}/${fmt(postWarp.max)} source px; reliable ${(postWarp.reliableShare * 100).toFixed(1)}%; ${reasons.length ? 'REJECTED' : 'PASS'}`);
-  await json(resolve(cache, 'stats.json'), { whole, tiles: tileStats, rejected: reasons.length > 0, acceptedOverride: !!opts.accept, reasons, notes });
   let master = sharp(bytes(merged), { raw: geometry(merged) });
   if (metadata.hasAlpha) {
-    const alpha = await sharp(sourceBytes).toColourspace('srgb').ensureAlpha().extractChannel('alpha').resize(plan.outW, plan.outH, { kernel: 'lanczos3' }).raw().toBuffer();
-    master = master.joinChannel(alpha, { raw: { width: plan.outW, height: plan.outH, channels: 1 } });
+    const restored = halo ? await resize(rgba, plan.outW, plan.outH) : await raw(sharp(bytes(rgba), { raw: geometry(rgba) }).resize(plan.outW, plan.outH, { kernel: 'lanczos3' }));
+    const alphaBytes = Uint8Array.from({ length: restored.width * restored.height }, (_, p) => restored.data[p * 4 + 3]);
+    master = master.joinChannel(alphaBytes, { raw: { width: plan.outW, height: plan.outH, channels: 1 } });
   }
-  const masterPath = resolve(cache, 'master.png');
-  await master.png().toFile(masterPath);
-  timing('master written');
-  if (reasons.length && !opts.accept) throw new Error(`REJECTED: ${reasons.join('; ')} (review stats.json; --accept overrides)`);
-  if (opts.verify) {
-    if (!await exists(output)) {
-      console.log(`${relative(root, output)} not shipped; verified gates only`);
-      return;
-    }
-    const encoded = await sharp(masterPath).webp(asset.lossless ? { lossless: true } : webpOptions(asset.quality)).toBuffer();
-    if (!encoded.equals(await readFile(output))) throw new Error('remerge differs from shipped bytes; output and lock left untouched');
-    await writeLockEntry(root, asset, lockEntry(sourceBytes, asset, key));
-    console.log(`${relative(root, output)} byte-identical; provenance locked`);
-    return;
-  }
-  const temporary = output + '.pending';
-  await sharp(masterPath).webp(asset.lossless ? { lossless: true } : webpOptions(asset.quality)).toFile(temporary);
-  await rename(temporary, output);
-  await writeLockEntry(root, asset, lockEntry(sourceBytes, asset, key));
+  let finished = await raw(master.ensureAlpha());
+  if (halo) finished = await crop(finished, { x: halo * 2, y: halo * 2, w: width * 2, h: height * 2 });
+  if (region) finished = placeRegion(resample(full), { x: region.x * 2, y: region.y * 2 }, finished);
+  await finishAsset(asset, opts, root, sourceBytes, full, finished, cache, key, reasons, { whole, tiles: tileStats, notes, ...(region ? { requestCrop: region } : {}) });
   timing('webp written');
-  console.log(`${relative(root, output)} written${reasons.length ? ' (--accept)' : ''}`);
 }
 
 export async function main(args = process.argv.slice(2), { root = ROOT, invoke = run } = {}) {
   const opts = cliOptions(args);
   const manifest = validateManifest(JSON.parse(await readFile(resolve(root, opts.manifest), 'utf8')));
   const prompt = await readFile(resolve(root, 'art/prompts/hires/upscale.txt'), 'utf8');
-  const assets = manifest.assets.filter((a) => !opts.only || a.src.includes(opts.only));
+  const selected = manifest.assets.filter((a) => !opts.only || a.src.includes(opts.only));
+  const families = new Set(selected.map((a) => a.family).filter(Boolean));
+  const assets = manifest.assets.filter((a) => selected.includes(a) || families.has(a.family))
+    .toSorted((a, b) => Number(!!a.family && a.src !== a.reference) - Number(!!b.family && b.src !== b.reference));
+  opts.assets = manifest.assets;
+  const summary = { api: 0, external: 0, resample: 0, requests: 0, externalTiles: 0 };
+  const failedFamilies = new Set();
   if (!assets.length && !opts.requests) console.log('No matching hires assets; estimated requests 0.');
   let failed = false;
   for (const asset of assets) {
-    try { await processAsset(asset, opts, prompt, root, invoke); }
-    catch (error) { failed = true; console.error(`${asset.src}: ${error.message}`); }
+    if (asset.family && failedFamilies.has(asset.family)) { console.error(`${asset.src}: family blocked by a failed member`); continue; }
+    try {
+      const plan = await processAsset(asset, opts, prompt, root, invoke);
+      summary[asset.provider]++;
+      if (plan?.provider === 'api') summary.requests += plan.requests;
+      if (plan?.provider === 'external') summary.externalTiles += plan.requests;
+    } catch (error) { failed = true; if (asset.family) failedFamilies.add(asset.family); console.error(`${asset.src}: ${error.message}`); }
   }
+  if (opts.dry) console.log(`Plan: ${assets.length} assets; api ${summary.api}, external ${summary.external}, resample ${summary.resample}; estimated API requests ${summary.requests}; external tiles ${summary.externalTiles}.`);
   return failed ? 1 : 0;
 }
 
