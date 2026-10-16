@@ -1,5 +1,25 @@
 export const API_LIMITS = Object.freeze({ multiple: 16, maxEdge: 3840, minAspect: 1 / 3, maxAspect: 3, minPixels: 655360, maxPixels: 8294400 });
 
+// Ignore <=2% API size rounding: 1714 -> 1728, and the shipped 42x28
+// tile on a 992x672 minimum-area canvas (1.61%). Preserve their paid keys.
+// Symmetric in orientation: a portrait and its transpose make the same decision.
+export const API_PADDING_TOLERANCE = 0.02;
+
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+
+const requestPadding = (tile) => {
+  const aspect = tile.apiW / tile.apiH, sourceAspect = tile.w / tile.h;
+  if (Math.max(aspect / sourceAspect, sourceAspect / aspect) - 1 <= API_PADDING_TOLERANCE) return tile;
+  // Integer multiples of the reduced API aspect preserve source pixels and
+  // match the canvas exactly, even when minimum-area sizing enlarges both axes.
+  const divisor = gcd(tile.apiW, tile.apiH);
+  const unitW = tile.apiW / divisor, unitH = tile.apiH / divisor;
+  const units = Math.ceil(Math.max(tile.w / unitW, tile.h / unitH));
+  const requestW = unitW * units, requestH = unitH * units;
+  return { ...tile, requestW, requestH,
+    padLeft: Math.floor((requestW - tile.w) / 2), padTop: Math.floor((requestH - tile.h) / 2) };
+};
+
 const axis = (size, count, overlap) => Array.from({ length: count }, (_, i) => {
   if (count === 1) return [0, size];
   const start = Math.floor(i * (size - overlap) / count);
@@ -62,7 +82,7 @@ export function planTiles({ width, height, factor, overlap = 64, limits = API_LI
           if (!sizeCache.has(key)) sizeCache.set(key, ow && oh ? apiSize(ow, oh, l) : undefined);
           const api = sizeCache.get(key);
           if (!api) { valid = false; break; }
-          tiles.push({ x, y, w: right - x, h: bottom - y, ox, oy, ow, oh, apiW: api[0], apiH: api[1] });
+          tiles.push(requestPadding({ x, y, w: right - x, h: bottom - y, ox, oy, ow, oh, apiW: api[0], apiH: api[1] }));
         }
         if (!valid) break;
       }

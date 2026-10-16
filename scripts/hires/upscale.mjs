@@ -7,7 +7,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { webpOptions } from '../webp.mjs';
 import { planTiles } from './tiles.mjs';
-import { planExternalTiles, normalizationSize } from './external.mjs';
+import { planExternalTiles } from './external.mjs';
+import { padRequestCanvas, extractRequestTile } from './canvas.mjs';
 import { blendTiles, colourStats, composeFlow, estimateFlow, padTransparent, placeRegion, toneMatch, warp } from './merge.mjs';
 import { resample, seamStats, wrapRegion, periodicHalo } from './periodic.mjs';
 import { canonicaliseTransparent, registerState, stateRequestCrop, stateStats, derivationDigest, stateGateWeights, cropWeights, stateEvidence, residualRouting, transferResidual, residualDiagnostics, changeReproduction, statePolicy } from './states.mjs';
@@ -360,7 +361,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     return;
   }
   const requests = opts.remerge ? 0 : opts.force ? present.length : missing.length;
-  console.log(`${asset.src}: ${metadata.width}x${metadata.height} -> ${plan.outW}x${plan.outH}; ${plan.tiles.length} tiles; ${external ? 'external' : 'API'} ${plan.tiles.map((t) => `${t.apiW}x${t.apiH}`).join(', ')}; estimated requests ${requests} ${external ? '' : `(up to ${requests + opts.retryRejected} including asset retry budget)`}`);
+  console.log(`${asset.src}: ${metadata.width}x${metadata.height} -> ${plan.outW}x${plan.outH}; ${plan.tiles.length} tiles; ${external ? 'external' : 'API'} ${plan.tiles.map((t) => `${t.apiW}x${t.apiH}${t.requestW ? ` (padded input ${t.requestW}x${t.requestH}, offset ${t.padLeft},${t.padTop})` : ''}`).join(', ')}; estimated requests ${requests} ${external ? '' : `(up to ${requests + opts.retryRejected} including asset retry budget)`}`);
   if (opts.remerge && missing.length) {
     console.log(`${asset.src}: SKIPPED --remerge; missing cached tiles: ${missing.join(', ')}`);
     return;
@@ -388,11 +389,9 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
       const requestPath = resolve(cache, `tile-${i}-in.png`), outputPath = resolve(cache, `tile-${i}.png`);
       if (present[i]) continue;
       const tile = await crop(padded, t);
-      const canvas = await raw(sharp(bytes(tile), { raw: geometry(tile) }).ensureAlpha().extend({
-        left: t.padLeft, right: t.requestW - t.w - t.padLeft,
-        top: t.padTop, bottom: t.requestH - t.h - t.padTop, background: { r: 0, g: 0, b: 0, alpha: 0 },
-      }));
-      const filled = asset.periodic ? wrapRegion(periodicSource, t.x - t.padLeft - halo, t.y - t.padTop - halo, t.requestW, t.requestH) : padTransparent(canvas);
+      const filled = asset.periodic
+        ? wrapRegion(periodicSource, t.x - t.padLeft - halo, t.y - t.padTop - halo, t.requestW, t.requestH)
+        : await padRequestCanvas(tile, t);
       await sharp(bytes(filled), { raw: geometry(filled) }).png().toFile(requestPath);
       if (!context.attempts.tiles[i]) {
         context.attempts.tiles[i] = 1;
@@ -414,7 +413,11 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
   if (!external) await mapJobs(plan.tiles, opts.jobs, async (t, i) => {
     const input = resolve(cache, `tile-${i}-in.png`), output = resolve(cache, `tile-${i}.png`);
     if (opts.remerge || (!opts.force && await exists(output))) return;
-    const inputBytes = await sharp(bytes(await crop(padded, t)), { raw: { width: t.w, height: t.h, channels: 3 } }).png().toBuffer();
+    const inputTile = await crop(padded, t);
+    const inputCanvas = t.requestW && periodicSource
+      ? wrapRegion(periodicSource, t.x - t.padLeft - halo, t.y - t.padTop - halo, t.requestW, t.requestH)
+      : await padRequestCanvas(inputTile, t);
+    const inputBytes = await sharp(bytes(inputCanvas), { raw: geometry(inputCanvas) }).png().toBuffer();
     if (inputBytes.length >= 50_000_000) throw new Error(`tile ${i} input exceeds the API's 50MB limit`);
     await writeFile(input, inputBytes);
     await rm(output, { force: true });
@@ -454,17 +457,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     let generated;
     const tilePath = resolve(cache, `tile-${i}.png`);
     try {
-      if (external) {
-        const info = await sharp(tilePath).metadata();
-        if ((info.pages ?? 1) > 1) throw new Error('animated external output is not supported');
-        const size = normalizationSize(info.width, info.height, t);
-        // Resize the complete request canvas, then remove only our known padding.
-        const normalized = await sharp(tilePath).toColourspace('srgb').removeAlpha()
-          .resize(size.width, size.height, { fit: 'fill', kernel: 'lanczos3' }).png().toBuffer();
-        generated = await raw(sharp(normalized).extract({ left: t.padLeft * asset.factor, top: t.padTop * asset.factor, width: t.ow, height: t.oh }));
-      } else {
-        generated = await raw(sharp(tilePath).toColourspace('srgb').removeAlpha().resize(t.ow, t.oh, { fit: 'fill', kernel: 'lanczos3' }));
-      }
+      generated = await extractRequestTile(await readFile(tilePath), t);
     } catch (error) {
       if (deterministicError(error)) throw error;
       throw new CandidateRejected(`tile ${i}: ${error.message}`, [i]);
@@ -587,7 +580,7 @@ export async function currentCandidateKey(asset, sourceBytes, promptText, root, 
   return assetCacheKey(sourceBytes, asset, requestPrompt(promptText, asset, plan), normalBytes ? { normalSha256: sourceSha256(normalBytes), region: region ?? null } : null);
 }
 
-const requestPrompt = (promptText, asset, plan) => [promptText.trim(), ...(plan.tiles.length > 1 ? ['Image 1 is a crop of a larger painting: keep its edges continuous; no border, vignette or frame at the edges.'] : []), ...(asset.provider === 'external' ? ['The input includes padding. Preserve the entire canvas and padding exactly; do not crop, reframe or enlarge the subject.'] : []), ...(asset.note ? [asset.note] : [])].join('\n') + '\n';
+const requestPrompt = (promptText, asset, plan) => [promptText.trim(), ...(plan.tiles.length > 1 ? ['Image 1 is a crop of a larger painting: keep its edges continuous; no border, vignette or frame at the edges.'] : []), ...(asset.provider === 'external' || plan.tiles.some((t) => t.requestW) ? ['The input includes padding. Preserve the entire canvas and padding exactly; do not crop, reframe or enlarge the subject.'] : []), ...(asset.note ? [asset.note] : [])].join('\n') + '\n';
 
 // Inspect encoded files and metadata only; never load cached tiles or merge pixels.
 async function isUpToDate(asset, lock, root, assets) {
