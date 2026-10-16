@@ -11,11 +11,13 @@ import { planExternalTiles, normalizationSize } from './external.mjs';
 import { blendTiles, colourStats, composeFlow, estimateFlow, padTransparent, placeRegion, toneMatch, warp } from './merge.mjs';
 import { resample, seamStats, wrapRegion, periodicHalo } from './periodic.mjs';
 import { canonicaliseTransparent, registerState, stateRequestCrop, stateStats, derivationDigest, stateGateWeights, cropWeights, stateEvidence } from './states.mjs';
+import { protectGlyphs, protectedStats } from './protect.mjs';
+import { smoothField } from './generators.mjs';
 import { detailStats } from './detail.mjs';
 import { CandidateRejected, retrySelection } from './retries.mjs';
 import { sheenImage } from '../framed-pane.mjs';
-import { assetCacheKey, validateManifest } from './manifest.mjs';
-import { lockEntry, lockMatches, outputPath, readLock, sourceSha256, writeLockEntry } from './lock.mjs';
+import { assetCacheKey, validateManifest, validateProtection, orderAssets } from './manifest.mjs';
+import { lockEntry, lockMatches, outputPath, readLock, sourceSha256, writeLockEntry, outputProof, generatorDependency, generatorName } from './lock.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const exists = async (path) => access(path).then(() => true, () => false);
@@ -96,14 +98,6 @@ export async function alignTile(source, generated, factor, weights) {
   return { down, aligned, alignedDown, preWarp: pre.diagnostics, postWarp: residual.diagnostics, iterations: history.length - 1, history };
 }
 
-async function outputProof(asset, sourceBytes, outputBytes, root) {
-  const source = await sharp(sourceBytes).metadata(), output = await sharp(outputBytes).metadata();
-  const reference = asset.family && asset.reference !== asset.src;
-  return { outputBytes, width: output.width, height: output.height, sourceWidth: source.width, sourceHeight: source.height,
-    ...(reference ? { referenceBytes: await readFile(resolve(root, asset.reference)),
-      referenceOutputBytes: await readFile(resolve(root, outputPath({ src: asset.reference, factor: 2 }))) } : {}) };
-}
-
 async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, reasons, stats) {
   const output = resolve(root, outputPath(asset));
   let derivation, reference, normal;
@@ -112,7 +106,7 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
     const normalBytes = await readFile(resolve(root, asset.reference));
     const referenceBytes = await readFile(resolve(root, outputPath(normalAsset)));
     const lock = await readLock(root);
-    if (!lockMatches(lock.assets[outputPath(normalAsset)], normalBytes, normalAsset, await outputProof(normalAsset, normalBytes, referenceBytes, root))) throw new Error('canonical reference is stale or unlocked');
+    if (!lockMatches(lock.assets[outputPath(normalAsset)], normalBytes, normalAsset, await outputProof(normalAsset, normalBytes, referenceBytes, root, opts.assets))) throw new Error('canonical reference is stale or unlocked');
     normal = await raw(sharp(normalBytes).toColourspace('srgb').ensureAlpha());
     reference = await raw(sharp(referenceBytes).toColourspace('srgb').ensureAlpha());
     derivation = derivationDigest(sourceBytes, normalBytes, referenceBytes, asset.sigma);
@@ -122,6 +116,21 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
       master = registerState(rgba, normal, reference, master);
       await sharp(bytes(master), { raw: geometry(master) }).png().toFile(derivedPath);
     }
+  }
+  if (asset.protect) {
+    master = protectGlyphs(rgba, master, asset.protect, asset.protectFeather ?? 6);
+    stats.protect = asset.protect;
+    stats.protectFeather = asset.protectFeather ?? 6;
+    // Protection changes the delivered image. Gate each contributing tile and
+    // the whole protected master, rather than the discarded model lettering.
+    const down = await resize(master, rgba.width, rgba.height);
+    const support = reference ? stateGateWeights(rgba, normal) : undefined;
+    stats.whole = protectedStats(rgba, down, support);
+    stats.tiles = await Promise.all((stats.gateRegions ?? []).map(async (t) => protectedStats(await crop(rgba, t), await crop(down, t), support ? cropWeights(support, rgba.width, t) : undefined)));
+    stats.notes = [stats.whole, ...stats.tiles].flatMap((s, i) => s.gateable ? [] : [`${i ? `tile ${i - 1}` : 'whole'}: gate skipped: ${s.note}`]);
+    reasons = [stats.whole, ...stats.tiles].flatMap((s, i) => acceptanceReasons(s, i ? `tile ${i - 1}` : 'whole', opts.maxMae));
+    stats.retryTiles = stats.tiles.flatMap((s, i) => acceptanceReasons(s, 'tile', opts.maxMae).length ? [i] : []);
+    console.log(`${asset.src}: protected conformance ${reasons.length ? 'REJECTED' : 'PASS'}`);
   }
   if (asset.family) master = canonicaliseTransparent(master);
   const encoded = await sharp(bytes(master), { raw: geometry(master) }).webp(asset.lossless || asset.family ? { lossless: true } : webpOptions(asset.quality)).toBuffer();
@@ -148,7 +157,8 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
   if (invariantReasons.length) throw new Error(`REJECTED: ${stats.reasons.join('; ')}`);
   if (hardReasons.length || (reasons.length && !opts.accept)) throw new CandidateRejected(`REJECTED: ${stats.reasons.join('; ')} (review stats.json; --accept overrides conformance gates only)`, stats.retryTiles?.length ? stats.retryTiles : stats.tiles?.map((_, i) => i));
   const proof = { outputSha256: sourceSha256(encoded), width: decoded.width, height: decoded.height,
-    ...(derivation ? { derivationDigest: derivation } : {}) };
+    ...(derivation ? { derivationDigest: derivation } : {}),
+    ...(stats.dependencies ? { dependencies: stats.dependencies } : {}) };
   const entry = lockEntry(sourceBytes, asset, key, { ...proof, ...(stats.acceptedOverride ? { accepted: true } : {}) });
   if (opts.verify) {
     if (!await exists(output)) { console.log(`${relative(root, output)} not shipped; verified gates only`); return; }
@@ -170,6 +180,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
   if (!((await realpath(srcPath)).startsWith(publicPath + sep))) throw new Error('src resolves outside public/');
   const sourceBytes = await readFile(srcPath);
   const metadata = await sharp(sourceBytes).metadata();
+  validateProtection(asset, metadata.width, metadata.height);
   if ((metadata.pages ?? 1) > 1) throw new Error('animated or multi-page sources are not supported');
   const external = asset.provider === 'external';
   const deterministic = asset.provider === 'resample';
@@ -185,15 +196,17 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     if (opts.requests) return;
     const rgba = await raw(sharp(sourceBytes).toColourspace('srgb').ensureAlpha());
     const detail = detailStats(rgba);
-    if (!detail.passes) throw new Error(`resample refused: HF RMS ${detail.hfRms.toFixed(4)}/255 > ${detail.limit}/255; use a generative provider`);
+    // For seals, glyph fidelity outweighs recovered detail; generators synthesize their own field.
+    if (!asset.generator && !asset.glyphs && !detail.passes) throw new Error(`resample refused: HF RMS ${detail.hfRms.toFixed(4)}/255 > ${detail.limit}/255; use a generative provider`);
+    const dependency = !opts.dry && asset.generator?.type === 'smooth-field' ? await generatorDependency(asset, root, opts.assets) : null;
     console.log(`${asset.src}: ${metadata.width}x${metadata.height} -> ${metadata.width * 2}x${metadata.height * 2}; resample; estimated requests 0`);
     if (opts.dry) return { provider: asset.provider, requests: 0, tiles: 0 };
     const key = assetCacheKey(sourceBytes, asset, promptText);
     const cache = resolve(root, process.env.HIRES_CACHE ?? 'art/raw/hires', asset.src.slice(7, -extname(asset.src).length), key.slice(0, 12));
     await mkdir(cache, { recursive: true });
-    if (asset.generator && (rgba.width !== rgba.height || rgba.width !== 256)) throw new Error('sheen generator requires a 256px square source');
-    const master = asset.generator ? sheenImage(rgba.width * 2, asset.generator) : resample(rgba, 2, !!asset.periodic);
-    await finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, [], { detail, attempts: { requests: 0, retries: 0 }, generator: asset.generator ? 'framed-pane/sheen-v1' : 'premultiplied-bilinear-v1' });
+    if (asset.generator?.type === 'sheen' && (rgba.width !== rgba.height || rgba.width !== 256)) throw new Error('sheen generator requires a 256px square source');
+    const master = dependency ? await smoothField(dependency.dependencyBytes, asset.generator) : asset.generator ? sheenImage(rgba.width * 2, asset.generator) : resample(rgba, 2, !!asset.periodic);
+    await finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, [], { detail, attempts: { requests: 0, retries: 0 }, generator: generatorName(asset), ...(dependency ? { dependencies: { [asset.generator.from]: sourceSha256(dependency.dependencyBytes) } } : {}) });
     return;
   }
   if (opts.requests && !external) return;
@@ -353,7 +366,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
   for (const note of notes) console.log(`${asset.src}: ${note}`);
   const reasons = [whole, ...tileStats].flatMap((s, i) => acceptanceReasons(s, i === 0 ? 'whole' : `tile ${i - 1}`, opts.maxMae));
   const fmt = (n) => n.toFixed(2);
-  console.log(`${asset.src}: pre median/p90 ${fmt(preWarp.median)}/${fmt(preWarp.p90)}; post median/p90/max ${fmt(postWarp.median)}/${fmt(postWarp.p90)}/${fmt(postWarp.max)} source px; reliable ${(postWarp.reliableShare * 100).toFixed(1)}%; ${reasons.length ? 'REJECTED' : 'PASS'}`);
+  if (!asset.protect) console.log(`${asset.src}: pre median/p90 ${fmt(preWarp.median)}/${fmt(preWarp.p90)}; post median/p90/max ${fmt(postWarp.median)}/${fmt(postWarp.p90)}/${fmt(postWarp.max)} source px; reliable ${(postWarp.reliableShare * 100).toFixed(1)}%; ${reasons.length ? 'REJECTED' : 'PASS'}`);
   let master = sharp(bytes(merged), { raw: geometry(merged) });
   if (metadata.hasAlpha) {
     const restored = halo ? await resize(rgba, plan.outW, plan.outH) : await raw(sharp(bytes(rgba), { raw: geometry(rgba) }).resize(plan.outW, plan.outH, { kernel: 'lanczos3' }));
@@ -367,6 +380,11 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
   const retryTiles = rejectedTiles.length ? rejectedTiles : acceptanceReasons(whole, 'whole', opts.maxMae).length ? plan.tiles.map((_, i) => i) : [];
   await finishAsset(asset, opts, root, sourceBytes, full, finished, cache, key, reasons, { whole, tiles: tileStats, notes, attempts: context.attempts,
     gateScope: gateWeights ? 'state-mask-plus-4-source-px' : 'whole',
+    ...(asset.protect ? { gateRegions: plan.tiles.map((t) => {
+      const x = t.x - halo + (region?.x ?? 0), y = t.y - halo + (region?.y ?? 0);
+      const left = Math.max(0, x), top = Math.max(0, y);
+      return { x: left, y: top, w: Math.min(full.width, x + t.w) - left, h: Math.min(full.height, y + t.h) - top };
+    }).filter((r) => r.w > 0 && r.h > 0) } : {}),
     retryTiles, ...(region ? { requestCrop: region } : {}) });
   timing('webp written');
 }
@@ -415,13 +433,13 @@ async function processAsset(asset, opts, promptText, root, invoke) {
 }
 
 // Inspect encoded files and metadata only; never load cached tiles or merge pixels.
-async function isUpToDate(asset, lock, root) {
+async function isUpToDate(asset, lock, root, assets) {
   const entry = lock.assets[outputPath(asset)];
   if (!entry) return false;
   try {
     const sourceBytes = await readFile(resolve(root, asset.src));
     const outputBytes = await readFile(resolve(root, outputPath(asset)));
-    const proof = await outputProof(asset, sourceBytes, outputBytes, root);
+    const proof = await outputProof(asset, sourceBytes, outputBytes, root, assets);
     // Legacy locks have no output proof. Supply observed metadata in memory so
     // the existing recipe/family validation still applies without backfilling.
     const legacy = ['outputSha256', 'width', 'height'].every((key) => !Object.hasOwn(entry, key));
@@ -439,29 +457,45 @@ export async function main(args = process.argv.slice(2), { root = ROOT, invoke =
   const opts = cliOptions(args);
   const manifest = validateManifest(JSON.parse(await readFile(resolve(root, opts.manifest), 'utf8')));
   const prompt = await readFile(resolve(root, 'art/prompts/hires/upscale.txt'), 'utf8');
-  const selected = manifest.assets.filter((a) => !opts.only || a.src.includes(opts.only));
-  const families = new Set(selected.map((a) => a.family).filter(Boolean));
-  const candidates = manifest.assets.filter((a) => selected.includes(a) || families.has(a.family))
-    .toSorted((a, b) => Number(!!a.family && a.src !== a.reference) - Number(!!b.family && b.src !== b.reference));
+  const selected = new Set(manifest.assets.filter((a) => !opts.only || a.src.includes(opts.only)));
+  // Close selection over families and output dependencies, including transitive ones.
+  let size;
+  do {
+    size = selected.size;
+    for (const asset of [...selected]) for (const candidate of manifest.assets) {
+      if ((asset.family && candidate.family === asset.family) || outputPath(candidate) === asset.generator?.from) selected.add(candidate);
+    }
+  } while (selected.size !== size);
+  const candidates = orderAssets(manifest.assets.filter((a) => selected.has(a)));
   const lock = opts.pending ? await readLock(root) : null;
-  const states = await Promise.all(candidates.map(async (asset) => ({ asset, valid: opts.pending && await isUpToDate(asset, lock, root) })));
-  const pendingFamilies = new Set(states.filter(({ asset, valid }) => asset.family && !valid).map(({ asset }) => asset.family));
-  const assets = states.filter(({ asset, valid }) => !valid || pendingFamilies.has(asset.family)).map(({ asset }) => asset);
+  const states = await Promise.all(candidates.map(async (asset) => ({ asset, valid: opts.pending && await isUpToDate(asset, lock, root, manifest.assets) })));
+  let pendingFamilies = new Set(states.filter(({ asset, valid }) => asset.family && !valid).map(({ asset }) => asset.family));
+  let changed;
+  do {
+    changed = false;
+    pendingFamilies = new Set(states.filter(({ asset, valid }) => asset.family && !valid).map(({ asset }) => asset.family));
+    const stale = new Set(states.filter(({ valid }) => !valid).map(({ asset }) => outputPath(asset)));
+    for (const state of states) if (state.valid && (stale.has(state.asset.generator?.from) || pendingFamilies.has(state.asset.family))) {
+      state.valid = false; changed = true;
+    }
+  } while (changed);
+  const assets = states.filter(({ valid }) => !valid).map(({ asset }) => asset);
   const skipped = candidates.length - assets.length;
   opts.assets = manifest.assets;
   const summary = { api: 0, external: 0, resample: 0, requests: 0, externalTiles: 0 };
-  const failedFamilies = new Set();
+  const failedFamilies = new Set(), failedOutputs = new Set();
   if (!candidates.length && !opts.requests) console.log('No matching hires assets; estimated requests 0.');
   if (opts.pending && !opts.requests) console.log(`Skipped ${skipped} assets as up to date.`);
   let failed = false;
   for (const asset of assets) {
-    if (asset.family && failedFamilies.has(asset.family)) { console.error(`${asset.src}: family blocked by a failed member`); continue; }
+    if (asset.family && failedFamilies.has(asset.family)) { failedOutputs.add(outputPath(asset)); console.error(`${asset.src}: family blocked by a failed member`); continue; }
+    if (failedOutputs.has(asset.generator?.from)) { failed = true; failedOutputs.add(outputPath(asset)); console.error(`${asset.src}: generator dependency failed`); continue; }
     try {
       const plan = await processSelectedAsset(asset, opts, prompt, root, invoke);
       summary[asset.provider]++;
       if (plan?.provider === 'api') summary.requests += plan.requests;
       if (plan?.provider === 'external') summary.externalTiles += plan.requests;
-    } catch (error) { failed = true; if (asset.family && asset.reference === asset.src) failedFamilies.add(asset.family); console.error(`${asset.src}: ${error.message}`); }
+    } catch (error) { failed = true; failedOutputs.add(outputPath(asset)); if (asset.family && asset.reference === asset.src) failedFamilies.add(asset.family); console.error(`${asset.src}: ${error.message}`); }
   }
   if (opts.dry) console.log(`Plan: ${assets.length} assets; api ${summary.api}, external ${summary.external}, resample ${summary.resample}; estimated API requests ${summary.requests}; external tiles ${summary.externalTiles}.`);
   return failed ? 1 : 0;

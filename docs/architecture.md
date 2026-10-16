@@ -927,19 +927,49 @@ selected shipped files through the API or an external generator and conforms the
   Tests retain real controls and reject encoded 12/20-code boundary damage.
   Enamel-day's reviewed 3x3 repeat has no obvious boundary seam: decoded error
   jump RMS/p99 1.50/6, derivative 1.74/7; post-flow median/p90 0.25/0.35 source px.
+- **Protected glyphs**: API/external entries can supply a non-empty `protect`
+  array of `{ x, y, w, h }` rectangles in source pixels. Integer rectangles
+  must lie inside the source, with positive sizes. `protectFeather` defaults
+  to 6 output pixels and accepts integers 0–64. At exact 2x, after merging,
+  tone and alpha restoration, the deterministic premultiplied bilinear source
+  replaces each rectangle exactly; a smoothstep feather extends outside it.
+  Overlaps use maximum coverage. Pixels beyond the feather stay unchanged.
+  Conformance gates inspect the protected master, including its tile regions,
+  before encoding. `stats.json` records `protect` and `protectFeather`.
+  Protection changes the processing recipe and invalidates the lock, including
+  when removed, but never enters the tile cache key or request prompt. Rect
+  edits therefore reuse paid tiles.
 - **Deterministic maps**: `provider: "resample"` bypasses all model requests and
   produces exact 2x by deterministic premultiplied bilinear interpolation.
   It first refuses detail with HF RMS above **0.6/255**, including in `--dry`;
   `--accept` cannot override this provider constraint. HF is RMS(C - Gaussian
   sigma=1(C)) over composited RGB, measured over black and white and taking
   the worse result. Transparent RGB never counts as detail, but alpha texture
-  does. The source check also applies to analytic generators. Five cleared
+  does. `glyphs: true` is allowed only on resample entries and is recorded in
+  the lock: for small seals, glyph fidelity outweighs recovered detail, so it
+  explicitly exempts them from the HF refusal. Without it, the refusal is
+  unchanged. Generator assets synthesize their own field and are exempt.
+  Five cleared
   Ligne/Cyanotype skies and phone grounds use resample alongside the light maps.
   The six analytic `sheet-{day,night}-light` maps instead supply
   `generator: { "type": "sheen", "color": "ffe6a8", "alpha": 0.3, "streak": 0.12 }`
   (settings vary per finish). They run the same pure `sheenImage` field used by
   `scripts/framed-pane.mjs` / `scripts/build-kit.mjs`, directly at 512px.
   Locks name `premultiplied-bilinear-v1` or `framed-pane/sheen-v1` respectively.
+  Atlas copy skies use `generator: { "type": "smooth-field", "from":
+  "public/kit/atlas/sky-quiet-day@2x.webp", "median": 57, "blur":
+  4.5933014354066986, "grain": 1, "seed": 83 }` (matching night input).
+  Median and blur use output pixels, scaled from the 1672×941 recipe to
+  3840×2160 (25×3840/1672 rounded to odd 57; 2×3840/1672 for blur).
+  The pure byte-input generator median-filters, blurs, then adds seeded
+  Mulberry32 grain shared across each pixel's RGB channels. Its lock model is
+  `smooth-field-v1`; `dependencies` maps `from` to its file SHA-256.
+  The input must be an existing lock-valid manifest output. Changed dependency
+  bytes invalidate the derived lock in CSS checks and `--pending`; a pending
+  upstream regeneration also makes downstream outputs pending. `--only`
+  includes transitive dependencies and families; stable topological ordering
+  puts dependencies first, and cycles are rejected. No derived output ships
+  when its dependency fails.
 - **New provenance**: the manifest and lock remain version 1. New external
   locks name the real tool, `codex-image_gen`, in `model`; historical external
   entries carrying the API model still validate. An overridden conformance or
@@ -950,10 +980,12 @@ selected shipped files through the API or an external generator and conforms the
   shipped bytes and the versioned mask/feather/tone/alpha recipe, and validates
   shipped hashes and exact decoded dimensions before CSS makes them available.
   Unextended API/external entries keep their original cache keys and lock
-  validation contract; new recipe fields enter keys only for opted-in assets.
+  validation contract; new recipe fields enter keys only for opted-in assets, except protection
+  fields, which affect processing and locks only.
   `bun run hires --dry` is read-only and ends with asset counts per provider,
   estimated uncached API requests (before optional retries), and pending
-  external tiles. The current inventory adds 357 assets, excluding glyph art.
+  external tiles. The inventory also includes protected cyanotype glyph art and deterministic
+  Sumi seals; adding manifest entries alone does not publish their twins.
 
 - **Pending assets**: `bun run hires --pending` skips processing assets only when
   their current source and lock match and the shipped output matches its recorded

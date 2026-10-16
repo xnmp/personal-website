@@ -2815,6 +2815,126 @@
       "src": "public/kit/sumi/washi-night.webp",
       "provider": "external",
       "periodic": true
+    },
+    {
+      "src": "public/kit/cyanotype/plate-phone-day.webp",
+      "provider": "api",
+      "protect": [
+        {
+          "x": 735,
+          "y": 95,
+          "w": 160,
+          "h": 210
+        },
+        {
+          "x": 355,
+          "y": 500,
+          "w": 190,
+          "h": 125
+        },
+        {
+          "x": 770,
+          "y": 550,
+          "w": 110,
+          "h": 75
+        },
+        {
+          "x": 0,
+          "y": 455,
+          "w": 340,
+          "h": 410
+        }
+      ]
+    },
+    {
+      "src": "public/kit/cyanotype/plate-phone-night.webp",
+      "provider": "api",
+      "protect": [
+        {
+          "x": 735,
+          "y": 95,
+          "w": 160,
+          "h": 210
+        },
+        {
+          "x": 355,
+          "y": 500,
+          "w": 190,
+          "h": 125
+        },
+        {
+          "x": 770,
+          "y": 550,
+          "w": 110,
+          "h": 75
+        },
+        {
+          "x": 0,
+          "y": 455,
+          "w": 340,
+          "h": 410
+        }
+      ]
+    },
+    {
+      "src": "public/kit/cyanotype/strip-phone-day.webp",
+      "provider": "api",
+      "protect": [
+        {
+          "x": 395,
+          "y": 45,
+          "w": 95,
+          "h": 85
+        }
+      ]
+    },
+    {
+      "src": "public/kit/cyanotype/strip-phone-night.webp",
+      "provider": "api",
+      "protect": [
+        {
+          "x": 395,
+          "y": 45,
+          "w": 95,
+          "h": 85
+        }
+      ]
+    },
+    {
+      "src": "public/kit/sumi/pin-signal.webp",
+      "provider": "resample",
+      "glyphs": true,
+      "lossless": true
+    },
+    {
+      "src": "public/kit/sumi/pin-brass.webp",
+      "provider": "resample",
+      "glyphs": true,
+      "lossless": true
+    },
+    {
+      "src": "public/kit/atlas/sky-copy-day.webp",
+      "provider": "resample",
+      "generator": {
+        "type": "smooth-field",
+        "from": "public/kit/atlas/sky-quiet-day@2x.webp",
+        "median": 57,
+        "blur": 4.5933014354066986,
+        "grain": 1,
+        "seed": 83
+      }
+    },
+    {
+      "src": "public/kit/atlas/sky-copy-night.webp",
+      "provider": "resample",
+      "generator": {
+        "type": "smooth-field",
+        "from": "public/kit/atlas/sky-quiet-night@2x.webp",
+        "median": 57,
+        "blur": 4.5933014354066986,
+        "grain": 1,
+        "seed": 83
+      }
     }
   ]
 }

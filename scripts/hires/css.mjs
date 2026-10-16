@@ -1,5 +1,4 @@
 import postcss from 'postcss';
-import sharp from 'sharp';
 // Next ships this parser; reuse the installed copy so this tool also works offline.
 import valueParser from 'next/dist/compiled/postcss-value-parser/index.js';
 import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
@@ -7,7 +6,7 @@ import { extname, resolve, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { processingRecipe, validateManifest } from './manifest.mjs';
-import { familyMembershipMatches, lockMatches, outputPath, readLock } from './lock.mjs';
+import { familyMembershipMatches, lockMatches, outputPath, readLock, outputProof } from './lock.mjs';
 
 export const HIRES_MEDIA = '(min-resolution: 1.5dppx), (min-width: 2200px)';
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
@@ -292,10 +291,7 @@ export async function checkRepo(root = ROOT) {
       let proof = {};
       if (processingRecipe(asset)) {
         const outputBytes = await readFile(resolve(root, output));
-        const sourceInfo = await sharp(bytes).metadata(), outputInfo = await sharp(outputBytes).metadata();
-        proof = { outputBytes, width: outputInfo.width, height: outputInfo.height, sourceWidth: sourceInfo.width, sourceHeight: sourceInfo.height,
-          ...(asset.family && asset.reference !== asset.src ? { referenceBytes: await readFile(resolve(root, asset.reference)),
-            referenceOutputBytes: await readFile(resolve(root, outputPath({ src: asset.reference, factor: 2 }))) } : {}) };
+        proof = await outputProof(asset, bytes, outputBytes, root, manifest.assets);
       }
       valid = !mismatchedFamilies.has(asset.family) && asset.factor === 2 && lockMatches(lock.assets[output], bytes, asset, proof);
     } catch { valid = false; }
