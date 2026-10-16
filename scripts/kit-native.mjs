@@ -19,7 +19,7 @@ export const KIT_MAE_LIMIT = 1.1;
 // Retain the existing p99.9 guard too: local averaging must not relax it.
 export const KIT_PIXEL_TAIL_LIMIT = 60;
 export const KIT_TAIL_LIMIT = 45;
-const rendererFiles = ['build-kit.mjs', 'kit-native.mjs', 'kit-raster.mjs', 'straighten.mjs', 'state-light.mjs', 'derive-state.mjs', 'paper-shadow.mjs', 'framed-pane.mjs', 'mitre.mjs', 'webp.mjs', 'hires/structure.mjs'];
+const rendererFiles = ['build-kit.mjs', 'kit-native.mjs', 'kit-raster.mjs', 'kit-junction.mjs', 'straighten.mjs', 'state-light.mjs', 'derive-state.mjs', 'paper-shadow.mjs', 'framed-pane.mjs', 'mitre.mjs', 'webp.mjs', 'hires/structure.mjs'];
 const rendererDigest = () => sha(rendererFiles.map((file) => sha(readFileSync(new URL(file, import.meta.url)))).join(':'));
 
 export function kitRecipe(generator, { rawBytes, rawRoot = process.env.HIRES_KIT_RAW ?? resolve('art/raw'), requireRaw = false } = {}) {

@@ -28,7 +28,14 @@ const FRAME = {
   hoverFlags: ["--catch=1", "--catch-width=14", "--sheen=0.14", "--light=ffc25c"],
   pressedFlags: ["--catch=0.45", "--catch-width=14", "--dim=0.8"],
 };
-const CARD = { ...FRAME, src: "card-brass", frame: { t: 13, r: 13, b: 13, l: 13 } };
+const CARD = {
+  ...FRAME, src: "card-brass", frame: { t: 13, r: 13, b: 13, l: 13 },
+  // The pinned painted source has a dark one-source-pixel line at
+  // each gusset/rail junction, visible at native density but filtered away at
+  // 1x. Restore only those narrow source bands from their intact neighbours;
+  // all coordinates refer to the trimmed 1439x839 raw, before native sampling.
+  nativeJunctions: { size: [1439, 839], horizontal: [117, 1320], vertical: [112, 728], depth: 44, radius: 5 },
+};
 // the lamplit brass, graded down from the same art
 const NIGHT_BRASS = [0.66, 0.62, 0.58];
 // a pill lifted into the light: its hairline catches it, its face warms

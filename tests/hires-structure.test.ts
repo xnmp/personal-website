@@ -94,16 +94,17 @@ test('logical bevel lighting interpolates continuously across threshold changes'
 });
 
 
-test('completed material effects retain native opaque detail and resolve changed translucent coverage', () => {
+test('completed material effects retain native detail and composite added coverage', () => {
   const image = (rgba: number[], width: number, height: number) => ({ data: Buffer.from(rgba), info: { width, height, channels: 4 } });
   const before = image([80, 80, 80, 255], 1, 1), after = image([100, 100, 100, 255], 1, 1);
   const native = image([60, 60, 60, 255, 90, 90, 90, 255, 70, 70, 70, 255, 80, 80, 80, 255], 2, 2);
   expect(rasterEffect(native, before, after).data).toEqual(Buffer.from([80, 80, 80, 255, 110, 110, 110, 255, 90, 90, 90, 255, 100, 100, 100, 255]));
   expect(rasterEffect(native, before, before).data).toEqual(native.data);
   const transparent = image([255, 0, 0, 0], 1, 1), enamel = image([210, 180, 120, 200], 1, 1);
-  const filled = rasterEffect(native, transparent, enamel).data;
+  const clearNative = image(Array(4).fill([0, 0, 0, 0]).flat(), 2, 2);
+  const filled = rasterEffect(clearNative, transparent, enamel).data;
   for (let i = 0; i < filled.length; i += 4) expect(Array.from(filled.subarray(i, i + 4))).toEqual([210, 180, 120, 200]);
-  expect(rasterEffect(native, transparent, enamel).data).toEqual(filled);
+  expect(rasterEffect(clearNative, transparent, enamel).data).toEqual(filled);
   expect(() => rasterEffect(before, before, after)).toThrow(/exact 2x/);
 });
 

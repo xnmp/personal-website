@@ -282,6 +282,30 @@ export const scaleField = (data, width, height, channels, density) => {
 };
 export const materialFrame = (material, density) => scaleField(material.frame, material.width, material.height, 1, density);
 
+// An underpaint operation remains present where opaque metal hides it. Keep a
+// one-logical-pixel support margin beneath that metal so interpolating the
+// operation onto a native antialiased edge cannot open a crack. Never extend
+// into clear pixels: the exterior silhouette is not part of the enamel band.
+// RGBA values are premultiplied, with coverage encoded in [0,255].
+export function extendUnderlayUnderMetal(data, metal, width, height) {
+  const out = Float32Array.from(data);
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    const i = y * width + x, p = i * 4;
+    if (metal[i] < 1 || data[p + 3] > 0) continue;
+    let nearest = Infinity, samples = [];
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const nx = x + dx, ny = y + dy, distance = dx * dx + dy * dy;
+      if (!distance || nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+      const q = (ny * width + nx) * 4;
+      if (data[q + 3] <= 0 || distance > nearest) continue;
+      if (distance < nearest) { nearest = distance; samples = []; }
+      samples.push(q);
+    }
+    if (samples.length) for (let k = 0; k < 4; k++) out[p + k] = samples.reduce((sum, q) => sum + data[q + k], 0) / samples.length;
+  }
+  return out;
+}
+
 /**
  * The focus state's base art: `path` with a band of enamel or silk laid in
  * along the pane's edge, `width` px wide in `color`, taking the grain of
@@ -368,6 +392,7 @@ export async function fillet(path, mask, { width, key = 0, color, keyColor = "00
   // Material is resolved before resampling: cleared PNGs have quantized alpha
   // and hidden RGB, so normalizing their texture at device density changes it.
   const captured = captureMaterial ? new Float32Array(W * H * 3) : null;
+  const underlay = captureMaterial && metal ? new Float32Array(W * H * 4) : null;
   const scaledMaterial = material && scaleField(material.data, material.width, material.height, 3, density);
   for (let y = y0; y < y1; y++)
     for (let x = x0; x < x1; x++) {
@@ -388,6 +413,10 @@ export async function fillet(path, mask, { width, key = 0, color, keyColor = "00
       const paint = [0, 1, 2].map((k) => material ? scaledMaterial[i * 3 + k] : Math.min(255, C[k] * grain * crown));
       if (captured) captured.set(paint, i * 3);
       const ink = paint.map((c, k) => (c * strip + K[k] * line) / Math.max(1e-6, strip + line));
+      if (underlay) {
+        for (let k = 0; k < 3; k++) underlay[p + k] = ink[k] * cover;
+        underlay[p + 3] = cover * 255;
+      }
       if (metal) {
         // the metal over the enamel (straight alpha: the art over the band)
         const a = data[p + 3] / 255;
@@ -405,7 +434,8 @@ export async function fillet(path, mask, { width, key = 0, color, keyColor = "00
       if (keep) keep[i] = cover;
     }
   await sharp(data, { raw: { width: W, height: H, channels: 4 } }).png().toFile(out);
-  if (captureMaterial) captureMaterial({ data: captured, frame: mask.band, width: W, height: H });
+  if (captureMaterial) captureMaterial({ data: captured, frame: mask.band, width: W, height: H,
+    ...(underlay ? { underlay: { data: extendUnderlayUnderMetal(underlay, metal, W, H), width: W, height: H } } : {}) });
   return keep;
 }
 

@@ -78,10 +78,10 @@ const floored = async (path, floor) => {
 };
 
 /** trim transparent margin, then resize; returns the path of a PNG base */
-const base = async (name, resize, { gain = 1, alphaFloor = 0 } = {}, out = `${TMP}/${name}.png`, sampleDensity = density) => {
+const base = async (name, resize, { gain = 1, alphaFloor = 0, nativeJunctions } = {}, out = `${TMP}/${name}.png`, sampleDensity = density) => {
   const g = Array.isArray(gain) ? gain : [gain, gain, gain];
   const src = alphaFloor ? await floored(raw(name), alphaFloor) : raw(name);
-  let trimmed = options.kit ? await rasterBase(src, resize, sampleDensity) : await sharp(src).trim({ threshold: 1 }).resize(resize).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let trimmed = options.kit ? await rasterBase(src, resize, sampleDensity, nativeJunctions) : await sharp(src).trim({ threshold: 1 }).resize(resize).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   // Resolve the original integer geometry before scaling: independently
   // rounding an aspect at 2x can add a pixel to an odd-sized 1x base.
   if (density !== 1 && !options.kit) trimmed = await sharp(trimmed.data, { raw: geometry(trimmed.info) }).resize(trimmed.info.width * density, trimmed.info.height * density).raw().toBuffer({ resolveWithObject: true });
@@ -335,7 +335,7 @@ for (const s of kit.sheets ?? []) {
   // narrower base shrinks the frame to fit
   // (`height` fixes the base's height too, for a sheet stored at a scale,
   // `prescale`, whose size at it must come out in whole px)
-  const b = await base(s.src, { width: p.width ?? 1000, ...(p.height && { height: p.height, fit: "fill" }) }, { gain: s.gain ?? 1, alphaFloor: s.alphaFloor }, `${TMP}/${s.name}.png`);
+  const b = await base(s.src, { width: p.width ?? 1000, ...(p.height && { height: p.height, fit: "fill" }) }, { gain: s.gain ?? 1, alphaFloor: s.alphaFloor, nativeJunctions: p.nativeJunctions }, `${TMP}/${s.name}.png`);
   // another sheet from the same art, turned end for end: art lit evenly (a
   // print) has no up, so one raw makes two sheets whose every edge differs
   // (its frame turns with it: the config gives it turned)
@@ -434,7 +434,10 @@ for (const s of kit.sheets ?? []) {
       if (!logicalWindow && entry.turn) writeFileSync(texture.path, await sharp(texture.path).rotate(180).png().toBuffer());
       const textureMask = logicalWindow?.mask ?? await frameMask(texture.path, settings.frame, { rivets: settings.rivets ?? true, feather: settings.feather ?? 0 });
       const logicalKeep = await fillet(texture.path, textureMask, settings.fillet, `${TMP}/${s.name}-material-focus.png`, { captureMaterial: (field) => { material = field; } });
-      if (logicalWindow) logicalWindow.keep = logicalKeep;
+      if (logicalWindow) {
+        logicalWindow.keep = logicalKeep;
+        logicalWindow.underlay = material.underlay;
+      }
     }
     if (logicalWindow) {
       // Start with the native normal. The complete logical focus treatment is
@@ -456,7 +459,7 @@ for (const s of kit.sheets ?? []) {
   } else if (p.pressedFlags) {
     // pressed: the frame sinks out of the light as the sheet goes flat
     const pressed = `${TMP}/${s.name}-pressed.webp`;
-    derive(b.path, pressed, "pressed", ...p.pressedFlags);
+    derive(b.path, pressed, "pressed", ...p.pressedFlags, ...(logicalWindow ? [`--geometry=${logicalWindow.texture.path}`] : []));
     shadow(pressed, dest("pressed"), SHEET_PAD, ...p.pressed);
   } else shadow(b.path, dest("pressed"), SHEET_PAD, ...p.pressed);
   if (want("flat")) shadow(b.path, dest("flat"), SHEET_PAD, ...p.flat);
@@ -480,7 +483,11 @@ for (const s of kit.sheets ?? []) {
         shadow(source, shadowed, 96, ...settings.normal);
         await glaze(shadowed, `${TMP}/${s.name}-logical-${state}.webp`, 96, logicalMask, logicalLight, { ...settings.glass, keep: state === "focus" ? logicalKeep : null });
       }
-      await applyRasterEffect(`${OUT}/${s.name}-normal.webp`, `${TMP}/${s.name}-logical-normal.webp`, `${TMP}/${s.name}-logical-focus.webp`, `${OUT}/${s.name}-focus.webp`);
+      const layer = logicalWindow.underlay;
+      const width = layer.width + 192, height = layer.height + 192;
+      const data = new Float32Array(width * height * 4);
+      for (let y = 0; y < layer.height; y++) data.set(layer.data.subarray(y * layer.width * 4, (y + 1) * layer.width * 4), ((y + 96) * width + 96) * 4);
+      await applyRasterEffect(`${OUT}/${s.name}-normal.webp`, `${TMP}/${s.name}-logical-normal.webp`, `${TMP}/${s.name}-logical-focus.webp`, `${OUT}/${s.name}-focus.webp`, { data, width, height });
     }
     // the key light's pool on the pane, at rest and (stronger) lifted
     if (p.light) await sheen(256, p.light, `${OUT}/${s.name}-light.webp`);

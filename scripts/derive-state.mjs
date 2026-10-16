@@ -118,13 +118,14 @@ for (let y = 0; y < H; y++)
     const gl = Math.hypot(gx, gy) || 1;
     const facing = Math.max(0, (gx + gy) / gl / Math.SQRT2); // n = -grad, L = (-1,-1)/sqrt2
     const bevel = 1 - smooth(Math.min(2 * density, CATCH_W / 3), CATCH_W, d);
-    const catchLight = logicalCatch ? logicalCatch[i] : bevel * facing;
+    // Preserve the legacy left-to-right product at density 1 (rounding is visible).
+    const catchLight = logicalCatch ? CATCH * logicalCatch[i] : CATCH * bevel * facing;
     let rgb;
     if (mode === "pressed") {
-      const shade = DIM * (1 - CATCH * catchLight);
+      const shade = DIM * (1 - catchLight);
       rgb = [0, 1, 2].map((k) => data[p + k] * shade);
     } else {
-      const light = 255 * (SHEEN * fall + CATCH * catchLight);
+      const light = 255 * (SHEEN * fall + catchLight);
       rgb = [0, 1, 2].map((k) => screen(data[p + k], Math.min(255, light * LIGHT[k])));
     }
     if (mode === "focus") {

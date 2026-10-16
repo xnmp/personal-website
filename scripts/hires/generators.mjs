@@ -93,14 +93,16 @@ export async function kitConformance(source, output, generator = { type: 'ink' }
   const tailLimit = KIT_TAIL_LIMIT;
   const limit = generator.type === 'kit' ? KIT_MAE_LIMIT : 1;
   // Native painted kits have explicit 9-slice rail spans: tile pad20+corner40,
-  // sheet pad96+corner56, in logical pixels. Corners are still covered by the
-  // existing pixel and local-error gates; this gate measures rail continuity.
+  // sheet pad96+corner56, in logical pixels. Only the legacy rail statistic
+  // uses this inset; symmetric local structure covers the complete canvas.
   const inset = generator.type === 'kit' ? (kitRecipe(generator).kind === 'tiles' ? 120 : 304) : 0;
   const structure = generator.type === 'kit' ? edgeStructure({ ...output, data: enlarged }, output, { inset }) : null;
   const reasons = [
     ...(mae > limit ? [`ink premultiplied MAE ${mae}/255 exceeds ${limit}/255`] : []),
     ...(tail > tailLimit ? [`ink premultiplied max-3x3-mean ${tail}/255 exceeds Lanczos baseline allowance ${tailLimit}/255`] : []),
-    ...(structure && !structure.passes ? [`ink structure ${structure.peak}/255 exceeds ${structure.limit}/255 (${structure.metric})`] : []),
+    ...(structure && structure.peak > structure.limit ? [`ink structure ${structure.peak}/255 exceeds ${structure.limit}/255 (${structure.metric})`] : []),
+    ...(['added', 'lost', 'coherent'].flatMap(name => structure?.[name] && !structure[name].passes
+      ? [`ink structure ${name} ${structure[name].peak}/255 exceeds ${structure[name].limit}/255`] : [])),
     ...(pixelTail > KIT_PIXEL_TAIL_LIMIT ? [`ink premultiplied p99.9 ${pixelTail}/255 exceeds ${KIT_PIXEL_TAIL_LIMIT}/255`] : []),
   ];
   return { mae, tail, pixelTail, structure, pixelTailLimit: KIT_PIXEL_TAIL_LIMIT, baselineTail, tailLimit, limit,

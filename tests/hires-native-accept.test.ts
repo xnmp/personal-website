@@ -164,3 +164,54 @@ for (const accept of [false, true]) {
     } else await expect(access(join(root, outputPath(asset)))).rejects.toThrow();
   }));
 }
+
+for (const accept of [false, true]) {
+  test(`interior structure rejection ${accept ? 'records --accept override' : 'blocks publication'}`, () => fixture(async (root, asset) => {
+    const rgba = { data: Buffer.alloc(400 * 400 * 4), width: 400, height: 400, channels: 4 };
+    const source = await sharp(rgba.data, { raw: { width: 400, height: 400, channels: 4 } }).webp({ lossless: true }).toBuffer();
+    const master = { data: Buffer.alloc(800 * 800 * 4), width: 800, height: 800, channels: 4 };
+    for (let y = 400; y < 403; y++) for (let x = 400; x < 403; x++) master.data[(y * 800 + x) * 4 + 3] = 255;
+    const work = finishAsset(asset, cliOptions(accept ? ['--accept'] : []), root, source, rgba, master, join(root, 'cache'), 'd'.repeat(64), [], {});
+    if (accept) await work;
+    else await expect(work).rejects.toThrow(/structure added/);
+    const stats = JSON.parse(await readFile(join(root, 'cache/stats.json'), 'utf8'));
+    expect(stats.ink.mae).toBeLessThanOrEqual(stats.ink.limit);
+    expect(stats.ink.tail).toBeLessThanOrEqual(stats.ink.tailLimit);
+    expect(stats.ink.pixelTail).toBeLessThanOrEqual(stats.ink.pixelTailLimit);
+    expect(stats.ink.structure.peak).toBe(0); // No reference edge for the legacy gate.
+    expect(stats.ink.structure.added.passes).toBe(false);
+    expect(stats.gates.invariants).toEqual([]);
+    expect(stats.acceptedOverride).toBe(accept);
+    if (accept) {
+      const lock = JSON.parse(await readFile(join(root, 'art/hires.lock.json'), 'utf8'));
+      expect(lock.assets[outputPath(asset)].acceptedReasons.some((reason: string) => reason.includes("structure added"))).toBe(true);
+      expect((await sharp(join(root, outputPath(asset))).raw().toBuffer())[(401 * 800 + 401) * 4 + 3]).toBe(255);
+    } else {
+      await expect(access(join(root, outputPath(asset)))).rejects.toThrow();
+      await expect(access(join(root, 'art/hires.lock.json'))).rejects.toThrow();
+    }
+  }));
+}
+
+for (const provider of ['api', 'external', 'resample']) {
+  test(`native structure gate does not reject ${provider} assets`, () => fixture(async (root, nativeAsset) => {
+    const asset = validateManifest({ version: 1, defaults: {}, assets: [{
+      src: nativeAsset.src, provider, lossless: true,
+      ...(provider === 'external' ? { external: { sizes: ['1024x1024'] } } : {}),
+    }] }).assets[0];
+    const rgba = { data: Buffer.alloc(96 * 96 * 4), width: 96, height: 96, channels: 4 };
+    const source = await sharp(rgba.data, { raw: { width: 96, height: 96, channels: 4 } }).webp({ lossless: true }).toBuffer();
+    const master = { data: Buffer.alloc(192 * 192 * 4), width: 192, height: 192, channels: 4 };
+    for (let y = 96; y < 99; y++) for (let x = 96; x < 99; x++) master.data[(y * 192 + x) * 4 + 3] = 255;
+    // The same new coverage fails the native gate; the provider's own checks
+    // remain its publication authority. No provider or network call is made.
+    const { kitConformance } = await import('../scripts/hires/generators.mjs');
+    expect((await kitConformance(rgba, master, nativeAsset.generator)).structure?.added.passes).toBe(false);
+    await finishAsset(asset, cliOptions([]), root, source, rgba, master, join(root, 'cache'), 'e'.repeat(64), [], {});
+    const stats = JSON.parse(await readFile(join(root, 'cache/stats.json'), 'utf8'));
+    expect(stats.ink).toBeUndefined();
+    expect(stats.acceptedOverride).toBe(false);
+    const published = await sharp(join(root, outputPath(asset))).ensureAlpha().raw().toBuffer();
+    expect(published[(97 * 192 + 97) * 4 + 3]).toBe(255);
+  }));
+}
