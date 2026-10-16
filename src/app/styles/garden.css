@@ -182,9 +182,13 @@
   --mat-l: 40;
   --bezel-under: #3a3f42;
   --k-key: url(/kit/garden/tile-day-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key: image-set(url(/kit/garden/tile-day-normal@2x.webp) 2x); }
   --k-key-hover: url(/kit/garden/tile-day-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-hover: image-set(url(/kit/garden/tile-day-hover@2x.webp) 2x); }
   --k-key-pressed: url(/kit/garden/tile-day-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-pressed: image-set(url(/kit/garden/tile-day-pressed@2x.webp) 2x); }
   --k-key-focus: url(/kit/garden/tile-day-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-focus: image-set(url(/kit/garden/tile-day-focus@2x.webp) 2x); }
   --k-key-signal: url(/kit/garden/tile-signal-normal.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal: image-set(url(/kit/garden/tile-signal-normal@2x.webp) 2x); }
   --k-key-signal-hover: url(/kit/garden/tile-signal-hover.webp);

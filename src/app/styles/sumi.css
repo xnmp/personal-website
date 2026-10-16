@@ -115,9 +115,13 @@
   --key-ink-soft: #c9c1b0;
   /* the primary: a field of madder red brushed on */
   --k-key-signal: url(/kit/sumi/tile-signal-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal: image-set(url(/kit/sumi/tile-signal-night-normal@2x.webp) 2x); }
   --k-key-signal-hover: url(/kit/sumi/tile-signal-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-hover: image-set(url(/kit/sumi/tile-signal-night-hover@2x.webp) 2x); }
   --k-key-signal-pressed: url(/kit/sumi/tile-signal-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-pressed: image-set(url(/kit/sumi/tile-signal-night-pressed@2x.webp) 2x); }
   --k-key-signal-focus: url(/kit/sumi/tile-signal-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-focus: image-set(url(/kit/sumi/tile-signal-night-focus@2x.webp) 2x); }
   --key-signal-ink: #fbf3e4; /* cream on madder */
   --key-signal-under: #9c2f29;
   /* round seals, in the painting's own inks: sumi (off), ochre (paused) and
@@ -184,9 +188,13 @@
   --k-key-pressed: url(/kit/sumi/tile-day-pressed.webp);
   --k-key-focus: url(/kit/sumi/tile-day-focus.webp);
   --k-key-signal: url(/kit/sumi/tile-signal-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal: image-set(url(/kit/sumi/tile-signal-normal@2x.webp) 2x); }
   --k-key-signal-hover: url(/kit/sumi/tile-signal-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-hover: image-set(url(/kit/sumi/tile-signal-hover@2x.webp) 2x); }
   --k-key-signal-pressed: url(/kit/sumi/tile-signal-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-pressed: image-set(url(/kit/sumi/tile-signal-pressed@2x.webp) 2x); }
   --k-key-signal-focus: url(/kit/sumi/tile-signal-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-focus: image-set(url(/kit/sumi/tile-signal-focus@2x.webp) 2x); }
   --k-drift-cloud: none;
   --motes: #fff6e2;
   --motes-kind: dust;

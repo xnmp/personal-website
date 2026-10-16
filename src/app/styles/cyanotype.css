@@ -36,6 +36,7 @@
   /* the same print with everything drawn on it taken out, registered to it
      (the type's knock-out, below) */
   --k-ground: url(/kit/cyanotype/scene/ground-night/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ground: url(/kit/cyanotype/scene/ground-night/sky@2x.webp); }
   /* the print is the whole scene: one layer, its photograms printed in it */
   --k-sun: none;
   --sun-sw: 1;
@@ -130,9 +131,13 @@
   --k-strip-d: url(/kit/cyanotype/sheet-strip-night-d-normal.webp);
   /* a page's own sheets, wide (below) */
   --k-plate-w: url(/kit/cyanotype/sheet-night-w-b-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-w: image-set(url(/kit/cyanotype/sheet-night-w-b-normal@2x.webp) 2x); }
   --k-plate-w-flat: url(/kit/cyanotype/sheet-night-w-b-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-w-flat: image-set(url(/kit/cyanotype/sheet-night-w-b-flat@2x.webp) 2x); }
   --k-plate-w-b: url(/kit/cyanotype/sheet-night-w-c-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-w-b: image-set(url(/kit/cyanotype/sheet-night-w-c-normal@2x.webp) 2x); }
   --k-plate-w-b-flat: url(/kit/cyanotype/sheet-night-w-c-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-w-b-flat: image-set(url(/kit/cyanotype/sheet-night-w-c-flat@2x.webp) 2x); }
   /* tape holds a sheet: no pin */
   --k-pin-hold: none;
   --k-pin-hold-signal: none;
@@ -170,9 +175,13 @@
   --key-ink-soft: #3a3f52;
   /* the call is a slip of the cards' paper, typed in the print's ink */
   --k-key-signal: url(/kit/cyanotype/tile-signal-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal: image-set(url(/kit/cyanotype/tile-signal-night-normal@2x.webp) 2x); }
   --k-key-signal-hover: url(/kit/cyanotype/tile-signal-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-hover: image-set(url(/kit/cyanotype/tile-signal-night-hover@2x.webp) 2x); }
   --k-key-signal-pressed: url(/kit/cyanotype/tile-signal-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-pressed: image-set(url(/kit/cyanotype/tile-signal-night-pressed@2x.webp) 2x); }
   --k-key-signal-focus: url(/kit/cyanotype/tile-signal-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-focus: image-set(url(/kit/cyanotype/tile-signal-night-focus@2x.webp) 2x); }
   --key-signal-ink: #1a2236;
   --key-signal-under: #cbbfa6;
   --k-pin-brass: url(/kit/cyanotype/pin-brass.webp); /* a white paper dot */
@@ -214,6 +223,7 @@
   /* the print with everything drawn on it taken out, under the phone's
      outlined call (below) */
   --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-night@2x.webp); }
   --k-strip-phone: url(/kit/cyanotype/strip-phone-night.webp);
   /* the print's chalk: the white of its type, and of its notes, which are
      printed in it and dim with it after dark */
@@ -291,6 +301,7 @@
   --k-sky: url(/kit/cyanotype/scene/day/sky.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/day/sky@2x.webp); }
   --k-ground: url(/kit/cyanotype/scene/ground-day/sky.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ground: url(/kit/cyanotype/scene/ground-day/sky@2x.webp); }
   --k-sun: none;
   --sun-cx: 0;
   --sun-cy: 0;
@@ -309,10 +320,15 @@
   --k-plate-focus: url(/kit/cyanotype/sheet-day-focus.webp);
   --k-plate-flat: url(/kit/cyanotype/sheet-day-flat.webp);
   --k-plate-b: url(/kit/cyanotype/sheet-day-b-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b: image-set(url(/kit/cyanotype/sheet-day-b-normal@2x.webp) 2x); }
   --k-plate-b-hover: url(/kit/cyanotype/sheet-day-b-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b-hover: image-set(url(/kit/cyanotype/sheet-day-b-hover@2x.webp) 2x); }
   --k-plate-b-pressed: url(/kit/cyanotype/sheet-day-b-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b-pressed: image-set(url(/kit/cyanotype/sheet-day-b-pressed@2x.webp) 2x); }
   --k-plate-b-focus: url(/kit/cyanotype/sheet-day-b-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b-focus: image-set(url(/kit/cyanotype/sheet-day-b-focus@2x.webp) 2x); }
   --k-plate-b-flat: url(/kit/cyanotype/sheet-day-b-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-b-flat: image-set(url(/kit/cyanotype/sheet-day-b-flat@2x.webp) 2x); }
   --k-plate-c: url(/kit/cyanotype/sheet-day-c-normal.webp);
   --k-plate-c-hover: url(/kit/cyanotype/sheet-day-c-hover.webp);
   --k-plate-c-pressed: url(/kit/cyanotype/sheet-day-c-pressed.webp);
@@ -352,9 +368,13 @@
   --k-strip: url(/kit/cyanotype/sheet-strip-day-normal.webp);
   --k-strip-d: url(/kit/cyanotype/sheet-strip-day-d-normal.webp);
   --k-plate-w: url(/kit/cyanotype/sheet-day-w-b-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-w: image-set(url(/kit/cyanotype/sheet-day-w-b-normal@2x.webp) 2x); }
   --k-plate-w-flat: url(/kit/cyanotype/sheet-day-w-b-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-w-flat: image-set(url(/kit/cyanotype/sheet-day-w-b-flat@2x.webp) 2x); }
   --k-plate-w-b: url(/kit/cyanotype/sheet-day-w-c-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-w-b: image-set(url(/kit/cyanotype/sheet-day-w-c-normal@2x.webp) 2x); }
   --k-plate-w-b-flat: url(/kit/cyanotype/sheet-day-w-c-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-w-b-flat: image-set(url(/kit/cyanotype/sheet-day-w-c-flat@2x.webp) 2x); }
   --k-bezel: url(/kit/cyanotype/mat-day.webp);
   --mat-t: 123;
   --mat-r: 140;
@@ -365,9 +385,13 @@
   --k-key-pressed: url(/kit/cyanotype/tile-day-pressed.webp);
   --k-key-focus: url(/kit/cyanotype/tile-day-focus.webp);
   --k-key-signal: url(/kit/cyanotype/tile-signal-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal: image-set(url(/kit/cyanotype/tile-signal-normal@2x.webp) 2x); }
   --k-key-signal-hover: url(/kit/cyanotype/tile-signal-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-hover: image-set(url(/kit/cyanotype/tile-signal-hover@2x.webp) 2x); }
   --k-key-signal-pressed: url(/kit/cyanotype/tile-signal-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-pressed: image-set(url(/kit/cyanotype/tile-signal-pressed@2x.webp) 2x); }
   --k-key-signal-focus: url(/kit/cyanotype/tile-signal-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-focus: image-set(url(/kit/cyanotype/tile-signal-focus@2x.webp) 2x); }
   --k-chip: url(/kit/cyanotype/chip-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-chip: image-set(url(/kit/cyanotype/chip-day@2x.webp) 2x); }
   --chip-ink: #142033;
@@ -408,6 +432,7 @@
   --k-phone-sky: url(/kit/cyanotype/plate-phone-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-phone-sky: url(/kit/cyanotype/plate-phone-day@2x.webp); }
   --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-day@2x.webp); }
   --k-strip-phone: url(/kit/cyanotype/strip-phone-day.webp);
   --k-type: url(/kit/cyanotype/type-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-type: url(/kit/cyanotype/type-day@2x.webp); }
@@ -1731,12 +1756,14 @@
     --k-sky: url(/kit/cyanotype/scene/project-night/sky.webp);
     @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/project-night/sky@2x.webp); }
     --k-ground: url(/kit/cyanotype/scene/ground-project-night/sky.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ground: url(/kit/cyanotype/scene/ground-project-night/sky@2x.webp); }
   }
 
   :root[data-style="cyanotype"][data-rice="paper"]:is(:has(.detail-hero .tags), :has(.detail-hero.solo)) {
     --k-sky: url(/kit/cyanotype/scene/project-day/sky.webp);
     @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/project-day/sky@2x.webp); }
     --k-ground: url(/kit/cyanotype/scene/ground-project-day/sky.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ground: url(/kit/cyanotype/scene/ground-project-day/sky@2x.webp); }
   }
 
   :root[data-style="cyanotype"]:has(.launch-hero) {
@@ -1749,6 +1776,7 @@
     --k-sky: url(/kit/cyanotype/scene/launch-day/sky.webp);
     @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/launch-day/sky@2x.webp); }
     --k-ground: url(/kit/cyanotype/scene/ground-launch-day/sky.webp);
+    @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ground: url(/kit/cyanotype/scene/ground-launch-day/sky@2x.webp); }
   }
 
   /* ---------- the stage ----------

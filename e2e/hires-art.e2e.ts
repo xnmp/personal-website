@@ -35,11 +35,20 @@ function inventory() {
 }
 
 // URL-level exceptions only; never waive all assets for a kit/property.
-// Currently empty: the sole twinned --k-scene-flat (ligne/hero-night) is also
+// The sole twinned --k-scene-flat (ligne/hero-night) is also
 // painted by --k-hero on .launchpad::before (styles/ligne.css). The other
 // consumers are .og-stage (globals.css) and .tier-cut (kit.css); neither adds
 // an OG-only URL to today's twin inventory. No /og route is needed for coverage.
-const unrenderedTwins: Readonly<Record<string, string>> = {};
+// Cyanotype assigns wide-b flat to odd page sheets at >=900px, but the
+// launch page's .sheet-flat sections are children 4 and 6, and the flattened
+// .sheet-row child is always second: all paint wide-c flat instead. Other
+// routes have no .sheet-flat sections. Cyanotype enables neither --tier-cut
+// nor --shot-cut; those decorations stay hidden at every viewport. Below
+// 900px page sheets use the non-wide variants. No real state paints wide-b flat.
+const unrenderedTwins: Readonly<Record<string, string>> = {
+  "/kit/cyanotype/sheet-night-w-b-flat@2x.webp": "Odd wide page sheets never use flat art; flat sections are even siblings, and Cyanotype's tier/shot cuts are hidden.",
+  "/kit/cyanotype/sheet-day-w-b-flat@2x.webp": "Odd wide page sheets never use flat art; flat sections are even siblings, and Cyanotype's tier/shot cuts are hidden.",
+};
 
 const desktop = { width: 1440, height: 900 };
 function casesFor(kit: string) {
@@ -162,36 +171,46 @@ async function capture(
       captures.push({ state, png: await page.screenshot({ type: "png", fullPage, scale: "css", animations: "disabled", caret: "hide" }) });
     };
     await snapshot("normal", true);
-    if (path === "/" && viewport.width === desktop.width) {
-      // Real links: never force pseudo-classes or swap tokens. A neutral key
-      // exercises Atlas's tile family; the signal key the signal tile family;
-      // a shelf link exercises Garden's sheet family (the showcase uses
-      // different art in several styles).
-      for (const [name, control] of [
-        ["key", page.getByRole("link", { name: "Try it live", exact: true })],
-        ["signal", page.getByRole("link", { name: /^Join the .+ alpha$/ })],
-        ["sheet", page.locator("a.module.faceplate.is-live").first()],
-      ] as const) {
-        await control.hover();
-        await expect(control).toBeVisible();
-        expect(await control.evaluate((element) => element.matches(":hover"))).toBe(true);
-        await snapshot(`${name}-hover`);
-        await page.mouse.down();
-        try {
-          expect(await control.evaluate((element) => element.matches(":active"))).toBe(true);
-          await snapshot(`${name}-pressed`);
-        } finally {
-          // Release away from the link so the real press never navigates.
-          await page.mouse.move(0, 0);
-          await page.mouse.up();
-        }
-        // Keyboard modality makes focus-visible select the focus-state twin.
-        await page.keyboard.press("Tab");
-        await control.focus();
-        expect(await control.evaluate((element) => element.matches(":focus-visible"))).toBe(true);
-        await snapshot(`${name}-focus`);
-        await control.evaluate((element) => (element as HTMLElement).blur());
+    // One representative per key family on both home and launch pages. Scope
+    // to their key groups: the launch signal is named "Join the alpha", unlike
+    // the home link's longer accessible name. Absent controls are optional on
+    // detail pages, but known home/launch coverage must not silently disappear.
+    const keys = page.locator(".launchpad-keys, .launch-keys");
+    const sheets = page.locator("a.module.faceplate.is-live");
+    const controls = [
+      { name: "key", control: keys.locator('a.key:not([data-tone="signal"])').first(), required: path === "/" || path === "/p/tauri-explorer" },
+      { name: "signal", control: keys.locator('a.key[data-tone="signal"]').first(), required: path === "/" || path === "/p/tauri-explorer" },
+      ...(id === "cyanotype"
+        ? ["4n + 1", "4n + 2", "4n + 3", "4n"].map((nth, index) => ({
+          name: `sheet-${"abcd"[index]}`,
+          // Match actual sibling positions, not the index among live cards.
+          control: sheets.and(page.locator(`:nth-child(${nth})`)).first(),
+          required: path === "/",
+        }))
+        : [{ name: "sheet", control: sheets.first(), required: path === "/" }]),
+    ];
+    for (const { name, control, required } of controls) {
+      if (required) await expect(control, `${id} ${path}: required ${name} coverage`).toHaveCount(1);
+      if (await control.count() === 0) continue;
+      await control.hover();
+      await expect(control).toBeVisible();
+      expect(await control.evaluate((element) => element.matches(":hover"))).toBe(true);
+      await snapshot(`${name}-hover`);
+      await page.mouse.down();
+      try {
+        expect(await control.evaluate((element) => element.matches(":active"))).toBe(true);
+        await snapshot(`${name}-pressed`);
+      } finally {
+        // Release away from the link so the real press never navigates.
+        await page.mouse.move(0, 0);
+        await page.mouse.up();
       }
+      // Keyboard modality makes focus-visible select the focus-state twin.
+      await page.keyboard.press("Tab");
+      await control.focus();
+      expect(await control.evaluate((element) => element.matches(":focus-visible"))).toBe(true);
+      await snapshot(`${name}-focus`);
+      await control.evaluate((element) => (element as HTMLElement).blur());
     }
     return captures;
   } finally {

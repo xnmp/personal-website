@@ -69,9 +69,13 @@
      page's call to act, the phone's second key) */
   --k-tape-red: url(/kit/paper/tape-red-night.webp);
   --k-key-clay: url(/kit/paper/tile-clay-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-clay: image-set(url(/kit/paper/tile-clay-night-normal@2x.webp) 2x); }
   --k-key-clay-hover: url(/kit/paper/tile-clay-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-clay-hover: image-set(url(/kit/paper/tile-clay-night-hover@2x.webp) 2x); }
   --k-key-clay-pressed: url(/kit/paper/tile-clay-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-clay-pressed: image-set(url(/kit/paper/tile-clay-night-pressed@2x.webp) 2x); }
   --k-key-clay-focus: url(/kit/paper/tile-clay-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-clay-focus: image-set(url(/kit/paper/tile-clay-night-focus@2x.webp) 2x); }
   --key-clay-under: #7a3d2b;
   --key-clay-ink: #f6efe4; /* 5.6:1 on the night's clay */
   /* the launch page's torn keys, and the phone's green one (scripts/kits/paper-sprites.mjs TORN) */
@@ -80,9 +84,13 @@
   --k-torn-clay-pressed: url(/kit/paper/torn-clay-night-pressed.webp);
   --k-torn-clay-focus: url(/kit/paper/torn-clay-night-focus.webp);
   --k-torn-green: url(/kit/paper/torn-green-night-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-torn-green: image-set(url(/kit/paper/torn-green-night-normal@2x.webp) 2x); }
   --k-torn-green-hover: url(/kit/paper/torn-green-night-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-torn-green-hover: image-set(url(/kit/paper/torn-green-night-hover@2x.webp) 2x); }
   --k-torn-green-pressed: url(/kit/paper/torn-green-night-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-torn-green-pressed: image-set(url(/kit/paper/torn-green-night-pressed@2x.webp) 2x); }
   --k-torn-green-focus: url(/kit/paper/torn-green-night-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-torn-green-focus: image-set(url(/kit/paper/torn-green-night-focus@2x.webp) 2x); }
   --k-torn-cream: url(/kit/paper/torn-cream-night-normal.webp);
   --k-torn-cream-hover: url(/kit/paper/torn-cream-night-hover.webp);
   --k-torn-cream-pressed: url(/kit/paper/torn-cream-night-pressed.webp);
@@ -161,9 +169,13 @@
   --key-signal-ink: #fff;
   --k-tape-red: url(/kit/paper/tape-red.webp);
   --k-key-clay: url(/kit/paper/tile-clay-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-clay: image-set(url(/kit/paper/tile-clay-normal@2x.webp) 2x); }
   --k-key-clay-hover: url(/kit/paper/tile-clay-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-clay-hover: image-set(url(/kit/paper/tile-clay-hover@2x.webp) 2x); }
   --k-key-clay-pressed: url(/kit/paper/tile-clay-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-clay-pressed: image-set(url(/kit/paper/tile-clay-pressed@2x.webp) 2x); }
   --k-key-clay-focus: url(/kit/paper/tile-clay-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-clay-focus: image-set(url(/kit/paper/tile-clay-focus@2x.webp) 2x); }
   --key-clay-under: #b45c39;
   --key-clay-ink: #fff;
   /* the launch page's torn keys (scripts/kits/paper-sprites.mjs TORN) */
@@ -172,9 +184,13 @@
   --k-torn-clay-pressed: url(/kit/paper/torn-clay-pressed.webp);
   --k-torn-clay-focus: url(/kit/paper/torn-clay-focus.webp);
   --k-torn-green: url(/kit/paper/torn-green-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-torn-green: image-set(url(/kit/paper/torn-green-normal@2x.webp) 2x); }
   --k-torn-green-hover: url(/kit/paper/torn-green-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-torn-green-hover: image-set(url(/kit/paper/torn-green-hover@2x.webp) 2x); }
   --k-torn-green-pressed: url(/kit/paper/torn-green-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-torn-green-pressed: image-set(url(/kit/paper/torn-green-pressed@2x.webp) 2x); }
   --k-torn-green-focus: url(/kit/paper/torn-green-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-torn-green-focus: image-set(url(/kit/paper/torn-green-focus@2x.webp) 2x); }
   --k-torn-cream: url(/kit/paper/torn-cream-normal.webp);
   --k-torn-cream-hover: url(/kit/paper/torn-cream-hover.webp);
   --k-torn-cream-pressed: url(/kit/paper/torn-cream-pressed.webp);

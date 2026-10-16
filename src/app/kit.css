@@ -112,9 +112,13 @@
   --key-ink-soft: #c3bba9;
   /* the primary tile and the fittings: one set in both finishes */
   --k-key-signal: url(/kit/paper/tile-signal-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal: image-set(url(/kit/paper/tile-signal-normal@2x.webp) 2x); }
   --k-key-signal-hover: url(/kit/paper/tile-signal-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-hover: image-set(url(/kit/paper/tile-signal-hover@2x.webp) 2x); }
   --k-key-signal-pressed: url(/kit/paper/tile-signal-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-pressed: image-set(url(/kit/paper/tile-signal-pressed@2x.webp) 2x); }
   --k-key-signal-focus: url(/kit/paper/tile-signal-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-signal-focus: image-set(url(/kit/paper/tile-signal-focus@2x.webp) 2x); }
   --key-signal-ink: #fff8ee; /* 4.87:1 on the signal board */
   --key-signal-under: #a25b39;
   --k-pin-brass: url(/kit/paper/pin-brass.webp);
@@ -210,10 +214,15 @@
   --k-right: url(/kit/paper/scene/alpenglow/pines-right.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right: url(/kit/paper/scene/alpenglow/pines-right@2x.webp); }
   --k-plate: url(/kit/paper/sheet-alpenglow-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/paper/sheet-alpenglow-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/paper/sheet-alpenglow-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-hover: image-set(url(/kit/paper/sheet-alpenglow-hover@2x.webp) 2x); }
   --k-plate-pressed: url(/kit/paper/sheet-alpenglow-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-pressed: image-set(url(/kit/paper/sheet-alpenglow-pressed@2x.webp) 2x); }
   --k-plate-focus: url(/kit/paper/sheet-alpenglow-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-focus: image-set(url(/kit/paper/sheet-alpenglow-focus@2x.webp) 2x); }
   --k-plate-flat: url(/kit/paper/sheet-alpenglow-flat.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-flat: image-set(url(/kit/paper/sheet-alpenglow-flat@2x.webp) 2x); }
   --k-bezel: url(/kit/paper/mat-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-bezel: image-set(url(/kit/paper/mat-day@2x.webp) 2x); }
   --mat-t: 153;
@@ -221,9 +230,13 @@
   --mat-b: 169;
   --mat-l: 177;
   --k-key: url(/kit/paper/tile-alpenglow-normal.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key: image-set(url(/kit/paper/tile-alpenglow-normal@2x.webp) 2x); }
   --k-key-hover: url(/kit/paper/tile-alpenglow-hover.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-hover: image-set(url(/kit/paper/tile-alpenglow-hover@2x.webp) 2x); }
   --k-key-pressed: url(/kit/paper/tile-alpenglow-pressed.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-pressed: image-set(url(/kit/paper/tile-alpenglow-pressed@2x.webp) 2x); }
   --k-key-focus: url(/kit/paper/tile-alpenglow-focus.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-key-focus: image-set(url(/kit/paper/tile-alpenglow-focus@2x.webp) 2x); }
   /* a peach-lit cloud drifts across; motes of dust catch the low sun */
   --k-drift-cloud: url(/kit/paper/cloud-b-alpenglow.webp);
   --motes: #ffd6b8;
