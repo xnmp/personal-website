@@ -12,6 +12,9 @@ import { resample, seamStats, wrapRegion } from '../scripts/hires/periodic.mjs';
 import { webpOptions } from '../scripts/webp.mjs';
 import { validateManifest } from '../scripts/hires/manifest.mjs';
 
+// These tests exercise API mechanics on small fixtures, so they lift the 2 MP
+// credit floor (apiMinPixels: 0); hires-api-budget.test.ts covers that policy.
+
 const image = (w: number, h: number, pixel: (x: number, y: number, c: number) => number) => ({ width: w, height: h, channels: 4,
   data: Uint8Array.from({ length: w * h * 4 }, (_, i) => i % 4 === 3 ? 255 : pixel(Math.floor(i / 4) % w, Math.floor(i / 4 / w), i % 4)) });
 const paint = (x: number, y: number, c: number) => 120 + 35 * Math.sin(x * .31 + y * .17 + c) + 30 * Math.cos(y * .41 - x * .13 + c);
@@ -50,7 +53,7 @@ describe('bounded candidate replacement', () => {
         if (calls < 3) { const [w, h] = arg(args, '--size').split('x').map(Number); await badOutput(arg(args, '--out'), w, h); }
         else await faithful(command, args);
       };
-      expect(await main(['--retry-rejected', '2'], { root, invoke })).toBe(0);
+      expect(await main(['--retry-rejected', '2'], { root, apiMinPixels: 0, invoke })).toBe(0);
       expect(calls).toBe(3);
       const dir = await cache(root), names = await readdir(dir);
       expect(names).toContain('tile-0.rejected1.png'); expect(names).toContain('tile-0.rejected2.png');
@@ -59,7 +62,7 @@ describe('bounded candidate replacement', () => {
       expect(await readdir(join(root, 'public'))).toContain('a@2x.webp');
       // Verification must not recreate a missing lock, even for byte-identical output.
       const lockPath = join(root, 'art/hires.lock.json'); await rm(lockPath);
-      expect(await main(['--remerge', '--verify', '--retry-rejected', '5'], { root, invoke: never })).toBe(0);
+      expect(await main(['--remerge', '--verify', '--retry-rejected', '5'], { root, apiMinPixels: 0, invoke: never })).toBe(0);
       expect(await readdir(join(root, 'art'))).not.toContain('hires.lock.json');
     } finally { await rm(root, { recursive: true, force: true }); }
   }, 30_000);
@@ -67,7 +70,7 @@ describe('bounded candidate replacement', () => {
     for (const budget of [0, 2]) {
       const root = await fixture(); let calls = 0;
       try {
-        expect(await main(['--retry-rejected', String(budget)], { root, invoke: async () => { calls++; throw new Error('provider failed'); } })).toBe(1);
+        expect(await main(['--retry-rejected', String(budget)], { root, apiMinPixels: 0, invoke: async () => { calls++; throw new Error('provider failed'); } })).toBe(1);
         expect(calls).toBe(budget + 1);
         expect(await readdir(join(root, 'public'))).toEqual(['a.png']);
         expect(JSON.parse(await readFile(join(await cache(root), 'stats.json'), 'utf8')).attempts.requests).toBe(budget + 1);
@@ -76,14 +79,14 @@ describe('bounded candidate replacement', () => {
     const root = await fixture(); let calls = 0;
     try {
       await rm(join(root, 'public/a.png'));
-      expect(await main(['--retry-rejected', '9'], { root, invoke: async () => { calls++; } })).toBe(1);
+      expect(await main(['--retry-rejected', '9'], { root, apiMinPixels: 0, invoke: async () => { calls++; } })).toBe(1);
       expect(calls).toBe(0);
     } finally { await rm(root, { recursive: true, force: true }); }
   });
   test('deterministic process launch errors do not consume extra requests', async () => {
     const root = await fixture(); let calls = 0;
     try {
-      expect(await main(['--retry-rejected', '4'], { root, invoke: async () => {
+      expect(await main(['--retry-rejected', '4'], { root, apiMinPixels: 0, invoke: async () => {
         calls++; throw Object.assign(new Error('missing executable'), { code: 'ENOENT' });
       } })).toBe(1);
       expect(calls).toBe(1);
@@ -94,7 +97,7 @@ describe('bounded candidate replacement', () => {
     const root = await fixture(); let calls = 0;
     try {
       await writeFile(join(root, 'public/a.png'), await png(image(2200, 100, paint)));
-      expect(await main(['--retry-rejected', '1'], { root, invoke: async () => { calls++; throw new Error('provider failed'); } })).toBe(1);
+      expect(await main(['--retry-rejected', '1'], { root, apiMinPixels: 0, invoke: async () => { calls++; throw new Error('provider failed'); } })).toBe(1);
       expect(calls).toBe(2); // two initial tiles, no budget for replacing both
       expect(JSON.parse(await readFile(join(await cache(root), 'stats.json'), 'utf8')).attempts.retries).toBe(0);
     } finally { await rm(root, { recursive: true, force: true }); }
@@ -103,19 +106,19 @@ describe('bounded candidate replacement', () => {
     const root = await fixture('external');
     try {
       const flags = ['--retry-rejected', '1'];
-      expect(await main(flags, { root, invoke: never })).toBe(0);
+      expect(await main(flags, { root, apiMinPixels: 0, invoke: never })).toBe(0);
       const dir = await cache(root), requestsPath = join(dir, 'requests.json');
       const request = JSON.parse(await readFile(requestsPath, 'utf8')).requests[0];
       await writeFile(request.outputPath, 'truncated PNG'); // corrupt external output also re-emits
-      expect(await main(flags, { root, invoke: never })).toBe(0);
+      expect(await main(flags, { root, apiMinPixels: 0, invoke: never })).toBe(0);
       expect(await readdir(dir)).toContain('tile-0.rejected1.png');
       expect(JSON.parse(await readFile(requestsPath, 'utf8')).requests).toHaveLength(1);
       await badOutput(request.outputPath, 200, 100);
-      expect(await main(flags, { root, invoke: never })).toBe(1);
+      expect(await main(flags, { root, apiMinPixels: 0, invoke: never })).toBe(1);
       expect(JSON.parse(await readFile(join(dir, 'stats.json'), 'utf8')).attempts).toMatchObject({ requests: 2, retries: 1 });
       expect(await readdir(join(root, 'public'))).toEqual(['a.png']);
       await sharp(request.requestPath).resize(384, 384).png().toFile(request.outputPath);
-      expect(await main(flags, { root, invoke: never })).toBe(0);
+      expect(await main(flags, { root, apiMinPixels: 0, invoke: never })).toBe(0);
       expect(await readdir(join(root, 'public'))).toContain('a@2x.webp');
     } finally { await rm(root, { recursive: true, force: true }); }
   }, 30_000);
@@ -156,7 +159,7 @@ test('a state upscale displaced only in discarded paint still ships an unchanged
       const [w, h] = arg(args, '--size').split('x').map(Number);
       await sharp(await png(discardedDisplacement)).resize(w, h).png().toFile(arg(args, '--out'));
     };
-    expect(await main([], { root, invoke })).toBe(0);
+    expect(await main([], { root, apiMinPixels: 0, invoke })).toBe(0);
     const reference = await sharp(join(root, 'public/normal@2x.webp')).ensureAlpha().raw().toBuffer();
     const shipped = await sharp(join(root, 'public/hover@2x.webp')).ensureAlpha().raw().toBuffer();
     expect(shipped).not.toEqual(reference);

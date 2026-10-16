@@ -23,6 +23,9 @@ import { lockEntry, lockMatches, outputPath, readLock, sourceSha256, writeLockEn
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const exists = async (path) => access(path).then(() => true, () => false);
+// API credits are for large art only: under about 2 MP at 2x, Codex image_gen
+// (provider "external") produces the same tiles without spending credits.
+export const API_MIN_OUTPUT_PIXELS = 2_000_000;
 const deterministicError = (error) => ['ENOENT', 'ENOTDIR', 'EACCES', 'EPERM', 'ENOSPC', 'EROFS', 'EMFILE', 'ENFILE'].includes(error.code);
 const geometry = ({ width, height, channels }) => ({ width, height, channels });
 const bytes = (img) => {
@@ -390,6 +393,8 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     return;
   }
   const requests = opts.remerge ? 0 : opts.force ? present.length : missing.length;
+  if (!external && (requests > 0 || opts.retryRejected > 0) && plan.outW * plan.outH < (opts.apiMinPixels ?? API_MIN_OUTPUT_PIXELS))
+    throw new Error(`API refused: ${plan.outW}x${plan.outH} is under ${(opts.apiMinPixels ?? API_MIN_OUTPUT_PIXELS) / 1e6} MP at 2x; set provider "external" (Codex image_gen)`);
   console.log(`${asset.src}: ${metadata.width}x${metadata.height} -> ${plan.outW}x${plan.outH}; ${plan.tiles.length} tiles; ${external ? 'external' : 'API'} ${plan.tiles.map((t) => `${t.apiW}x${t.apiH}${t.requestW ? ` (padded input ${t.requestW}x${t.requestH}, offset ${t.padLeft},${t.padTop})` : ''}`).join(', ')}; estimated requests ${requests} ${external ? '' : `(up to ${requests + opts.retryRejected} including asset retry budget)`}`);
   if (opts.remerge && missing.length && !(external && context.stateDerivation?.mode === 'auto')) {
     console.log(`${asset.src}: SKIPPED --remerge; missing cached tiles: ${missing.join(', ')}`);
@@ -646,8 +651,8 @@ async function isUpToDate(asset, lock, root, assets) {
   }
 }
 
-export async function main(args = process.argv.slice(2), { root = ROOT, invoke = run, processAsset: processSelectedAsset = processAsset } = {}) {
-  const opts = cliOptions(args);
+export async function main(args = process.argv.slice(2), { root = ROOT, invoke = run, processAsset: processSelectedAsset = processAsset, apiMinPixels = API_MIN_OUTPUT_PIXELS } = {}) {
+  const opts = { ...cliOptions(args), apiMinPixels };
   const manifest = validateManifest(JSON.parse(await readFile(resolve(root, opts.manifest), 'utf8')));
   const prompt = await readFile(resolve(root, 'art/prompts/hires/upscale.txt'), 'utf8');
   const selected = new Set(manifest.assets.filter((a) => !opts.only || a.src.includes(opts.only)));

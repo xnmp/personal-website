@@ -12,6 +12,9 @@ import { main } from '../scripts/hires/upscale.mjs';
 import { checkRepo, diagnostics, main as cssMain } from '../scripts/hires/css.mjs';
 import { sheenImage } from '../scripts/framed-pane.mjs';
 
+// These tests exercise API mechanics on small fixtures, so they lift the 2 MP
+// credit floor (apiMinPixels: 0); hires-api-budget.test.ts covers that policy.
+
 const rgba = (width: number, height: number, pixel: (x: number, y: number) => number[] = () => [70, 100, 130, 255]) => ({
   width, height, channels: 4,
   data: Uint8Array.from({ length: width * height * 4 }, (_, i) => pixel(Math.floor(i / 4) % width, Math.floor(i / 4 / width))[i % 4]),
@@ -200,7 +203,7 @@ test('deterministic family ships registered lossless outputs; CSS withholds ever
     const normal = rgba(64, 64);
     for (const [i, asset] of assets.entries()) await writeFile(join(root, asset.src), await encode(i ? rgba(64, 64, (x, y) => x >= 25 && x < 39 && y >= 25 && y < 39 ? [70 + 8 * i, 100, 130, 255] : [70, 100, 130, 255]) : normal));
     await writeFile(join(root, 'src/app/kit.css'), `.key {\n  --key: url(/kit/key-normal.png);\n  --hover: url(/kit/key-hover.png);\n  border-image: var(--key) 8 fill / 4px;\n}`);
-    expect(await main(['--only', 'key-hover', '--accept'], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main(['--only', 'key-hover', '--accept'], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     const reference = await decode(await readFile(join(root, outputPath(assets[0]))));
     for (const asset of assets.slice(1)) {
       const state = await decode(await readFile(join(root, asset.src)));
@@ -231,10 +234,10 @@ test('external state requests crop only the changed region; dry plans do not wri
     await writeFile(join(root, entries[0].src), await encode(normal));
     const state = { ...normal, data: normal.data.slice() }; state.data[(128 * 256 + 128) * 4] += 30;
     await writeFile(join(root, entries[1].src), await encode(state));
-    expect(await main(['--dry'], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main(['--dry'], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     expect((await readdir(join(root, 'art'))).sort()).toEqual(['hires.json', 'prompts']);
     expect(logs.at(-1)).toMatch(/2 assets; api 0, external 2, resample 0; estimated API requests 0; external tiles 5/);
-    expect(await main([], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main([], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     const awaiting = logs.filter((s) => s.startsWith('AWAITING'));
     const pendingPath = awaiting.at(-1)!.split(': ').at(-1)!;
     const request = JSON.parse(await readFile(pendingPath, 'utf8')).requests[0];
@@ -245,7 +248,7 @@ test('external state requests crop only the changed region; dry plans do not wri
     changed.data[(128 * 256 + 127) * 4] += 25;
     await writeFile(join(root, entries[0].src), await encode(changed));
     logs.length = 0;
-    expect(await main([], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main([], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     const nextPath = logs.filter((s) => s.startsWith('AWAITING')).at(-1)!.split(': ').at(-1)!;
     expect(nextPath).not.toBe(pendingPath);
     const nextPlan = JSON.parse(await readFile(join(nextPath, '..', 'request.json'), 'utf8')).plan;
@@ -263,13 +266,13 @@ test('periodic external request uses modular halo and ships decoded seamless exa
     const noise = rgba(80, 80, (x, y) => [0, 1, 2].map((c) => (Math.imul((x + 1) * 73856093 ^ (y + 1) * 19349663 ^ (c + 1) * 83492791, 2246822519) >>> 16) % 180 + 38).concat(255));
     const source = { ...noise, data: Uint8Array.from(gaussianBlur(noise, 2.5, true).data, Math.round) };
     await writeFile(join(root, asset.src), await encode(source));
-    expect(await main([], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main([], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     const path = logs.find((s) => s.startsWith('AWAITING'))!.split(': ').at(-1)!;
     const request = JSON.parse(await readFile(path, 'utf8')).requests[0];
     const requestImage = await decode(await readFile(request.requestPath));
     expect(requestImage.data).toEqual(Uint8Array.from(wrapRegion(source, -56, -56, 192, 192).data));
     await sharp(request.requestPath).resize(384, 384).png().toFile(request.outputPath);
-    expect(await main([], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main([], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     const shipped = await decode(await readFile(join(root, 'public/kit/tile@2x.webp')));
     expect([shipped.width, shipped.height]).toEqual([160, 160]);
     expect(seamStats(shipped, resample(source, 2, true)).passes).toBe(true);
@@ -285,14 +288,14 @@ test('analytic light maps use the repo generator at 512px and record actual prov
     const asset = { src: 'public/kit/light.png', provider: 'resample', generator, lossless: true };
     await writeFile(join(root, 'art/hires.json'), JSON.stringify(input([asset])));
     await writeFile(join(root, asset.src), await encode(sheenImage(256, generator)));
-    expect(await main([], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main([], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     const shipped = await decode(await readFile(join(root, 'public/kit/light@2x.webp')));
     // WebP canonicalises invisible RGB; compare premultiplied pixels.
     expect(differenceMask(shipped, sheenImage(512, generator)).some(Boolean)).toBe(false);
     const lock = JSON.parse(await readFile(join(root, 'art/hires.lock.json'), 'utf8'));
     expect(lock.assets['public/kit/light@2x.webp'].model).toBe('framed-pane/sheen-v1');
     for (const size of [0, 1, NaN, 1e12]) expect(() => sheenImage(size, generator)).toThrow();
-    expect(await main(['--remerge', '--verify'], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main(['--remerge', '--verify'], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
   } finally { await rm(root, { recursive: true, force: true }); }
 });
 
@@ -308,21 +311,21 @@ test('replacing a cached state tile changes its derivation while keeping every u
     for (let y = 35; y < 55; y++) for (let x = 35; x < 55; x++) state.data[(y * 96 + x) * 4] += 20;
     await writeFile(join(root, assets[0].src), await encode(normal));
     await writeFile(join(root, assets[1].src), await encode(state));
-    expect(await main([], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main([], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     const paths = logs.filter((s) => s.startsWith('AWAITING')).map((s) => s.split(': ').at(-1)!);
     const pending = await Promise.all(paths.map(async (path) => JSON.parse(await readFile(path, 'utf8')).requests[0]));
     for (const request of pending) await sharp(request.requestPath).resize(request.width, request.height).png().toFile(request.outputPath);
-    expect(await main([], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main([], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     const before = await readFile(join(root, outputPath(assets[1])));
     const request = pending[1];
     const original = await decode(await readFile(request.outputPath));
     const data = Uint8Array.from(original.data, (v, i) => i % 4 === 3 ? v : Math.max(0, Math.min(255, v + (Math.floor((Math.floor(i / 4) % original.width) / 3) % 2 ? 8 : -8))));
     await sharp(data, { raw: { width: original.width, height: original.height, channels: 4 } }).png().toFile(request.outputPath);
-    expect(await main(['--remerge'], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main(['--remerge'], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     const after = await readFile(join(root, outputPath(assets[1])));
     expect(after).not.toEqual(before);
     expect(outsideDifferences(await decode(after), await decode(await readFile(join(root, outputPath(assets[0])))), expandMask(differenceMask(state, normal), 96, 96))).toBe(0);
-    expect(await main(['--remerge', '--verify'], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main(['--remerge', '--verify'], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
   } finally { console.log = log; await rm(root, { recursive: true, force: true }); }
 }, 30_000);
 
@@ -333,7 +336,7 @@ test('resample detail refusal cannot be overridden by accept or retry flags', as
     await writeFile(join(root, 'art/hires.json'), JSON.stringify(input([asset])));
     await writeFile(join(root, asset.src), await encode(rgba(32, 32, (x, y) => [x % 2 * 255, y % 2 * 255, 100, 255])));
     for (const flags of [[], ['--accept'], ['--retry-rejected', '5'], ['--dry']]) {
-      expect(await main(flags, { root, invoke: neverInvoke })).toBe(1);
+      expect(await main(flags, { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(1);
       expect(await readdir(join(root, 'public/kit'))).toEqual(['material.png']);
       expect(await readdir(join(root, 'art'))).not.toContain('raw');
     }
@@ -347,7 +350,7 @@ test('real Atlas sources retain zero visible outside-mask differences through lo
     await mkdir(join(root, 'public/kit/atlas'));
     await writeFile(join(root, 'art/hires.json'), JSON.stringify(input(entries)));
     for (const entry of entries) await writeFile(join(root, entry.src), await readFile(new URL(`../${entry.src}`, import.meta.url)));
-    expect(await main([], { root, invoke: async (_command: string, args: string[]) => {
+    expect(await main([], { root, apiMinPixels: 0, invoke: async (_command: string, args: string[]) => {
       const arg = (name: string) => args[args.indexOf(name) + 1];
       const [w, h] = arg('--size').split('x').map(Number);
       await sharp(arg('--image')).resize(w, h).png().toFile(arg('--out'));
@@ -375,7 +378,7 @@ test('changed locked family membership withholds all five states and fails CSS c
     await writeFile(join(root, 'art/hires.json'), JSON.stringify(input(entries)));
     for (const [i, entry] of entries.entries()) await writeFile(join(root, entry.src), await encode(rgba(8, 8, () => [70 + i * 20, 100, 130, 255])));
     await writeFile(join(root, 'src/app/kit.css'), `.key {\n${entries.map((entry, i) => `  --state-${i}: url(${entry.src.slice(6)});`).join('\n')}\n}`);
-    expect(await main(['--accept'], { root, invoke: neverInvoke })).toBe(0);
+    expect(await main(['--accept'], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
     const lock = JSON.parse(await readFile(join(root, 'art/hires.lock.json'), 'utf8'));
     for (const entry of entries) expect(lock.assets[outputPath({ ...entry, factor: 2 })].familyMembership).toEqual({
       reference: entries[0].reference, members: entries.map((e) => e.src).sort(),

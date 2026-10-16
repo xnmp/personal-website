@@ -10,6 +10,9 @@ import { cacheKey, validateManifest, settingsDigest } from "../scripts/hires/man
 import { acceptanceReasons, alignTile, cliOptions, main, mapJobs } from "../scripts/hires/upscale.mjs";
 import { outputPath } from "../scripts/hires/lock.mjs";
 
+// These tests exercise API mechanics on small fixtures, so they lift the 2 MP
+// credit floor (apiMinPixels: 0); hires-api-budget.test.ts covers that policy.
+
 const rgb = (width: number, height: number, pixel: (x: number, y: number, c: number) => number) => ({
   width, height, channels: 3,
   data: Float32Array.from({ length: width * height * 3 }, (_, i) => pixel(Math.floor(i / 3) % width, Math.floor(i / 3 / width), i % 3)),
@@ -494,7 +497,7 @@ describe("hires offline shell", () => {
         await sharp(Buffer.from(Uint8Array.from(output.data, Math.round)), { raw: { width: output.width, height: output.height, channels: 3 } }).png().toFile(join(cache, 'tile-0.png'));
       }
       const invoke = async () => { throw new Error('remerge must not request images'); };
-      expect(await main(['--remerge'], { root, invoke })).toBe(0);
+      expect(await main(['--remerge'], { root, apiMinPixels: 0, invoke })).toBe(0);
       const global = JSON.parse(await readFile(join(caches[0], 'stats.json'), 'utf8'));
       expect(global.rejected).toBe(false);
       expect(global.tiles[0].preWarp.median).toBeGreaterThan(1.2);
@@ -528,11 +531,11 @@ describe("hires offline shell", () => {
         });
       }
       const originalOutput = await readFile(join(root, 'public/global@2x.webp'));
-      expect(await main(['--remerge', '--verify', '--only', 'global'], { root, invoke })).toBe(0);
+      expect(await main(['--remerge', '--verify', '--only', 'global'], { root, apiMinPixels: 0, invoke })).toBe(0);
       expect(await readFile(join(root, 'public/global@2x.webp'))).toEqual(originalOutput);
       expect(JSON.parse(await readFile(lockPath, 'utf8'))).toEqual(lock);
       await writeFile(join(root, 'public/global@2x.webp'), 'different shipped bytes');
-      expect(await main(['--remerge', '--verify', '--only', 'global'], { root, invoke })).toBe(1);
+      expect(await main(['--remerge', '--verify', '--only', 'global'], { root, apiMinPixels: 0, invoke })).toBe(1);
       expect(await readFile(join(root, 'public/global@2x.webp'), 'utf8')).toBe('different shipped bytes');
       expect(JSON.parse(await readFile(lockPath, 'utf8'))).toEqual(lock);
     } finally { await rm(root, { recursive: true, force: true }); }
@@ -556,7 +559,7 @@ describe("hires offline shell", () => {
       const generated = rgb(128, 128, (x, y, c) => (x * 17 + y * 13 + c * 47) % 256);
       await sharp(Buffer.from(Uint8Array.from(generated.data)), { raw: { width: 128, height: 128, channels: 3 } }).png().toFile(join(cache, 'tile-0.png'));
       const invoke = async () => { throw new Error('remerge must never request images'); };
-      expect(await main(['--remerge', '--max-mae', '0'], { root, invoke })).toBe(0);
+      expect(await main(['--remerge', '--max-mae', '0'], { root, apiMinPixels: 0, invoke })).toBe(0);
       const stats = JSON.parse(await readFile(join(cache, 'stats.json'), 'utf8'));
       expect(stats.rejected).toBe(false);
       expect(stats.whole.gateable).toBe(false);
@@ -599,7 +602,7 @@ describe("hires offline shell", () => {
           await sharp(Buffer.from(Uint8Array.from(shifted.data, Math.round)), { raw: { width: apiW, height: apiH, channels: 3 } }).png().toFile(output);
         } else await sharp(input).resize(apiW, apiH, { fit: 'fill' }).png().toFile(output);
       };
-      expect(await main([], { root, invoke })).toBe(1);
+      expect(await main([], { root, apiMinPixels: 0, invoke })).toBe(1);
       expect(calls).toEqual(['bad', 'good']);
       expect((await readdir(join(root, 'public'))).toSorted()).toEqual(['bad.png', 'good.png', 'good@2x.webp']);
       const encoded = await sharp(join(root, 'public/good@2x.webp')).metadata();
@@ -612,11 +615,11 @@ describe("hires offline shell", () => {
       expect(stats.rejected).toBe(true);
       expect(stats.tiles[0].blurredMae).toBeGreaterThan(14);
       expect(stats.reasons.join(' ')).toMatch(/blurred MAE/);
-      expect(await main(['--only', 'good'], { root, invoke })).toBe(0);
+      expect(await main(['--only', 'good'], { root, apiMinPixels: 0, invoke })).toBe(0);
       expect(calls).toHaveLength(2);
-      expect(await main(['--only', 'good', '--force'], { root, invoke })).toBe(0);
+      expect(await main(['--only', 'good', '--force'], { root, apiMinPixels: 0, invoke })).toBe(0);
       expect(calls).toHaveLength(3);
-      expect(await main(['--only', 'bad', '--accept'], { root, invoke })).toBe(0);
+      expect(await main(['--only', 'bad', '--accept'], { root, apiMinPixels: 0, invoke })).toBe(0);
       expect(calls).toHaveLength(3);
       expect(JSON.parse(await readFile(join(root, 'art/hires.lock.json'), 'utf8')).assets['public/bad@2x.webp'].accepted).toBe(true);
       expect((await readdir(join(root, 'public')))).toContain('bad@2x.webp');
@@ -626,7 +629,7 @@ describe("hires offline shell", () => {
       await rm(join(cache, 'stats.json'));
       await rm(join(cache, 'master.png'));
       const neverInvoke = async () => { throw new Error('remerge must never request images'); };
-      expect(await main(['--only', 'good', '--remerge', '--force'], { root, invoke: neverInvoke })).toBe(0);
+      expect(await main(['--only', 'good', '--remerge', '--force'], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
       expect((await sharp(join(root, 'public/good@2x.webp')).metadata()).hasAlpha).toBe(true);
       expect(JSON.parse(await readFile(join(cache, 'stats.json'), 'utf8')).rejected).toBe(false);
       expect((await sharp(join(cache, 'master.png')).metadata()).width).toBe(128);
@@ -635,7 +638,7 @@ describe("hires offline shell", () => {
       const log = console.log, logs: string[] = [];
       console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
       try {
-        expect(await main(['--only', 'good', '--remerge'], { root, invoke: neverInvoke })).toBe(0);
+        expect(await main(['--only', 'good', '--remerge'], { root, apiMinPixels: 0, invoke: neverInvoke })).toBe(0);
         expect(logs.join(' ')).toMatch(/SKIPPED --remerge; missing cached tiles: tile-0.png/);
         expect(logs.join(' ')).toMatch(/estimated requests 0/);
         expect(await readdir(join(root, 'public'))).not.toContain('good@2x.webp');
