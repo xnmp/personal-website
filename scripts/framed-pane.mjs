@@ -259,6 +259,24 @@ export async function frameMask(path, frame, { rivets = true, feather = 0, clear
   return { W, H, frame, band, rivet, discs, metal };
 }
 
+// Resolve nonlinear material and lighting decisions on the logical grid, then
+// interpolate the resulting fields at output pixel centres. Geometry stays native.
+const scaleField = (data, width, height, channels, density) => {
+  const W = width * density, H = height * density;
+  const out = new Float32Array(W * H * channels);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const sx = Math.max(0, Math.min(width - 1, (x + 0.5) / density - 0.5));
+    const sy = Math.max(0, Math.min(height - 1, (y + 0.5) / density - 0.5));
+    const ix = Math.floor(sx), iy = Math.floor(sy), fx = sx - ix, fy = sy - iy;
+    for (let k = 0; k < channels; k++) {
+      const at = (a, b) => data[(Math.min(height - 1, b) * width + Math.min(width - 1, a)) * channels + k];
+      out[(y * W + x) * channels + k] = (at(ix, iy) * (1 - fx) + at(ix + 1, iy) * fx) * (1 - fy) + (at(ix, iy + 1) * (1 - fx) + at(ix + 1, iy + 1) * fx) * fy;
+    }
+  }
+  return out;
+};
+export const materialFrame = (material, density) => scaleField(material.frame, material.width, material.height, 1, density);
+
 /**
  * The focus state's base art: `path` with a band of enamel or silk laid in
  * along the pane's edge, `width` px wide in `color`, taking the grain of
@@ -280,7 +298,7 @@ export async function frameMask(path, frame, { rivets = true, feather = 0, clear
  * out (past a line along the edge), at full strength unless `grain` says.
  * Writes `out`.
  */
-export async function fillet(path, mask, { width, key = 0, color, keyColor = "000000", side = "pane", grain: carry, weave = null, crown: proud = 0.08, radius = 0 }, out) {
+export async function fillet(path, mask, { width, key = 0, color, keyColor = "000000", side = "pane", grain: carry, weave = null, crown: proud = 0.08, radius = 0 }, out, { density = 1, material = null, captureMaterial } = {}) {
   const { data, W, H } = await load(path);
   const { frame, rivet, metal } = mask;
   const [C, K] = [hex(color), hex(keyColor)];
@@ -297,7 +315,7 @@ export async function fillet(path, mask, { width, key = 0, color, keyColor = "00
   };
   // depth from the pane's edge, in px: into the pane (pane side) or into
   // the frame (frame side), Chebyshev, so the band is square-cornered
-  const reach = width + key + 2;
+  const reach = width + key + 2 * density;
   const depth =
     side === "pane"
       ? radius
@@ -341,15 +359,19 @@ export async function fillet(path, mask, { width, key = 0, color, keyColor = "00
   const keep = side === "pane" ? new Float32Array(W * H) : null;
   // the texture is read from the art as it was, before the band is laid in
   const grainAt = new Float32Array(W * H);
-  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (D[y * W + x] < width + key + 1) grainAt[y * W + x] = 1 + strength * (lum(x, y) / mean - 1);
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (D[y * W + x] < width + key + density) grainAt[y * W + x] = 1 + strength * (lum(x, y) / mean - 1);
+  // Material is resolved before resampling: cleared PNGs have quantized alpha
+  // and hidden RGB, so normalizing their texture at device density changes it.
+  const captured = captureMaterial ? new Float32Array(W * H * 3) : null;
+  const scaledMaterial = material && scaleField(material.data, material.width, material.height, 3, density);
   for (let y = y0; y < y1; y++)
     for (let x = x0; x < x1; x++) {
       const i = y * W + x;
       const d = D[i];
       if (d === Infinity) continue;
       // (rounded, the band's outer edge is antialiased too)
-      const strip = (1 - smooth(width - 0.75, width + 0.75, d)) * (radius ? smooth(-0.75, 0.75, d) : 1);
-      const line = key ? smooth(width - 0.75, width + 0.75, d) * (1 - smooth(width + key - 0.75, width + key + 0.75, d)) : 0;
+      const strip = (1 - smooth(width - 0.75 * density, width + 0.75 * density, d)) * (radius ? smooth(-0.75 * density, 0.75 * density, d) : 1);
+      const line = key ? smooth(width - 0.75 * density, width + 0.75 * density, d) * (1 - smooth(width + key - 0.75 * density, width + key + 0.75 * density, d)) : 0;
       const cover = (strip + line) * (1 - rivet[i]);
       if (cover <= 0) continue;
       const p = i * 4;
@@ -358,7 +380,9 @@ export async function fillet(path, mask, { width, key = 0, color, keyColor = "00
       // a laid band is a little proud: brighter along its middle (`crown`;
       // 0 for a band of flat colour)
       const crown = 1 + proud * Math.sin(Math.PI * clamp01(d / width));
-      const ink = [0, 1, 2].map((k) => (Math.min(255, C[k] * grain * crown) * strip + K[k] * line) / Math.max(1e-6, strip + line));
+      const paint = [0, 1, 2].map((k) => material ? scaledMaterial[i * 3 + k] : Math.min(255, C[k] * grain * crown));
+      if (captured) captured.set(paint, i * 3);
+      const ink = paint.map((c, k) => (c * strip + K[k] * line) / Math.max(1e-6, strip + line));
       if (metal) {
         // the metal over the enamel (straight alpha: the art over the band)
         const a = data[p + 3] / 255;
@@ -376,6 +400,7 @@ export async function fillet(path, mask, { width, key = 0, color, keyColor = "00
       if (keep) keep[i] = cover;
     }
   await sharp(data, { raw: { width: W, height: H, channels: 4 } }).png().toFile(out);
+  if (captureMaterial) captureMaterial({ data: captured, frame: mask.band, width: W, height: H });
   return keep;
 }
 
@@ -425,7 +450,7 @@ function fromWindowEdge(metal, W, H, reach) {
  * from the upper-left key light, and `glint`, a thin catch along the pane's
  * edge where it faces that light (the bottom and right edges).
  */
-export function paneLight(mask, { dx = 3, dy = 4, soft = 4, glintWidth = 2 } = {}) {
+export function paneLight(mask, { dx = 3, dy = 4, soft = 4, glintWidth = 2 } = {}, density = 1) {
   const { W, H, band, rivet } = mask;
   const bandShade = blur(shift(band, W, H, dx, dy), W, H, soft);
   const rivetShade = blur(shift(rivet, W, H, dx, dy), W, H, soft * 0.75);
@@ -446,8 +471,8 @@ export function paneLight(mask, { dx = 3, dy = 4, soft = 4, glintWidth = 2 } = {
     for (let x = frame.l; x < W - frame.r; x++) {
       const fromBottom = H - frame.b - 1 - y + 0.5;
       const fromRight = W - frame.r - 1 - x + 0.5;
-      const bottom = (1 - smooth(glintWidth * 0.5, glintWidth + 0.5, fromBottom)) * along((x - frame.l) / pw);
-      const right = (1 - smooth(glintWidth * 0.5, glintWidth + 0.5, fromRight)) * along((y - frame.t) / ph);
+      const bottom = (1 - smooth(glintWidth * 0.5, glintWidth + 0.5 * density, fromBottom)) * along((x - frame.l) / pw);
+      const right = (1 - smooth(glintWidth * 0.5, glintWidth + 0.5 * density, fromRight)) * along((y - frame.t) / ph);
       const g = Math.max(bottom, right);
       glint[y * W + x] = g * (1 - rivet[y * W + x]);
     }
@@ -463,7 +488,7 @@ export function paneLight(mask, { dx = 3, dy = 4, soft = 4, glintWidth = 2 } = {
  * it on the page (kit.css --plate-press-wash): the art's centre is never
  * drawn, so a veil here would only reach the band inside the frame.
  */
-export async function glaze(file, out, pad, mask, light, { keep, shadeColor, shadeAlpha, glintColor = "fff4dc", glintAlpha = 0 }) {
+export async function glaze(file, out, pad, mask, light, { keep, lightFrame, shadeColor, shadeAlpha, glintColor = "fff4dc", glintAlpha = 0 }) {
   const { data, W, H } = await load(file);
   const { W: bw, H: bh, band, rivet } = mask;
   if (W !== bw + 2 * pad || H !== bh + 2 * pad) throw new Error(`${file}: ${W}x${H} is not the base ${bw}x${bh} plus ${pad}px`);
@@ -477,8 +502,11 @@ export async function glaze(file, out, pad, mask, light, { keep, shadeColor, sha
       // what of the art stays: the frame's own soft edge, and the strip
       const art = Math.max(frameCover, keep ? keep[i] : 0) * (data[p + 3] / 255);
       // over it, the frame's light on the glass (not on the frame itself)
-      const sa = shadeAlpha * light.shade[i] * (1 - frameCover);
-      const ga = glintAlpha * light.glint[i] * (1 - frameCover) * (1 - (keep ? keep[i] : 0));
+      // Cleared-window membership is nonlinear (alpha > 0). Its logical
+      // material footprint must protect the same physical strip from lighting.
+      const lightCover = Math.max(frameCover, lightFrame ? lightFrame[i] : 0);
+      const sa = shadeAlpha * light.shade[i] * (1 - lightCover);
+      const ga = glintAlpha * light.glint[i] * (1 - lightCover) * (1 - (keep ? keep[i] : 0));
       // composite: art, then shade, then glint (straight alpha)
       let a = art;
       let rgb = [data[p], data[p + 1], data[p + 2]].map((c) => c * art);

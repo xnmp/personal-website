@@ -4,11 +4,12 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { extname, resolve } from 'node:path';
 import sharp from 'sharp';
 import { recipeDigest, settingsDigest, validateProtection } from './manifest.mjs';
+import { kitRecipe } from '../kit-native.mjs';
 import { derivationDigest, statePolicy, CURRENT_DERIVATION_GENERATION, HISTORICAL_DERIVATION_GENERATIONS } from './states.mjs';
 
 export const outputPath = ({ src, factor }) => src.slice(0, -extname(src).length) + `@${factor}x.webp`;
 export const sourceSha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
-export const generatorName = (asset) => asset.provider === 'external' ? 'codex-image_gen' : asset.provider === 'resample' ? asset.generator ? asset.generator.type === 'ink' ? 'kit-native-ink-v1' : asset.generator.type === 'smooth-field' ? 'smooth-field-v1' : 'framed-pane/sheen-v1' : 'premultiplied-bilinear-v1' : asset.model;
+export const generatorName = (asset) => asset.provider === 'external' ? 'codex-image_gen' : asset.provider === 'resample' ? asset.generator ? asset.generator.type === 'kit' ? 'kit-native-raster-v1' : asset.generator.type === 'ink' ? 'kit-native-ink-v1' : asset.generator.type === 'smooth-field' ? 'smooth-field-v1' : 'framed-pane/sheen-v1' : 'premultiplied-bilinear-v1' : asset.model;
 export const lockEntry = (bytes, asset, key, proof = {}) => ({
   ...(asset.provider && asset.provider !== 'api' ? { provider: asset.provider } : {}),
   settingsDigest: settingsDigest(asset),
@@ -25,6 +26,9 @@ export const familyMembershipMatches = (entry, asset) => !asset.family || !!asse
   JSON.stringify(entry.familyMembership.members) === JSON.stringify(asset.familyMembership.members);
 
 export function lockMatches(entry, bytes, asset, proof = {}) {
+  if (asset.generator?.type === 'kit') {
+    try { kitRecipe(asset.generator); } catch { return false; }
+  }
   if (!entry || (entry.provider ?? 'api') !== (asset.provider ?? 'api') || entry.sourceSha256 !== sourceSha256(bytes) || entry.factor !== asset.factor ||
       ![asset.model, generatorName(asset)].includes(entry.model) || !/^[a-f0-9]{64}$/.test(entry.cacheKey ?? '')) return false;
   if (entry.settingsDigest !== settingsDigest(asset)) return false;

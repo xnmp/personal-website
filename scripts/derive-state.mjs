@@ -28,11 +28,12 @@ if (!src || !out || !["hover", "focus", "pressed"].includes(mode)) {
   process.exit(1);
 }
 const opt = Object.fromEntries(flags.map((f) => f.replace(/^--/, "").split("=")));
+const density = Number(opt.density ?? 1);
 const CATCH = +(opt.catch ?? 0.5); // edge-catch gain on the outer bevel
 const SHEEN = +(opt.sheen ?? 0.18); // face sheen strength at the top-left
-const CATCH_W = +(opt["catch-width"] ?? 12); // px of bevel the catch spans in from the edge
+const CATCH_W = +(opt["catch-width"] ?? 12 * density); // px of bevel the catch spans in from the edge
 const DIM = +(opt.dim ?? 0.9); // pressed: what's left of the face's brightness
-const [R0, R1] = (opt.ring ?? "14:22").split(":").map(Number); // focus line band, px from the edge
+const [R0, R1] = (opt.ring ?? `${14 * density}:${22 * density}`).split(":").map(Number); // focus line band, px from the edge
 // With --ring-radius the line is a rounded rectangle inset R0 from the
 // art's bounds, its corners this round, instead of following the
 // silhouette: an outline offset inward past its corner radius comes out
@@ -124,7 +125,7 @@ for (let y = 0; y < H; y++)
     const gy = at(x, y + 1) - at(x, y - 1);
     const gl = Math.hypot(gx, gy) || 1;
     const facing = Math.max(0, (gx + gy) / gl / Math.SQRT2); // n = -grad, L = (-1,-1)/sqrt2
-    const bevel = 1 - smooth(Math.min(2, CATCH_W / 3), CATCH_W, d);
+    const bevel = 1 - smooth(Math.min(2 * density, CATCH_W / 3), CATCH_W, d);
     let rgb;
     if (mode === "pressed") {
       const shade = DIM * (1 - CATCH * bevel * facing);
@@ -136,7 +137,7 @@ for (let y = 0; y < H; y++)
     if (mode === "focus") {
       // where the line runs: by the silhouette, or by the rounded rectangle
       const dr = RADIUS ? R0 + roundDepth(x, y) : d;
-      const band = (a, b) => smooth(a - 1.5, a, dr) * (1 - smooth(b, b + 1.5, dr));
+      const band = (a, b) => smooth(a - 1.5 * density, a, dr) * (1 - smooth(b, b + 1.5 * density, dr));
       const h = Math.min(1, HALOS.reduce((a, [h0, h1]) => a + band(h0, h1), 0)) * 0.85;
       rgb = rgb.map((c, k) => c * (1 - h) + HALO[k] * h);
       const w = band(R0, R1);

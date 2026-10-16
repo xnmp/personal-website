@@ -50,6 +50,10 @@ const IVY = [
 
 const kit = {
   raw: "solarpunk",
+  // Expected input identities for native recipes; missing raws are allowed in CI.
+  rawHashes: {
+    "card-brass": "ce4bfe2000f5f55d3517062dadcf892c20805d16f9018be6e4df3c344a64aa5f"
+  },
   sheet: {
     normal: ["8:14:18:0.26", "1:2:2.5:0.32"],
     hover: ["18:38:30:0.62", "5:10:9:0.26"],

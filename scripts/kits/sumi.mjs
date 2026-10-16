@@ -35,6 +35,12 @@ const SIGNAL_RED = [0.99, 1.28, 1.45];
 
 const kit = {
   raw: "sumi",
+  // Expected input identities for native recipes; missing raws are allowed in CI.
+  rawHashes: {
+    "tile-line-day": "464fe640223a46efcf43bd4468873b3402bb8f0baf7ff40f49b59b894f967ec0",
+    "tile-line-night": "1e1cdc2f3004d2bc608e1efe2cda43e5483f89707f624d075590b261660bb920",
+    "tile-red-day": "8fc8f0294c0ad711eb8bf2c26f9e38d22917da17581cff76234b8af02739957c"
+  },
   sheet: {
     // paper laid on paper: a close, soft shadow
     normal: ["4:8:12:0.2", "0.5:1:1.5:0.26"],
