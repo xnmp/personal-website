@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { outputSizes } from './external.mjs';
+import { API_LIMITS } from './tiles.mjs';
 import { CURRENT_DERIVATION_GENERATION, HISTORICAL_DERIVATION_GENERATIONS, statePolicy } from './states.mjs';
 import { PERIODIC_RECIPE, periodicHalo } from './periodic.mjs';
 import { posix } from 'node:path';
@@ -61,7 +62,7 @@ export function validateManifest(value, dimensions = {}) {
   const seen = new Set();
   const assets = value.assets.map((entry, i) => {
     const where = `assets[${i}]${typeof entry?.src === 'string' ? ` (${entry.src})` : ''}`;
-    keys(entry, ['src', 'factor', 'quality', 'sigma', 'model', 'apiQuality', 'lossless', 'note', 'group', 'provider', 'external', 'family', 'reference', 'stateCrop', 'periodic', 'generator', 'protect', 'protectFeather', 'glyphs', 'stateDerivation', 'stateResidualMaxHf'], where);
+    keys(entry, ['src', 'factor', 'quality', 'sigma', 'model', 'apiQuality', 'lossless', 'note', 'group', 'provider', 'external', 'family', 'reference', 'stateCrop', 'periodic', 'generator', 'protect', 'protectFeather', 'glyphs', 'stateDerivation', 'stateResidualMaxHf', 'apiMaxPixels'], where);
     if (typeof entry.src !== 'string' || !entry.src.startsWith('public/') || posix.normalize(entry.src) !== entry.src ||
         entry.src.includes('\\') || entry.src.includes('\0') || !/\.(webp|png|jpe?g|tiff?|avif|gif)$/i.test(entry.src)) fail(where, 'src must be a raster path inside public/');
     if (seen.has(entry.src)) fail(where, 'duplicate src');
@@ -72,6 +73,11 @@ export function validateManifest(value, dimensions = {}) {
     if (asset.provider === 'external') {
       try { outputSizes(asset.external?.sizes, asset.factor); } catch (error) { fail(where, error.message); }
     }
+    // Caps each API tile's area so the planner splits large art into smaller,
+    // independently aligned requests (each frame tile then holds a corner).
+    if ('apiMaxPixels' in entry && (asset.provider !== 'api' || !Number.isSafeInteger(entry.apiMaxPixels) ||
+        entry.apiMaxPixels < API_LIMITS.minPixels || entry.apiMaxPixels > API_LIMITS.maxPixels))
+      fail(where, `apiMaxPixels must be an integer from ${API_LIMITS.minPixels} to ${API_LIMITS.maxPixels}, with provider api`);
     for (const name of ['family', 'reference']) if (name in entry && (typeof entry[name] !== 'string' || !entry[name])) fail(where, `invalid ${name}`);
     if (!!entry.family !== !!entry.reference) fail(where, 'family and reference are required together');
     if ('family' in entry && !/^[a-z0-9]+(?:[/-][a-z0-9]+)*$/.test(entry.family)) fail(where, 'invalid family');
@@ -134,6 +140,7 @@ export const pixelSettings = (asset) => ({
   sigma: asset.sigma, quality: asset.quality, lossless: !!asset.lossless,
   apiQuality: asset.apiQuality ?? DEFAULTS.apiQuality, note: asset.note ?? '',
   external: asset.provider === 'external' ? asset.external : null,
+  ...(asset.apiMaxPixels ? { apiMaxPixels: asset.apiMaxPixels } : {}),
 });
 export const settingsDigest = (asset) => createHash('sha256').update(JSON.stringify(pixelSettings(asset))).digest('hex');
 
@@ -158,11 +165,13 @@ export const assetCacheKey = (bytes, asset, prompt, requestIdentity = null) => {
   // Historical API requests used high quality. Keep those paid identities.
   const legacy = (asset.provider ?? 'api') === 'api' && (asset.apiQuality ?? DEFAULTS.apiQuality) !== 'high'
     ? createHash('sha256').update(original).update(JSON.stringify({ apiQuality: asset.apiQuality })).digest('hex') : original;
+  // A tile cap changes which regions are requested: tiles from another plan must never be reused.
+  const tiled = asset.apiMaxPixels ? createHash('sha256').update(legacy).update(JSON.stringify({ apiMaxPixels: asset.apiMaxPixels })).digest('hex') : legacy;
   // Protection changes delivered pixels only: paid tile identity must remain stable.
   // Non-periodic family sigma is post-processing only. Preserve the historical
   // sigma=4 tile namespace while allowing tone changes to reuse paid tiles.
   const recipe = processingRecipe({ ...asset, ...(asset.family && !asset.periodic ? { sigma: 4 } : {}), protect: undefined, protectFeather: undefined }, true, HISTORICAL_DERIVATION_GENERATIONS[0]);
-  return recipe ? createHash('sha256').update(legacy).update(JSON.stringify([recipe, requestIdentity])).digest('hex') : legacy;
+  return recipe ? createHash('sha256').update(tiled).update(JSON.stringify([recipe, requestIdentity])).digest('hex') : tiled;
 };
 
 // Stable topological order also preserves canonical-first state processing.

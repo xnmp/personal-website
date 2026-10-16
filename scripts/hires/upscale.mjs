@@ -115,7 +115,7 @@ export async function stateConformance(state, normal, reference, decoded, down, 
   const width = region?.w ?? state.width, height = region?.h ?? state.height;
   const plan = asset.provider === 'external'
     ? planExternalTiles({ width, height, factor: 2, sizes: asset.external.sizes })
-    : planTiles({ width, height, factor: 2 });
+    : planTiles({ width, height, factor: 2, ...(asset.apiMaxPixels ? { limits: { maxPixels: asset.apiMaxPixels } } : {}) });
   const regions = plan.tiles.map((t) => ({ x: t.x + (region?.x ?? 0), y: t.y + (region?.y ?? 0), w: t.w, h: t.h }));
   const wholeImage = protectedStats(state, down, undefined, { alignment });
   const whole = protectedStats(state, down, support, { alignment });
@@ -379,7 +379,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
   if (external && opts.force) throw new Error('--force is not supported for external assets; remove the cached tile to request a replacement');
   const plan = external
     ? planExternalTiles({ width: width + 2 * halo, height: height + 2 * halo, factor: asset.factor, sizes: asset.external.sizes })
-    : planTiles({ width: width + 2 * halo, height: height + 2 * halo, factor: asset.factor });
+    : planTiles({ width: width + 2 * halo, height: height + 2 * halo, factor: asset.factor, ...(asset.apiMaxPixels ? { limits: { maxPixels: asset.apiMaxPixels } } : {}) });
   const prompt = requestPrompt(promptText, asset, plan);
   const requestIdentity = normalBytes ? { normalSha256: sourceSha256(normalBytes), region: region ?? null } : null;
   const key = assetCacheKey(sourceBytes, asset, prompt, requestIdentity);
@@ -628,7 +628,7 @@ export async function currentCandidateKey(asset, sourceBytes, promptText, root, 
   const halo = asset.periodic ? periodicHalo(asset.sigma) : 0;
   const width = (region?.w ?? metadata.width) + halo * 2, height = (region?.h ?? metadata.height) + halo * 2;
   const external = asset.provider === 'external';
-  const plan = external ? planExternalTiles({ width, height, factor: asset.factor, sizes: asset.external.sizes }) : planTiles({ width, height, factor: asset.factor });
+  const plan = external ? planExternalTiles({ width, height, factor: asset.factor, sizes: asset.external.sizes }) : planTiles({ width, height, factor: asset.factor, ...(asset.apiMaxPixels ? { limits: { maxPixels: asset.apiMaxPixels } } : {}) });
   return assetCacheKey(sourceBytes, asset, requestPrompt(promptText, asset, plan), normalBytes ? { normalSha256: sourceSha256(normalBytes), region: region ?? null } : null);
 }
 
