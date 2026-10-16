@@ -1,7 +1,7 @@
 // Celestial Atlas: the raws that are not generated but derived, from the
 // original mock (art/raw/originals/atlas.png) and the generated plates.
 //
-//   node art/prompts/atlas/derive.mjs <frame|dials|sky|quiet|foil|tiles|frames|compass|canvas|bleed|stars|mat|moon>...
+//   node art/prompts/atlas/derive.mjs <frame|dials|sky|quiet|copy|foil|tiles|frames|compass|canvas|bleed|stars|mat|moon>...
 //
 // Each writes art/raw/atlas/<name>/<name>.png, which scripts/kits/atlas.mjs
 // builds into the kit like any raw.
@@ -632,6 +632,26 @@ async function quiet() {
           for (let c = 0; c < 3; c++) px[i + c] = Math.round(px[i + c] * (1 - w) + C.data[i + c] * w);
         }
     await png(px, C.W, C.H, 3, out(name));
+  }
+}
+
+/** The copy needs no chart ink at all. The masthead's star-reduced field
+ *  deliberately keeps faint lines. Here a wider median removes the marks
+ *  rather than clamping them towards the sky, with a little fresh grain
+ *  instead of the original residual (which would bring the lines back).
+ *  Its coordinates stay the core's, including the phone crop. */
+async function copy() {
+  for (const [src, name] of [
+    ["sky-night", "sky-copy-night"],
+    ["layer-sky-day-clear", "sky-copy-day"],
+  ]) {
+    const C = await rgb(await sharp(raw(src)).removeAlpha().median(25).blur(2).png().toBuffer());
+    const rand = rng(83);
+    for (let i = 0; i < C.data.length; i += 3) {
+      const grain = Math.floor(rand() * 3) - 1;
+      for (let c = 0; c < 3; c++) C.data[i + c] = Math.max(0, Math.min(255, C.data[i + c] + grain));
+    }
+    await png(C.data, C.W, C.H, 3, out(name));
   }
 }
 
@@ -1616,7 +1636,7 @@ async function mat() {
   }
 }
 
-const jobs = { frame, dials, sky, quiet, foil, tiles, frames, compass, canvas, bleed, stars, mat, moon };
+const jobs = { frame, dials, sky, quiet, copy, foil, tiles, frames, compass, canvas, bleed, stars, mat, moon };
 for (const job of process.argv.slice(2)) {
   if (!jobs[job]) throw new Error(`unknown job ${job}: ${Object.keys(jobs).join(", ")}`);
   await jobs[job]();

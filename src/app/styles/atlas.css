@@ -38,6 +38,7 @@
   /* the sky with its glints and lines taken out, behind the words on it */
   --a-quiet: url(/kit/atlas/sky-quiet-night.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --a-quiet: url(/kit/atlas/sky-quiet-night@2x.webp); }
+  --a-copy-sky: url(/kit/atlas/sky-copy-night.webp);
 
   /* gold: the primary button, the links, focus */
   --signal: #e9c578;
@@ -243,6 +244,7 @@
   --a-compass: url(/kit/atlas/compass-day.webp);
   --a-quiet: url(/kit/atlas/sky-quiet-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --a-quiet: url(/kit/atlas/sky-quiet-day@2x.webp); }
+  --a-copy-sky: url(/kit/atlas/sky-copy-day.webp);
   --signal: #7a5718;
   --signal-ink: #6e4c12;
   --signal-rule: #9a7430;
@@ -604,9 +606,8 @@
   pointer-events: none;
 }
 
-/* The quiet field: behind the words that stand on the scene (the brand and
-   its line, the nav, the flagship's copy and keys), the sky with its glints
-   and constellation lines taken out (sky-quiet, the plate star-reduced:
+/* The quiet field: behind the brand, its line and the nav, the sky with
+   its glints and constellation lines taken out (sky-quiet, the plate star-reduced:
    art/prompts/atlas/derive.mjs quiet), feathered out at its edges, so no
    glint lands on a glyph, as none does in the mock. It is the plate's
    core, fixed to the viewport and hung as the plate's is (centred, from
@@ -615,11 +616,11 @@
    first screen stacks, and a phone draws a fixed background as a
    scrolling one. */
 @media (min-width: 900px) {
-  :root[data-style="atlas"] :is(.masthead .tagline, .masthead .instruments, .launchpad-copy) {
+  :root[data-style="atlas"] :is(.masthead .tagline, .masthead .instruments) {
     position: relative;
   }
 
-  :root[data-style="atlas"] :is(.masthead .tagline, .masthead .instruments, .launchpad-copy)::before {
+  :root[data-style="atlas"] :is(.masthead .tagline, .masthead .instruments)::before {
     --feather: calc(25.7 * var(--u));
     content: "";
     position: absolute;
@@ -645,16 +646,78 @@
     inset: calc(-11.9 * var(--u)) calc(-7.9 * var(--u)) calc(-11.9 * var(--u)) calc(-21.8 * var(--u));
     --feather: calc(17.8 * var(--u));
   }
+}
 
-  :root[data-style="atlas"] .launchpad-copy::before {
-    inset: calc(7.9 * var(--u)) calc(-5.9 * var(--u)) calc(-15.8 * var(--u)) calc(4 * var(--u));
-    --feather: calc(39.6 * var(--u));
+/* The reduced-star plate still holds chart ink. Only the words take bare
+   sky: the chart, moon and observatory keep their paint around them and
+   behind the opaque keys. The feather lies outside each text block. */
+.launchpad-sky {
+  display: none;
+}
+
+:root[data-style="atlas"] :is(.launchpad-title, .launchpad-pitch, .launchpad-call) {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  isolation: isolate;
+}
+
+:root[data-style="atlas"] .launchpad-sky {
+  --feather: max(4px, calc(10 * var(--u)));
+  --copy-pad: 2px;
+  display: block;
+  position: absolute;
+  inset: calc(-1 * (var(--feather) + var(--copy-pad)));
+  z-index: -1;
+  mask:
+    linear-gradient(90deg, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent),
+    linear-gradient(transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+
+/* Masking clips fixed descendants without changing their containing block.
+   The window follows the words; its sky stays in viewport coordinates, like
+   the plate. No background-attachment: fixed: iOS treats that as scroll.
+   Keep transforms/filters off this span and its ancestors. */
+:root[data-style="atlas"] .launchpad-sky > span {
+  position: fixed;
+  inset: 0;
+  container-type: size;
+}
+
+/* Measure the fixed box itself, as .scene does, rather than 100vh: iOS's
+   expanding toolbar can make those heights differ. */
+:root[data-style="atlas"] .launchpad-sky > span::before {
+  --a-copy-k: max(100cqw / 1672, 100cqh / 941);
+  --a-copy-x: calc((100cqw - 1672 * var(--a-copy-k)) * 0.96);
+  --a-copy-y: calc(100cqh - 941 * var(--a-copy-k));
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--a-copy-sky) var(--a-copy-x) var(--a-copy-y) / calc(1672 * var(--a-copy-k)) auto no-repeat;
+}
+
+@media (min-width: 900px) {
+  :root[data-style="atlas"] .launchpad-sky > span::before {
+    --a-copy-k: max(var(--u), 100cqh / (941 + var(--sky-bleed-bottom)), 100cqw / (1672 + 2 * var(--sky-bleed-x)));
+    --a-copy-x: calc((100cqw - 1672 * var(--a-copy-k)) / 2);
+    --a-copy-y: 0px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* A translated main would become the fixed sky's containing block during
+     sheet-down. Preserve the entrance fade without moving that ancestor. */
+  :root[data-style="atlas"] .rack-inner > .rack-main {
+    animation-name: sheet-fade;
   }
 }
 
 /* it fades up with the sky it belongs to (kit.css) */
 @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
-  :root[data-style="atlas"] :is(.masthead .tagline, .masthead .instruments, .launchpad-copy)::before {
+  :root[data-style="atlas"] :is(.masthead .tagline, .masthead .instruments)::before,
+  :root[data-style="atlas"] .launchpad-sky {
     animation: layer-fade 700ms ease-out both;
   }
 }
@@ -689,11 +752,16 @@
   margin-left: calc(-2 * var(--u));
   line-height: 0.96;
   letter-spacing: -0.016em;
+  text-shadow: none;
+}
+
+/* Keep the foil's filter on the lettering, clear of its sky backdrop. */
+:root[data-style="atlas"] .launchpad-title-ink {
+  display: block;
   background: var(--a-title-light), var(--a-foil) 0 0 / calc(415.8 * var(--u)) auto repeat;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  text-shadow: none;
   filter: var(--a-title-shadow);
 }
 

@@ -1,0 +1,21 @@
+/* Round-3 phone treatment, kept only as the attachment test's negative control. */
+:root[data-style="atlas"] {
+  --a-copy-k: max(var(--page-w) / 1672, 100vh / 941);
+  --a-copy-x: calc((var(--page-w) - 1672 * var(--a-copy-k)) * 0.96);
+  --a-copy-y: calc(100vh - 941 * var(--a-copy-k));
+}
+:root[data-style="atlas"] .launchpad-sky { display: none; }
+:root[data-style="atlas"] :is(.launchpad-title, .launchpad-pitch, .launchpad-call)::before {
+  --feather: max(4px, calc(10 * var(--u)));
+  --copy-pad: 2px;
+  content: "";
+  position: absolute;
+  inset: calc(-1 * (var(--feather) + var(--copy-pad)));
+  z-index: -1;
+  background: var(--a-copy-sky) var(--a-copy-x) var(--a-copy-y) / calc(1672 * var(--a-copy-k)) auto no-repeat fixed;
+  mask:
+    linear-gradient(90deg, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent),
+    linear-gradient(transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
