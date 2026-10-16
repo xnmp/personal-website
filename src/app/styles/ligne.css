@@ -293,6 +293,7 @@
   --k-key-signal-pressed: url(/kit/ligne/tile-signal-pressed.webp);
   --k-key-signal-focus: url(/kit/ligne/tile-signal-focus.webp);
   --k-tape: url(/kit/ligne/tape-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/ligne/tape-day@2x.webp) 2x); }
   --k-chip: url(/kit/ligne/chip-day.webp);
   --k-cap: url(/kit/ligne/cap-day.webp);
   --k-caption: url(/kit/ligne/caption-day.webp);

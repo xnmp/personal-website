@@ -37,6 +37,7 @@
   --k-hero: url(/kit/paper/hero-night.webp);
   --k-mount: url(/kit/paper/mount-night.webp);
   --k-label: url(/kit/paper/label-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-label: url(/kit/paper/label-night@2x.webp); }
   --k-ribbon: url(/kit/paper/ribbon-night.webp);
   --k-ledge: url(/kit/paper/ledge-night.webp);
   --k-foreground: url(/kit/paper/foreground-night.webp);
@@ -127,6 +128,7 @@
   --k-hero: url(/kit/paper/hero-day.webp);
   --k-mount: url(/kit/paper/mount-day.webp);
   --k-label: url(/kit/paper/label-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-label: url(/kit/paper/label-day@2x.webp); }
   --k-ribbon: url(/kit/paper/ribbon-day.webp);
   --k-ledge: url(/kit/paper/ledge-day.webp);
   --k-foreground: url(/kit/paper/foreground-day.webp);
