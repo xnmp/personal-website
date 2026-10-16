@@ -10,7 +10,7 @@ import { planTiles } from './tiles.mjs';
 import { planExternalTiles, normalizationSize } from './external.mjs';
 import { blendTiles, colourStats, composeFlow, estimateFlow, padTransparent, placeRegion, toneMatch, warp } from './merge.mjs';
 import { resample, seamStats, wrapRegion, periodicHalo } from './periodic.mjs';
-import { canonicaliseTransparent, registerState, stateRequestCrop, stateStats, derivationDigest, stateGateWeights, cropWeights, stateEvidence } from './states.mjs';
+import { canonicaliseTransparent, registerState, stateRequestCrop, stateStats, derivationDigest, stateGateWeights, cropWeights, stateEvidence, residualRouting, transferResidual, residualDiagnostics, changeReproduction, statePolicy } from './states.mjs';
 import { protectGlyphs, protectedStats } from './protect.mjs';
 import { smoothField } from './generators.mjs';
 import { detailStats } from './detail.mjs';
@@ -98,26 +98,98 @@ export async function alignTile(source, generated, factor, weights) {
   return { down, aligned, alignedDown, preWarp: pre.diagnostics, postWarp: residual.diagnostics, iterations: history.length - 1, history };
 }
 
+// Evaluate the delivered state with the generated path's evidence support,
+// tile plan, alignment/colour thresholds and registration invariants.
+export async function stateConformance(state, normal, reference, decoded, down, asset = {}, maxMae = 14) {
+  const support = stateGateWeights(state, normal);
+  const region = asset.stateCrop ? stateRequestCrop(state, normal) : null;
+  const width = region?.w ?? state.width, height = region?.h ?? state.height;
+  const plan = asset.provider === 'external'
+    ? planExternalTiles({ width, height, factor: 2, sizes: asset.external.sizes })
+    : planTiles({ width, height, factor: 2 });
+  const regions = plan.tiles.map((t) => ({ x: t.x + (region?.x ?? 0), y: t.y + (region?.y ?? 0), w: t.w, h: t.h }));
+  const wholeImage = protectedStats(state, down);
+  const whole = protectedStats(state, down, support);
+  const tiles = await Promise.all(regions.map(async (t) => protectedStats(await crop(state, t), await crop(down, t), cropWeights(support, state.width, t))));
+  const registration = stateStats(state, normal, reference, decoded, down);
+  const reasons = [wholeImage, whole, ...tiles].flatMap((s, i) => acceptanceReasons(s, i === 0 ? 'whole-image' : i === 1 ? 'state-region' : `state tile ${i - 2}`, maxMae));
+  if (registration.stateMae > maxMae) reasons.push(`registered state premultiplied MAE ${registration.stateMae} > ${maxMae}`);
+  if (registration.outsideDifferingPixels) reasons.push(`registered state differs outside S2 (${registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
+  if (registration.suppressed) reasons.push('registration suppressed every intended state change');
+  return { wholeImage, whole, tiles, registration, reasons, passes: !reasons.length };
+}
+
+export async function residualCandidate(state, normal, reference, asset = {}, maxMae = 14) {
+  const master = canonicaliseTransparent(transferResidual(state, normal, reference));
+  const encoded = await sharp(bytes(master), { raw: geometry(master) }).webp({ lossless: true }).toBuffer();
+  const decoded = await raw(sharp(encoded).toColourspace('srgb').ensureAlpha());
+  const down = await resize(decoded, state.width, state.height);
+  const diagnostics = residualDiagnostics(state, normal, down, await resize(reference, state.width, state.height));
+  const conformance = await stateConformance(state, normal, reference, decoded, down, asset, maxMae);
+  const change = changeReproduction(state, normal, down, await resize(reference, state.width, state.height));
+  return { master, encoded, diagnostics, conformance, change };
+}
+
+// Accept only waives conformance. Missing state changes remain hard failures
+// for every candidate, including an auto fallback. Region errors are diagnostic.
+export function stateCandidateFailures(candidate, accept = false) {
+  return [
+    ...(candidate.conformance.registration?.suppressed ? ['registration suppressed every intended state change'] : []),
+    ...(!candidate.change.passes ? [`change reproduction ${candidate.change.reproducedPixels}/${candidate.change.strongPixels} (${(candidate.change.share * 100).toFixed(2)}%) < 90%`] : []),
+    ...(!accept ? candidate.conformance.reasons : []),
+  ];
+}
+
+export async function resolveStateCandidate(state, normal, reference, generated, asset = {}, { maxMae = 14, accept = false, generationReasons = [] } = {}) {
+  const down = await resize(generated, state.width, state.height);
+  const change = changeReproduction(state, normal, down, await resize(reference, state.width, state.height));
+  const conformance = await stateConformance(state, normal, reference, generated, down, asset, maxMae);
+  conformance.reasons = [...generationReasons, ...conformance.reasons];
+  conformance.passes = !conformance.reasons.length;
+  const original = { change, conformance };
+  // Even --accept must attempt the deterministic fallback when generation loses
+  // conformance. Only the fallback's conformance can then be waived.
+  if (statePolicy(asset).mode === 'auto' && (!change.passes || !conformance.passes)) {
+    const candidate = await residualCandidate(state, normal, reference, asset, maxMae);
+    return { ...candidate, method: 'residual', fallbackReason: stateCandidateFailures(original).join('; '), generated: original,
+      failures: stateCandidateFailures(candidate, accept) };
+  }
+  return { ...original, master: generated, method: 'generate', failures: stateCandidateFailures(original, accept) };
+}
+
+async function lockedReference(asset, root, assets) {
+  const normalAsset = assets.find((a) => a.src === asset.reference);
+  const normalBytes = await readFile(resolve(root, asset.reference));
+  let referenceBytes;
+  try { referenceBytes = await readFile(resolve(root, outputPath(normalAsset))); }
+  catch (error) { if (error.code === 'ENOENT') throw new Error(`missing reference output: ${outputPath(normalAsset)}`); throw error; }
+  const lock = await readLock(root);
+  if (!await isUpToDate(normalAsset, lock, root, assets)) throw new Error('canonical reference is stale or unlocked');
+  return { normalBytes, referenceBytes,
+    normal: await raw(sharp(normalBytes).toColourspace('srgb').ensureAlpha()),
+    reference: await raw(sharp(referenceBytes).toColourspace('srgb').ensureAlpha()) };
+}
+
 async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, reasons, stats) {
   const output = resolve(root, outputPath(asset));
   let derivation, reference, normal;
   if (asset.family && asset.reference !== asset.src) {
-    const normalAsset = opts.assets.find((a) => a.src === asset.reference);
-    const normalBytes = await readFile(resolve(root, asset.reference));
-    const referenceBytes = await readFile(resolve(root, outputPath(normalAsset)));
-    const lock = await readLock(root);
-    if (!lockMatches(lock.assets[outputPath(normalAsset)], normalBytes, normalAsset, await outputProof(normalAsset, normalBytes, referenceBytes, root, opts.assets))) throw new Error('canonical reference is stale or unlocked');
-    normal = await raw(sharp(normalBytes).toColourspace('srgb').ensureAlpha());
-    reference = await raw(sharp(referenceBytes).toColourspace('srgb').ensureAlpha());
+    const dependency = await lockedReference(asset, root, opts.assets);
+    const { normalBytes, referenceBytes } = dependency;
+    normal = dependency.normal; reference = dependency.reference;
     derivation = derivationDigest(sourceBytes, normalBytes, referenceBytes, asset.sigma);
-    const derivedPath = resolve(cache, `derived-${derivation}-${sourceSha256(bytes(master))}.png`);
-    if (await exists(derivedPath)) master = await raw(sharp(derivedPath).ensureAlpha());
-    else {
-      master = registerState(rgba, normal, reference, master);
-      await sharp(bytes(master), { raw: geometry(master) }).png().toFile(derivedPath);
+    if (stats.stateDerivation?.method !== 'residual') {
+      const derivedPath = resolve(cache, `derived-${derivation}-${sourceSha256(bytes(master))}.png`);
+      if (await exists(derivedPath)) master = await raw(sharp(derivedPath).ensureAlpha());
+      else {
+        master = registerState(rgba, normal, reference, master);
+        await sharp(bytes(master), { raw: geometry(master) }).png().toFile(derivedPath);
+      }
     }
   }
-  if (asset.protect) {
+  // Residuals retain the locked reference's protected paint. Reapplying the
+  // source resample here would overwrite that paint outside the change mask.
+  if (asset.protect && stats.stateDerivation?.method !== 'residual') {
     master = protectGlyphs(rgba, master, asset.protect, asset.protectFeather ?? 6);
     stats.protect = asset.protect;
     stats.protectFeather = asset.protectFeather ?? 6;
@@ -133,15 +205,36 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
     console.log(`${asset.src}: protected conformance ${reasons.length ? 'REJECTED' : 'PASS'}`);
   }
   if (asset.family) master = canonicaliseTransparent(master);
-  const encoded = await sharp(bytes(master), { raw: geometry(master) }).webp(asset.lossless || asset.family ? { lossless: true } : webpOptions(asset.quality)).toBuffer();
-  const decoded = await raw(sharp(encoded).toColourspace('srgb').ensureAlpha());
+  let encoded = await sharp(bytes(master), { raw: geometry(master) }).webp(asset.lossless || asset.family ? { lossless: true } : webpOptions(asset.quality)).toBuffer();
+  let decoded = await raw(sharp(encoded).toColourspace('srgb').ensureAlpha());
   const hardReasons = [], invariantReasons = [];
   if (decoded.width !== rgba.width * asset.factor || decoded.height !== rgba.height * asset.factor) invariantReasons.push('decoded output dimensions differ from exact scale');
   if (reference) {
-    stats.registration = { ...stateStats(rgba, normal, reference, decoded, await resize(decoded, rgba.width, rgba.height)), derivationDigest: derivation };
-    if (stats.registration.outsideDifferingPixels) invariantReasons.push(`registered state differs outside S2 (${stats.registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
+    if (stats.stateDerivation?.method !== 'residual') {
+      const resolved = await resolveStateCandidate(rgba, normal, reference, decoded, asset, { ...opts, generationReasons: reasons });
+      stats.stateDerivation = { ...stats.stateDerivation, method: resolved.method,
+        ...(resolved.fallbackReason ? { fallbackReason: resolved.fallbackReason, generated: resolved.generated } : {}) };
+      if (resolved.method === 'residual') {
+        master = resolved.master; encoded = resolved.encoded;
+        decoded = await raw(sharp(encoded).toColourspace('srgb').ensureAlpha());
+        // The rejected model candidate's conformance is recorded above; gate
+        // the replacement on its own delivered pixels.
+        reasons = [];
+      }
+    }
+    const down = await resize(decoded, rgba.width, rgba.height);
+    const referenceDown = await resize(reference, rgba.width, rgba.height);
+    stats.registration = { ...stateStats(rgba, normal, reference, decoded, down), derivationDigest: derivation };
     if (stats.registration.suppressed) hardReasons.push('registration suppressed every intended state change');
-    if (stats.registration.stateMae > opts.maxMae) reasons.push(`registered state premultiplied MAE ${stats.registration.stateMae} > ${opts.maxMae}`);
+    if (stats.registration.outsideDifferingPixels) invariantReasons.push(`registered state differs outside S2 (${stats.registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
+    stats.changeReproduction = changeReproduction(rgba, normal, down, referenceDown);
+    if (!stats.changeReproduction.passes) hardReasons.push(...stateCandidateFailures({ change: stats.changeReproduction, conformance: { reasons: [] } }));
+    stats.conformance = await stateConformance(rgba, normal, reference, decoded, down, asset, opts.maxMae);
+    reasons.push(...stats.conformance.reasons);
+    if (stats.stateDerivation?.method === 'residual') {
+      stats.stateDerivation.diagnostics = residualDiagnostics(rgba, normal, down, referenceDown);
+      stats.stateDerivation.conformance = stats.conformance;
+    }
   }
   if (asset.periodic) {
     stats.seams = seamStats(decoded, resample(rgba, 2, true));
@@ -158,6 +251,7 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
   if (hardReasons.length || (reasons.length && !opts.accept)) throw new CandidateRejected(`REJECTED: ${stats.reasons.join('; ')} (review stats.json; --accept overrides conformance gates only)`, stats.retryTiles?.length ? stats.retryTiles : stats.tiles?.map((_, i) => i));
   const proof = { outputSha256: sourceSha256(encoded), width: decoded.width, height: decoded.height,
     ...(derivation ? { derivationDigest: derivation } : {}),
+    ...(stats.stateDerivation ? { stateDerivation: stats.stateDerivation } : {}),
     ...(stats.dependencies ? { dependencies: stats.dependencies } : {}) };
   const entry = lockEntry(sourceBytes, asset, key, { ...proof, ...(stats.acceptedOverride ? { accepted: true } : {}) });
   if (opts.verify) {
@@ -182,6 +276,45 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
   const metadata = await sharp(sourceBytes).metadata();
   validateProtection(asset, metadata.width, metadata.height);
   if ((metadata.pages ?? 1) > 1) throw new Error('animated or multi-page sources are not supported');
+  if (asset.family && asset.reference !== asset.src) {
+    const state = await raw(sharp(sourceBytes).toColourspace('srgb').ensureAlpha());
+    const normal = await raw(sharp(await readFile(resolve(root, asset.reference))).toColourspace('srgb').ensureAlpha());
+    context.stateDerivation ??= residualRouting(state, normal, asset);
+    const decision = context.stateDerivation;
+    if (decision.method === 'residual') {
+      // Dry planning may precede creation of the canonical output. Its gate is
+      // deferred until that dependency is locked; no cache or output is written.
+      let dependency;
+      if (!opts.dry && !opts.requests) dependency = await lockedReference(asset, root, opts.assets);
+      else {
+        try { dependency = await lockedReference(asset, root, opts.assets); }
+        catch (error) { decision.referencePendingReason = error.message; }
+      }
+      const candidate = dependency ? await residualCandidate(state, normal, dependency.reference, asset, opts.maxMae) : null;
+      if (candidate) {
+        decision.diagnostics = candidate.diagnostics; decision.conformance = candidate.conformance; decision.change = candidate.change;
+        decision.failures = stateCandidateFailures(candidate, opts.accept);
+        if (decision.failures.length && !opts.dry && !opts.requests) {
+          const key = assetCacheKey(sourceBytes, asset, promptText);
+          const cache = resolve(root, process.env.HIRES_CACHE ?? 'art/raw/hires', asset.src.slice(7, -extname(asset.src).length), key.slice(0, 12));
+          await mkdir(cache, { recursive: true });
+          await json(resolve(cache, 'stats.json'), { stateDerivation: decision, rejected: true, reasons: decision.failures });
+          throw new Error(`REJECTED: ${decision.failures.join('; ')} (--accept overrides conformance only, never change-reproduction gates)`);
+        }
+      }
+      if (decision.method === 'residual') {
+        if (opts.requests) return;
+        console.log(`${asset.src}: state residual; HF RMS ${decision.hfRms.toFixed(4)}/255; threshold ${decision.maxHf}/255; ${candidate ? decision.failures.length ? `REJECTED (${decision.failures.join('; ')})` : 'change + conformance PASS' : `gates deferred (${decision.referencePendingReason})`}; estimated requests 0`);
+        if (opts.dry) return { provider: asset.provider, requests: 0, tiles: 0, stateDerivation: decision };
+        const key = assetCacheKey(sourceBytes, asset, promptText);
+        const cache = resolve(root, process.env.HIRES_CACHE ?? 'art/raw/hires', asset.src.slice(7, -extname(asset.src).length), key.slice(0, 12));
+        await mkdir(cache, { recursive: true });
+        await finishAsset(asset, opts, root, sourceBytes, state, candidate.master, cache, key, [], { stateDerivation: decision, attempts: { requests: 0, retries: 0 } });
+        return { provider: asset.provider, requests: 0, tiles: 0, stateDerivation: decision };
+      }
+    }
+    if (!opts.requests) console.log(`${asset.src}: state generate; HF RMS ${decision.hfRms.toFixed(4)}/255; threshold ${decision.maxHf}/255${decision.fallbackReason ? `; ${decision.fallbackReason}` : ''}`);
+  }
   const external = asset.provider === 'external';
   const deterministic = asset.provider === 'resample';
   const halo = asset.periodic ? periodicHalo(asset.sigma) : 0;
@@ -200,13 +333,13 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     if (!asset.generator && !asset.glyphs && !detail.passes) throw new Error(`resample refused: HF RMS ${detail.hfRms.toFixed(4)}/255 > ${detail.limit}/255; use a generative provider`);
     const dependency = !opts.dry && asset.generator?.type === 'smooth-field' ? await generatorDependency(asset, root, opts.assets) : null;
     console.log(`${asset.src}: ${metadata.width}x${metadata.height} -> ${metadata.width * 2}x${metadata.height * 2}; resample; estimated requests 0`);
-    if (opts.dry) return { provider: asset.provider, requests: 0, tiles: 0 };
+    if (opts.dry) return { provider: asset.provider, requests: 0, tiles: 0, stateDerivation: context.stateDerivation };
     const key = assetCacheKey(sourceBytes, asset, promptText);
     const cache = resolve(root, process.env.HIRES_CACHE ?? 'art/raw/hires', asset.src.slice(7, -extname(asset.src).length), key.slice(0, 12));
     await mkdir(cache, { recursive: true });
     if (asset.generator?.type === 'sheen' && (rgba.width !== rgba.height || rgba.width !== 256)) throw new Error('sheen generator requires a 256px square source');
     const master = dependency ? await smoothField(dependency.dependencyBytes, asset.generator) : asset.generator ? sheenImage(rgba.width * 2, asset.generator) : resample(rgba, 2, !!asset.periodic);
-    await finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, [], { detail, attempts: { requests: 0, retries: 0 }, generator: generatorName(asset), ...(dependency ? { dependencies: { [asset.generator.from]: sourceSha256(dependency.dependencyBytes) } } : {}) });
+    await finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, [], { detail, attempts: { requests: 0, retries: 0 }, generator: generatorName(asset), ...(context.stateDerivation ? { stateDerivation: context.stateDerivation } : {}), ...(dependency ? { dependencies: { [asset.generator.from]: sourceSha256(dependency.dependencyBytes) } } : {}) });
     return;
   }
   if (opts.requests && !external) return;
@@ -214,7 +347,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
   const plan = external
     ? planExternalTiles({ width: width + 2 * halo, height: height + 2 * halo, factor: asset.factor, sizes: asset.external.sizes })
     : planTiles({ width: width + 2 * halo, height: height + 2 * halo, factor: asset.factor });
-  const prompt = [promptText.trim(), ...(plan.tiles.length > 1 ? ['Image 1 is a crop of a larger painting: keep its edges continuous; no border, vignette or frame at the edges.'] : []), ...(external ? ['The input includes padding. Preserve the entire canvas and padding exactly; do not crop, reframe or enlarge the subject.'] : []), ...(asset.note ? [asset.note] : [])].join('\n') + '\n';
+  const prompt = requestPrompt(promptText, asset, plan);
   const requestIdentity = normalBytes ? { normalSha256: sourceSha256(normalBytes), region: region ?? null } : null;
   const key = assetCacheKey(sourceBytes, asset, prompt, requestIdentity);
   const sourceStem = asset.src.slice('public/'.length, -extname(asset.src).length);
@@ -232,9 +365,10 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     console.log(`${asset.src}: SKIPPED --remerge; missing cached tiles: ${missing.join(', ')}`);
     return;
   }
-  if (opts.dry) return { provider: asset.provider, requests, tiles: plan.tiles.length };
+  if (opts.dry) return { provider: asset.provider, requests, tiles: plan.tiles.length, stateDerivation: context.stateDerivation };
   await mkdir(cache, { recursive: true });
   context.cache = cache;
+  if (context.stateDerivation) await json(resolve(cache, 'stats.json'), { stateDerivation: context.stateDerivation, status: 'generation-pending' });
   if (external && !context.loaded) {
     if (await exists(resolve(cache, 'attempts.json'))) context.attempts = JSON.parse(await readFile(resolve(cache, 'attempts.json'), 'utf8'));
     context.loaded = true;
@@ -379,6 +513,7 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
   const rejectedTiles = tileStats.flatMap((s, i) => acceptanceReasons(s, 'tile', opts.maxMae).length ? [i] : []);
   const retryTiles = rejectedTiles.length ? rejectedTiles : acceptanceReasons(whole, 'whole', opts.maxMae).length ? plan.tiles.map((_, i) => i) : [];
   await finishAsset(asset, opts, root, sourceBytes, full, finished, cache, key, reasons, { whole, tiles: tileStats, notes, attempts: context.attempts,
+    ...(context.stateDerivation ? { stateDerivation: context.stateDerivation } : {}),
     gateScope: gateWeights ? 'state-mask-plus-4-source-px' : 'whole',
     ...(asset.protect ? { gateRegions: plan.tiles.map((t) => {
       const x = t.x - halo + (region?.x ?? 0), y = t.y - halo + (region?.y ?? 0);
@@ -389,7 +524,8 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
   timing('webp written');
 }
 
-async function processAsset(asset, opts, promptText, root, invoke) {
+/** @returns {Promise<{provider: string, requests: number, tiles: number, stateDerivation?: ReturnType<typeof residualRouting>} | undefined>} */
+export async function processAsset(asset, opts, promptText, root, invoke) {
   const context = { cache: null, loaded: false, attempts: { requests: 0, retries: 0, tiles: {}, history: [] } };
   let first = true;
   while (true) {
@@ -424,13 +560,34 @@ async function processAsset(asset, opts, promptText, root, invoke) {
         }
       }
       await json(resolve(context.cache, 'attempts.json'), context.attempts);
-      await json(statsPath, { ...stats, rejected: true, reasons: errors.map((e) => e.message), attempts: context.attempts });
+      await json(statsPath, { ...stats, ...(stats.stateDerivation || context.stateDerivation ? { stateDerivation: stats.stateDerivation ?? context.stateDerivation } : {}), rejected: true, reasons: errors.map((e) => e.message), attempts: context.attempts });
       console.log(`${asset.src}: attempts ${context.attempts.requests}; extra requests ${context.attempts.retries}/${opts.retryRejected}; ${selected.length ? `retrying tiles ${selected.join(', ')}` : 'retry budget exhausted'}`);
       if (!selected.length) throw error;
       first = false;
     }
   }
 }
+
+// Reconstruct the paid request identity without opening cache tiles or writing.
+// A shipped fallback retains its generated request key; a direct derivation
+// uses the raw prompt key. Recipe/output/reference validation remains separate.
+export async function currentCandidateKey(asset, sourceBytes, promptText, root, entry = {}) {
+  if (asset.provider === 'resample' || (entry.stateDerivation?.method === 'residual' && !entry.stateDerivation?.fallbackReason))
+    return assetCacheKey(sourceBytes, asset, promptText);
+  const metadata = await sharp(sourceBytes).metadata();
+  let region, normalBytes;
+  if (asset.stateCrop && asset.reference !== asset.src) {
+    normalBytes = await readFile(resolve(root, asset.reference));
+    region = stateRequestCrop(await raw(sharp(sourceBytes).ensureAlpha()), await raw(sharp(normalBytes).ensureAlpha()));
+  }
+  const halo = asset.periodic ? periodicHalo(asset.sigma) : 0;
+  const width = (region?.w ?? metadata.width) + halo * 2, height = (region?.h ?? metadata.height) + halo * 2;
+  const external = asset.provider === 'external';
+  const plan = external ? planExternalTiles({ width, height, factor: asset.factor, sizes: asset.external.sizes }) : planTiles({ width, height, factor: asset.factor });
+  return assetCacheKey(sourceBytes, asset, requestPrompt(promptText, asset, plan), normalBytes ? { normalSha256: sourceSha256(normalBytes), region: region ?? null } : null);
+}
+
+const requestPrompt = (promptText, asset, plan) => [promptText.trim(), ...(plan.tiles.length > 1 ? ['Image 1 is a crop of a larger painting: keep its edges continuous; no border, vignette or frame at the edges.'] : []), ...(asset.provider === 'external' ? ['The input includes padding. Preserve the entire canvas and padding exactly; do not crop, reframe or enlarge the subject.'] : []), ...(asset.note ? [asset.note] : [])].join('\n') + '\n';
 
 // Inspect encoded files and metadata only; never load cached tiles or merge pixels.
 async function isUpToDate(asset, lock, root, assets) {
@@ -440,6 +597,8 @@ async function isUpToDate(asset, lock, root, assets) {
     const sourceBytes = await readFile(resolve(root, asset.src));
     const outputBytes = await readFile(resolve(root, outputPath(asset)));
     const proof = await outputProof(asset, sourceBytes, outputBytes, root, assets);
+    const prompt = await readFile(resolve(root, 'art/prompts/hires/upscale.txt'), 'utf8');
+    proof.candidateKey = await currentCandidateKey(asset, sourceBytes, prompt, root, entry);
     // Legacy locks have no output proof. Supply observed metadata in memory so
     // the existing recipe/family validation still applies without backfilling.
     const legacy = ['outputSha256', 'width', 'height'].every((key) => !Object.hasOwn(entry, key));
@@ -469,13 +628,14 @@ export async function main(args = process.argv.slice(2), { root = ROOT, invoke =
   const candidates = orderAssets(manifest.assets.filter((a) => selected.has(a)));
   const lock = opts.pending ? await readLock(root) : null;
   const states = await Promise.all(candidates.map(async (asset) => ({ asset, valid: opts.pending && await isUpToDate(asset, lock, root, manifest.assets) })));
-  let pendingFamilies = new Set(states.filter(({ asset, valid }) => asset.family && !valid).map(({ asset }) => asset.family));
   let changed;
   do {
     changed = false;
-    pendingFamilies = new Set(states.filter(({ asset, valid }) => asset.family && !valid).map(({ asset }) => asset.family));
     const stale = new Set(states.filter(({ valid }) => !valid).map(({ asset }) => outputPath(asset)));
-    for (const state of states) if (state.valid && (stale.has(state.asset.generator?.from) || pendingFamilies.has(state.asset.family))) {
+    // Valid siblings stay untouched. Shipping completeness is enforced by CSS;
+    // only actual output dependencies propagate pending status.
+    for (const state of states) if (state.valid && (stale.has(state.asset.generator?.from) ||
+      (state.asset.family && state.asset.reference !== state.asset.src && stale.has(outputPath({ src: state.asset.reference, factor: 2 }))))) {
       state.valid = false; changed = true;
     }
   } while (changed);
@@ -483,6 +643,7 @@ export async function main(args = process.argv.slice(2), { root = ROOT, invoke =
   const skipped = candidates.length - assets.length;
   opts.assets = manifest.assets;
   const summary = { api: 0, external: 0, resample: 0, requests: 0, externalTiles: 0 };
+  const routing = { api: { residual: 0, generate: 0 }, external: { residual: 0, generate: 0 }, resample: { residual: 0, generate: 0 } };
   const failedFamilies = new Set(), failedOutputs = new Set();
   if (!candidates.length && !opts.requests) console.log('No matching hires assets; estimated requests 0.');
   if (opts.pending && !opts.requests) console.log(`Skipped ${skipped} assets as up to date.`);
@@ -493,10 +654,12 @@ export async function main(args = process.argv.slice(2), { root = ROOT, invoke =
     try {
       const plan = await processSelectedAsset(asset, opts, prompt, root, invoke);
       summary[asset.provider]++;
+      if (plan?.stateDerivation) routing[asset.provider][plan.stateDerivation.method]++;
       if (plan?.provider === 'api') summary.requests += plan.requests;
       if (plan?.provider === 'external') summary.externalTiles += plan.requests;
     } catch (error) { failed = true; failedOutputs.add(outputPath(asset)); if (asset.family && asset.reference === asset.src) failedFamilies.add(asset.family); console.error(`${asset.src}: ${error.message}`); }
   }
+  if (opts.dry && Object.values(routing).some((r) => r.residual + r.generate)) console.log(`State routing: ${JSON.stringify(routing)}`);
   if (opts.dry) console.log(`Plan: ${assets.length} assets; api ${summary.api}, external ${summary.external}, resample ${summary.resample}; estimated API requests ${summary.requests}; external tiles ${summary.externalTiles}.`);
   return failed ? 1 : 0;
 }

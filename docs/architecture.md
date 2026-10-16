@@ -838,7 +838,8 @@ selected shipped files through the API or an external generator and conforms the
   poorly anywhere). With at least 1% alpha-weighted visible area, fewer than
   max(3, 20% of blocks containing visible paint) reliable blocks rejects as
   "cannot establish alignment"; below 1% the gates are skipped. A rejected
-  file is not written; `stats.json` says why. `--accept` overrides after review.
+  file is not written; `stats.json` says why. `--accept` overrides conformance
+  after review; it never overrides state-change reproduction or registration invariants.
 - **Cache**: requests, model tiles, stats and a lossless `master.png` live in
   `art/raw/hires/<path>/<key>/` (gitignored), keyed by the 1x file's bytes,
   factor, model and prompt. A cached tile is never requested again;
@@ -898,10 +899,81 @@ selected shipped files through the API or an external generator and conforms the
   total suppression of an intended change also rejects, without `--accept`
   overriding either registration invariant. Changed-region premultiplied MAE is
   gated by `--max-mae` in addition to normal conformance gates.
+
+- **Region-aware state derivation (`residual-v4`)**: pending family states default
+  to `stateDerivation: "auto"`; asset settings override family settings. Modes
+  remain `"generate"`, `"residual"` (derive), and `"auto"` for manifest compatibility.
+  Auto measures RMS of `delta - Gaussian(sigma=1, delta)` over all four
+  premultiplied channels in the exact 1x change mask M. HF <=
+  `stateResidualMaxHf` (default 4/255) derives; crisp deltas generate.
+
+  Each changed 1x footprint is opaque when both source alphas are >= 0.98.
+  Its four output pixels receive `premul(normal@2x) + U(delta)` without feather.
+  Other changed footprints use `U(premul(state))`, independent of generated
+  shadow error. U is pixel-centred bilinear interpolation without intermediate
+  rounding. A smoothstep blends the translucent replacement from the locked
+  normal across four output pixels inside M. Four output pixels are two source
+  pixels: enough samples for zero endpoint slopes without a long band that
+  erases narrow shadows. Distance is the inward Manhattan distance to unchanged
+  paint; image edges do not introduce a fictitious unchanged region. The raw
+  transfer copies every byte outside M. Family encoding canonicalises invisible
+  RGB and verifies exact visible premultiplied equality outside M after decode.
+  Results are clamped to valid premultiplied RGBA before byte encoding. Full
+  alpha prevents alpha clipping, but saturated generated RGB can still clip an
+  additive colour delta; change reproduction and conformance assess that loss.
+
+  Derived output is losslessly encoded, decoded and downsampled with Lanczos3.
+  Regional errors are diagnostics only: opaque changed pixels compare
+  `down(result) - down(normal@2x)` against the 1x premultiplied delta;
+  translucent changed pixels compare `down(result)` against the absolute
+  premultiplied state. MAE, p99 and sample counts for each region are recorded
+  under `stateDerivation.diagnostics` in stats.json; empty regions have zero
+  error and samples. There are no regional acceptance thresholds. Bilinear
+  upsampling followed by Lanczos3 downsampling is not an identity on crisp
+  antialiased edges, even for a pure source upscale. Comparing against the
+  kernel's own expected output would merely restate the construction.
+
+  Every generated or derived family state also passes whole-image conformance
+  and state-scoped conformance (mask plus four source pixels and contributing
+  tiles): sufficient alignment evidence, median <= 0.6px, p90 <= 1px, blurred
+  RGB MAE <= `--max-mae` (14), and registered premultiplied state MAE <= that
+  limit. Every state must reproduce its strong changes: for pixels with any
+  channel's |delta| >= 24/255, all such channels must retain the delta's sign
+  and at least half its magnitude in `down(output) - down(normal@2x)`.
+  At least 90% of these pixels must pass. No strong pixels means a vacuous pass,
+  recorded with a zero denominator. `changeReproduction` records counts/share.
+
+  If generation in auto mode fails change reproduction or any conformance gate,
+  it falls back once to derivation, recording `fallbackReason` and the generated
+  candidate's diagnostics. The fallback must pass the same change-reproduction
+  and standard conformance gates as generation, with identical thresholds. A
+  failed smooth derivation rejects; it does not loop back to generation.
+  **`--accept` overrides conformance only, never change reproduction, total
+  suppression, dimensions, or outside-mask invariants.** Auto still attempts
+  derivation before considering an acceptance override for bad generation.
+
+  Transfer requires a lock-valid shipped normal. Its bytes enter the derivation
+  digest. Residuals retain reference glyph protection. Generation keeps its
+  original paid-tile cache identity. Implicit auto accepts legacy registered lock
+  recipes; recipe changes invalidate prior derived locks. `--pending` skips
+  valid members individually, including `accepted: true` members, so a pending
+  sibling cannot re-gate and block an accepted normal. Validation checks source,
+  recipe, family membership, reference dependencies, output hash/geometry and
+  current candidate request key (including prompt, note, sizes and crop). A
+  changed source, candidate or output invalidates the old acceptance. A skipped
+  normal is loaded from its shipped output when its states need the reference.
+  Dry runs evaluate derived candidates only when a valid normal exists and
+  otherwise report deferred gates. `scripts/hires/audit-states.mjs` audits locked
+  states using real outputs without writes; `--calibrate --baseline <jsonl>`
+  evaluates a fixed state cohort in memory. With `--cache <directory>`, calibration
+  checks the current request's generated master and reports change-triggered
+  fallback eligibility, explicit generate-only routes, and unavailable cached
+  evidence separately. Neither command changes outputs, locks or cache.
+
   Own-state alignment and displacement/evidence gates use only the visible
   state-difference mask plus four source pixels of context (S2 plus eight output
   pixels). Evidence grids fit that support's bounding box; discarded whole-sheet
-  paint cannot fail the member. Composite fidelity and decoded outside-mask
+  paint is excluded from those scoped checks. Whole-image conformance, composite fidelity and decoded outside-mask
   equality still gate the final registered image. A failed sibling does not
   block other siblings; a failed canonical normal blocks its dependants.
   Optional `stateCrop: true` requests a difference bounding box plus 16 source

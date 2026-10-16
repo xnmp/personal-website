@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import sharp from 'sharp';
-import { mkdtemp, mkdir, readdir, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { assetCacheKey, processingRecipe, validateManifest } from '../scripts/hires/manifest.mjs';
@@ -8,7 +8,7 @@ import { protectGlyphs, protectedStats } from '../scripts/hires/protect.mjs';
 import { resample } from '../scripts/hires/periodic.mjs';
 import { smoothField } from '../scripts/hires/generators.mjs';
 import { lockEntry, lockMatches, outputPath, outputProof, sourceSha256 } from '../scripts/hires/lock.mjs';
-import { main, acceptanceReasons } from '../scripts/hires/upscale.mjs';
+import { currentCandidateKey, main, acceptanceReasons } from '../scripts/hires/upscale.mjs';
 import { checkRepo } from '../scripts/hires/css.mjs';
 
 const image = (w: number, h: number, pixel: (x: number, y: number) => number[] = () => [40, 90, 180, 255]) => ({ width: w, height: h, channels: 4,
@@ -110,6 +110,7 @@ const dependencyFixture = async () => {
   for (const asset of assets) { await writeFile(join(root, asset.src), source); await writeFile(join(root, outputPath(asset)), output); }
   const entries = Object.fromEntries(assets.map((a: { src: string; factor: number }) => [outputPath(a), lockEntry(source, a, 'a'.repeat(64), { outputSha256: sourceSha256(output), width: 16, height: 16,
     ...(a.src.includes('copy') ? { dependencies: { [generator.from]: sourceSha256(output) } } : {}) })]));
+  for (const asset of assets) entries[outputPath(asset)].cacheKey = await currentCandidateKey(asset, source, await readFile(join(root, 'art/prompts/hires/upscale.txt'), 'utf8'), root);
   const writeLock = () => writeFile(join(root, 'art/hires.lock.json'), JSON.stringify({ version: 1, assets: entries }));
   await writeLock();
   return { root, assets, source, output, entries, writeLock };

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { outputSizes } from './external.mjs';
-import { STATE_RECIPE } from './states.mjs';
+import { STATE_RECIPE, RESIDUAL_RECIPE, statePolicy } from './states.mjs';
 import { PERIODIC_RECIPE, periodicHalo } from './periodic.mjs';
 import { posix } from 'node:path';
 
@@ -12,6 +12,8 @@ const keys = (value, allowed, where) => {
   for (const key of Object.keys(value)) if (!allowed.includes(key)) fail(where, `unknown key ${key}`);
 };
 const options = (v, where) => {
+  if ('stateDerivation' in v && !['generate', 'residual', 'auto'].includes(v.stateDerivation)) fail(where, 'invalid stateDerivation');
+  if ('stateResidualMaxHf' in v && (!Number.isFinite(v.stateResidualMaxHf) || v.stateResidualMaxHf < 0 || v.stateResidualMaxHf > 255)) fail(where, 'stateResidualMaxHf must be in [0, 255]');
   if ('provider' in v && !['api', 'external', 'resample'].includes(v.provider)) fail(where, 'invalid provider');
   if ('external' in v) {
     keys(v.external, ['sizes'], where + '.external');
@@ -43,22 +45,29 @@ export function validateProtection(asset, width = Infinity, height = Infinity) {
 }
 
 export function validateManifest(value, dimensions = {}) {
-  keys(value, ['version', 'defaults', 'assets'], 'manifest');
+  keys(value, ['version', 'defaults', 'assets', 'families'], 'manifest');
   if (value.version !== 1) fail('manifest', 'version must be 1');
   keys(value.defaults, [...Object.keys(DEFAULTS), 'provider', 'external'], 'defaults');
   options(value.defaults, 'defaults');
   if (!Array.isArray(value.assets)) fail('manifest', 'assets must be an array');
+  const families = value.families ?? {};
+  if (!object(families)) fail('families', 'expected an object');
+  for (const [name, settings] of Object.entries(families)) {
+    keys(settings, ['stateDerivation', 'stateResidualMaxHf'], `families.${name}`);
+    options(settings, `families.${name}`);
+    if (!value.assets.some((a) => a.family === name)) fail(`families.${name}`, 'unknown family');
+  }
   const seen = new Set();
   const assets = value.assets.map((entry, i) => {
     const where = `assets[${i}]${typeof entry?.src === 'string' ? ` (${entry.src})` : ''}`;
-    keys(entry, ['src', 'factor', 'quality', 'lossless', 'note', 'group', 'provider', 'external', 'family', 'reference', 'stateCrop', 'periodic', 'generator', 'protect', 'protectFeather', 'glyphs'], where);
+    keys(entry, ['src', 'factor', 'quality', 'lossless', 'note', 'group', 'provider', 'external', 'family', 'reference', 'stateCrop', 'periodic', 'generator', 'protect', 'protectFeather', 'glyphs', 'stateDerivation', 'stateResidualMaxHf'], where);
     if (typeof entry.src !== 'string' || !entry.src.startsWith('public/') || posix.normalize(entry.src) !== entry.src ||
         entry.src.includes('\\') || entry.src.includes('\0') || !/\.(webp|png|jpe?g|tiff?|avif|gif)$/i.test(entry.src)) fail(where, 'src must be a raster path inside public/');
     if (seen.has(entry.src)) fail(where, 'duplicate src');
     seen.add(entry.src);
     options(entry, where);
     if ('group' in entry && (typeof entry.group !== 'string' || !/^[a-z0-9]+(?:[/-][a-z0-9]+)*$/.test(entry.group))) fail(where, 'invalid group');
-    const asset = { ...DEFAULTS, ...value.defaults, ...entry };
+    const asset = { ...DEFAULTS, ...value.defaults, ...(families[entry.family] ?? {}), ...entry };
     if (asset.provider === 'external') {
       try { outputSizes(asset.external?.sizes, asset.factor); } catch (error) { fail(where, error.message); }
     }
@@ -66,6 +75,7 @@ export function validateManifest(value, dimensions = {}) {
     if (!!entry.family !== !!entry.reference) fail(where, 'family and reference are required together');
     if ('family' in entry && !/^[a-z0-9]+(?:[/-][a-z0-9]+)*$/.test(entry.family)) fail(where, 'invalid family');
     for (const name of ['stateCrop', 'periodic']) if (name in entry && typeof entry[name] !== 'boolean') fail(where, `invalid ${name}`);
+    if ((asset.stateDerivation !== undefined || asset.stateResidualMaxHf !== undefined) && !entry.family) fail(where, 'state derivation settings require a family');
     if (entry.stateCrop && !entry.family) fail(where, 'stateCrop requires a family');
     if (entry.family && (asset.factor !== 2 || entry.periodic || entry.lossless === false)) fail(where, 'families require lossless exact 2x, non-periodic images');
     if (entry.family) asset.lossless = true;
@@ -107,22 +117,23 @@ export const cacheKey = (bytes, factor, model, prompt) => createHash('sha256')
   .update(bytes).update(JSON.stringify([factor, model, prompt])).digest('hex');
 
 // Preserve the original API digest byte-for-byte, including explicit provider: api.
-export const processingRecipe = (asset) => {
+export const processingRecipe = (asset, legacyStates = false) => {
   const fields = {
     ...(asset.family ? { family: asset.family, reference: asset.reference, familyMembership: asset.familyMembership, states: STATE_RECIPE, sigma: asset.sigma, stateCrop: asset.stateCrop ?? false } : {}),
+    ...(!legacyStates && asset.family && asset.src !== asset.reference ? { stateDerivation: { ...statePolicy(asset), recipe: RESIDUAL_RECIPE } } : {}),
     ...(asset.periodic ? { periodic: PERIODIC_RECIPE, halo: periodicHalo(asset.sigma), sigma: asset.sigma } : {}),
     ...(asset.provider === 'resample' ? { resample: 'premultiplied-bilinear-v1', generator: asset.generator ?? null, ...(asset.glyphs ? { glyphs: true } : {}) } : {}),
     ...(asset.protect ? { protect: asset.protect, protectFeather: asset.protectFeather ?? 6, protection: 'premultiplied-smoothstep-v1' } : {}),
   };
   return Object.keys(fields).length ? fields : null;
 };
-export const recipeDigest = (asset) => processingRecipe(asset) && createHash('sha256').update(JSON.stringify(processingRecipe(asset))).digest('hex');
+export const recipeDigest = (asset, legacyStates = false) => processingRecipe(asset, legacyStates) && createHash('sha256').update(JSON.stringify(processingRecipe(asset, legacyStates))).digest('hex');
 export const assetCacheKey = (bytes, asset, prompt, requestIdentity = null) => {
   const legacy = asset.provider === 'external'
     ? createHash('sha256').update(bytes).update(JSON.stringify([asset.factor, asset.model, prompt, 'external', asset.external.sizes, 'padded-v1'])).digest('hex')
     : cacheKey(bytes, asset.factor, asset.model, prompt);
   // Protection changes delivered pixels only: paid tile identity must remain stable.
-  const recipe = processingRecipe({ ...asset, protect: undefined, protectFeather: undefined });
+  const recipe = processingRecipe({ ...asset, protect: undefined, protectFeather: undefined }, true);
   return recipe ? createHash('sha256').update(legacy).update(JSON.stringify([recipe, requestIdentity])).digest('hex') : legacy;
 };
 
