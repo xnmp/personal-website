@@ -889,14 +889,13 @@ selected shipped files through the API or an external generator and conforms the
   `scripts/hires/states.mjs` compares decoded 1x premultiplied RGBA exactly
   (invisible RGB does not count), expands that difference mask by nearest-neighbour
   2x, and copies canonical RGBA everywhere outside it **after** tone and alpha
-  processing. Within the mask it blends the state's own conformed upscale with
-  a two-output-pixel inward Manhattan feather in premultiplied space, then
-  unpremultiplies and rounds back to RGBA. Even one-source-pixel changes
-  retain half-strength support; no feather extends outside the mask.
+  processing. Changed footprints keep the own candidate at full weight. Feather
+  weights ramp outside the changed mask and are clipped at its boundary so no
+  unchanged footprint is modified. Glyph protection precedes registration.
   Transparent RGB is canonicalised to zero before encoding. Decoded shipped
   outputs must have zero differing premultiplied RGBA pixels outside the mask
   (alpha-zero pixels compare equal regardless of encoder RGB rewrites);
-  total suppression of an intended change also rejects, without `--accept`
+  suppression of more than 10% of changed source footprints also rejects, without `--accept`
   overriding either registration invariant. Changed-region premultiplied MAE is
   gated by `--max-mae` in addition to normal conformance gates.
 
@@ -911,11 +910,8 @@ selected shipped files through the API or an external generator and conforms the
   Its four output pixels receive `premul(normal@2x) + U(delta)` without feather.
   Other changed footprints use `U(premul(state))`, independent of generated
   shadow error. U is pixel-centred bilinear interpolation without intermediate
-  rounding. A smoothstep blends the translucent replacement from the locked
-  normal across four output pixels inside M. Four output pixels are two source
-  pixels: enough samples for zero endpoint slopes without a long band that
-  erases narrow shadows. Distance is the inward Manhattan distance to unchanged
-  paint; image edges do not introduce a fictitious unchanged region. The raw
+  rounding. The translucent replacement keeps full weight throughout M. Its
+  smoothstep feather ramps outside M, clipped to retain canonical equality. The raw
   transfer copies every byte outside M. Family encoding canonicalises invisible
   RGB and verifies exact visible premultiplied equality outside M after decode.
   Results are clamped to valid premultiplied RGBA before byte encoding. Full
@@ -938,17 +934,19 @@ selected shipped files through the API or an external generator and conforms the
   tiles): sufficient alignment evidence, median <= 0.6px, p90 <= 1px, blurred
   RGB MAE <= `--max-mae` (14), and registered premultiplied state MAE <= that
   limit. Every state must reproduce its strong changes: for pixels with any
-  channel's |delta| >= 24/255, all such channels must retain the delta's sign
+  channel's |delta| >= min(24, maxDelta, max(6, 0.5 * maxDelta))/255, all such channels must retain the delta's sign
   and at least half its magnitude in `down(output) - down(normal@2x)`.
-  At least 90% of these pixels must pass. No strong pixels means a vacuous pass,
-  recorded with a zero denominator. `changeReproduction` records counts/share.
+  At least 90% of these pixels must pass. The threshold is capped by the
+  state's peak delta, so even sub-6-code changes have evidence; only a zero-delta
+  state has an empty denominator. Registration must preserve at least 90% of
+  changed source footprints. `changeReproduction` records counts/share.
 
   If generation in auto mode fails change reproduction or any conformance gate,
   it falls back once to derivation, recording `fallbackReason` and the generated
   candidate's diagnostics. The fallback must pass the same change-reproduction
   and standard conformance gates as generation, with identical thresholds. A
   failed smooth derivation rejects; it does not loop back to generation.
-  **`--accept` overrides conformance only, never change reproduction, total
+  **`--accept` overrides conformance only, never change reproduction, proportional
   suppression, dimensions, or outside-mask invariants.** Auto still attempts
   derivation before considering an acceptance override for bad generation.
 
@@ -979,7 +977,8 @@ selected shipped files through the API or an external generator and conforms the
   Optional `stateCrop: true` requests a difference bounding box plus 16 source
   pixels of margin when that rectangle covers at most 25% of the sheet. The
   request cache includes the normal-source hash and crop geometry. Model tiles
-  remain reusable; derived PNGs are keyed separately by the dependency digest
+  remain reusable; protection precedes registration and registration is recomputed
+  to avoid stale derived PNG composition
   and the conformed own-state pixels, so refreshed tiles refresh derivations too.
 - **Periodic materials**: `periodic: true` preserves modular source context
   through request padding, alignment, resampling, tone matching and restored
@@ -1051,9 +1050,11 @@ selected shipped files through the API or an external generator and conforms the
   recomputes recipe/dependency digests from state bytes, normal bytes, canonical
   shipped bytes and the versioned mask/feather/tone/alpha recipe, and validates
   shipped hashes and exact decoded dimensions before CSS makes them available.
-  Unextended API/external entries keep their original cache keys and lock
-  validation contract; new recipe fields enter keys only for opted-in assets, except protection
-  fields, which affect processing and locks only.
+  Every API/external output now uses the same decoded hash/geometry validation,
+  even without a recipe. A mandatory settings digest covers effective pixel and
+  request options; see [the one-time migration](hires-settings-migration.md).
+  Dependency validation recursively checks both generator inputs and state
+  canonicals. Post-processing settings preserve paid tile identity.
   `bun run hires --dry` is read-only and ends with asset counts per provider,
   estimated uncached API requests (before optional retries), and pending
   external tiles. The inventory also includes protected cyanotype glyph art and deterministic

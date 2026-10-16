@@ -116,7 +116,7 @@ export async function stateConformance(state, normal, reference, decoded, down, 
   const reasons = [wholeImage, whole, ...tiles].flatMap((s, i) => acceptanceReasons(s, i === 0 ? 'whole-image' : i === 1 ? 'state-region' : `state tile ${i - 2}`, maxMae));
   if (registration.stateMae > maxMae) reasons.push(`registered state premultiplied MAE ${registration.stateMae} > ${maxMae}`);
   if (registration.outsideDifferingPixels) reasons.push(`registered state differs outside S2 (${registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
-  if (registration.suppressed) reasons.push('registration suppressed every intended state change');
+  if (registration.suppressed) reasons.push('registration suppressed too many intended state changes');
   return { wholeImage, whole, tiles, registration, reasons, passes: !reasons.length };
 }
 
@@ -135,7 +135,7 @@ export async function residualCandidate(state, normal, reference, asset = {}, ma
 // for every candidate, including an auto fallback. Region errors are diagnostic.
 export function stateCandidateFailures(candidate, accept = false) {
   return [
-    ...(candidate.conformance.registration?.suppressed ? ['registration suppressed every intended state change'] : []),
+    ...(candidate.conformance.registration?.suppressed ? ['registration suppressed too many intended state changes'] : []),
     ...(!candidate.change.passes ? [`change reproduction ${candidate.change.reproducedPixels}/${candidate.change.strongPixels} (${(candidate.change.share * 100).toFixed(2)}%) < 90%`] : []),
     ...(!accept ? candidate.conformance.reasons : []),
   ];
@@ -171,6 +171,11 @@ async function lockedReference(asset, root, assets) {
     reference: await raw(sharp(referenceBytes).toColourspace('srgb').ensureAlpha()) };
 }
 
+export function prepareGeneratedPixels(source, master, asset, normal, reference) {
+  const protectedMaster = asset.protect ? protectGlyphs(source, master, asset.protect, asset.protectFeather ?? 6) : master;
+  return reference ? registerState(source, normal, reference, protectedMaster) : protectedMaster;
+}
+
 async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, reasons, stats) {
   const output = resolve(root, outputPath(asset));
   let derivation, reference, normal;
@@ -179,19 +184,12 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
     const { normalBytes, referenceBytes } = dependency;
     normal = dependency.normal; reference = dependency.reference;
     derivation = derivationDigest(sourceBytes, normalBytes, referenceBytes, asset.sigma);
-    if (stats.stateDerivation?.method !== 'residual') {
-      const derivedPath = resolve(cache, `derived-${derivation}-${sourceSha256(bytes(master))}.png`);
-      if (await exists(derivedPath)) master = await raw(sharp(derivedPath).ensureAlpha());
-      else {
-        master = registerState(rgba, normal, reference, master);
-        await sharp(bytes(master), { raw: geometry(master) }).png().toFile(derivedPath);
-      }
-    }
   }
-  // Residuals retain the locked reference's protected paint. Reapplying the
-  // source resample here would overwrite that paint outside the change mask.
+  // Protect the own candidate before canonical registration. Never blend an
+  // already protected canonical feather a second time. Registration is cheap;
+  // recompute it so cached derived PNGs cannot preserve an older composition.
+  if (stats.stateDerivation?.method !== 'residual') master = prepareGeneratedPixels(rgba, master, asset, normal, reference);
   if (asset.protect && stats.stateDerivation?.method !== 'residual') {
-    master = protectGlyphs(rgba, master, asset.protect, asset.protectFeather ?? 6);
     stats.protect = asset.protect;
     stats.protectFeather = asset.protectFeather ?? 6;
     // Protection changes the delivered image. Gate each contributing tile and
@@ -226,7 +224,7 @@ async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, 
     const down = await resize(decoded, rgba.width, rgba.height);
     const referenceDown = await resize(reference, rgba.width, rgba.height);
     stats.registration = { ...stateStats(rgba, normal, reference, decoded, down), derivationDigest: derivation };
-    if (stats.registration.suppressed) hardReasons.push('registration suppressed every intended state change');
+    if (stats.registration.suppressed) hardReasons.push('registration suppressed too many intended state changes');
     if (stats.registration.outsideDifferingPixels) invariantReasons.push(`registered state differs outside S2 (${stats.registration.outsideDifferingPixels} premultiplied RGBA pixels)`);
     stats.changeReproduction = changeReproduction(rgba, normal, down, referenceDown);
     if (!stats.changeReproduction.passes) hardReasons.push(...stateCandidateFailures({ change: stats.changeReproduction, conformance: { reasons: [] } }));
@@ -582,23 +580,17 @@ export async function currentCandidateKey(asset, sourceBytes, promptText, root, 
 
 const requestPrompt = (promptText, asset, plan) => [promptText.trim(), ...(plan.tiles.length > 1 ? ['Image 1 is a crop of a larger painting: keep its edges continuous; no border, vignette or frame at the edges.'] : []), ...(asset.provider === 'external' || plan.tiles.some((t) => t.requestW) ? ['The input includes padding. Preserve the entire canvas and padding exactly; do not crop, reframe or enlarge the subject.'] : []), ...(asset.note ? [asset.note] : [])].join('\n') + '\n';
 
-// Inspect encoded files and metadata only; never load cached tiles or merge pixels.
+// Decode delivered files and validate provenance; never load cached tiles or merge.
 async function isUpToDate(asset, lock, root, assets) {
   const entry = lock.assets[outputPath(asset)];
   if (!entry) return false;
   try {
     const sourceBytes = await readFile(resolve(root, asset.src));
     const outputBytes = await readFile(resolve(root, outputPath(asset)));
-    const proof = await outputProof(asset, sourceBytes, outputBytes, root, assets);
+    const proof = await outputProof(asset, sourceBytes, outputBytes, root, assets, new Set(), lock);
     const prompt = await readFile(resolve(root, 'art/prompts/hires/upscale.txt'), 'utf8');
     proof.candidateKey = await currentCandidateKey(asset, sourceBytes, prompt, root, entry);
-    // Legacy locks have no output proof. Supply observed metadata in memory so
-    // the existing recipe/family validation still applies without backfilling.
-    const legacy = ['outputSha256', 'width', 'height'].every((key) => !Object.hasOwn(entry, key));
-    const checkedEntry = legacy ? { ...entry, outputSha256: sourceSha256(outputBytes), width: proof.width, height: proof.height } : entry;
-    return lockMatches(checkedEntry, sourceBytes, asset, proof) &&
-      checkedEntry.outputSha256 === sourceSha256(outputBytes) && checkedEntry.width === proof.width && checkedEntry.height === proof.height &&
-      proof.width === proof.sourceWidth * asset.factor && proof.height === proof.sourceHeight * asset.factor;
+    return lockMatches(entry, sourceBytes, asset, proof);
   } catch {
     // Missing, unreadable or malformed files must go through normal processing.
     return false;

@@ -93,34 +93,16 @@ export function expandMask(mask, width, height) {
   return Uint8Array.from({ length: width * height * 4 }, (_, p) => mask[Math.floor(Math.floor(p / (width * 2)) / 2) * width + Math.floor(p % (width * 2) / 2)]);
 }
 
-// Distance to unchanged paint; all feather support stays strictly inside S2.
+// The footprint is a hard canonical-equality boundary. Feather weights ramp
+// outside it, never inside: the exterior ramp is clipped when composing S2.
 export function registerState(state, normal, reference, own, feather = Number(STATE_RECIPE.feather)) {
   pair(state, normal); pair(reference, own);
   if (reference.width !== state.width * 2 || reference.height !== state.height * 2) throw new Error('State output must be exactly 2x');
-  if (!Number.isInteger(feather) || feather < 1 || feather > 32) throw new Error('Invalid inward feather');
   const mask = expandMask(differenceMask(state, normal), state.width, state.height);
-  const { width, height } = reference;
-  const distance = Float32Array.from(mask, (v) => v ? feather : 0);
-  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
-    const p = y * width + x;
-    if (x) distance[p] = Math.min(distance[p], distance[p - 1] + 1);
-    if (y) distance[p] = Math.min(distance[p], distance[p - width] + 1);
-  }
-  for (let y = height - 1; y >= 0; y--) for (let x = width - 1; x >= 0; x--) {
-    const p = y * width + x;
-    if (x + 1 < width) distance[p] = Math.min(distance[p], distance[p + 1] + 1);
-    if (y + 1 < height) distance[p] = Math.min(distance[p], distance[p + width] + 1);
-  }
+  const weights = outwardWeights(mask, reference.width, reference.height, feather);
   const data = Uint8Array.from(reference.data);
-  for (let p = 0; p < mask.length; p++) {
-    const weight = distance[p] / feather;
-    if (!weight) continue;
-    const i = p * 4, a = reference.data[i + 3] * (1 - weight), b = own.data[i + 3] * weight;
-    const alpha = a + b;
-    data[i + 3] = Math.round(alpha);
-    for (let c = 0; c < 3; c++) data[i + c] = data[i + 3]
-      ? Math.round((reference.data[i + c] * a + own.data[i + c] * b) / alpha) : 0;
-  }
+  for (let p = 0; p < mask.length; p++) if (mask[p] && weights[p] === 1)
+    for (let c = 0; c < 4; c++) data[p * 4 + c] = Math.round(own.data[p * 4 + c]);
   return { ...reference, data };
 }
 
@@ -161,7 +143,10 @@ export function stateStats(state, normal, reference, shipped, down) {
     const x = p % state.width * 2, y = Math.floor(p / state.width) * 2;
     if ([0, 1].some((dy) => [0, 1].some((dx) => pixelDiffers(shipped, reference, ((y + dy) * shipped.width + x + dx) * 4)))) preservedSourcePixels++;
   }
-  return { outsideDifferingPixels, stateMae: error / (count || 1), preservedSourcePixels, suppressed: !!count && !preservedSourcePixels };
+  const changedSourcePixels = count / 4;
+  const preservedShare = changedSourcePixels ? preservedSourcePixels / changedSourcePixels : 1;
+  return { outsideDifferingPixels, stateMae: error / (count || 1), changedSourcePixels, preservedSourcePixels, preservedShare,
+    suppressed: preservedShare < CHANGE_GATE.minimumShare };
 }
 
 // Signed code values, before filtering: invisible RGB contributes exactly zero.
@@ -197,12 +182,11 @@ export function stateRegions(state, normal) {
 
 const premulValue = (img, i, c) => img.data[i + c] * (c < 3 ? img.data[i + 3] / 255 : 1);
 
-// Four output pixels = two source pixels: a short transition with zero endpoint
-// slopes, broad enough to avoid a one-pixel alpha step without erasing a shadow.
-export function inwardWeights(mask, width, height, feather = Number(RESIDUAL_RECIPE.feather)) {
-  if (!Number.isInteger(feather) || feather < 1 || feather > 32) throw new Error('Invalid inward feather');
+// Full weight throughout the changed footprint, smoothstep decay outside it.
+export function outwardWeights(mask, width, height, feather = Number(RESIDUAL_RECIPE.feather)) {
+  if (!Number.isInteger(feather) || feather < 1 || feather > 32) throw new Error('Invalid outward feather');
   if (mask.length !== width * height) throw new Error('Invalid feather geometry');
-  const distance = Float32Array.from(mask, (v) => v ? feather : 0);
+  const distance = Float32Array.from(mask, (v) => v ? 0 : feather);
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
     const p = y * width + x;
     if (x) distance[p] = Math.min(distance[p], distance[p - 1] + 1);
@@ -213,7 +197,7 @@ export function inwardWeights(mask, width, height, feather = Number(RESIDUAL_REC
     if (x + 1 < width) distance[p] = Math.min(distance[p], distance[p + 1] + 1);
     if (y + 1 < height) distance[p] = Math.min(distance[p], distance[p + width] + 1);
   }
-  return Float32Array.from(distance, (d) => { const t = d / feather; return t * t * (3 - 2 * t); });
+  return Float32Array.from(distance, (d) => { const t = d / feather; return 1 - t * t * (3 - 2 * t); });
 }
 
 export function transferResidual(state, normal, reference, feather = Number(RESIDUAL_RECIPE.feather)) {
@@ -223,7 +207,7 @@ export function transferResidual(state, normal, reference, feather = Number(RESI
   const regions = stateRegions(state, normal);
   const mask = expandMask(regions.changed, state.width, state.height);
   const opaque = expandMask(regions.opaque, state.width, state.height);
-  const weights = inwardWeights(mask, reference.width, reference.height, feather);
+  const weights = outwardWeights(mask, reference.width, reference.height, feather);
   const up = bilinear2x(delta);
   const target = bilinear2x({ ...state, data: Float32Array.from(state.data, (_, i) => premulValue(state, i - i % 4, i % 4)) });
   const data = Uint8Array.from(reference.data);
@@ -265,12 +249,19 @@ export function residualDiagnostics(state, normal, down, referenceDown) {
 export const CHANGE_GATE = Object.freeze({ threshold: 24, minimumMagnitude: 0.5, minimumShare: 0.9 });
 export function changeReproduction(state, normal, down, referenceDown) {
   pair(state, normal); pair(state, down); pair(state, referenceDown);
+  let maxDelta = 0;
+  for (let i = 0; i < state.data.length; i += 4) for (let c = 0; c < 4; c++)
+    maxDelta = Math.max(maxDelta, Math.abs(premulValue(state, i, c) - premulValue(normal, i, c)));
+  // Half the peak includes faint rings; cap at 24 for large changes. The 6-code
+  // floor excludes minor noise only when stronger evidence exists. Capping by
+  // maxDelta ensures even a sub-6-code state has a nonempty evidence set.
+  const threshold = Math.min(CHANGE_GATE.threshold, maxDelta, Math.max(6, 0.5 * maxDelta));
   let strongPixels = 0, reproducedPixels = 0;
   for (let i = 0; i < state.data.length; i += 4) {
     let strong = false, reproduced = true;
     for (let c = 0; c < 4; c++) {
       const delta = premulValue(state, i, c) - premulValue(normal, i, c);
-      if (Math.abs(delta) < CHANGE_GATE.threshold) continue;
+      if (!delta || Math.abs(delta) < threshold) continue;
       strong = true;
       const observed = premulValue(down, i, c) - premulValue(referenceDown, i, c);
       if (Math.sign(delta) * observed < Math.abs(delta) * CHANGE_GATE.minimumMagnitude) reproduced = false;
@@ -278,5 +269,5 @@ export function changeReproduction(state, normal, down, referenceDown) {
     if (strong) { strongPixels++; if (reproduced) reproducedPixels++; }
   }
   const share = strongPixels ? reproducedPixels / strongPixels : 1;
-  return { ...CHANGE_GATE, strongPixels, reproducedPixels, share, passes: share >= CHANGE_GATE.minimumShare };
+  return { ...CHANGE_GATE, threshold, maxDelta, strongPixels, reproducedPixels, share, passes: share >= CHANGE_GATE.minimumShare };
 }

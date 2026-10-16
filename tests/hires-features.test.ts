@@ -41,7 +41,7 @@ describe('registered state image contracts', () => {
     expect(differenceMask(state, normal)).toEqual(new Uint8Array([0, 1, 0]));
     expect(expandMask(differenceMask(state, normal), 3, 1)).toEqual(new Uint8Array([0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0]));
   });
-  test('copies every RGBA channel outside S2 and feathers only inward, retaining a one-pixel stroke', () => {
+  test('copies canonical RGBA outside S2 and retains full weight on a one-pixel stroke', () => {
     const normal = rgba(5, 5), state = rgba(5, 5, (x, y) => x === 2 && y === 2 ? [170, 200, 230, 128] : [70, 100, 130, 255]);
     const reference = rgba(10, 10, () => [20, 30, 40, 64]), own = rgba(10, 10, () => [200, 210, 220, 255]);
     const result = registerState(state, normal, reference, own);
@@ -50,8 +50,8 @@ describe('registered state image contracts', () => {
     const composite = (pixel: number[], background: number[]) => background.map((v, c) => pixel[c] * pixel[3] / 255 + v * (1 - pixel[3] / 255));
     const blended = Array.from<number>(result.data.slice((4 * 10 + 4) * 4, (4 * 10 + 4) * 4 + 4));
     for (const background of [[0, 0, 0], [240, 170, 90]]) {
-      const a = composite([20, 30, 40, 64], background), b = composite([200, 210, 220, 255], background);
-      composite(blended, background).forEach((v, c) => expect(Math.abs(v - (a[c] + b[c]) / 2)).toBeLessThan(1));
+      const b = composite([200, 210, 220, 255], background);
+      composite(blended, background).forEach((v, c) => expect(Math.abs(v - b[c])).toBeLessThan(1));
     }
     expect(outsideDifferences(own, reference, mask)).toBe(96);
     expect(registerState(normal, normal, reference, own).data).toEqual(reference.data);
@@ -60,14 +60,14 @@ describe('registered state image contracts', () => {
     narrow.data[(5 * 10 + 5) * 4]++;
     expect(stateStats(state, normal, reference, narrow, state).preservedSourcePixels).toBe(1);
   });
-  test('half feather from transparent black to opaque blue retains its composited contribution', () => {
+  test('opaque blue at the change boundary retains its full composited contribution', () => {
     const normal = rgba(3, 3, () => [0, 0, 0, 0]);
     const state = rgba(3, 3, (x, y) => x === 1 && y === 1 ? [0, 0, 255, 255] : [0, 0, 0, 0]);
     const result = registerState(state, normal, rgba(6, 6, () => [0, 0, 0, 0]), rgba(6, 6, () => [0, 0, 255, 255]));
     const pixel = Array.from<number>(result.data.slice((2 * 6 + 2) * 4, (2 * 6 + 2) * 4 + 4));
-    expect(pixel).toEqual([0, 0, 255, 128]);
+    expect(pixel).toEqual([0, 0, 255, 255]);
     for (const background of [[0, 0, 0], [255, 180, 100]]) {
-      background.forEach((v, c) => expect(Math.abs(pixel[c] * pixel[3] / 255 + v * (1 - pixel[3] / 255) - (v + (c === 2 ? 255 : 0)) / 2)).toBeLessThan(1));
+      background.forEach((v, c) => expect(Math.abs(pixel[c] * pixel[3] / 255 + v * (1 - pixel[3] / 255) - (c === 2 ? 255 : 0))).toBeLessThan(1));
     }
   });
   test('outside gate and suppression compare visible premultiplied paint', () => {
@@ -166,14 +166,14 @@ describe('manifest and dependency provenance', () => {
     expect(assetCacheKey(bytes, periodic, 'prompt')).not.toBe(assetCacheKey(bytes, { ...periodic, sigma: 3 }, 'prompt'));
     const external = { ...a, provider: 'external', external: { sizes: ['1254x1254'] } };
     const legacy = { ...lockEntry(bytes, external, 'a'.repeat(64)), model: a.model };
-    expect(lockMatches(legacy, bytes, external)).toBe(true);
+    expect(lockMatches(legacy, bytes, external, { outputBytes: bytes, sourceWidth: 1, sourceHeight: 1, width: 2, height: 2 })).toBe(true);
     expect(lockEntry(bytes, external, 'a'.repeat(64)).model).toBe('codex-image_gen');
     expect(generatorName({ ...a, provider: 'resample' })).toMatch(/bilinear/);
   });
   test('lockMatches recomputes derivation dependency and recipe digests, output hash and dimensions', () => {
     const asset = validateManifest(input(family())).assets[1];
     const bytes = Buffer.from('state'), normal = Buffer.from('normal'), output = Buffer.from('state2'), ref = Buffer.from('normal2');
-    const proof = { outputBytes: output, referenceBytes: normal, referenceOutputBytes: ref, sourceWidth: 10, sourceHeight: 20, width: 20, height: 40 };
+    const proof = { outputBytes: output, referenceBytes: normal, referenceOutputBytes: ref, referenceValid: true, sourceWidth: 10, sourceHeight: 20, width: 20, height: 40 };
     const entry = lockEntry(bytes, asset, 'a'.repeat(64), { outputSha256: sourceSha256(output), width: 20, height: 40, derivationDigest: derivationDigest(bytes, normal, ref, asset.sigma) });
     expect(lockMatches(entry, bytes, asset, proof)).toBe(true);
     for (const change of [{ referenceBytes: Buffer.from('new normal') }, { referenceOutputBytes: Buffer.from('new normal2') }, { outputBytes: Buffer.from('tampered') }, { width: 19 }, { sourceHeight: 21 }]) expect(lockMatches(entry, bytes, asset, { ...proof, ...change })).toBe(false);

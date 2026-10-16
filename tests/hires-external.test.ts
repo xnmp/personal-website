@@ -82,12 +82,13 @@ describe('external manifest and provenance contracts', () => {
     const key = assetCacheKey(bytes, a, 'prompt');
     expect(key).not.toBe(legacy);
     expect(assetCacheKey(bytes, { ...a, external: { sizes: ['1024x1024'] } }, 'prompt')).not.toBe(key);
+    const proof = { outputBytes: bytes, sourceWidth: 1, sourceHeight: 1, width: 2, height: 2 };
     const oldLock = lockEntry(bytes, { ...a, provider: 'api' }, legacy);
-    expect(lockMatches(oldLock, bytes, { ...a, provider: 'api' })).toBe(true);
+    expect(lockMatches(oldLock, bytes, { ...a, provider: 'api' }, proof)).toBe(true);
     expect(lockMatches(oldLock, bytes, a)).toBe(false);
     const externalLock = lockEntry(bytes, a, key);
     expect(externalLock.provider).toBe('external');
-    expect(lockMatches(externalLock, bytes, a)).toBe(true);
+    expect(lockMatches(externalLock, bytes, a, proof)).toBe(true);
     expect(lockMatches(externalLock, bytes, { ...a, provider: 'api' })).toBe(false);
   });
 });
