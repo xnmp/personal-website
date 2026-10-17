@@ -57,11 +57,12 @@ describe("authored content", () => {
 
   test("a real product preview is optional and validates its image and accessible description", () => {
     const document = parseContent(readFileSync("content/projects/tauri-explorer.md", "utf8"), "tauri-explorer.md");
-    expect(projectEntry(document).preview?.src).toBe("/tauri/hero-quick-open-{theme}.webp");
+    const preview = projectEntry(document).preview!;
+    expect(preview.src).toBe("/tauri/hero-quick-open-{theme}.webp");
     expect(projectEntry({ ...document, data: { ...document.data, preview: undefined } }).preview).toBeUndefined();
-    for (const preview of [null, {}, { ...document.data.preview, src: "javascript:alert(1)" },
-      { ...document.data.preview, src: "/../private.png" }, { ...document.data.preview, alt: "" },
-      { ...document.data.preview, width: Infinity }, { ...document.data.preview, height: 0 }]) {
+    for (const preview of [null, {}, { ...preview, src: "javascript:alert(1)" },
+      { ...preview, src: "/../private.png" }, { ...preview, alt: "" },
+      { ...preview, width: Infinity }, { ...preview, height: 0 }]) {
       expect(() => projectEntry({ ...document, data: { ...document.data, preview } })).toThrow("preview");
     }
   });
