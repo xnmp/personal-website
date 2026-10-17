@@ -5,17 +5,27 @@ import { useRouter } from "next/navigation";
 import type { ContentBinding } from "@/lib/studio/bindings";
 import type { StudioDocument } from "@/lib/studio/document";
 import type { PublishJob } from "@/lib/studio/publish.server";
-import { acceptSaved, draftKey, draftValue, hasEdits, recoverDraft, updateDraft, type Drafts } from "@/lib/studio/drafts";
+import {
+  acceptSaved,
+  draftKey,
+  draftValue,
+  hasEdits,
+  recoverDraft,
+  updateDraft,
+  type Drafts,
+} from "@/lib/studio/drafts";
 
-const busy = (job: PublishJob) => ["validating", "building", "pushing", "deploying"].includes(job.phase);
-const errorMessage = (error: unknown) => error instanceof Error ? error.message : "Editor request failed";
+const busy = (job: PublishJob) =>
+  ["validating", "building", "pushing", "deploying"].includes(job.phase);
+const errorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Editor request failed";
 
 export function useStudioController(token: string) {
   const router = useRouter();
   const [drafts, setDrafts] = useState<Drafts>({});
   const draftsRef = useRef<Drafts>({});
   const operation = useRef(false);
-  const [editing, setEditing] = useState(true);
+  const [editing, setEditing] = useState(false);
   const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -23,16 +33,51 @@ export function useStudioController(token: string) {
   const [job, setJob] = useState<PublishJob>({ phase: "idle", message: "" });
   const deploying = busy(job);
 
-  const request = useCallback(async (path = "", body?: unknown) => {
-    const response = await fetch(`/api/studio${path}`, {
-      method: body ? "POST" : "GET", cache: "no-store",
-      headers: { "x-studio-token": token, ...(body ? { "Content-Type": "application/json" } : {}) },
-      ...(body ? { body: JSON.stringify(body) } : {}),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error ?? "Editor request failed");
-    return result;
-  }, [token]);
+  const toggleEditing = useCallback(() => {
+    if (!ready || operation.current || saving || deploying) return;
+    const active = document.activeElement;
+    if (
+      active instanceof HTMLElement &&
+      (active.isContentEditable || active.matches("input, textarea, select"))
+    )
+      active.blur();
+    setEditing((current) => !current);
+  }, [ready, saving, deploying]);
+
+  useEffect(() => {
+    const toggleShortcut = (event: KeyboardEvent) => {
+      if (
+        !(event.ctrlKey || event.metaKey) ||
+        event.altKey ||
+        event.shiftKey ||
+        event.key.toLowerCase() !== "e"
+      )
+        return;
+      event.preventDefault();
+      if (!event.repeat) toggleEditing();
+    };
+    window.addEventListener("keydown", toggleShortcut);
+    return () => window.removeEventListener("keydown", toggleShortcut);
+  }, [toggleEditing]);
+
+  const request = useCallback(
+    async (path = "", body?: unknown) => {
+      const response = await fetch(`/api/studio${path}`, {
+        method: body ? "POST" : "GET",
+        cache: "no-store",
+        headers: {
+          "x-studio-token": token,
+          ...(body ? { "Content-Type": "application/json" } : {}),
+        },
+        ...(body ? { body: JSON.stringify(body) } : {}),
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.error ?? "Editor request failed");
+      return result;
+    },
+    [token],
+  );
 
   const replaceDrafts = useCallback((next: Drafts) => {
     draftsRef.current = next;
@@ -41,26 +86,38 @@ export function useStudioController(token: string) {
 
   useEffect(() => {
     let cancelled = false;
-    void request().then((result) => {
-      if (cancelled) return;
-      const recovered: Drafts = {};
-      for (const entry of result.documents as { id: string }[]) {
-        try {
-          const draft = recoverDraft(localStorage.getItem(draftKey(entry.id)));
-          if (draft && hasEdits(draft)) recovered[entry.id] = draft;
-        } catch (error) { setError(errorMessage(error)); }
-      }
-      replaceDrafts(recovered);
-      setJob(result.job);
-      setReady(true);
-      if (Object.keys(recovered).length) setNotice("Recovered unsaved edits.");
-    }).catch((error) => { if (!cancelled) setError(errorMessage(error)); });
-    return () => { cancelled = true; };
+    void request()
+      .then((result) => {
+        if (cancelled) return;
+        const recovered: Drafts = {};
+        for (const entry of result.documents as { id: string }[]) {
+          try {
+            const draft = recoverDraft(
+              localStorage.getItem(draftKey(entry.id)),
+            );
+            if (draft && hasEdits(draft)) recovered[entry.id] = draft;
+          } catch (error) {
+            setError(errorMessage(error));
+          }
+        }
+        replaceDrafts(recovered);
+        setJob(result.job);
+        setReady(true);
+        if (Object.keys(recovered).length)
+          setNotice("Recovered unsaved edits.");
+      })
+      .catch((error) => {
+        if (!cancelled) setError(errorMessage(error));
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [request, replaceDrafts]);
 
   useEffect(() => {
     const preventLoss = (event: BeforeUnloadEvent) => {
-      if (Object.values(draftsRef.current).some(hasEdits)) event.preventDefault();
+      if (Object.values(draftsRef.current).some(hasEdits))
+        event.preventDefault();
     };
     window.addEventListener("beforeunload", preventLoss);
     return () => window.removeEventListener("beforeunload", preventLoss);
@@ -69,7 +126,9 @@ export function useStudioController(token: string) {
   useEffect(() => {
     if (!deploying) return;
     const interval = setInterval(() => {
-      void request("?status=1").then((result) => setJob(result.job)).catch((error) => setError(errorMessage(error)));
+      void request("?status=1")
+        .then((result) => setJob(result.job))
+        .catch((error) => setError(errorMessage(error)));
     }, 1500);
     return () => clearInterval(interval);
   }, [deploying, request]);
@@ -77,9 +136,17 @@ export function useStudioController(token: string) {
   const persist = (id: string, next: Drafts) => {
     try {
       const draft = next[id];
-      if (draft && hasEdits(draft)) localStorage.setItem(draftKey(id), JSON.stringify({ revision: draft.revision, edits: draft.edits }));
+      if (draft && hasEdits(draft))
+        localStorage.setItem(
+          draftKey(id),
+          JSON.stringify({ revision: draft.revision, edits: draft.edits }),
+        );
       else localStorage.removeItem(draftKey(id));
-    } catch { setNotice("Browser draft storage is unavailable. Save before closing this tab."); }
+    } catch {
+      setNotice(
+        "Browser draft storage is unavailable. Save before closing this tab.",
+      );
+    }
   };
 
   const update = (binding: ContentBinding, value: string) => {
@@ -96,8 +163,15 @@ export function useStudioController(token: string) {
     setSaving(true);
     setError("");
     try {
-      for (const [id, snapshot] of Object.entries(draftsRef.current).filter(([, draft]) => hasEdits(draft))) {
-        const { document } = await request("", { action: "save", id, revision: snapshot.revision, edits: snapshot.edits }) as { document: StudioDocument };
+      for (const [id, snapshot] of Object.entries(draftsRef.current).filter(
+        ([, draft]) => hasEdits(draft),
+      )) {
+        const { document } = (await request("", {
+          action: "save",
+          id,
+          revision: snapshot.revision,
+          edits: snapshot.edits,
+        })) as { document: StudioDocument };
         const next = acceptSaved(draftsRef.current, id, snapshot, document);
         replaceDrafts(next);
         persist(id, next);
@@ -109,14 +183,27 @@ export function useStudioController(token: string) {
         setJob(result.job);
         setNotice("");
       }
-    } catch (error) { setError(errorMessage(error)); }
-    finally { operation.current = false; setSaving(false); }
+    } catch (error) {
+      setError(errorMessage(error));
+    } finally {
+      operation.current = false;
+      setSaving(false);
+    }
   };
 
   const discard = () => {
-    if (!window.confirm("Discard all unsaved browser edits and reload the Markdown files?")) return;
+    if (
+      !window.confirm(
+        "Discard all unsaved browser edits and reload the Markdown files?",
+      )
+    )
+      return;
     for (const id of Object.keys(draftsRef.current)) {
-      try { localStorage.removeItem(draftKey(id)); } catch { /* disk content is authoritative */ }
+      try {
+        localStorage.removeItem(draftKey(id));
+      } catch {
+        /* disk content is authoritative */
+      }
     }
     replaceDrafts({});
     setError("");
@@ -125,8 +212,23 @@ export function useStudioController(token: string) {
   };
 
   return {
-    context: { editing, locked: saving || deploying, ready, value: (binding: ContentBinding) => draftValue(drafts, binding), update },
-    editing, setEditing, ready, locked: saving || deploying, saving, job, error, notice,
-    unsaved: Object.values(drafts).filter(hasEdits).length, save, discard,
+    context: {
+      editing,
+      locked: saving || deploying,
+      ready,
+      value: (binding: ContentBinding) => draftValue(drafts, binding),
+      update,
+    },
+    editing,
+    toggleEditing,
+    ready,
+    locked: saving || deploying,
+    saving,
+    job,
+    error,
+    notice,
+    unsaved: Object.values(drafts).filter(hasEdits).length,
+    save,
+    discard,
   };
 }

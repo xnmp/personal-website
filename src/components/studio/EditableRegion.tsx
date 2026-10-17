@@ -1,76 +1,61 @@
 "use client";
 
-import { memo, useCallback, useLayoutEffect, useRef, useState, type HTMLAttributes, type ReactNode } from "react";
-import { MarkdownRenderer, type MarkdownProps } from "@/components/notebook/MarkdownRenderer";
-import { interpolateContent } from "@/lib/content-template";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import type { MarkdownProps } from "@/components/notebook/MarkdownRenderer";
 import type { ContentBinding } from "@/lib/studio/bindings";
 import { useStudio } from "./StudioContext";
+import { EditableMarkdown } from "./EditableMarkdown";
+import { ForOS } from "@/components/launch/ForOS";
+import { editShortcutText } from "@/lib/studio/shortcuts";
 
-// Typing in one block must not parse/highlight every other block on a long page.
-const PreviewMarkdown = memo(MarkdownRenderer);
-
-function SourceInput({ binding, value, inline, className, update, close }: {
-  binding: ContentBinding; value: string; inline: boolean; className?: string;
-  update: (value: string) => void; close: () => void;
-}) {
-  const input = useRef<HTMLSpanElement>(null);
-  const initial = useRef(value);
+function EditableScalar({ binding, children, shortcuts }: { binding: ContentBinding; children: ReactNode; shortcuts: boolean }) {
+  const studio = useStudio()!;
+  const value = studio.value(binding);
+  const [snapshot, setSnapshot] = useState<{ value: string; content: ReactNode } | null>(null);
+  const [epoch, setEpoch] = useState(0);
+  const element = useRef<HTMLSpanElement>(null);
+  const previousInput = useRef({ source: value, display: "" });
+  const canEdit = studio.editing && studio.ready && !studio.locked;
+  const content = value === binding.value ? children : shortcuts ? <ForOS>{value}</ForOS> : value;
+  const active = Boolean(snapshot);
   useLayoutEffect(() => {
-    const element = input.current!;
-    element.textContent = initial.current;
-    element.focus();
-    const selection = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(element);
-    range.collapse(false);
-    selection?.removeAllRanges();
-    selection?.addRange(range);
-  }, []);
-  return <span ref={input} className={`studio-input ${className ?? ""}`} data-inline={inline || undefined}
-    role="textbox" aria-label={binding.label} aria-multiline={!inline}
-    contentEditable="plaintext-only" suppressContentEditableWarning spellCheck
-    onInput={(event) => update(event.currentTarget.innerText.replace(/\r\n/g, "\n"))}
-    onBlur={close}
-    onClick={(event) => event.preventDefault()}
-    onKeyDown={(event) => {
-      if (event.key === "Escape") { event.preventDefault(); update(initial.current); close(); }
-      if (event.key === "Enter" && (inline || event.metaKey || event.ctrlKey)) { event.preventDefault(); close(); }
-    }} />;
-}
-
-export function EditableRegion({ binding, markdown, inline = false, children }: {
-  binding: ContentBinding; markdown?: MarkdownProps; inline?: boolean; children: ReactNode;
-}) {
-  const studio = useStudio();
-  const [active, setActive] = useState(false);
-  const canEdit = Boolean(studio?.editing && studio.ready && !studio.locked);
-  const attributes = useCallback((first = true): HTMLAttributes<HTMLElement> & Record<string, unknown> => ({
-    "data-studio-slot": binding.slotId, "data-studio-document": binding.documentId,
-    "data-studio-editable": canEdit || undefined,
-    role: canEdit && !active && first ? "button" : undefined,
-    "aria-label": canEdit && !active && first ? `Edit ${binding.label}` : undefined,
-    tabIndex: canEdit && !active && first ? 0 : undefined,
-    onClickCapture: (event) => {
+    if (!active || !canEdit || !element.current) return;
+    previousInput.current = { source: snapshot!.value, display: element.current.innerText };
+    element.current.focus({ preventScroll: true });
+  }, [active, canEdit, snapshot]);
+  const close = (cancel = false) => {
+    if (!snapshot) return;
+    if (cancel) studio.update(binding, snapshot.value);
+    setSnapshot(null);
+    setEpoch((current) => current + 1);
+  };
+  return <span className="studio-region" data-studio-slot={binding.slotId} data-studio-document={binding.documentId}
+    data-studio-editable={canEdit && !snapshot || undefined} data-studio-active={canEdit && snapshot ? true : undefined}
+    role={canEdit && !snapshot ? "button" : undefined}
+    aria-label={canEdit && !snapshot ? `Edit ${binding.label}` : undefined} tabIndex={canEdit && !snapshot ? 0 : undefined}
+    onClickCapture={(event) => {
       if (!canEdit || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
-      setActive(true);
-    },
-    onKeyDown: (event) => {
-      if (canEdit && !active && ["Enter", "F2", " "].includes(event.key)) { event.preventDefault(); setActive(true); }
-    },
-  }), [binding.slotId, binding.documentId, binding.label, canEdit, active]);
+      if (!snapshot) setSnapshot({ value, content });
+    }}
+    onKeyDown={(event) => {
+      if (snapshot && event.key === "Escape") { event.preventDefault(); close(true); }
+      else if (snapshot && event.key === "Enter") { event.preventDefault(); close(); }
+      else if (canEdit && !snapshot && ["Enter", "F2", " "].includes(event.key)) { event.preventDefault(); setSnapshot({ value, content }); }
+    }}><span key={epoch} ref={element} className="studio-text"
+      role={canEdit && snapshot ? "textbox" : undefined} aria-label={canEdit && snapshot ? binding.label : undefined}
+      contentEditable={canEdit && snapshot ? "plaintext-only" : undefined} suppressContentEditableWarning
+      onInput={(event) => {
+        const display = event.currentTarget.innerText;
+        const next = shortcuts ? editShortcutText(previousInput.current.source, previousInput.current.display, display) : display;
+        previousInput.current = { source: next, display };
+        studio.update(binding, next);
+      }} onBlur={() => close()}
+    >{snapshot ? snapshot.content : content}</span></span>;
+}
+
+export function EditableRegion({ binding, markdown, children, shortcuts = false }: { binding: ContentBinding; markdown?: MarkdownProps; inline?: boolean; children: ReactNode; shortcuts?: boolean }) {
+  const studio = useStudio();
   if (!studio) return children;
-  const value = studio.value(binding);
-  const isInline = inline || Boolean(markdown?.inline);
-  let rendered = value;
-  if (markdown && binding.fields) {
-    try { rendered = interpolateContent(value, binding.fields); } catch { /* Invalid drafts remain editable; save reports validation errors. */ }
-  }
-  if (active && canEdit) return <SourceInput binding={binding} value={value} inline={isInline} className={markdown?.paragraphClassName}
-    update={(next) => studio.update(binding, next)} close={() => setActive(false)} />;
-  if (markdown && !isInline && value) return <PreviewMarkdown {...markdown} text={rendered} rootProps={attributes} />;
-  return <span {...attributes()} className="studio-region">
-    {markdown ? <PreviewMarkdown {...markdown} text={rendered} /> : value === binding.value ? children : value}
-    {canEdit && !value && <span className="studio-empty">Empty text</span>}
-  </span>;
+  return markdown ? <EditableMarkdown binding={binding} markdown={markdown} /> : <EditableScalar binding={binding} shortcuts={shortcuts}>{children}</EditableScalar>;
 }

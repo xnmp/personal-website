@@ -1,4 +1,4 @@
-import { LXGW_WenKai_TC, Archivo, Comic_Neue, Cormorant, EB_Garamond, Fraunces, Grandstander, IM_Fell_English, Inter, JetBrains_Mono, Newsreader, Crimson_Pro, Caveat, Protest_Revolution, Special_Elite } from "next/font/google";
+import { LXGW_WenKai_TC, Archivo, Comic_Neue, Cormorant, EB_Garamond, Fraunces, Grandstander, IBM_Plex_Sans, IM_Fell_English, Inter, JetBrains_Mono, Newsreader, Crimson_Pro, Caveat, Protest_Revolution, Special_Elite } from "next/font/google";
 
 // Three type roles (art/BRIEF.md): --font-display (headlines), --font-print
 // (body and UI) and --font-mono (labels, key legends, everything on a
@@ -110,6 +110,16 @@ const inter = Inter({
   preload: false,
 });
 
+// Margin Index: a technical humanist sans for prose and editing controls.
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: "variable",
+  style: ["normal", "italic"],
+  variable: "--font-plex-sans",
+  display: "swap",
+  preload: false,
+});
+
 // Cyanotype: a typewriter face with slab serifs, as a darkroom types its
 // labels: the tagline, the keys, the buttons and the cards' titles. The
 // original mock's is a slab typewriter with a tall x-height, set at about 20px
@@ -186,4 +196,4 @@ const newsreader = Newsreader({
   preload: false,
 });
 
-export const fontVariables = [display, print, mono, fraunces, cormorant, garamond, comicNeue, fell, grandstander, inter, typewriter, crimson, caveat, protest, seal, newsreader].map((f) => f.variable).join(" ");
+export const fontVariables = [display, print, mono, fraunces, cormorant, garamond, comicNeue, fell, grandstander, inter, plexSans, typewriter, crimson, caveat, protest, seal, newsreader].map((f) => f.variable).join(" ");

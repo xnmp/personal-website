@@ -158,7 +158,7 @@ export default function TauriExplorerPage() {
               <li key={r.chord.join("+")}>
                 <LiveCaps chord={r.chord} />
                 <span>
-                  <EditableText binding={bindField(content, ["reflexes", index, "what"])}><ForOS>{r.what}</ForOS></EditableText>
+                  <EditableText binding={bindField(content, ["reflexes", index, "what"])} shortcuts><ForOS>{r.what}</ForOS></EditableText>
                 </span>
               </li>
             ))}

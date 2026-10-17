@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // isolated dev servers' build dirs (NEXT_DIST_DIR, next.config.ts)
     ".next-*/**",
+    // Separate checkouts have their own source and generated build files.
+    ".worktrees/**",
     // generation scratch beside the raw art (gitignored)
     "art/raw/**",
     "art/raw/**/.*/**", // the passes' capture dirs (.pass): ** skips dot-dirs

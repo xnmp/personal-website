@@ -1,6 +1,6 @@
 "use client";
 import { useMemo } from "react";
-import * as echarts from "echarts";
+import type * as echarts from "echarts";
 import { Chart, useNotebookPalette, notebookTextStyle } from "./Chart";
 import q1 from "@/data/eskiv/q1.json";
 

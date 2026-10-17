@@ -123,9 +123,9 @@ Content is loaded by server components on each render, deduplicated within a
 request. Reload the page after saving Markdown to refresh both copy and the
 shared project index.
 
-For a browser editor with local saving, actual-page preview and one-click
-publishing, run `bun run studio` and open the address it prints. See the
-[content editor guide](content-studio.md).
+`bun run dev` opens the actual pages with editable text, local saving and a
+bottom-left Deploy button at http://127.0.0.1:3210. For a plain site preview,
+run `bun run dev:site` instead. See the [content editor guide](content-studio.md).
 
 Before publishing:
 

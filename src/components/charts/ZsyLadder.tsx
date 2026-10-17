@@ -1,6 +1,6 @@
 "use client";
 import { useMemo } from "react";
-import * as echarts from "echarts";
+import type * as echarts from "echarts";
 import { Chart, useNotebookPalette, notebookTextStyle } from "./Chart";
 import ladder from "@/data/zsy/ladder.json";
 
