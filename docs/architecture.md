@@ -70,15 +70,17 @@ linked.
 ## Art directions (styles)
 
 The site can be worn in several art directions (issue #1). A style is a
-complete raster kit plus its type, selected by `<html data-style>`; pages and
-components never fork per style.
+set of surfaces and type, selected by `<html data-style>`. The illustrated
+styles share a raster kit contract. Margin Index uses CSS surfaces and a sparse
+server-rendered directory over the same project catalogue; theme state, search,
+keyboard handling and reading-page components remain shared.
 
 - **Registry** (`lib/styles.ts`, pure, tested): the shipped styles, in menu
   order. Only a style listed there can be chosen; the head script in
   `app/layout.tsx` applies the stored choice (`localStorage["nb-style"]`)
   before paint and refuses anything unlisted, falling back to `paper`.
 - **Tokens**: Paper Diorama's are the base (`kit.css`: `:root` for night,
-  `:root[data-rice="paper"]` for day). Every other style overrides all of them
+  `:root[data-rice="paper"]` for day). Every other raster style overrides all of them
   in `src/app/styles/<style>.css`, under `:root[data-style="<id>"]` (night)
   and `:root[data-style="<id>"][data-rice="paper"]` (day). `tests/styles.test.ts`
   fails if a style leaves a token unset (which would show the diorama's art),
@@ -92,12 +94,18 @@ components never fork per style.
   the 3D diorama hides that plane. The diorama maps its mountains, hills and
   groves onto them. A style with no lifted sun sets `--k-sun: none`.
 - **Scene art** (`scene` in `lib/styles.ts`): a `diorama` (Paper) is
-  layered cut-outs, which the 3D scene stands in depth. A `plate` (every
-  other style) is one painting: the style's original mock with the page
+  layered cut-outs, which the 3D scene stands in depth. A `plate` (the other
+  illustrated styles) is one painting: the style's original mock with the page
   painted out (`art/raw/<style>/plate-*`), painted on past the mock's edges.
   The head script sets `<html data-scene-art>` and offers the 3D scene only
-  to a diorama; a switch to a plate style stands a running 3D scene down
+  to a diorama; a switch to any other scene kind stands a running 3D scene down
   (its framing covers the frame, which would undo the registration below).
+- **Margin Index** uses `scene: "none"`, hides the scene, and clears all raster
+  surface tokens. `styles/margin.css` is imported after the shared CSS. Its
+  directory displays every project, grouped by shelf; optional summaries and
+  a real flagship preview come from Markdown. Hidden presentation stops are
+  excluded from `j`/`k` navigation. `e2e/margin.e2e.ts` checks content, navigation,
+  viewport bounds, theme persistence and the absence of kit requests.
 - **Plate registration** (kit.css): on a desktop a plate's sky layer is
   drawn at the home stage's scale (`--u`), its core (the mock's 1672x941)
   centred across and its top on the stage's, so the props the page stands
@@ -117,9 +125,10 @@ components never fork per style.
   key): a WAI-ARIA menu button whose menu lists the styles as
   `menuitemradio` tiles, the chosen one the signal tile. The menu is a
   popover (`popover="auto"`), so the browser lays it over everything and
-  dismisses it on Escape or a click elsewhere; it is placed under its key in
-  page coordinates as it opens (`menuPlacement`, `lib/menu.ts`) and closed
-  by a resize. The keyboard opens it synchronously on the checked item (a
+  dismisses it on Escape or a click elsewhere. It is measured as it opens
+  (`menuPlacement`, `lib/menu.ts`), placed in viewport coordinates on the side
+  of its key with room, and constrained to scroll internally on short screens.
+  A resize closes it. The keyboard opens it synchronously on the checked item (a
   popover's `toggle` event comes a task later, and a key pressed before it
   would land on the button); arrows, Home and End move (`nextItem`), Enter
   or Space chooses, and focus leaving the menu closes it. On a phone the key

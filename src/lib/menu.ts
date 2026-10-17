@@ -1,11 +1,21 @@
 /** Pure helpers for a menu button's popover menu (components/instrument/StyleMenu). */
 
-/** The menu's top right, in document px, under its button's bottom right
- *  (`gap` px below it): a popover in the top layer is placed against the
- *  whole document, so it scrolls with the masthead it hangs from. Never
- *  past the document's right edge. */
-export function menuPlacement(button: { bottom: number; right: number }, scrollY: number, docWidth: number, gap = 8) {
-  return { top: Math.round(button.bottom + scrollY + gap), right: Math.max(0, Math.round(docWidth - button.right)) };
+/** Viewport placement for a measured popover. Prefer below the trigger;
+ *  use the larger side when it needs to scroll, and keep both edges in view. */
+export function menuPlacement(
+  button: { top: number; bottom: number; right: number },
+  menu: { width: number; height: number },
+  viewport: { width: number; height: number },
+  gap = 8,
+) {
+  const inset = 14;
+  const below = Math.max(0, viewport.height - button.bottom - gap - inset);
+  const above = Math.max(0, button.top - gap - inset);
+  const down = below >= menu.height || below >= above;
+  const maxHeight = Math.min(menu.height, down ? below : above);
+  const top = down ? button.bottom + gap : button.top - gap - maxHeight;
+  const left = Math.max(inset, Math.min(button.right - menu.width, viewport.width - menu.width - inset));
+  return { top: Math.round(top), left: Math.round(left), maxHeight: Math.floor(maxHeight) };
 }
 
 /** The item a key moves focus to, from item `at` of `count` (wrapping; from

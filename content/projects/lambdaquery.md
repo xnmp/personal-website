@@ -2,6 +2,7 @@
 slug: lambdaquery
 glyph: 查
 title: LambdaQuery
+summary: Python comprehensions, compiled to SQL.
 heading: 'Python comprehensions, compiled to SQL.'
 href: /p/lambdaquery
 repo: 'https://github.com/xnmp/LambdaQuery_2'

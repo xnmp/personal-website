@@ -2,6 +2,7 @@
 slug: ballast
 glyph: 心
 title: Ballast
+summary: A mood diary made of markdown files.
 heading: A mood diary that keeps every entry as a plain markdown file.
 href: /p/ballast
 tags:

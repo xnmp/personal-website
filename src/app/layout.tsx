@@ -6,6 +6,7 @@ import { DEFAULT_STYLE, SCENE_ART, STYLE_IDS, STYLE_KEY } from "@/lib/styles";
 import type { Metadata } from "next";
 import { fontVariables } from "./fonts";
 import "./globals.css";
+import "./styles/margin.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://chong.md"),

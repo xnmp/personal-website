@@ -2,6 +2,7 @@
 slug: zheng-shang-you
 glyph: 遊
 title: Zheng Shang You
+summary: Teaching a network the family card game.
 heading: Teaching a network the family card game.
 href: /p/zheng-shang-you
 repo: 'https://github.com/xnmp/zheng-shang-you'

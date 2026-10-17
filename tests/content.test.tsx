@@ -50,8 +50,20 @@ describe("authored content", () => {
     const source = readFileSync("content/projects/scrivo.md", "utf8");
     const document = parseContent(source, "scrivo.md");
     expect(projectEntry({ ...document, data: { ...document.data, title: "An edited title" } }).title).toBe("An edited title");
-    for (const [field, value] of [["status", "unknown"], ["tags", null], ["tags", [null]], ["order", Infinity], ["slug", "../bad"], ["href", "/bad"], ["glyph", "two"], ["repo", "javascript:alert(1)"], ["art", "/screens/../private"]] as const) {
+    for (const [field, value] of [["summary", null], ["summary", "  "], ["status", "unknown"], ["tags", null], ["tags", [null]], ["order", Infinity], ["slug", "../bad"], ["href", "/bad"], ["glyph", "two"], ["repo", "javascript:alert(1)"], ["art", "/screens/../private"]] as const) {
       expect(() => projectEntry({ ...document, data: { ...document.data, [field]: value } })).toThrow(String(field));
+    }
+  });
+
+  test("a real product preview is optional and validates its image and accessible description", () => {
+    const document = parseContent(readFileSync("content/projects/tauri-explorer.md", "utf8"), "tauri-explorer.md");
+    const preview = projectEntry(document).preview!;
+    expect(preview.src).toBe("/tauri/hero-quick-open-{theme}.webp");
+    expect(projectEntry({ ...document, data: { ...document.data, preview: undefined } }).preview).toBeUndefined();
+    for (const candidate of [null, {}, { ...preview, src: "javascript:alert(1)" },
+      { ...preview, src: "/../private.png" }, { ...preview, alt: "" },
+      { ...preview, width: Infinity }, { ...preview, height: 0 }]) {
+      expect(() => projectEntry({ ...document, data: { ...document.data, preview: candidate } })).toThrow("preview");
     }
   });
 });

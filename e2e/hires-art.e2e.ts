@@ -242,7 +242,7 @@ async function capture(
   }
 }
 
-for (const { id } of STYLES) {
+for (const { id } of STYLES.filter((style) => style.scene !== "none")) {
   for (const rice of themes) {
     for (const artCase of casesFor(id)) {
       const { path, viewport } = artCase;

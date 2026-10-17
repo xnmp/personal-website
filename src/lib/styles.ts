@@ -1,11 +1,11 @@
 /**
- * The site's art directions (issue #1). A style is a complete raster kit and
- * its type: the same pages and components, dressed by the tokens under
+ * The site's art directions (issue #1). A style supplies surfaces and
+ * type: the same pages and components, dressed by the tokens under
  * `:root[data-style="<id>"]` (src/app/styles/<id>.css). Each has a day finish
  * (worn by the light rice) and a night finish (the dark rices); the rice still
  * colours the screens in every style.
  *
- * Only styles whose kit has shipped are listed: the style menu offers exactly
+ * Only shipped styles are listed: the style menu offers exactly
  * these, and the head script refuses anything else.
  */
 
@@ -18,7 +18,8 @@
  * stands down for it (one plane has no depth to give, and the 3D framing
  * covers the frame, which would break the registration).
  */
-export type SceneArt = "diorama" | "plate";
+// "none" leaves the scene out entirely (the CSS-only Margin Index).
+export type SceneArt = "diorama" | "plate" | "none";
 
 export const STYLES = [
   { id: "paper", name: "Paper Diorama", note: "cut paper in a shadow box", scene: "diorama" },
@@ -28,6 +29,7 @@ export const STYLES = [
   { id: "garden", name: "Natural Garden", note: "limestone tablets in a walled cottage garden", scene: "plate" },
   { id: "ligne", name: "Ligne Claire", note: "comic panels over a desert outpost", scene: "plate" },
   { id: "atlas", name: "Celestial Atlas", note: "enamel plates in gilt over a star chart", scene: "plate" },
+  { id: "margin", name: "Margin Index", note: "a quiet directory in type and rules", scene: "none" },
 ] as const;
 
 export type StyleId = (typeof STYLES)[number]["id"];

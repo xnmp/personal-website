@@ -2,6 +2,7 @@
 slug: eskiv
 glyph: 避
 title: Eskiv
+summary: A dodger, a brute-force agent, and what the runs reveal.
 heading: A brute-force AI that plays a dodger.
 href: /p/eskiv
 repo: 'https://github.com/xnmp/Eskiv_new'

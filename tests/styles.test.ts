@@ -45,7 +45,7 @@ describe("every style is a complete kit", () => {
     expect(day.length).toBeGreaterThan(30);
   });
 
-  for (const s of STYLES.filter((s) => s.id !== "paper")) {
+  for (const s of STYLES.filter((s) => s.id !== "paper" && s.scene !== "none")) {
     const file = `src/app/styles/${s.id}.css`;
     describe(s.name, () => {
       const css = existsSync(file) ? readFileSync(file, "utf8") : "";

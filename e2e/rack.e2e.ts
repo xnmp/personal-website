@@ -11,7 +11,7 @@ async function hydrated(page: Page) {
 test("every project is mounted on the home rack and opens its page", async ({ page }) => {
   await page.goto("/");
   for (const p of projects) {
-    await expect(page.locator(`a[href="${p.href}"]`).first()).toBeVisible();
+    await expect(page.locator(`a[href="${p.href}"]:visible`).first()).toBeVisible();
   }
   await page.getByRole("link", { name: "Scrivo", exact: true }).click();
   await expect(page).toHaveURL(/\/p\/scrivo$/);
@@ -153,7 +153,7 @@ test("prose keeps its spaces around inline elements", async ({ page }) => {
 
 // in every style: each dresses the masthead's strip and keys in its own art,
 // with its own insets and its own wordmark face
-for (const style of STYLES) {
+for (const style of STYLES.filter((style) => style.scene !== "none")) {
   test(`on a narrow phone the masthead keeps the brand and its keys on one row (${style.id})`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" }); // the sheets' drop would move the boxes between reads
     await page.addInitScript((s) => localStorage.setItem("nb-style", s), style.id);
@@ -163,7 +163,7 @@ for (const style of STYLES) {
         await page.goto(route);
         await page.evaluate(() => document.fonts.ready);
         const brand = await page.locator(":is(.running-head, .masthead) .brand").boundingBox();
-        for (const key of await page.locator(":is(.running-head, .masthead) .instruments > .key").all()) {
+        for (const key of await page.locator(":is(.running-head, .masthead) .instruments > .key:visible").all()) {
           const k = (await key.boundingBox())!;
           // the key's box spans the brand's middle: the same row
           expect(k.y, `${route} at ${width}`).toBeLessThan(brand!.y + brand!.height / 2);

@@ -2,6 +2,7 @@
 slug: quickshell-statusbar
 glyph: 欄
 title: Quickshell bar
+summary: A status bar for my desktop and coding agents.
 heading: A status bar that shows what my coding agents are doing.
 href: /p/quickshell-statusbar
 repo: 'https://github.com/xnmp-setup/quickshell-statusbar'

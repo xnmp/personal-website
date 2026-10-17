@@ -148,7 +148,7 @@ test("the style is not part of the t cycle", async ({ page, isMobile }) => {
   await expect(page.locator("html")).toHaveAttribute("data-style", "solarpunk");
 });
 
-for (const s of STYLES) {
+for (const s of STYLES.filter((style) => style.scene !== "none")) {
   test(`${s.name}: every kit asset loads, and only this style's kit is fetched`, async ({ page }) => {
     const seen = kitRequests(page);
     await asStyle(page, s.id);
@@ -158,7 +158,7 @@ for (const s of STYLES) {
     expect(seen.length).toBeGreaterThan(5);
     for (const r of seen) expect(r.status, r.url).toBeLessThan(400);
     // the screens' glare map is one neutral bitmap every style shares
-    const foreign = seen.filter((r) => !r.url.startsWith(`/kit/${s.id}/`) && r.url !== "/kit/paper/glass-glare.webp");
+    const foreign = seen.filter((r) => !r.url.startsWith(`/kit/${s.id}/`) && !/^\/kit\/paper\/glass-glare(?:@2x)?\.webp$/.test(r.url));
     expect(foreign.map((r) => r.url)).toEqual([]);
     for (const part of ["sheet-", "tile-"]) {
       expect(seen.some((r) => r.url.includes(`/${part}`)), part).toBe(true);
@@ -227,7 +227,7 @@ async function meanDiff(a: Buffer, b: Buffer) {
 // Every screen on the site is lit in the visitor's theme, whatever the art
 // direction: the window on the home page is light under the day theme and
 // dark under a night one, though a style's mock may paint it otherwise.
-for (const s of STYLES) {
+for (const s of STYLES.filter((style) => style.scene !== "none")) {
   test(`${s.name}: the home window is lit in the visitor's theme, light by day and dark by night`, async ({ page }) => {
     await asStyle(page, s.id);
     const lum: Record<string, number> = {};

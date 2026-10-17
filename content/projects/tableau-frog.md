@@ -2,6 +2,7 @@
 slug: tableau-frog
 glyph: 蛙
 title: Tableau Frog
+summary: A data explorer that checks whether a difference is real.
 heading: Point at a difference; it tells you if it’s real.
 href: /p/tableau-frog
 repo: 'https://github.com/xnmp/tableau-frog'

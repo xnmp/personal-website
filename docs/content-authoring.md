@@ -25,6 +25,14 @@ example, a project's `title`, `heading`, `tags`, `stats`, `status` and `repo`
 control its cards and command-index entry. `metadata` controls its browser/search
 title and description. `order` determines its place in the project list.
 
+Margin Index uses the optional project `summary` for its short description
+(falling back to `heading`), and the shared `tags` for the stack line. Its
+opening copy is in the `margin-intro` and `margin-description` blocks in
+`content/home.md`; `location` controls the navigation rail. The flagship may
+include an optional `preview` with `src`, `alt`, `width` and `height`. A
+`{theme}` placeholder in `src` follows the visitor’s app colour theme; without
+a preview the directory remains text-only.
+
 ```yaml
 title: Scrivo
 status: producing

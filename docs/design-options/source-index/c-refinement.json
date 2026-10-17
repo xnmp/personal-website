@@ -1,0 +1,7 @@
+{
+  "generatedWith": "built-in imagegen",
+  "target": "source-index-c-annotated initial generated mockup",
+  "supportingAsset": "public/tauri/hero-quick-open-solarized.webp",
+  "prompt": "Use case: precise-object-edit of a UI mockup. Image 1 is the EDIT TARGET, the complete Annotated Index website screenshot. Image 2 is the REAL PRODUCT SCREENSHOT to insert.\nChange ONLY the contents inside the large product screenshot rectangle under the Tauri Explorer row. Replace the invented file-manager/Finder interface there with Image 2 faithfully, including its actual cream quick-open palette containing the search query 'read', README.md selected blue, and the rows 'features/ai-plugins.md', 'features/views-and-themes.md', 'features/terminal.md', 'features/git-graph.md', 'features/content-search.md'. Use the actual provided capture, not the Finder window from the first image.\nPreserve all other typography, page background, exact layout, navigation rail, project names, descriptions, margin annotations, row positions and sizes. Keep the current product image's outer bounds, scaling Image 2 to fit its existing area. Do not add screenshot text elsewhere or a new frame. Straight-on website screenshot, identical canvas. The rest of Image 1 must remain unchanged.",
+  "output": "c-annotated-index.png"
+}

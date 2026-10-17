@@ -2,6 +2,7 @@
 slug: bwai
 glyph: 智
 title: Brood War
+summary: An agent learning to play Brood War.
 heading: 'The game that taught me to think, now a machine-learning problem.'
 href: /p/bwai
 tags:

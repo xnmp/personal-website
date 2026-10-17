@@ -538,8 +538,8 @@ export function createDiorama(canvas: HTMLCanvasElement, opts: DioramaOptions) {
   // a change to a style whose scene is a single plate hands the scene back to
   // the CSS, which registers that plate to the page (lib/styles.ts SceneArt)
   const rice = new MutationObserver(() =>
-    document.documentElement.dataset.sceneArt === "plate"
-      ? opts.onFail(new Error("this style's scene is a plate"))
+    document.documentElement.dataset.sceneArt !== "diorama"
+      ? opts.onFail(new Error("this style uses a CSS scene"))
       : applyFinish().catch(opts.onFail),
   );
   rice.observe(document.documentElement, { attributes: true, attributeFilter: ["data-rice", "data-style"] });

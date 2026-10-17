@@ -1,6 +1,7 @@
 import { ExplorerWindow } from "@/components/landing/ExplorerWindow";
 import { Masthead } from "@/components/landing/Masthead";
 import { ShowcaseCard } from "@/components/landing/ShowcaseCard";
+import { MarginIndex } from "@/components/landing/MarginIndex";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, ModuleCard, Prop, RackKeys } from "@/components/rack";
 import { FEATURED, FLAGSHIP, project, projects, shelves } from "@/data/projects";
@@ -27,6 +28,7 @@ export default function Home() {
       <RackKeys />
       <Masthead brand={contentField<string>(content, "brand")} tagline={contentField<string>(content, "tagline")} />
       <main id="content" className="rack-main" tabIndex={-1}>
+        <MarginIndex />
         {/* the first screen, composed as the style's mock (globals.css: home landing) */}
         <div className="landing">
           <section className="launchpad" aria-labelledby="flagship-title">
@@ -92,8 +94,8 @@ export default function Home() {
         {/* each key with what it does, unbroken, its separator trailing it (the
             spaces explicit: one before an entity on its line is dropped) */}
         <span className="sl-keys fine-only"><Markdown text={contentBlock(content, "spankbdj-kbdk-projects-spankbd-open-spankbd-search-spankbd")} inline /></span>
-        <span><Markdown text={contentBlock(content, "github-xnmp-https-github")} inline /></span>
-        <span><Markdown text={contentBlock(content, "chonw-proton")} inline /></span>
+        <span className="sl-contact"><Markdown text={contentBlock(content, "github-xnmp-https-github")} inline /></span>
+        <span className="sl-contact"><Markdown text={contentBlock(content, "chonw-proton")} inline /></span>
         <span><Markdown text={contentBlock(content, "screens-themed-by-my-dotfiles-https-github")} inline /></span>
         <span><Markdown text={contentBlock(content, "art-generated-composited-for-this-site")} inline /></span>
       </footer>

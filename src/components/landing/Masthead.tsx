@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Instruments } from "@/components/instrument/Instruments";
 import { Led } from "@/components/rack/Led";
+import { MarginDetails } from "@/components/notebook/MarginDetails";
 
 /**
  * The home page's masthead, part of its first screen: the brand set large
@@ -22,6 +23,7 @@ export function Masthead({ brand, tagline }: { brand: string; tagline: string })
         <p className="tagline">{tagline}</p>
       </div>
       <Instruments />
+      <MarginDetails />
     </header>
   );
 }

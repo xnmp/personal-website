@@ -19,8 +19,15 @@ export function projectEntry(document: ContentDocument): ProjectEntry & { order:
   const repo = data.repo === undefined ? undefined : text("repo");
   if (repo && (!safeHref(repo) || !repo.startsWith("https://"))) fail("repo");
   if (typeof data.order !== "number" || !Number.isSafeInteger(data.order) || data.order < 1) fail("order");
+  const preview = data.preview as ProjectEntry["preview"];
+  if (preview !== undefined && (!preview || typeof preview !== "object"
+    || typeof preview.src !== "string" || !/^\/[\w/{\}.-]+\.(?:webp|png|jpg|avif)$/.test(preview.src) || preview.src.includes("..")
+    || typeof preview.alt !== "string" || !preview.alt.trim()
+    || ![preview.width, preview.height].every((n) => Number.isSafeInteger(n) && n > 0 && n <= 10_000))) fail("preview");
   return {
     slug, glyph, title: text("title"), heading: text("heading"), href: text("href"), repo,
+    summary: data.summary === undefined ? undefined : text("summary"),
+    preview,
     tags: list("tags"), index: text("index"), stats: list("stats"), art,
     status: oneOf("status", ["alpha", "producing", "paused", "complete"]),
     shelf: oneOf("shelf", ["tools", "games"]), tone: oneOf("tone", ["cyan", "rust", "amber", "olive"]),

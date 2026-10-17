@@ -44,6 +44,17 @@ export function StyleMenu() {
   if (STYLES.length < 2) return null;
 
   const button = () => document.querySelector<HTMLButtonElement>(`[popovertarget="${CSS.escape(menuId)}"]`);
+  const place = (menu: HTMLElement) => {
+    const b = button();
+    if (!b) return;
+    const at = menuPlacement(b.getBoundingClientRect(), menu.getBoundingClientRect(), {
+      width: document.documentElement.clientWidth, height: window.innerHeight,
+    });
+    menu.style.top = `${at.top}px`;
+    menu.style.left = `${at.left}px`;
+    menu.style.maxHeight = `${at.maxHeight}px`;
+    menu.style.visibility = "visible";
+  };
 
   // the popover's own toggle events: placed before it shows, focused into
   // once it has; closed, its button says so
@@ -53,15 +64,17 @@ export function StyleMenu() {
     const before = (e: Event) => {
       const b = button();
       if ((e as ToggleEvent).newState !== "open" || !b) return;
-      const at = menuPlacement(b.getBoundingClientRect(), window.scrollY, document.documentElement.clientWidth);
-      menu.style.top = `${at.top}px`;
-      menu.style.right = `${at.right}px`;
+      // The closed popover has no measurable box. Reveal it only once the
+      // toggle event can measure and place it, before focus scrolls an item.
+      menu.style.visibility = "hidden";
+      menu.style.maxHeight = "none";
     };
     const toggled = (e: Event) => {
       const isOpen = (e as ToggleEvent).newState === "open";
       setOpen(isOpen);
       // laid out against the page as it was: a resize closes it
       if (isOpen) {
+        place(menu);
         window.addEventListener("resize", close);
         // (unless a key that opened it has already moved focus in)
         if (!menu.contains(document.activeElement)) focusChecked(menu);
@@ -104,6 +117,7 @@ export function StyleMenu() {
     if (!["Enter", " ", "ArrowDown", "ArrowUp"].includes(e.key) || !menu) return;
     e.preventDefault();
     if (!menu.matches(":popover-open")) menu.showPopover();
+    place(menu);
     focusChecked(menu);
   };
 

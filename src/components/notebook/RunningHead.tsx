@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Instruments } from "@/components/instrument/Instruments";
 import { Led } from "@/components/rack/Led";
 import { SITE_BRAND } from "@/data/site";
+import { MarginDetails } from "./MarginDetails";
 
 type Props = {
   brand?: string;
@@ -24,6 +25,7 @@ export function RunningHead({ brand = SITE_BRAND, meta, nav }: Props) {
       </div>
       <div className="meta silk">{meta}</div>
       <Instruments />
+      <MarginDetails />
       {nav ? <nav className="head-nav" aria-label="Pages">{nav}</nav> : null}
     </header>
   );
