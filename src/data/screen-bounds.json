@@ -5,6 +5,12 @@
     "w": 0.6083,
     "h": 0.5917
   },
+  "/screens/autonomous-issue-agent.png": {
+    "x": 0.5,
+    "y": 0.5042,
+    "w": 0.8722,
+    "h": 0.65
+  },
   "/screens/ballast.png": {
     "x": 0.5,
     "y": 0.4563,
