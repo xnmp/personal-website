@@ -8,7 +8,7 @@
 [data-studio-editable]:hover,
 [data-studio-editable]:focus-visible { outline: 1px dashed color-mix(in srgb, var(--signal) 48%, transparent); outline-offset: 4px; border-radius: 3px; }
 /* Pseudo-elements preserve the site's markup, line wrapping and spacing. */
-[data-studio-editable]::after {
+[data-studio-editable]:is(:hover, :focus-visible)::after {
   content: "";
   position: absolute;
   top: var(--studio-edit-top);
@@ -22,7 +22,7 @@
   cursor: pointer;
   z-index: 2;
 }
-[data-studio-editable]::before {
+[data-studio-editable]:is(:hover, :focus-visible)::before {
   content: "";
   position: absolute;
   top: calc(var(--studio-edit-top) + 4px);
