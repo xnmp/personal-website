@@ -2,6 +2,12 @@
 slug: tauri-explorer
 glyph: 檔
 title: Tauri Explorer
+summary: A keyboard-first file manager.
+preview:
+  src: /tauri/hero-quick-open-{theme}.webp
+  alt: Tauri Explorer with Quick Open finding files by name.
+  width: 698
+  height: 438
 heading: A file manager with the soul of an IDE.
 href: /p/tauri-explorer
 repo: 'https://github.com/xnmp/tauri-explorer'

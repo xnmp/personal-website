@@ -2,6 +2,7 @@
 slug: scrivo
 glyph: 書
 title: Scrivo
+summary: A markdown editor that never reformats.
 heading: A markdown reader that paints first and an editor that never reformats.
 href: /p/scrivo
 repo: 'https://github.com/xnmp/scrivo'

@@ -19,7 +19,7 @@ const box = async (l: Locator) => (await l.boundingBox())!;
 // The home page's first screen is composed as every style's mock is: the
 // flagship's name, pitch and keys with its window beside them, and the row of
 // featured projects under them, all of it on the first screen of a desktop.
-for (const style of STYLES) {
+for (const style of STYLES.filter((style) => style.scene !== "none")) {
   test(`a desktop's first screen holds the flagship, its window and the row of projects (${style.id})`, async ({ page, isMobile }) => {
     test.skip(isMobile, "the desktop composition");
     for (const [width, height] of [
@@ -87,5 +87,5 @@ test("the projects off the first screen are still on the home page, on their she
     await expect(page.locator(`.shelf a[href="${p.href}"]`), p.slug).toHaveCount(1);
   }
   // and none twice: a featured project is on the row, not on a shelf too
-  for (const slug of FEATURED_SLUGS) await expect(page.locator(`a[href="${project(slug).href}"]`), slug).toHaveCount(1);
+  for (const slug of FEATURED_SLUGS) await expect(page.locator(`a[href="${project(slug).href}"]:visible`), slug).toHaveCount(1);
 });

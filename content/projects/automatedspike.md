@@ -2,6 +2,7 @@
 slug: automatedspike
 glyph: 法
 title: AutomatedSpike
+summary: Searching for Magic decks and agents to pilot them.
 heading: 'Looking for Magic decks nobody has built yet, and agents that can pilot them.'
 href: /p/automatedspike
 tags:

@@ -14,6 +14,7 @@ shelves:
     note: things that play
 brand: chong
 tagline: 'tools, games, and the agents that play them'
+location: Sydney
 metadata:
   title: 'chong: tools, games, and the agents that play them'
   description: >-
@@ -21,6 +22,12 @@ metadata:
     mood diary, a Hyprland status bar, and agents for Brood War, Magic and a
     family card game.
 ---
+<!-- block: margin-intro -->
+I build the software I want to use, then measure it.
+
+<!-- block: margin-description -->
+Tools, games, and notes from the work.
+
 <!-- block: a-keyboard-first-file-manager -->
 A keyboard-first file manager.
 

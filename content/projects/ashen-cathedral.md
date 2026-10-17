@@ -2,6 +2,7 @@
 slug: ashen-cathedral
 glyph: 燼
 title: Ashen Cathedral
+summary: A dungeon crawler built with procedural assets.
 heading: A gothic dungeon crawler where nearly every asset comes out of a script.
 href: /p/ashen-cathedral
 tags:

@@ -44,7 +44,7 @@ const boxes = (l: Locator) =>
 const overlap = (a: Box, b: Box) =>
   Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
 
-for (const s of STYLES) {
+for (const s of STYLES.filter((style) => style.scene !== "none")) {
   test(`${s.name}: the home row takes three or five projects as it takes four`, async ({ page, isMobile }) => {
     test.skip(isMobile, "the desktop row");
     const [width, height] = [1672, 941];

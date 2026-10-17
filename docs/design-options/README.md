@@ -5,9 +5,13 @@ directions remain available. These are design proposals, not implemented themes.
 
 | Option | Character | Preview |
 | --- | --- | --- |
-| Reading Room | Warm white, serif project titles, oxblood links. A small personal research library. Recommended for the private-garden brief. | [Open mockup](01-reading-room.png) |
+| Reading Room | Warm white, serif project titles, oxblood links. A small personal research library. | [Open mockup](01-reading-room.png) |
 | Source Index | A narrow navigation rail and a precise, compact project index. The most utilitarian option. | [Open mockup](02-source-index.png) |
 | Working Notebook | Warm charcoal, olive links, quiet marginal notes. A dark reading surface. | [Open mockup](03-working-notebook.png) |
+
+**Selected direction: Source Index.** Four further variations are saved in
+[the Source Index exploration](source-index/README.md): Margin Index, Technical
+Register, Annotated Index and Night Index.
 
 All three use existing project content and keep navigation and theme selection
 small. Typography, alignment and reading rhythm carry the design. Project lists

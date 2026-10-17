@@ -15,6 +15,10 @@ export interface ProjectEntry {
   glyph: string;
   title: string;
   heading: string; // the one-liner
+  /** Concise directory copy; older entries fall back to the heading. */
+  summary?: string;
+  /** Optional real product capture. {theme} follows the visitor's app theme. */
+  preview?: { src: string; alt: string; width: number; height: number };
   href: string; // detail page
   /** public source only; private repos are deliberately left unlinked */
   repo?: string;

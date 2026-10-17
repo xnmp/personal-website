@@ -2,17 +2,21 @@ import { describe, expect, test } from "bun:test";
 import { menuPlacement, nextItem } from "../src/lib/menu";
 
 describe("menuPlacement", () => {
-  test("hangs the menu under its button's bottom right, in document px", () => {
-    expect(menuPlacement({ bottom: 60, right: 1200 }, 0, 1440)).toEqual({ top: 68, right: 240 });
+  const viewport = { width: 1440, height: 900 };
+  const menu = { width: 230, height: 340 };
+  test("hangs a menu below its trigger, aligned to its right edge", () => {
+    expect(menuPlacement({ top: 20, bottom: 60, right: 1200 }, menu, viewport)).toEqual({ top: 68, left: 970, maxHeight: 340 });
   });
-  test("a scrolled page moves the menu down by the scroll, so it stays with the button", () => {
-    expect(menuPlacement({ bottom: 60, right: 1200 }, 500, 1440).top).toBe(568);
+  test("clamps a left-rail trigger and an offscreen right edge", () => {
+    expect(menuPlacement({ top: 200, bottom: 240, right: 79 }, menu, viewport).left).toBe(14);
+    expect(menuPlacement({ top: 20, bottom: 60, right: 1600 }, menu, viewport).left).toBe(1196);
   });
-  test("a button past the document's right edge never puts the menu past it", () => {
-    expect(menuPlacement({ bottom: 40, right: 400 }, 0, 390).right).toBe(0);
+  test("opens upward when that side has more room", () => {
+    expect(menuPlacement({ top: 700, bottom: 740, right: 1200 }, menu, viewport)).toEqual({ top: 352, left: 970, maxHeight: 340 });
   });
-  test("fractional rects round to whole px", () => {
-    expect(menuPlacement({ bottom: 59.6, right: 1199.4 }, 0.2, 1440, 8)).toEqual({ top: 68, right: 241 });
+  test("constrains a tall menu to the larger available side of a short viewport", () => {
+    const at = menuPlacement({ top: 220, bottom: 260, right: 79 }, menu, { width: 900, height: 390 });
+    expect(at).toEqual({ top: 14, left: 14, maxHeight: 198 });
   });
 });
 

@@ -3360,11 +3360,11 @@ html:has(dialog[open]) {
 
 .style-menu.faceplate {
   --plate-k: 0.3;
-  position: absolute;
+  position: fixed;
   inset: auto;
   margin: 0;
   border: 0;
-  overflow: visible;
+  overflow: auto;
   background: none;
   color: var(--print);
   width: max-content;

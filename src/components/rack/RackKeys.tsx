@@ -23,7 +23,8 @@ export function RackKeys() {
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey || isEditable(e.target) || modalOpen()) return;
       if (e.key !== "j" && e.key !== "k") return;
-      const stops = Array.from(document.querySelectorAll<HTMLElement>(TARGETS));
+      const stops = Array.from(document.querySelectorAll<HTMLElement>(TARGETS))
+        .filter((stop) => stop.getClientRects().length > 0);
       const i = nextStop(stops.indexOf(document.activeElement as HTMLElement), stops.length, e.key);
       if (i < 0) return;
       e.preventDefault();
