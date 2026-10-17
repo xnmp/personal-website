@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
 import { CommandIndex } from "@/components/instrument/CommandIndex";
+import { projects } from "@/data/projects";
+import { contentField } from "@/lib/content";
+import { readContent } from "@/lib/content.server";
 import { DEFAULT_STYLE, SCENE_ART, STYLE_IDS, STYLE_KEY } from "@/lib/styles";
+import type { Metadata } from "next";
 import { fontVariables } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://chong.md"),
-  title: "chong: tools, games, and the agents that play them",
-  description:
-    "Things I build: a keyboard-first file manager in alpha, a markdown editor, a mood diary, a Hyprland status bar, and agents for Brood War, Magic and a family card game.",
+  ...contentField<Metadata>(readContent("home"), "metadata"),
   // The site has its own day and night finishes. Dark Reader would recolour
   // them, and its stylesheet lays an opaque fill on every element, covering
   // the scene's art; this tag asks it to leave the page as drawn.
@@ -37,7 +38,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
-        <CommandIndex />
+        <CommandIndex projects={projects} />
       </body>
     </html>
   );

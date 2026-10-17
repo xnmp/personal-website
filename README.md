@@ -21,6 +21,21 @@ bun run kit:check  # every kit state registers with its normal state
 
 See [`docs/architecture.md`](docs/architecture.md) for routes, the two colour-token families, the raster kit and the image pipeline.
 
+## Edit the content
+
+Website copy lives in [`content/`](content/). Edit Markdown, commit, and deploy;
+you do not need to edit React to change the existing pages.
+
+- [`content/home.md`](content/home.md): home copy, featured projects, shelf labels, site title and description.
+- [`content/about.md`](content/about.md): biography, sections, facts, optional portrait and drafts.
+- [`content/projects/`](content/projects/): one file per project; card/search metadata and the project's complete written page.
+- [`content/tableau-frog.md`](content/tableau-frog.md): standalone Tableau Frog showcase.
+- [`content/zheng-shang-you-play.md`](content/zheng-shang-you-play.md): playable card game's surrounding copy.
+
+The [authoring guide](docs/content-authoring.md) explains metadata, named blocks,
+formatting and deployment. The [minimal theme mockups](docs/design-options/README.md)
+are separate design options.
+
 ## Deploy
 
 Production deploys automatically on push to `main`.

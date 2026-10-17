@@ -1,83 +1,61 @@
-import type { Metadata } from "next";
-import { RunningHead, ProjectMeta, Folio } from "@/components/notebook";
-import { Cap, Key, Led, Screen, Prop } from "@/components/rack";
 import { CopyKey } from "@/components/launch/CopyKey";
 import { DownloadKey } from "@/components/launch/DownloadKey";
 import { ForOS } from "@/components/launch/ForOS";
 import { LiveCaps } from "@/components/launch/LiveCaps";
-import { ShotGallery, type Shot } from "@/components/launch/ShotGallery";
 import { LiveSection } from "@/components/launch/LiveDemo";
-import { DEMO_ANCHOR } from "@/components/launch/keyboard";
-import { projects } from "@/data/projects";
+import { ShotGallery, type Shot } from "@/components/launch/ShotGallery";
 import { APP_THEME } from "@/components/launch/appTheme";
+import { DEMO_ANCHOR } from "@/components/launch/keyboard";
+import { Folio, ProjectMeta, RunningHead } from "@/components/notebook";
+import { Markdown } from "@/components/notebook/Markdown";
+import { Key, Led, Prop, Screen } from "@/components/rack";
+import { projects } from "@/data/projects";
+import { contentBlock, contentField } from "@/lib/content";
+import { readContent } from "@/lib/content.server";
 
-const REPO = "https://github.com/xnmp/tauri-explorer";
-const VERSION = "v1.11.2";
-const EMAIL = "chonw@proton.me";
+const content = readContent("projects/tauri-explorer");
+
+const REPO = contentField<string>(content, "repo");
+const VERSION = contentField<string>(content, "version");
+const EMAIL = contentField<string>(content, "email");
 const INVITE =
   `mailto:${EMAIL}?subject=Tauri%20Explorer%20alpha&body=` +
   encodeURIComponent(
     "OS + version:\nDesktop environment (Linux):\nDisplay scale:\nWhat file manager do you use today?\n"
   );
-const NIX_SCHEME = "nix run github:";
-const NIX_REPO = "xnmp/tauri-explorer";
+const NIX_SCHEME = contentField<string>(content, "nix_scheme");
+const NIX_REPO = contentField<string>(content, "nix_repo");
 const NIX = NIX_SCHEME + NIX_REPO;
 /** The same counts the home rack prints on this module (minus the version,
  * which the kicker already shows). */
 const COUNTS = projects.find((p) => p.slug === "tauri-explorer")!.stats.filter((s) => !s.startsWith("v"));
 /** What a tester can check before writing in, next to the call to action.
  * `more` is dropped on phones, where the first three facts share one line. */
-const PROOF: { text: string; more?: string }[] = [
-  { text: "MIT", more: " licensed" },
-  { text: "No telemetry" },
-  ...COUNTS.map((text) => ({ text })),
-  { text: "Builds for Linux, macOS, Windows" },
-];
+type ProofFact = { text: string; more?: string };
+const PROOF = contentField<(ProofFact | { includeStats: true })[]>(content, "proof")
+  .flatMap<ProofFact>(fact => "includeStats" in fact ? COUNTS.map(text => ({ text })) : [fact]);
 /** Where screenshots swap to their phone crops. */
 const PHONE = "(max-width: 600px)";
 
-export const metadata: Metadata = {
-  title: "Tauri Explorer: Ctrl+P for your filesystem",
-  description:
-    "A keyboard-first file manager for Linux, macOS and Windows. Frecency fuzzy-find, ripgrep content search, a command palette, split panes, git graph, embedded terminal. Alpha testers wanted.",
-  openGraph: {
-    title: "Tauri Explorer: Ctrl+P for your filesystem",
-    description:
-      "A keyboard-first file manager in Rust + Svelte. Try the working copy in your browser, then join the alpha.",
-  },
-};
+export const metadata = contentField<import("next").Metadata>(content, "metadata");
 
 /** Real bindings, from src/lib/state/commands/* in the app repo. */
-const REFLEXES: { chord: string[]; what: string }[] = [
-  { chord: ["Ctrl", "P"], what: "Quick open. Fuzzy-find any file under the tree, ranked by frecency." },
-  { chord: ["Ctrl", "Shift", "F"], what: "Content search across the tree using ripgrep's own crates." },
-  { chord: ["Ctrl", "Shift", "P"], what: "Command palette. Every action, rebindable." },
-  { chord: ["Ctrl", "Shift", "D"], what: "Dual pane. F6 jumps sides, Ctrl+Shift+F5 copies across." },
-  { chord: ["Ctrl", "T"], what: "New tab. Ctrl+Shift+T brings back the last one you closed." },
-  { chord: ["Ctrl", "`"], what: "Embedded terminal, opened in the folder you’re in." },
-  { chord: ["Ctrl", "Alt", "G"], what: "Git commit graph for the current repository." },
-  { chord: ["Ctrl", "Z"], what: "Undo for file operations: rename, move, trash." },
-];
+const REFLEXES: { chord: string[]; what: string }[] = contentField<{ chord: string[]; what: string }[]>(content, "reflexes");
 
 /** Feature crops at native resolution (w, h in 2x px), each shown at the app's
  * real size; tighter ones on phones so the text stays legible; the full window
  * is one click away. */
-const SHOTS: Shot[] = [
-  { scene: "content-search", w: 1176, h: 708, focus: { x: 0.25, y: 0.06 }, label: "Content search", note: "Ctrl+Shift+F searches inside files, grouped by file with the match in context." },
-  { scene: "command-palette", w: 1176, h: 784, focus: { x: 0.25, y: 0.06 }, label: "Command palette", note: "Every command, with its shortcut. Here: switching theme without a settings page." },
-  { scene: "git-graph", w: 1696, h: 374, focus: { x: 0.155, y: 0.15 }, label: "Git graph", note: "The commit graph sits beside your files, so you don’t have to leave for a git GUI." },
-];
+const SHOTS: Shot[] = contentField<Shot[]>(content, "shots");
 
 export default function TauriExplorerPage() {
   return (
     <>
       <RunningHead
-        brand="chong"
         meta={<ProjectMeta slug="tauri-explorer" />}
         nav={
           <>
-            <Key href="/">← all projects</Key>
-            <Key href={REPO}>GitHub ↗</Key>
+            <Key href="/"><Markdown text={contentBlock(content, "all-projects")} inline /></Key>
+            <Key href={REPO}><Markdown text={contentBlock(content, "github")} inline /></Key>
           </>
         }
       />
@@ -89,35 +67,19 @@ export default function TauriExplorerPage() {
             <Prop kind="pin" />
             <div className="kicker launch-kicker">
               <Led color="signal" blink />
-              <span className="seplist">
-                <span>Tauri Explorer {VERSION}</span>
-                <span>alpha testers wanted</span>
-              </span>
+              <span className="seplist"><Markdown text={contentBlock(content, "spantauri-explorer-version-spanalpha-testers-wanted")} inline /></span>
             </div>
-            <h1>
-              <ForOS>Ctrl+P for your filesystem.</ForOS>
-            </h1>
-            <p className="launch-sub">A keyboard-first file manager for Linux, macOS and Windows.</p>
-            <p className="launch-lede">
-              Fuzzy-find any file, search inside all of them, and run every action
-              from a palette. Your hands stay on the keyboard the whole time.
-            </p>
+            <h1><Markdown text={contentBlock(content, "headline")} inline /></h1>
+            <Markdown text={contentBlock(content, "a-keyboard-first-file-manager-for-linux-macos-and-windows")} paragraphClassName="launch-sub" />
+            <Markdown text={contentBlock(content, "fuzzy-find-any-file-search-inside-all-of-them-and-run-ever")} paragraphClassName="launch-lede" />
             <div className="launch-keys">
-              <Key href={INVITE} tone="signal" size="lg">
-                Join the alpha
-              </Key>
-              <Key href={`#${DEMO_ANCHOR}`} size="lg">
-                Try it live
-              </Key>
+              <Key href={INVITE} tone="signal" size="lg"><Markdown text={contentBlock(content, "join-the-alpha")} inline /></Key>
+              <Key href={`#${DEMO_ANCHOR}`} size="lg"><Markdown text={contentBlock(content, "try-it-live")} inline /></Key>
             </div>
             <p className="launch-keys-note note">
-              <span>
-                Opens an email to <b>{EMAIL}</b>
-              </span>
+              <span><Markdown text={contentBlock(content, "opens-an-email-to-email")} inline /></span>
               <CopyKey text={EMAIL} variant="text" />
-              <a href="#alpha" className="text-action keys-note-terms">
-                What testers get ↓
-              </a>
+              <a href="#alpha" className="text-action keys-note-terms"><Markdown text={contentBlock(content, "what-testers-get")} inline /></a>
             </p>
             <ul className="launch-proof seplist silk" aria-label="At a glance">
               {PROOF.map((p) => (
@@ -144,7 +106,7 @@ export default function TauriExplorerPage() {
                     <source media={PHONE} srcSet={`/tauri/hero-quick-open-strip-${theme}.webp`} width={406} height={162} />
                     <img
                       src={`/tauri/hero-quick-open-${theme}.webp`}
-                      alt="Tauri Explorer’s window with quick open over it after typing “read”: README.md ranked first, then the feature docs, each with the matched letters underlined"
+                      alt={contentBlock(content, "alt-tauri-explorer-s-window-with-quick-open-over-it-after")}
                       width={698}
                       height={438}
                       loading="lazy"
@@ -156,8 +118,8 @@ export default function TauriExplorerPage() {
               </Screen>
               <figcaption className="launch-shot-cap note">
                 <LiveCaps chord={["Ctrl", "P"]} className="fine-only" />
-                <span className="fine-only">Press these keys to jump to the live demo and hand it the keyboard.</span>
-                <span className="coarse-only">Quick open, typing “read”.</span>
+                <span className="fine-only"><Markdown text={contentBlock(content, "press-these-keys-to-jump-to-the-live-demo-and-hand-it-the")} inline /></span>
+                <span className="coarse-only"><Markdown text={contentBlock(content, "quick-open-typing-read")} inline /></span>
               </figcaption>
             </figure>
             {/* a style whose panels in a row are set level shows a cut of its scene here (kit.css .tier-cut) */}
@@ -169,12 +131,9 @@ export default function TauriExplorerPage() {
 
         <section className="section stack sheet-narrow sheet-start pin-left">
           <div>
-            <div className="section-kicker">The reflexes</div>
-            <h2>Shortcuts your editor already taught you</h2>
-            <p className="aside-note">
-              These are the default bindings. All of them can be rebound, and
-              chords like <Cap inline>g</Cap>&nbsp;<Cap inline>h</Cap> (go home) work too.
-            </p>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "the-reflexes")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "shortcuts-your-editor-already-taught-you")} inline /></h2>
+            <Markdown text={contentBlock(content, "these-are-the-default-bindings")} paragraphClassName="aside-note" />
           </div>
           <ul className="reflexes">
             {REFLEXES.map((r) => (
@@ -190,29 +149,13 @@ export default function TauriExplorerPage() {
 
         <section className="section stack sheet-narrow sheet-end sheet-flat pin-right">
           <div>
-            <div className="section-kicker">Why another file manager</div>
-            <h2>Most of them are polished but slow, or fast but punishing</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "why-another-file-manager")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "most-of-them-are-polished-but-slow-or-fast-but-punishing")} inline /></h2>
           </div>
           <div className="prose-cols">
-            <p>
-              Finder and Explorer are polished, but every trip through them goes
-              through the mouse. Ranger, <code>lf</code> and Midnight Commander are fast, but
-              you have to learn a new set of keys first. My IDE already solved
-              keyboard navigation, so this borrows its answers.
-            </p>
-            <p>
-              Quick open walks the tree with <code>jwalk</code> and ranks matches
-              with <code>nucleo</code>, the matcher from the Helix editor. Frecency is
-              zoxide-style: each path scores <span className="nowrap"><code>Σ&nbsp;1/(hours&nbsp;since<wbr />&nbsp;access&nbsp;+&nbsp;1)</code>,</span>{" "}
-              so a file you opened ten minutes ago beats one you opened a hundred
-              times last year. Content search embeds ripgrep’s own crates{" "}
-              <span className="nowrap">(<code>grep-searcher</code></span> + <span className="nowrap"><code>ignore</code>),</span> so it respects
-              your <code>.gitignore</code> and doesn’t shell out.
-            </p>
-            <p>
-              Everything else, including sidebars, columns, previews and the
-              terminal, is off until you turn it on.
-            </p>
+            <Markdown text={contentBlock(content, "finder-and-explorer-are-polished-but-every-trip-through-th")} />
+            <Markdown text={contentBlock(content, "quick-open-walks-the-tree-with-jwalk-and-ranks-matches-wit")} />
+            <Markdown text={contentBlock(content, "everything-else-including-sidebars-columns-previews-and-th")} />
           </div>
         </section>
 
@@ -223,25 +166,13 @@ export default function TauriExplorerPage() {
 
         <section className="section sheet-wide sheet-start sheet-flat pin-left">
           <div>
-            <div className="section-kicker">Under the hood</div>
-            <h2>One person, tested like a team</h2>
-            <p className="aside-note">
-              Counts are from the repository on 6 Oct 2026. The perf budgets
-              are enforced in CI, so a regression fails the build.
-            </p>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "under-the-hood")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "one-person-tested-like-a-team")} inline /></h2>
+            <Markdown text={contentBlock(content, "counts-are-from-the-repository-on-6-oct-2026")} paragraphClassName="aside-note" />
           </div>
           {/* printed on the sheet, like a spec table: mats are for screens */}
           <dl className="ledger">
-            {[
-              ["2,534", "commits since Jan 2026"],
-              ["~2.7k", "unit test cases (vitest)"],
-              ["193", "browser e2e specs"],
-              ["56", "native Tauri e2e files"],
-              ["~600", "Rust #\u2060[\u2060test\u2060] functions"],
-              ["11", "CI workflows on 3 OSes"],
-              ["595\u00a0ms", "startup p50, down from 837 ms"],
-              ["<50\u00a0ms", "sort 10k entries (CI budget)"],
-            ].map(([n, l]) => (
+            {contentField<string[][]>(content, "ledger").map(([n, l]) => (
               <div key={l} className="ledger-row">
                 <dt className="ledger-l">{l}</dt>
                 <dd className="ledger-n">{n}</dd>
@@ -252,33 +183,33 @@ export default function TauriExplorerPage() {
 
         <section className="section stack sheet-wide sheet-end pin-right">
           <div>
-            <div className="section-kicker">Also in the box</div>
-            <h2>Things you won’t find in the screenshots</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "also-in-the-box")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "things-you-won-t-find-in-the-screenshots")} inline /></h2>
           </div>
           <div className="features">
             <div className="feat">
-              <h3>Replaces your file picker</h3>
-              <p>On Linux it can act as the xdg-desktop-portal file chooser, so other apps’ Open dialogs get Ctrl+P too.</p>
+              <h3><Markdown text={contentBlock(content, "replaces-your-file-picker")} inline /></h3>
+              <Markdown text={contentBlock(content, "on-linux-it-can-act-as-the-xdg-desktop-portal-file-chooser")} />
             </div>
             <div className="feat">
-              <h3>Twelve themes, plus yours</h3>
-              <p>Drop a <code>.css</code> into <code>~/.config/<wbr />tauri-explorer/<wbr />themes</code>. It reloads while you edit it.</p>
+              <h3><Markdown text={contentBlock(content, "twelve-themes-plus-yours")} inline /></h3>
+              <Markdown text={contentBlock(content, "drop-a")} />
             </div>
             <div className="feat">
-              <h3>Splits and Miller columns</h3>
-              <p>Tabs, dual pane, arbitrary splits, named workspaces, and a yazi-style column view.</p>
+              <h3><Markdown text={contentBlock(content, "splits-and-miller-columns")} inline /></h3>
+              <Markdown text={contentBlock(content, "tabs-dual-pane-arbitrary-splits-named-workspaces-and-a-yaz")} />
             </div>
             <div className="feat">
-              <h3>Careful file ops</h3>
-              <p>Undo, Trash with restore, a conflict resolver. Cut checks clipboard ownership, so a stale cut becomes a copy instead of a surprise move.</p>
+              <h3><Markdown text={contentBlock(content, "careful-file-ops")} inline /></h3>
+              <Markdown text={contentBlock(content, "undo-trash-with-restore-a-conflict-resolver")} />
             </div>
             <div className="feat">
-              <h3>Plugins</h3>
-              <p>AI rename, AI organize and image tools ship as plugins you can switch off. A plugin SDK is in preview.</p>
+              <h3><Markdown text={contentBlock(content, "plugins")} inline /></h3>
+              <Markdown text={contentBlock(content, "ai-rename-ai-organize-and-image-tools-ship-as-plugins-you")} />
             </div>
             <div className="feat">
-              <h3>No telemetry</h3>
-              <p>Nothing phones home. Bug reports go out only when you send one <span className="nowrap">(<Cap inline><ForOS>Alt+I</ForOS></Cap>).</span></p>
+              <h3><Markdown text={contentBlock(content, "no-telemetry")} inline /></h3>
+              <Markdown text={contentBlock(content, "nothing-phones-home")} />
             </div>
           </div>
         </section>
@@ -288,57 +219,27 @@ export default function TauriExplorerPage() {
         <section className="section alpha" id="alpha">
           <div>
             {/* the sheet hangs on the signal pin; the kicker needs no lamp of its own */}
-            <div className="section-kicker">The alpha</div>
-            <h2>Looking for a small first cohort of people who live in a file manager</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "the-alpha")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "looking-for-a-small-first-cohort-of-people-who-live-in-a-f")} inline /></h2>
             <div className="alpha-keys">
-              <Key href={INVITE} tone="signal" size="lg">
-                Join the alpha
-              </Key>
+              <Key href={INVITE} tone="signal" size="lg"><Markdown text={contentBlock(content, "join-the-alpha-2")} inline /></Key>
               <DownloadKey repo={REPO} version={VERSION} />
             </div>
           </div>
           <div>
-            <p className="alpha-lead">
-              <strong>Testers get a direct line to me.</strong> Your reports of
-              data loss or wrong-target operations jump the queue ahead of
-              feature requests, and I’ll tell you what has been tested on your
-              setup before you trust it with real files.
-            </p>
-            <p>
-              To join, write with your OS, desktop environment and display
-              scale. That is the whole sign-up.
-            </p>
+            <Markdown text={contentBlock(content, "testers-get-a-direct-line-to-me")} paragraphClassName="alpha-lead" />
+            <Markdown text={contentBlock(content, "to-join-write-with-your-os-desktop-environment-and-display")} />
             <p className="alpha-alt">
-              <span>
-                No mail app? Write to <strong>{EMAIL}</strong>.
-              </span>
+              <span><Markdown text={contentBlock(content, "no-mail-app")} inline /></span>
               <CopyKey text={EMAIL} variant="text" />
             </p>
-            <p>
-              Rather try it first? The builds are public: download {VERSION}{" "}
-              and use it today, then write in when you’re ready.
-            </p>
-            <p>Before you say yes, here’s what it’s like today:</p>
+            <Markdown text={contentBlock(content, "rather-try-it-first")} />
+            <Markdown text={contentBlock(content, "before-you-say-yes-here-s-what-it-s-like-today")} />
             <ul>
-              <li>
-                <strong>Builds are unsigned.</strong> Windows shows SmartScreen.
-                The macOS build is Apple Silicon only and not notarized (Intel
-                Macs build from source).
-              </li>
-              <li>
-                <strong>No auto-updater yet.</strong> New versions are on the
-                release page.
-              </li>
-              <li>
-                <strong>Start on a scratch folder.</strong> Try copy, move,
-                rename and Trash on test files before you point it at anything
-                you care about.
-              </li>
-              <li>
-                <strong>Reporting is built in.</strong> Use the command palette
-                (Report Issue) or <Cap inline><ForOS>Alt+I</ForOS></Cap>. Reports are public GitHub
-                issues, so leave out private paths.
-              </li>
+              <li><Markdown text={contentBlock(content, "builds-are-unsigned")} inline /></li>
+              <li><Markdown text={contentBlock(content, "no-auto-updater-yet")} inline /></li>
+              <li><Markdown text={contentBlock(content, "start-on-a-scratch-folder")} inline /></li>
+              <li><Markdown text={contentBlock(content, "reporting-is-built-in")} inline /></li>
             </ul>
           </div>
         </section>
@@ -347,49 +248,29 @@ export default function TauriExplorerPage() {
         <div className="sheet-row">
           <section className="section" id="install">
             <div>
-              <div className="section-kicker">Install</div>
-              <h2>Install {VERSION}</h2>
-              <p className="aside-note">
-                Linux: AppImage, .deb, .rpm, a Nix flake and a PKGBUILD. macOS:
-                arm64 .dmg. Windows: .msi or setup .exe.
-              </p>
+              <div className="section-kicker"><Markdown text={contentBlock(content, "install")} inline /></div>
+              <h2><Markdown text={contentBlock(content, "install-version")} inline /></h2>
+              <Markdown text={contentBlock(content, "linux-appimage")} paragraphClassName="aside-note" />
             </div>
             <div className="install">
               <div className="install-keys">
                 <DownloadKey repo={REPO} version={VERSION} others />
               </div>
               <div className="install-nix">
-                <span className="silk">or, with Nix</span>
+                <span className="silk"><Markdown text={contentBlock(content, "or-with-nix")} inline /></span>
                 {/* typed on a strip of tape, like any label; on a narrow screen
                     the command wraps after its scheme, never mid-word */}
-                <div className="cmd tape">
-                  <code className="cmd-text">
-                    {NIX_SCHEME}
-                    <wbr />
-                    <span className="nowrap">{NIX_REPO}</span>
-                  </code>
-                </div>
+                <div className="cmd tape"><Markdown text={contentBlock(content, "code-nix-scheme-breakspan-nix-repo-class-nowrap-class-cmd")} inline /></div>
                 <CopyKey text={NIX} variant="text" />
               </div>
             </div>
           </section>
 
           <section className="colophon">
-            <div>
-              Materials<strong>Rust, Tauri v2, Svelte 5</strong>
-            </div>
-            <div>
-              Platforms<strong>Linux · macOS · Windows</strong>
-            </div>
-            <div>
-              Licence<strong>MIT</strong>
-            </div>
-            <div>
-              Source
-              <strong>
-                <a href={REPO} className="nowrap">github/xnmp/tauri-explorer</a>
-              </strong>
-            </div>
+            <div><Markdown text={contentBlock(content, "materialsrust-tauri-v2-svelte-5")} inline /></div>
+            <div><Markdown text={contentBlock(content, "platformslinux-macos-windows")} inline /></div>
+            <div><Markdown text={contentBlock(content, "licencemit")} inline /></div>
+            <div><Markdown text={contentBlock(content, "source-linkgithub-xnmp-tauri-explorer-href-https-github")} inline /></div>
           </section>
         </div>
 

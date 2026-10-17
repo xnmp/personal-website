@@ -2,16 +2,17 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Instruments } from "@/components/instrument/Instruments";
 import { Led } from "@/components/rack/Led";
+import { SITE_BRAND } from "@/data/site";
 
 type Props = {
-  brand: string;
+  brand?: string;
   meta: ReactNode;
   /** detail-page links (back to the rack, source, a sub-page); printed on the masthead */
   nav?: ReactNode;
 };
 
 /** The masthead: the top plate of the rack, with the power LED and controls. */
-export function RunningHead({ brand, meta, nav }: Props) {
+export function RunningHead({ brand = SITE_BRAND, meta, nav }: Props) {
   return (
     <header className="running-head faceplate">
       <a className="skip-link" href="#content">

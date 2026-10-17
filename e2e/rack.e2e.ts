@@ -192,6 +192,7 @@ test.describe("the Eskiv heatmap's timeline", () => {
   test("plays once it is on screen", async ({ page }) => {
     await page.goto("/p/eskiv");
     await heatmap(page).scrollIntoViewIfNeeded();
+    await expect(heatmap(page)).toContainText(/score \d+[-–]\d+/);
     const first = await bucket(page);
     expect(first).toBeTruthy();
     await expect.poll(() => bucket(page), { timeout: 6000 }).not.toBe(first);
@@ -201,6 +202,7 @@ test.describe("the Eskiv heatmap's timeline", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/p/eskiv");
     await heatmap(page).scrollIntoViewIfNeeded();
+    await expect(heatmap(page)).toContainText(/score \d+[-–]\d+/);
     const first = await bucket(page);
     expect(first).toBeTruthy();
     await page.waitForTimeout(3500); // over two of its 1.4s steps

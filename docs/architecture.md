@@ -38,14 +38,14 @@ src/app/
   layout.tsx            root: fonts, rice init script, CommandIndex
   (rack)/layout.tsx     wraps every page in <Rack> (the scene + a column of sheets)
   (rack)/page.tsx       home: masthead, hero (intro + flagship sheet, the product first), two shelves of modules (sheets), keys in the foot
-  (rack)/p/<slug>/      detail pages (one per project in src/data/projects.ts)
+  (rack)/p/<slug>/      detail layouts (one per project in content/projects/)
   tableau-frog/         standalone product showcase, deliberately outside the diorama
   og/[card]/            social cards drawn with the kit, captured by scripts/render-og.mjs
   not-found.tsx         404, mounts its own <Rack>
 ```
 
-To add a project, add an entry to `src/data/projects.ts` (the number, shelf,
-status, screen art and tone) and create `(rack)/p/<slug>/page.tsx`. The unit
+To add a project, add `content/projects/<slug>.md` (the order, shelf,
+status, screen art, tone and written content) and create `(rack)/p/<slug>/page.tsx`. The unit
 tests check that numbers are contiguous and that private repos are never
 linked.
 
@@ -178,12 +178,16 @@ components never fork per style.
 
 ## Content is data
 
-The projects are a list (`src/data/projects.ts`). Adding one, removing one,
-reordering them or featuring another on the home row is an edit to that list
-and never to a stylesheet. Each style holds to the following, and the tests
+The project list is loaded from `content/projects/*.md` by `src/data/projects.ts`.
+Reordering uses frontmatter `order`; featuring another uses `content/home.md`.
+Written content uses named Markdown blocks consumed by the existing layouts.
+The parser and metadata validation are pure; filesystem access stays in server
+modules. Client-side search receives only the parsed project data as props.
+See [the authoring guide](content-authoring.md) for editing and publishing.
+Each style holds to the following, and the tests
 enforce it.
 
-- **Adding a project** takes three things: an entry in `entries`, its page
+- **Adding a project** takes three things: a Markdown file in `content/projects/`, its page
   `src/app/(rack)/p/<slug>/page.tsx`, and its 1-bit art in
   `public/screens/`, after which you run `bun run screens:bounds`.
   - Its number is its place in the list.

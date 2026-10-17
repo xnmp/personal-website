@@ -1,21 +1,21 @@
-import { RunningHead, Tags, Tag, OpenQuestion, Plate, Folio, ProjectMeta, ProjectKicker } from "@/components/notebook";
-import { Screen, Key } from "@/components/rack";
+import { Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Markdown } from "@/components/notebook/Markdown";
+import { Key, Screen } from "@/components/rack";
+import { contentBlock, contentField } from "@/lib/content";
+import { readContent } from "@/lib/content.server";
 
-export const metadata = {
-  title: "LambdaQuery: Python comprehensions, compiled to SQL",
-  description:
-    "A compiler from Python comprehension-style queries to SQL: dependent-join decorrelation, empty-group semantics, and an adversarial DuckDB oracle that caught two real bugs.",
-};
+const content = readContent("projects/lambdaquery");
+
+export const metadata = contentField<import("next").Metadata>(content, "metadata");
 
 export default function LambdaQueryPage() {
   return (
     <>
       <RunningHead
-        brand="chong"
         meta={<ProjectMeta slug="lambdaquery" />}
         nav={
           <>
-            <Key href="/">← all projects</Key>
+            <Key href="/"><Markdown text={contentBlock(content, "all-projects")} inline /></Key>
           </>
         }
       />
@@ -24,217 +24,94 @@ export default function LambdaQueryPage() {
         <section className="detail-hero">
           <div>
             <ProjectKicker slug="lambdaquery" />
-            <h1>Python compre&shy;hensions, compiled to SQL.</h1>
-            <p>
-              Queries built as composable value objects (<code>fmap</code>,{" "}
-              <code>filter</code>, <code>get_foreign</code>) run through a
-              multi-pass compiler into standalone SQL. The interesting part is
-              what it refuses to get wrong. A <code>count()</code> over an empty
-              related set is <code>0</code>, exactly like <code>len([])</code>,
-              and the row never silently vanishes.
-            </p>
+            <h1><Markdown text={contentBlock(content, "headline")} inline /></h1>
+            <Markdown text={contentBlock(content, "queries-built-as-composable-value-objects-fmap-filter-get")} />
           </div>
           <div>
             <Screen art="/screens/lambdaquery.png" tone="amber" />
             <Tags>
-              <Tag>python</Tag>
-              <Tag>~4.7k LoC</Tag>
-              <Tag>150 tests</Tag>
-              <Tag>2017, rebuilt 2026</Tag>
+              <Tag><Markdown text={contentBlock(content, "python")} inline /></Tag>
+              <Tag><Markdown text={contentBlock(content, "4")} inline /></Tag>
+              <Tag><Markdown text={contentBlock(content, "150-tests")} inline /></Tag>
+              <Tag><Markdown text={contentBlock(content, "2017-rebuilt-2026")} inline /></Tag>
             </Tags>
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker">The idea</div>
-            <h2>Say it once, in Python</h2>
-            <p className="aside-note">
-              For each school with at least one program: the average, over its
-              departments, of the number of courses worth more than 3 credits.
-            </p>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "the-idea")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "say-it-once-in-python")} inline /></h2>
+            <Markdown text={contentBlock(content, "for-each-school-with-at-least-one-program-the-average-over")} paragraphClassName="aside-note" />
           </div>
           <div>
             <Plate
-              figure="FIG. 1 · Three levels of correlation"
-              caption="Fig. 1: the count() > 0 filter compiles to an EXISTS semi-join; the nested aggregate becomes two grouped LEFT JOINs with COALESCE guarding the empty groups."
+              figure={contentBlock(content, "figure-fig-1-three-levels-of-correlation")}
+              caption={contentBlock(content, "caption-fig-1-the-count-0-filter-compiles-to-an-exists-sem")}
             >
               <div className="code-duet">
                 <div className="code-panel">
-                  <h3>written</h3>
-                  <pre>
-                    <code>{`School.query(
-  lambda x: x.get_foreign('Program')
-             .count() > 0
-).fmap(
-  lambda x:
-    x.get_foreign('Department').fmap(
-      lambda y:
-        y.get_foreign('Course')
-         .filter(lambda z: z.credits > 3)
-         .count()
-    ).avg() % x.name
-)`}</code>
-                  </pre>
+                  <h3><Markdown text={contentBlock(content, "written")} inline /></h3>
+                  <Markdown text={contentBlock(content, "code-school-query-lambda-x-x-get-foreign-program-count-0-f")} />
                 </div>
                 <div className="code-panel">
-                  <h3>compiled</h3>
-                  <pre>
-                    <code>{`SELECT q2.avg_n, s.name
-FROM School AS s
-LEFT JOIN (
-  SELECT AVG(COALESCE(q1.n, 0)) AS avg_n,
-         d.school_code
-  FROM Department AS d
-  LEFT JOIN (
-    SELECT COUNT(c.course_code) AS n,
-           c.dept_code
-    FROM Course AS c
-    WHERE c.credits > 3
-    GROUP BY c.dept_code
-  ) AS q1 ON q1.dept_code = d.dept_code
-  GROUP BY d.school_code
-) AS q2 ON q2.school_code = s.school_code
-WHERE EXISTS (
-  SELECT 1 FROM Program AS p
-  WHERE p.school_code = s.school_code)`}</code>
-                  </pre>
+                  <h3><Markdown text={contentBlock(content, "compiled")} inline /></h3>
+                  <Markdown text={contentBlock(content, "code-select-q2-avg-n-s-name-from-school-as-s-left-join-sel")} />
                 </div>
               </div>
             </Plate>
-            <p style={{ marginTop: 20 }}>
-              An inner lambda can reference an outer lambda’s row at any
-              depth. The compiler handles it by <em>dependent-join
-              unnesting</em>: the subquery gets a private copy of the outer
-              table as its correlation domain, and successive passes pull the
-              join conditions up until everything is flat. Aggregate subqueries
-              are marked <code>LEFT JOIN</code> so an empty group still
-              produces a row, and that is where the Python semantics live.
-            </p>
+            <Markdown text={contentBlock(content, "an-inner-lambda-can-reference-an-outer-lambda-s-row-at-any")} paragraphStyle={{ marginTop: 20 }} />
           </div>
         </section>
 
 
         <section className="section">
           <div>
-            <div className="section-kicker">The pipeline</div>
-            <h2>Passes, to a fixpoint</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "the-pipeline")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "passes-to-a-fixpoint")} inline /></h2>
           </div>
           <div>
             <ol>
-              <li>
-                <strong>Decorrelate.</strong> <code>internalize_correlated_tables</code>{" "}
-                gives each inner scope its own copy of the outer tables it
-                closes over; join conditions are pulled upward. Iterated to a
-                fixpoint, because pulling one join condition up can expose the
-                next.
-              </li>
-              <li>
-                <strong>Flatten.</strong> Non-aggregate subqueries are merged
-                into their parent. Aggregates are <em>refused</em>, because flattening
-                one would silently drop empty-group rows.
-              </li>
-              <li>
-                <strong>Optimize, cost-only.</strong>{" "}
-                <code>count() &gt; 0</code> rewrites to <code>EXISTS</code>;
-                a <code>COALESCE</code> is elided when the surrounding predicate
-                already rejects NULL the same way it rejects zero, which keeps
-                the LEFT JOIN eligible for the engine’s own join
-                simplification. Every rewrite is result-preserving, and the test
-                suite is the proof.
-              </li>
+              <li><Markdown text={contentBlock(content, "decorrelate")} inline /></li>
+              <li><Markdown text={contentBlock(content, "flatten")} inline /></li>
+              <li><Markdown text={contentBlock(content, "optimize-cost-only")} inline /></li>
             </ol>
-            <p>
-              One hard-won invariant, straight from a comment in{" "}
-              <code>compile.py</code>: the passes track shared subqueries by
-              object identity, so the pipeline must run in place on a single
-              private deep copy. Copy mid-pipeline and shared subqueries
-              diverge into inconsistent twins with dangling aliases.
-            </p>
+            <Markdown text={contentBlock(content, "one-hard-won-invariant-straight-from-a-comment-in-compile")} />
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker">The oracle</div>
-            <h2>Tested against two ground truths</h2>
-            <p className="aside-note">
-              A quarter of the codebase is the adversarial suite. Every compiled
-              query is executed in DuckDB and diffed against a plain Python
-              comprehension over the same in-memory data.
-            </p>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "the-oracle")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "tested-against-two-ground-truths")} inline /></h2>
+            <Markdown text={contentBlock(content, "a-quarter-of-the-codebase-is-the-adversarial-suite")} paragraphClassName="aside-note" />
           </div>
           <div>
-            <p>
-              The fixture data is built to hurt: a school with zero departments,
-              a department with zero courses, the rows that vanish when
-              correlated SQL is written by hand. One suite crosses every
-              comparison operator with thresholds around the NULL/0 boundary,
-              including reflected forms like <code>0 &lt; count(...)</code>.
-              Another nests aggregates three deep with filters at every level.
-            </p>
-            <p>
-              The harness caught two genuine compiler bugs, both documented in
-              the suite rather than quietly fixed:
-            </p>
+            <Markdown text={contentBlock(content, "the-fixture-data-is-built-to-hurt-a-school-with-zero-depar")} />
+            <Markdown text={contentBlock(content, "the-harness-caught-two-genuine-compiler-bugs-both-document")} />
             <ol>
-              <li>
-                <strong>Unparenthesized OR.</strong>{" "}
-                <code>filter(A | B).filter(C)</code> emitted{" "}
-                <code>x OR y AND z</code>, which SQL parses as{" "}
-                <code>x OR (y AND z)</code>, silently changing which rows match.
-                Survived every structural test; fell to the adversarial suite.
-              </li>
-              <li>
-                <strong>Unscoped cross-scope joins.</strong> A reference to a
-                non-key outer column joined against an <em>unconstrained</em>{" "}
-                copy of the outer table, giving large, quiet over-counting. Pinned
-                down with <code>xfail</code> regression tests that record the
-                exact wrong numbers.
-              </li>
+              <li><Markdown text={contentBlock(content, "unparenthesized-or")} inline /></li>
+              <li><Markdown text={contentBlock(content, "unscoped-cross-scope-joins")} inline /></li>
             </ol>
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker">The rough edges</div>
-            <h2>Open questions</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "the-rough-edges")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "open-questions")} inline /></h2>
           </div>
           <div>
-            <OpenQuestion>
-              The OR-precedence bug survived 148 structural tests and fell to
-              the oracle in an afternoon. What is the smallest differential
-              harness that would have caught it on day one, and is it small
-              enough to write <em>before</em> the compiler?
-            </OpenQuestion>
-            <OpenQuestion label="Open question II">
-              Child-to-parent traversal (many-to-one <code>get_foreign</code>)
-              and <code>Query.bind</code> are unimplemented. Do they fall out of
-              the same decorrelation machinery, or is the value-object encoding
-              hiding a monad that wants to exist?
-            </OpenQuestion>
+            <OpenQuestion><Markdown text={contentBlock(content, "the-or-precedence-bug-survived-148-structural-tests-and-fe")} inline /></OpenQuestion>
+            <OpenQuestion label={contentBlock(content, "label-open-question-ii")}><Markdown text={contentBlock(content, "child-to-parent-traversal-many-to-one-get-foreign-and-quer")} inline /></OpenQuestion>
           </div>
         </section>
 
         <section className="colophon">
-          <div>
-            Materials<strong>Python, DuckDB, networkx</strong>
-          </div>
-          <div>
-            Vintage<strong>2017, rebuilt 2026</strong>
-          </div>
-          <div>
-            Scale<strong>4.7k LoC · 150 tests · 2 bugs, documented</strong>
-          </div>
-          <div>
-            Source
-            <strong>
-              <a href="https://github.com/xnmp/LambdaQuery_2">
-                github/xnmp/LambdaQuery_2
-              </a>
-            </strong>
-          </div>
+          <div><Markdown text={contentBlock(content, "materialspython-duckdb-networkx")} inline /></div>
+          <div><Markdown text={contentBlock(content, "vintage2017-rebuilt-2026")} inline /></div>
+          <div><Markdown text={contentBlock(content, "scale4")} inline /></div>
+          <div><Markdown text={contentBlock(content, "source-github-xnmp-lambdaquery-2-https-github")} inline /></div>
         </section>
 
       </main>

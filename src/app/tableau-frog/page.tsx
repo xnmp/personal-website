@@ -1,31 +1,19 @@
-import type { Metadata } from "next";
+import { Markdown } from "@/components/notebook/Markdown";
+import { contentBlock, contentField } from "@/lib/content";
+import { readContent } from "@/lib/content.server";
 import Link from "next/link";
-import "./tf.css";
-import { mono, display, serif } from "./fonts";
-import LensDemo from "./LensDemo";
+import { display, mono, serif } from "./fonts";
 import KeyboardLayer from "./KeyboardLayer";
+import LensDemo from "./LensDemo";
 import { Reveal } from "./Reveal";
+import "./tf.css";
 import { Window } from "./Window";
 
-export const metadata: Metadata = {
-  title: "tableau-frog — the hacker's data explorer",
-  description:
-    "Keyboard-first, AI-native, variables-first data exploration. You don't pick charts — you pick variables. Brush any panel and every other recolours by significance-tested contrast. Built-in random forest, AI Investigate, a plugin API, 1M-row interactivity.",
-  metadataBase: new URL("https://chong.md"),
-  openGraph: {
-    title: "tableau-frog — the hacker's data explorer",
-    description:
-      "You don't pick charts. You pick variables. One global lens; every panel recolours by significance-tested contrast.",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "tableau-frog — the hacker's data explorer",
-    description: "You don't pick charts. You pick variables.",
-  },
-};
+const content = readContent("tableau-frog");
 
-const SHOT = "/tableau-frog";
+export const metadata = contentField<import("next").Metadata>(content, "metadata");
+
+const SHOT = contentField<string>(content, "shot");
 
 export default function TableauFrogPage() {
   return (
@@ -34,53 +22,31 @@ export default function TableauFrogPage() {
 
       {/* ---------- nav ---------- */}
       <header className="tf-nav" id="tf-top">
-        <span className="tf-brand">
-          tableau<span className="frog"> frog</span>
-        </span>
+        <span className="tf-brand"><Markdown text={contentBlock(content, "tableauspan-frog-class-frog")} inline /></span>
         <nav className="tf-nav-right">
-          <a href="#demo">demo</a>
-          <a href="#investigate">investigate</a>
-          <a href="#hack">hack it</a>
-          <Link href="/">← notebook</Link>
+          <a href="#demo"><Markdown text={contentBlock(content, "demo")} inline /></a>
+          <a href="#investigate"><Markdown text={contentBlock(content, "investigate")} inline /></a>
+          <a href="#hack"><Markdown text={contentBlock(content, "hack-it")} inline /></a>
+          <Link href="/"><Markdown text={contentBlock(content, "notebook")} inline /></Link>
         </nav>
       </header>
 
       {/* ---------- hero ---------- */}
       <section className="tf-wrap tf-hero">
         <Reveal>
-          <div className="tf-kicker">keyboard-first · ai-native · variables-first</div>
-          <h1 className="tf-h1">
-            You don’t pick charts.
-            <br />
-            You pick <span className="em">variables.</span>
-          </h1>
-          <p className="tf-lede">
-            <b>tableau-frog</b>{" "}is a data explorer for people who’d rather type than click. Assign
-            columns to <span style={{ color: "var(--ink)" }}>x / y / z</span> slots and the chart is
-            inferred. Brush any panel and one global <span style={{ color: "var(--ink)" }}>lens</span>{" "}
-            recolours every other panel by statistical contrast — over-represented in red, under in blue,
-            and <b>every colour is significance-tested</b>.
-          </p>
-          <div className="tf-hero-cta">
-            <a className="tf-btn primary" href="#demo">brush the live demo ↓</a>
-            <a className="tf-btn" href="#quickstart">git clone &amp; run</a>
-            <span style={{ color: "var(--ink-3)", fontSize: 12, display: "flex", gap: 6, alignItems: "center" }}>
-              or press <span className="tf-kbd">?</span>
-            </span>
-          </div>
+          <div className="tf-kicker"><Markdown text={contentBlock(content, "keyboard-first-ai-native-variables-first")} inline /></div>
+          <h1 className="tf-h1"><Markdown text={contentBlock(content, "headline")} inline /></h1>
+          <Markdown text={contentBlock(content, "tableau-frog-is-a-data-explorer-for-people-who-d-rather-ty")} paragraphClassName="tf-lede" />
+          <div className="tf-hero-cta"><Markdown text={contentBlock(content, "linkbrush-the-live-demo-href-demo-class-tf-btn-primary-lin")} inline /></div>
         </Reveal>
       </section>
 
       {/* ---------- live demo ---------- */}
       <section className="tf-wrap tf-section" id="demo">
         <div className="tf-section-head">
-          <div className="tf-eyebrow"><span className="idx">01</span> the lens, live</div>
-          <h2 className="tf-h2">This isn’t a video. <span className="em">Drag a box.</span></h2>
-          <p className="tf-sub">
-            2,000 synthetic signups with a cohort hiding in them. The scatter is the source panel — brush a
-            region and the responder panels recolour by real log-ratio prevalence, each group two-proportion
-            z-tested with a Benjamini-Hochberg correction. Try the dense high-session cloud.
-          </p>
+          <div className="tf-eyebrow"><Markdown text={contentBlock(content, "span01-class-idx-the-lens-live")} inline /></div>
+          <h2 className="tf-h2"><Markdown text={contentBlock(content, "this-isn-t-a-video")} inline /></h2>
+          <Markdown text={contentBlock(content, "2-000-synthetic-signups-with-a-cohort-hiding-in-them")} paragraphClassName="tf-sub" />
         </div>
         <Reveal y={24}>
           <LensDemo />
@@ -92,26 +58,16 @@ export default function TableauFrogPage() {
         <div className="tf-quickstart">
           <Reveal>
             <div>
-              <div className="tf-eyebrow"><span className="idx">02</span> one lens, every panel</div>
-              <p className="tf-quote">
-                Colours you can trust.
-                <br />
-                <span>Every contrast is significance-tested.</span>
-              </p>
-              <p className="tf-sub" style={{ marginTop: 22 }}>
-                The source panel keeps population colours with an accent ring; every responder colours its
-                groups by prevalence log-ratio, clamped to ±ln 4 so a 2× lift reads half-saturated. Switch a
-                panel to <code style={{ color: "var(--yellow)" }}>significant</code> mode and groups whose
-                enrichment isn’t statistically real fade to neutral gray. Shift-brush composes; the chip
-                pops the newest clause; <span className="tf-kbd">Esc</span> clears.
-              </p>
+              <div className="tf-eyebrow"><Markdown text={contentBlock(content, "span02-class-idx-one-lens-every-panel")} inline /></div>
+              <Markdown text={contentBlock(content, "colours-you-can-trust")} paragraphClassName="tf-quote" />
+              <Markdown text={contentBlock(content, "the-source-panel-keeps-population-colours-with-an-accent-r")} paragraphClassName="tf-sub" paragraphStyle={{ marginTop: 22 }} />
             </div>
           </Reveal>
           <Reveal delay={0.1} y={24}>
             <Window
               src={`${SHOT}/source-responders.webp`}
-              alt="One brushed source panel; the other panels recolour by contrast on a blue–gray–red diverging scale."
-              title="tableau-frog — source panel + responders"
+              alt={contentBlock(content, "alt-one-brushed-source-panel-the-other-panels-recolour-by")}
+              title={contentBlock(content, "window-title-1")}
               width={1400}
               height={875}
             />
@@ -122,8 +78,8 @@ export default function TableauFrogPage() {
       {/* ---------- feature ledger ---------- */}
       <section className="tf-wrap tf-section">
         <div className="tf-section-head">
-          <div className="tf-eyebrow"><span className="idx">03</span> the shape of it</div>
-          <h2 className="tf-h2">Nine things, no chart picker.</h2>
+          <div className="tf-eyebrow"><Markdown text={contentBlock(content, "span03-class-idx-the-shape-of-it")} inline /></div>
+          <h2 className="tf-h2"><Markdown text={contentBlock(content, "nine-things-no-chart-picker")} inline /></h2>
         </div>
         <div className="tf-ledger">
           {LEDGER.map((row) => (
@@ -133,7 +89,7 @@ export default function TableauFrogPage() {
                   {row.title}
                   {row.key && <span className="tf-kbd key">{row.key}</span>}
                 </h4>
-                <p dangerouslySetInnerHTML={{ __html: row.body }} />
+                <Markdown text={row.body} />
               </div>
             </Reveal>
           ))}
@@ -143,53 +99,37 @@ export default function TableauFrogPage() {
       {/* ---------- investigate story ---------- */}
       <section className="tf-wrap tf-section" id="investigate">
         <div className="tf-section-head">
-          <div className="tf-eyebrow"><span className="idx">04</span> ai investigate · Ctrl+I</div>
-          <h2 className="tf-h2">Point at something odd. <span className="em">Get falsifiable cards.</span></h2>
-          <p className="tf-sub">
-            Investigate is the bidirectional counterpart to the assistant: brush a notable subset, and the
-            model returns 2–4 hypotheses — each with concrete, one-click test projections and a stated
-            expectation, grounded strictly in significance-aware contrast stats. Apply, then mark each
-            confirmed or rejected. The verdict trail persists.
-          </p>
+          <div className="tf-eyebrow"><Markdown text={contentBlock(content, "span04-class-idx-ai-investigate-ctrl-i")} inline /></div>
+          <h2 className="tf-h2"><Markdown text={contentBlock(content, "point-at-something-odd")} inline /></h2>
+          <Markdown text={contentBlock(content, "investigate-is-the-bidirectional-counterpart-to-the-assist")} paragraphClassName="tf-sub" />
         </div>
 
         <div className="tf-seq">
           <Reveal className="tf-seq-step" y={14}>
-            <div className="tf-seq-num active">1</div>
+            <div className="tf-seq-num active"><Markdown text={contentBlock(content, "1")} inline /></div>
             <div className="tf-seq-body">
-              <h3>Brush → generate hypotheses</h3>
-              <p>
-                A brushed cohort becomes the lens. Hit <span className="tf-kbd">Ctrl+I</span> and cards appear
-                in a side drawer, ranked by confidence and carrying the contrast that motivated them.
-              </p>
+              <h3><Markdown text={contentBlock(content, "brush-generate-hypotheses")} inline /></h3>
+              <Markdown text={contentBlock(content, "a-brushed-cohort-becomes-the-lens")} />
               <Window
                 src={`${SHOT}/investigate-cards.webp`}
-                alt="AI Investigate drawer: hypothesis cards with confidence badges and applyable test projections."
-                title="investigate — hypothesis cards"
+                alt={contentBlock(content, "alt-ai-investigate-drawer-hypothesis-cards-with-confidence")}
+                title={contentBlock(content, "window-title-2")}
                 width={1400}
                 height={875}
               />
-              <div className="tf-callouts">
-                <span className="tf-callout red">“Pro-plan users drive the enriched cohort” · HIGH</span>
-                <span className="tf-callout">test → panel x:plan · y:age</span>
-                <span className="tf-callout aqua">test → lens: plan = pro</span>
-              </div>
+              <div className="tf-callouts"><Markdown text={contentBlock(content, "span-pro-plan-users-drive-the-enriched-cohort-high-class-t")} inline /></div>
             </div>
           </Reveal>
 
           <Reveal className="tf-seq-step" y={14} delay={0.05}>
-            <div className="tf-seq-num active">2</div>
+            <div className="tf-seq-num active"><Markdown text={contentBlock(content, "2")} inline /></div>
             <div className="tf-seq-body">
-              <h3>Apply the tests → confirm or reject</h3>
-              <p>
-                Each test spawns real panels tagged <code style={{ color: "var(--yellow)" }}>H1 test</code>,
-                edits the lens, or trains a model — applied in dependency order. The card’s border
-                colours with your verdict; the trail is saved per dataset.
-              </p>
+              <h3><Markdown text={contentBlock(content, "apply-the-tests-confirm-or-reject")} inline /></h3>
+              <Markdown text={contentBlock(content, "each-test-spawns-real-panels-tagged-codeh1-test-style-colo")} />
               <Window
                 src={`${SHOT}/investigate-applied.webp`}
-                alt="Applied hypothesis tests: spawned panels tagged H1 test with the lens narrowed to pro-plan rows."
-                title="investigate — applied test projections"
+                alt={contentBlock(content, "alt-applied-hypothesis-tests-spawned-panels-tagged-h1-test")}
+                title={contentBlock(content, "window-title-3")}
                 width={1400}
                 height={875}
               />
@@ -204,27 +144,18 @@ export default function TableauFrogPage() {
           <Reveal y={24}>
             <Window
               src={`${SHOT}/ai-nl.webp`}
-              alt="Natural-language bar turning a request into panels and a lens."
-              title="assistant — natural language → panels + lens"
+              alt={contentBlock(content, "alt-natural-language-bar-turning-a-request-into-panels-and")}
+              title={contentBlock(content, "window-title-4")}
               width={1400}
               height={875}
             />
           </Reveal>
           <Reveal delay={0.1}>
             <div>
-              <div className="tf-eyebrow"><span className="idx">05</span> ai assistant · Ctrl+J</div>
-              <h2 className="tf-h2">Natural language, grounded in the real stats.</h2>
-              <p className="tf-sub" style={{ marginTop: 16 }}>
-                The assistant summarises your dataset to <i>shape only</i> — types, ranges, capped category
-                counts, row count; <b>never a row of data leaves</b> — then returns a validated plan of
-                panels, a composed lens, and derived columns. “Explain selection” answers from the
-                actual contrast summaries, not a hallucinated story.
-              </p>
-              <div className="tf-callouts" style={{ marginTop: 18 }}>
-                <span className="tf-callout aqua">shape-only schema · no rows</span>
-                <span className="tf-callout">strict JSON output · validatePlan</span>
-                <span className="tf-callout red">explain grounded in p / q</span>
-              </div>
+              <div className="tf-eyebrow"><Markdown text={contentBlock(content, "span05-class-idx-ai-assistant-ctrl-j")} inline /></div>
+              <h2 className="tf-h2"><Markdown text={contentBlock(content, "natural-language-grounded-in-the-real-stats")} inline /></h2>
+              <Markdown text={contentBlock(content, "the-assistant-summarises-your-dataset-to-shape-only-types")} paragraphClassName="tf-sub" paragraphStyle={{ marginTop: 16 }} />
+              <div className="tf-callouts" style={{ marginTop: 18 }}><Markdown text={contentBlock(content, "spanshape-only-schema-no-rows-class-tf-callout-aqua-spanst")} inline /></div>
             </div>
           </Reveal>
         </div>
@@ -233,21 +164,16 @@ export default function TableauFrogPage() {
       {/* ---------- ML ---------- */}
       <section className="tf-wrap tf-section" id="ml">
         <div className="tf-section-head">
-          <div className="tf-eyebrow"><span className="idx">06</span> built-in ml · no dependencies</div>
-          <h2 className="tf-h2">A random forest that trains in your browser.</h2>
-          <p className="tf-sub">
-            <code style={{ color: "var(--blue)" }}>model: predict &lt;column&gt;</code> grows a from-scratch,
-            deterministic random forest over the columnar arrays — histogram-binned splits, seeded
-            mulberry32 for reproducibility — then explains it with permutation importance and Friedman
-            partial-dependence curves. 36k rows in ≈0.4 s. No data leaves the tab.
-          </p>
+          <div className="tf-eyebrow"><Markdown text={contentBlock(content, "span06-class-idx-built-in-ml-no-dependencies")} inline /></div>
+          <h2 className="tf-h2"><Markdown text={contentBlock(content, "a-random-forest-that-trains-in-your-browser")} inline /></h2>
+          <Markdown text={contentBlock(content, "codemodel-predict-column-style-color-var-blue-grows-a-from")} paragraphClassName="tf-sub" />
         </div>
         <div className="tf-quickstart">
           <Reveal y={16}>
             <Window
               src={`${SHOT}/ml-importance.webp`}
-              alt="Permutation feature-importance bars, sorted, summing to one."
-              title="model — permutation importance"
+              alt={contentBlock(content, "alt-permutation-feature-importance-bars-sorted-summing-to")}
+              title={contentBlock(content, "window-title-5")}
               width={447}
               height={320}
               sizes="(max-width: 880px) 100vw, 560px"
@@ -256,8 +182,8 @@ export default function TableauFrogPage() {
           <Reveal y={16} delay={0.08}>
             <Window
               src={`${SHOT}/ml-pdp.webp`}
-              alt="Partial-dependence curve for the top feature."
-              title="model — partial dependence"
+              alt={contentBlock(content, "alt-partial-dependence-curve-for-the-top-feature")}
+              title={contentBlock(content, "window-title-6")}
               width={447}
               height={320}
               sizes="(max-width: 880px) 100vw, 560px"
@@ -268,8 +194,8 @@ export default function TableauFrogPage() {
           <div style={{ marginTop: 20 }}>
             <Window
               src={`${SHOT}/correlation.webp`}
-              alt="Pairwise-complete Pearson correlation matrix as a diverging heatmap."
-              title="correlations — pairwise-complete Pearson r"
+              alt={contentBlock(content, "alt-pairwise-complete-pearson-correlation-matrix-as-a-dive")}
+              title={contentBlock(content, "window-title-7")}
               width={1400}
               height={875}
               sizes="(max-width: 880px) 100vw, 1100px"
@@ -281,25 +207,18 @@ export default function TableauFrogPage() {
       {/* ---------- hack it ---------- */}
       <section className="tf-wrap tf-section" id="hack">
         <div className="tf-section-head">
-          <div className="tf-eyebrow"><span className="idx">07</span> a scripting seam, on purpose</div>
-          <h2 className="tf-h2">Hack it.</h2>
-          <p className="tf-sub">
-            Everything is exposed at runtime on <code style={{ color: "var(--aqua)" }}>window.tableauFrog</code>.
-            Claim an axis-type signature with a chart plugin, or just drive the live app from the console.
-          </p>
+          <div className="tf-eyebrow"><Markdown text={contentBlock(content, "span07-class-idx-a-scripting-seam-on-purpose")} inline /></div>
+          <h2 className="tf-h2"><Markdown text={contentBlock(content, "hack-it-2")} inline /></h2>
+          <Markdown text={contentBlock(content, "everything-is-exposed-at-runtime-on-codewindow")} paragraphClassName="tf-sub" />
         </div>
         <Reveal y={16}>
           <div className="tf-code">
-            <pre>
-              <code dangerouslySetInnerHTML={{ __html: CODE }} />
-            </pre>
+            <Markdown text={contentBlock(content, "code")} />
           </div>
         </Reveal>
         <Reveal y={12}>
           <div style={{ marginTop: 20 }}>
-            <div className="tf-eyebrow" style={{ marginBottom: 12 }}>
-              derived-column grammar · eval-free Pratt parser
-            </div>
+            <div className="tf-eyebrow" style={{ marginBottom: 12 }}><Markdown text={contentBlock(content, "derived-column-grammar-eval-free-pratt-parser")} inline /></div>
             <div className="tf-grammar">
               {GRAMMAR.map((g) => (
                 <div key={g.code}>
@@ -315,14 +234,14 @@ export default function TableauFrogPage() {
       {/* ---------- stats strip ---------- */}
       <section className="tf-wrap tf-section" id="stats">
         <div className="tf-section-head">
-          <div className="tf-eyebrow"><span className="idx">08</span> the numbers, precisely</div>
-          <h2 className="tf-h2">No superlatives. Just measurements.</h2>
+          <div className="tf-eyebrow"><Markdown text={contentBlock(content, "span08-class-idx-the-numbers-precisely")} inline /></div>
+          <h2 className="tf-h2"><Markdown text={contentBlock(content, "no-superlatives")} inline /></h2>
         </div>
         <Reveal y={14}>
           <div className="tf-stats">
             {STATS.map((s) => (
               <div className="tf-stat" key={s.label}>
-                <div className="v" dangerouslySetInnerHTML={{ __html: s.value }} />
+                <div className="v"><Markdown text={s.value} inline /></div>
                 <div className="l">{s.label}</div>
               </div>
             ))}
@@ -335,36 +254,23 @@ export default function TableauFrogPage() {
         <div className="tf-quickstart">
           <Reveal>
             <div>
-              <div className="tf-eyebrow"><span className="idx">09</span> open-source-style quickstart</div>
-              <h2 className="tf-h2">Clone it. Run it.</h2>
-              <p className="tf-sub" style={{ marginTop: 16 }}>
-                A Tauri v2 desktop app that runs identically in a plain browser. Pure-TypeScript domain, ECharts
-                on the SVG renderer, Rust only for the native file dialog.
-              </p>
-              <div className="tf-callouts" style={{ marginTop: 18 }}>
-                <span className="tf-callout">CSV · TSV · Parquet · JSON · JSONL · clipboard</span>
-                <span className="tf-callout aqua">Ctrl+P quick open</span>
-                <span className="tf-callout red">Ctrl+Shift+P palette</span>
-              </div>
+              <div className="tf-eyebrow"><Markdown text={contentBlock(content, "span09-class-idx-open-source-style-quickstart")} inline /></div>
+              <h2 className="tf-h2"><Markdown text={contentBlock(content, "clone-it")} inline /></h2>
+              <Markdown text={contentBlock(content, "a-tauri-v2-desktop-app-that-runs-identically-in-a-plain-br")} paragraphClassName="tf-sub" paragraphStyle={{ marginTop: 16 }} />
+              <div className="tf-callouts" style={{ marginTop: 18 }}><Markdown text={contentBlock(content, "spancsv-tsv-parquet-json-jsonl-clipboard-class-tf-callout")} inline /></div>
             </div>
           </Reveal>
           <Reveal delay={0.08} y={16}>
             <div className="tf-code">
-              <pre>
-                <code dangerouslySetInnerHTML={{ __html: QUICKSTART }} />
-              </pre>
+              <Markdown text={contentBlock(content, "quickstart")} />
             </div>
           </Reveal>
         </div>
       </section>
 
       <footer className="tf-wrap tf-footer">
-        <span>
-          tableau<span style={{ color: "var(--aqua)" }}> frog</span> — a variables-first data explorer.
-        </span>
-        <span>
-          Showcase built on <Link href="/">the notebook</Link> · press <span className="tf-kbd">?</span>
-        </span>
+        <span><Markdown text={contentBlock(content, "tableauspan-frog-style-color-var-aqua-a-variables-first-da")} inline /></span>
+        <span><Markdown text={contentBlock(content, "showcase-built-on-the-notebook-press-span")} inline /></span>
       </footer>
     </div>
   );
@@ -372,86 +278,10 @@ export default function TableauFrogPage() {
 
 /* ---------- static content ---------- */
 
-const LEDGER: Array<{ title: string; key?: string; body: string }> = [
-  {
-    title: "Inferred charts",
-    body: "Assign columns to <b>x / y / z</b> and <code>inferChartKind</code> derives the family from the axis type signature — scatter, clusters, line, histogram, bar, distribution, crosstab. You never open a chart-type menu.",
-  },
-  {
-    title: "One global lens",
-    body: "Brush, click a bar, drag a lineX, click a crosstab cell — it all becomes one <b>Selection</b>. Shift composes with AND; the chip pops the newest clause; Esc clears all.",
-  },
-  {
-    title: "Significance-aware contrast",
-    body: "Per-panel <code>ratio</code> vs <code>significant</code> metric. The latter greys out any group whose enrichment isn't statistically real — two-proportion z-test against the <i>complement</i>, then Benjamini-Hochberg FDR.",
-  },
-  {
-    title: "Missing values, first-class",
-    body: "The sidebar shows ∅ counts; bar / crosstab / distribution render a selectable <code>(missing)</code> bucket; a <code>missing</code> selection makes null-ness itself a lens.",
-  },
-  {
-    title: "Command palette",
-    key: "⌘⇧P",
-    body: "A fuzzy, validity-gated command list makes the app fully keyboard-drivable. <b>Quick open</b> (Ctrl+P) is a noun-first jump to a column, saved lens, or dataset — a leading <code>&gt;</code> delegates to commands.",
-  },
-  {
-    title: "Derived columns",
-    key: "ƒx",
-    body: "An eval-free expression engine: a hand-written tokenizer feeds a Pratt parser to a typed AST that compiles to a single linear pass over the columnar arrays — a 1M-row derive stays one scan.",
-  },
-  {
-    title: "Saved lenses",
-    body: "Name a selection, stash it per dataset, re-apply later — validated against the current schema, installed as a global lens so every panel renders it as contrast.",
-  },
-  {
-    title: "Correlation overview",
-    body: "A pairwise-complete Pearson-r heatmap over the numeric columns on a diverging visualMap pinned to r ∈ [-1, 1]; click a cell to spawn that scatter.",
-  },
-  {
-    title: "Plugin API + scripting",
-    body: "<code>registerChartPlugin</code> claims axis-type signatures ahead of built-in inference; everything is on <code>window.tableauFrog</code> for console-driven automation.",
-  },
-];
+const LEDGER: Array<{ title: string; key?: string; body: string }> = contentField<Array<{ title: string; key?: string; body: string }>>(content, "ledger");
 
-const GRAMMAR: Array<{ code: string; desc: string }> = [
-  { code: "log(price)", desc: "natural log · numeric/temporal" },
-  { code: "zscore(age)", desc: "standardise against the column" },
-  { code: "year(signup_date)", desc: "temporal → numeric part" },
-  { code: "bucket(revenue, 10)", desc: "quantise into N buckets" },
-  { code: "clamp(x, 0, 1)", desc: "min/max fence" },
-  { code: 'contains(name, "pro")', desc: "string predicate → boolean" },
-];
+const GRAMMAR: Array<{ code: string; desc: string }> = contentField<Array<{ code: string; desc: string }>>(content, "grammar");
 
-const STATS: Array<{ value: string; label: string }> = [
-  { value: "<em>&lt;100</em> ms", label: "mask + contrast + build at 1M rows — brush→recolour stays interactive" },
-  { value: "≈<em>0.4</em> s", label: "36k-row random forest, trained from scratch in the browser" },
-  { value: "<em>355</em>", label: "Vitest unit tests over the pure domain layer" },
-  { value: "<em>67</em>", label: "Playwright e2e tests driving the real pipeline — no mocking" },
-];
+const STATS: Array<{ value: string; label: string }> = contentField<Array<{ value: string; label: string }>>(content, "stats");
 
 /* syntax-highlighted code (hand-tagged spans matching the app's palette) */
-const CODE = [
-  '<span class="cm">// claim a new axis-type signature with a chart plugin</span>',
-  '<span class="fn">window</span>.<span class="fn">tableauFrog</span>.<span class="fn">registerChartPlugin</span>(<span class="pn">{</span>',
-  '  <span class="pn">kind</span>: <span class="str">"hexbin"</span>,',
-  '  <span class="pn">matches</span>: <span class="pn">(</span><span class="pn">{ x, y }</span><span class="pn">)</span> <span class="op">=&gt;</span> x?.type <span class="op">===</span> <span class="str">"numeric"</span> <span class="op">&amp;&amp;</span> y?.type <span class="op">===</span> <span class="str">"numeric"</span>,',
-  '  <span class="pn">create</span>: <span class="pn">(</span>dataset, axes<span class="pn">)</span> <span class="op">=&gt;</span> <span class="kw">new</span> <span class="fn">HexbinChart</span>(dataset, axes),',
-  '  <span class="pn">buildOption</span>: <span class="pn">(</span>model<span class="pn">)</span> <span class="op">=&gt;</span> <span class="pn">({</span> series: [<span class="pn">{</span> type: <span class="str">"custom"</span>, <span class="cm">/* … */</span> <span class="pn">}</span>] <span class="pn">})</span>,',
-  '<span class="pn">}</span>);',
-  "",
-  '<span class="cm">// …or just script the live app from the console</span>',
-  '<span class="kw">const</span> frog <span class="op">=</span> <span class="fn">window</span>.<span class="fn">tableauFrog</span>;',
-  'frog.<span class="fn">addPanel</span>(<span class="pn">{</span> x: <span class="str">"age"</span>, y: <span class="str">"session_minutes"</span> <span class="pn">}</span>);',
-  'frog.<span class="fn">setLens</span>(<span class="pn">{</span> field: <span class="str">"plan"</span>, eq: <span class="str">"pro"</span> <span class="pn">}</span>);',
-  'frog.<span class="fn">deriveColumn</span>(<span class="str">"ltv"</span>, <span class="str">"monthly_revenue * tenure_months"</span>);',
-].join("\n");
-
-const QUICKSTART = [
-  '<span class="cm"># variables-first, keyboard-first, AI-native</span>',
-  '<span class="fn">git</span> clone git@github.com:you/tableau-frog.git',
-  '<span class="fn">cd</span> tableau-frog',
-  "",
-  '<span class="fn">bun</span> install',
-  '<span class="fn">bun</span> run dev            <span class="cm"># http://localhost:1420</span>',
-  '<span class="fn">bun</span> run tauri dev      <span class="cm"># native desktop shell</span>',
-].join("\n");

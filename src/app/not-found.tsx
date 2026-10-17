@@ -4,7 +4,7 @@ import { Key, Rack, Screen } from "@/components/rack";
 export default function NotFound() {
   return (
     <Rack>
-      <RunningHead brand="chong" meta={<>off the map</>} />
+      <RunningHead meta={<>off the map</>} />
       <main id="content" className="blank-leaf" tabIndex={-1}>
         <div className="kicker">404 · empty bay</div>
         <h1>Nothing is mounted here.</h1>
