@@ -1,4 +1,6 @@
-import { contentBlock, contentField } from "@/lib/content";
+import { EditableText } from "@/components/studio/EditableText";
+import { bindBlock, bindField } from "@/lib/studio/bindings";
+import { contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 import { Markdown } from "./Markdown";
 
@@ -9,10 +11,10 @@ export function MarginDetails() {
 
   return (
     <>
-      <p className="margin-location">{contentField<string>(home, "location")}</p>
+      <p className="margin-location"><EditableText binding={bindField(home, ["location"])}>{contentField<string>(home, "location")}</EditableText></p>
       <div className="margin-contact">
-        <Markdown text={contentBlock(home, "github-xnmp-https-github")} />
-        <Markdown text={contentBlock(home, "chonw-proton")} />
+        <Markdown {...bindBlock(home, "github-xnmp-https-github")} />
+        <Markdown {...bindBlock(home, "chonw-proton")} />
       </div>
     </>
   );

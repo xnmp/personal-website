@@ -1,3 +1,5 @@
+import type { ContentBinding } from "@/lib/studio/bindings";
+import { EditableText } from "@/components/studio/EditableText";
 import Link from "next/link";
 import { Instruments } from "@/components/instrument/Instruments";
 import { Led } from "@/components/rack/Led";
@@ -9,7 +11,17 @@ import { MarginDetails } from "@/components/notebook/MarginDetails";
  * the right printed as words over the scene. No strip: the scene is the
  * page's paper here (the other pages' masthead is RunningHead).
  */
-export function Masthead({ brand, tagline }: { brand: string; tagline: string }) {
+export function Masthead({
+  brand,
+  brandBinding,
+  tagline,
+  taglineBinding,
+}: {
+  brand: string;
+  brandBinding?: ContentBinding;
+  tagline: string;
+  taglineBinding?: ContentBinding;
+}) {
   return (
     <header className="masthead">
       <a className="skip-link" href="#content">
@@ -18,9 +30,13 @@ export function Masthead({ brand, tagline }: { brand: string; tagline: string })
       <div className="masthead-brand">
         <h1 className="brand">
           <Led color="green" />
-          <Link href="/">{brand}</Link>
+          <Link href="/">
+            <EditableText binding={brandBinding}>{brand}</EditableText>
+          </Link>
         </h1>
-        <p className="tagline">{tagline}</p>
+        <p className="tagline">
+          <EditableText binding={taglineBinding}>{tagline}</EditableText>
+        </p>
       </div>
       <Instruments />
       <MarginDetails />

@@ -1,7 +1,10 @@
+import { interpolateContent } from "./content-template";
 import matter from "gray-matter";
 
 export interface ContentDocument {
   source: string;
+  /** Source revision supplied by the filesystem reader, used by the local editor. */
+  revision?: string;
   data: Record<string, unknown>;
   body: string;
   blocks: Readonly<Record<string, string>>;
@@ -30,14 +33,9 @@ export function parseContent(source: string, filename = "content"): ContentDocum
 /** Missing copy fails the build at its source instead of publishing a blank. */
 export function contentBlock(document: ContentDocument, name: string): string {
   if (!Object.hasOwn(document.blocks, name)) throw new Error(`${document.source}: missing block "${name}"`);
-  return document.blocks[name].replace(/\{\{([a-z][a-z0-9_-]*)\}\}/g, (_, field: string) => {
-    const value = document.data[field];
-    if (typeof value !== "string" && typeof value !== "number") {
-      throw new Error(`${document.source}: interpolation "${field}" must be text or a number`);
-    }
-    return String(value);
-  });
+  return interpolateContent(document.blocks[name], document.data, document.source);
 }
+
 
 export function contentField<T>(document: ContentDocument, name: string): T {
   if (!Object.hasOwn(document.data, name)) throw new Error(`${document.source}: missing frontmatter "${name}"`);

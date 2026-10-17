@@ -24,8 +24,8 @@ See [`docs/architecture.md`](docs/architecture.md) for routes, the two colour-to
 
 ## Edit the content
 
-Run `bun run studio` for the local Margin Index content editor. Edit blocks, preview
-the actual site, and use **Deploy** in the bottom-left to publish. The [editor guide](docs/content-studio.md) covers drafts and the publishing workflow.
+Run `bun run studio` for the local Margin Index content editor. Edit text directly in the actual site layout,
+and use **Deploy** in the bottom-left to publish. The [editor guide](docs/content-studio.md) covers drafts and the publishing workflow.
 
 Website copy lives in [`content/`](content/). You can also edit Markdown, commit, and deploy;
 you do not need to edit React to change the existing pages.

@@ -1,3 +1,4 @@
+import { bindBlock } from "@/lib/studio/bindings";
 import { Folio, Plate, ProjectKicker, ProjectMeta, RunningHead } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key } from "@/components/rack";
@@ -18,8 +19,8 @@ export default function ZsyPlayPage() {
         meta={<ProjectMeta slug="zheng-shang-you" />}
         nav={
           <>
-            <Key href="/p/zheng-shang-you"><Markdown text={contentBlock(content, "the-project")} inline /></Key>
-            <Key href="/"><Markdown text={contentBlock(content, "all-projects")} inline /></Key>
+            <Key href="/p/zheng-shang-you"><Markdown {...bindBlock(content, "the-project")} inline /></Key>
+            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline /></Key>
           </>
         }
       />
@@ -28,26 +29,26 @@ export default function ZsyPlayPage() {
         <section className="detail-hero">
           <div>
             <ProjectKicker slug="zheng-shang-you" />
-            <h1><Markdown text={contentBlock(content, "headline")} inline /></h1>
-            <Markdown text={contentBlock(content, "three-opponents-each-running-the-scripted-strategist-the-s")} />
+            <h1><Markdown {...bindBlock(content, "headline")} inline /></h1>
+            <Markdown {...bindBlock(content, "three-opponents-each-running-the-scripted-strategist-the-s")} />
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker"><Markdown text={contentBlock(content, "the-rules-briefly")} inline /></div>
-            <h2><Markdown text={contentBlock(content, "how-to-play")} inline /></h2>
+            <div className="section-kicker"><Markdown {...bindBlock(content, "the-rules-briefly")} inline /></div>
+            <h2><Markdown {...bindBlock(content, "how-to-play")} inline /></h2>
             <ul style={{ marginTop: 12 }}>
-              <li><Markdown text={contentBlock(content, "combinations-singles-pairs-triples-full-houses-straights-o")} inline /></li>
-              <li><Markdown text={contentBlock(content, "order-3-lowest-a-then-2-then-the-jokers")} inline /></li>
-              <li><Markdown text={contentBlock(content, "bombs-four-or-more-of-a-kind-straight-flushes-beat-any-ord")} inline /></li>
-              <li><Markdown text={contentBlock(content, "pick-cards-to-raise-them-the-play-button-names-what-you-ve")} inline /></li>
+              <li><Markdown {...bindBlock(content, "combinations-singles-pairs-triples-full-houses-straights-o")} inline /></li>
+              <li><Markdown {...bindBlock(content, "order-3-lowest-a-then-2-then-the-jokers")} inline /></li>
+              <li><Markdown {...bindBlock(content, "bombs-four-or-more-of-a-kind-straight-flushes-beat-any-ord")} inline /></li>
+              <li><Markdown {...bindBlock(content, "pick-cards-to-raise-them-the-play-button-names-what-you-ve")} inline /></li>
             </ul>
           </div>
           <div>
             <Plate
-              figure={contentBlock(content, "figure-fig-a-the-table")}
-              caption={contentBlock(content, "caption-fig-a-the-engine-is-the-typescript-port-of-the-tra")}
+              figure={contentBlock(content, "figure-fig-a-the-table")} figureBinding={bindBlock(content, "figure-fig-a-the-table").binding}
+              caption={contentBlock(content, "caption-fig-a-the-engine-is-the-typescript-port-of-the-tra")} captionBinding={bindBlock(content, "caption-fig-a-the-engine-is-the-typescript-port-of-the-tra").binding}
             >
               <ZsyGame />
             </Plate>

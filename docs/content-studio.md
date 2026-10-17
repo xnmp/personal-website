@@ -7,11 +7,13 @@ bun run studio
 
 Open **http://127.0.0.1:3210/studio**. `STUDIO_PORT=3211 bun run studio` chooses another port. The process binds to loopback and uses the same Next application, Margin Index CSS, fonts, Markdown renderer and source content as the public website.
 
-Choose a page or project from the left rail. Each named Markdown block has an **Edit** button; **Page fields & metadata** contains titles, labels, facts, links, descriptions, captions and existing scalar settings. The editor preserves block identities and structured frontmatter; adding/removing sections or projects still happens in Markdown/code. Existing inline directives and `{{field}}` references can be kept in block text.
+The editor opens the **actual website**. Navigate its usual pages and links; there is no separate preview or editing layout. The only added interface is the small editing/deployment dock at the bottom-left.
 
-**Done** closes a field's textarea. **Save locally** writes all edited files to `content/`. Browser drafts are recovered after reload, including drafts from other pages. **Reload file** deliberately discards that file's unsaved browser draft. A concurrent file edit fails with a conflict and keeps your draft; copy the draft, reload the file and reconcile it before saving.
+In **Editing** mode, click any authored text or focus it and press Enter to edit it in place. Plain text edits directly; Markdown blocks show their source while focused, preserving links, inline directives and `{{field}}` references. Click outside or press Ctrl/Cmd+Enter to finish. Enter also finishes single-line fields; Escape cancels the current edit. Switch to **Browsing** to follow text links normally (Ctrl/Cmd-click also follows links while editing).
 
-**Site preview** embeds the actual existing page, using saved Markdown and the actual layouts/components. Reload after manual external edits. Development previews include labelled About drafts; production omits `draft: true` sections and facts.
+**Save** writes all edited files to `content/`. **Deploy** saves pending edits and publishes them. Browser drafts are recovered after reload, including drafts from other pages. A concurrent file edit reports a conflict and keeps your draft; copy your edits, then use **Discard unsaved edits** and reload to reconcile with disk. Adding/removing sections or projects, metadata that is not displayed, image paths and structural settings are still edited in Markdown/code.
+
+Development pages include labelled About drafts; production omits `draft: true` sections and facts. Normal development and the deployed site have no editing interface.
 
 ## Deploy
 

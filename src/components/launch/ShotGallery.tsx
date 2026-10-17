@@ -1,5 +1,7 @@
 "use client";
 
+import { EditableText } from "@/components/studio/EditableText";
+import type { ContentBinding } from "@/lib/studio/bindings";
 import { useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { flushSync } from "react-dom";
 import { Key } from "@/components/rack/Key";
@@ -18,6 +20,8 @@ export type Shot = {
   h: number;
   label: string;
   note: string;
+  labelBinding?: ContentBinding;
+  noteBinding?: ContentBinding;
   /** On a phone the full window is shown at real size in a panning glass; this
    * is where the glass opens, as fractions of the window's width and height:
    * the top-left corner of the panel the shot is about. */
@@ -88,9 +92,9 @@ export function ShotGallery({ shots, phoneMedia }: { shots: Shot[]; phoneMedia: 
             </a>
             <figcaption className="plate-caption">
               <span className="plate-figure-label">
-                Fig. {i + 1} · {s.label}
+                Fig. {i + 1} · <EditableText binding={s.labelBinding}>{s.label}</EditableText>
               </span>
-              {note(s)}{" "}
+              <EditableText binding={s.noteBinding}>{note(s)}</EditableText>{" "}
               {/* a second pointer target for the shot's own link; one tab stop is enough */}
               <a href={files(s).full} onClick={open(s)} tabIndex={-1} className="shot-full text-action">
                 Full window
@@ -124,7 +128,7 @@ export function ShotGallery({ shots, phoneMedia }: { shots: Shot[]; phoneMedia: 
             </Screen>
             <div className="lightbox-foot note">
               <span>
-                <b className="silk">{shown.label}</b> &nbsp;·&nbsp; {note(shown)}
+                <b className="silk"><EditableText binding={shown.labelBinding}>{shown.label}</EditableText></b> &nbsp;·&nbsp; <EditableText binding={shown.noteBinding}>{note(shown)}</EditableText>
                 <span className="lightbox-pan">Drag to pan.</span>
               </span>
               <Key onClick={close} legend="esc" className="lightbox-close">

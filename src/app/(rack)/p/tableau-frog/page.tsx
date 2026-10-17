@@ -1,3 +1,4 @@
+import { bindBlock } from "@/lib/studio/bindings";
 import { Feature, Features, Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
@@ -18,8 +19,8 @@ export default function TableauFrogPage() {
         meta={<ProjectMeta slug="tableau-frog" />}
         nav={
           <>
-            <Key href="/"><Markdown text={contentBlock(content, "all-projects")} inline /></Key>
-            <Key href="/tableau-frog"><Markdown text={contentBlock(content, "the-showcase")} inline /></Key>
+            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline /></Key>
+            <Key href="/tableau-frog"><Markdown {...bindBlock(content, "the-showcase")} inline /></Key>
           </>
         }
       />
@@ -28,29 +29,29 @@ export default function TableauFrogPage() {
         <section className="detail-hero">
           <div>
             <ProjectKicker slug="tableau-frog" />
-            <h1><Markdown text={contentBlock(content, "headline")} inline /></h1>
-            <Markdown text={contentBlock(content, "a-data-explorer-that-inverts-the-usual-workflow-you-never")} />
+            <h1><Markdown {...bindBlock(content, "headline")} inline /></h1>
+            <Markdown {...bindBlock(content, "a-data-explorer-that-inverts-the-usual-workflow-you-never")} />
           </div>
           <div>
             <Screen art="/screens/tableau-frog.png" tone="olive" />
             <Tags>
-              <Tag><Markdown text={contentBlock(content, "svelte-5")} inline /></Tag>
-              <Tag><Markdown text={contentBlock(content, "tauri-v2")} inline /></Tag>
-              <Tag><Markdown text={contentBlock(content, "154k-loc")} inline /></Tag>
-              <Tag><Markdown text={contentBlock(content, "2026-active")} inline /></Tag>
+              <Tag><Markdown {...bindBlock(content, "svelte-5")} inline /></Tag>
+              <Tag><Markdown {...bindBlock(content, "tauri-v2")} inline /></Tag>
+              <Tag><Markdown {...bindBlock(content, "154k-loc")} inline /></Tag>
+              <Tag><Markdown {...bindBlock(content, "2026-active")} inline /></Tag>
             </Tags>
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker"><Markdown text={contentBlock(content, "the-lens")} inline /></div>
-            <h2><Markdown text={contentBlock(content, "enrichment-with-error-control")} inline /></h2>
+            <div className="section-kicker"><Markdown {...bindBlock(content, "the-lens")} inline /></div>
+            <h2><Markdown {...bindBlock(content, "enrichment-with-error-control")} inline /></h2>
           </div>
           <div>
             <Plate
-              figure={contentBlock(content, "figure-fig-1-select-anywhere-see-everywhere")}
-              caption={contentBlock(content, "caption-fig-1-a-brushed-selection-recolors-every-panel-by")}
+              figure={contentBlock(content, "figure-fig-1-select-anywhere-see-everywhere")} figureBinding={bindBlock(content, "figure-fig-1-select-anywhere-see-everywhere").binding}
+              caption={contentBlock(content, "caption-fig-1-a-brushed-selection-recolors-every-panel-by")} captionBinding={bindBlock(content, "caption-fig-1-a-brushed-selection-recolors-every-panel-by").binding}
             >
               <Image
                 src="/tableau-frog/source-responders.webp"
@@ -60,20 +61,20 @@ export default function TableauFrogPage() {
                 style={{ width: "100%", height: "auto", display: "block" }}
               />
             </Plate>
-            <Markdown text={contentBlock(content, "select-a-subset-on-any-panel-a-bar-a-brushed-range-a-cell")} paragraphStyle={{ marginTop: 20 }} />
+            <Markdown {...bindBlock(content, "select-a-subset-on-any-panel-a-bar-a-brushed-range-a-cell")} paragraphStyle={{ marginTop: 20 }} />
           </div>
         </section>
 
 
         <section className="section">
           <div>
-            <div className="section-kicker"><Markdown text={contentBlock(content, "the-assistant")} inline /></div>
-            <h2><Markdown text={contentBlock(content, "ai-that-has-to-show-its-work")} inline /></h2>
+            <div className="section-kicker"><Markdown {...bindBlock(content, "the-assistant")} inline /></div>
+            <h2><Markdown {...bindBlock(content, "ai-that-has-to-show-its-work")} inline /></h2>
           </div>
           <div>
             <Plate
-              figure={contentBlock(content, "figure-fig-2-hypothesis-cards")}
-              caption={contentBlock(content, "caption-fig-2-investigate-mode-turns-a-selection-into-fals")}
+              figure={contentBlock(content, "figure-fig-2-hypothesis-cards")} figureBinding={bindBlock(content, "figure-fig-2-hypothesis-cards").binding}
+              caption={contentBlock(content, "caption-fig-2-investigate-mode-turns-a-selection-into-fals")} captionBinding={bindBlock(content, "caption-fig-2-investigate-mode-turns-a-selection-into-fals").binding}
             >
               <Image
                 src="/tableau-frog/investigate-cards.webp"
@@ -83,32 +84,32 @@ export default function TableauFrogPage() {
                 style={{ width: "100%", height: "auto", display: "block" }}
               />
             </Plate>
-            <Markdown text={contentBlock(content, "kbdctrl-i-on-a-selection-generates-hypotheses")} paragraphStyle={{ marginTop: 20 }} />
+            <Markdown {...bindBlock(content, "kbdctrl-i-on-a-selection-generates-hypotheses")} paragraphStyle={{ marginTop: 20 }} />
             <Features>
-              <Feature label={contentBlock(content, "label-own-random-forest")}><Markdown text={contentBlock(content, "deterministic-zero-dependency-pure-ts-with-permutation-imp")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-plugin-charts")}><Markdown text={contentBlock(content, "a-documented-chartplugin-contract-on-window")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-eval-free-expressions")}><Markdown text={contentBlock(content, "log-zscore-bucket-ternary-parsed-and-computed-in-one-colum")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-domain-first")}><Markdown text={contentBlock(content, "27-pure-ts-modules-run-identically-in-a-plain-browser-the")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-own-random-forest")} labelBinding={bindBlock(content, "label-own-random-forest").binding}><Markdown {...bindBlock(content, "deterministic-zero-dependency-pure-ts-with-permutation-imp")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-plugin-charts")} labelBinding={bindBlock(content, "label-plugin-charts").binding}><Markdown {...bindBlock(content, "a-documented-chartplugin-contract-on-window")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-eval-free-expressions")} labelBinding={bindBlock(content, "label-eval-free-expressions").binding}><Markdown {...bindBlock(content, "log-zscore-bucket-ternary-parsed-and-computed-in-one-colum")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-domain-first")} labelBinding={bindBlock(content, "label-domain-first").binding}><Markdown {...bindBlock(content, "27-pure-ts-modules-run-identically-in-a-plain-browser-the")} inline /></Feature>
             </Features>
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker"><Markdown text={contentBlock(content, "the-rough-edges")} inline /></div>
-            <h2><Markdown text={contentBlock(content, "open-questions")} inline /></h2>
+            <div className="section-kicker"><Markdown {...bindBlock(content, "the-rough-edges")} inline /></div>
+            <h2><Markdown {...bindBlock(content, "open-questions")} inline /></h2>
           </div>
           <div>
-            <OpenQuestion><Markdown text={contentBlock(content, "when-non-significant-differences-are-greyed-out-do-people")} inline /></OpenQuestion>
-            <OpenQuestion label={contentBlock(content, "label-open-question-ii")}><Markdown text={contentBlock(content, "inferred-chart-kinds-remove-the-gallery-of-charts-decision")} inline /></OpenQuestion>
+            <OpenQuestion><Markdown {...bindBlock(content, "when-non-significant-differences-are-greyed-out-do-people")} inline /></OpenQuestion>
+            <OpenQuestion label={contentBlock(content, "label-open-question-ii")} labelBinding={bindBlock(content, "label-open-question-ii").binding}><Markdown {...bindBlock(content, "inferred-chart-kinds-remove-the-gallery-of-charts-decision")} inline /></OpenQuestion>
           </div>
         </section>
 
         <section className="colophon">
-          <div><Markdown text={contentBlock(content, "materialssvelte-5-typescript-tauri-v2")} inline /></div>
-          <div><Markdown text={contentBlock(content, "vintage2026-active")} inline /></div>
-          <div><Markdown text={contentBlock(content, "scale1m-rows-100ms-29-unit-30-e2e-suites")} inline /></div>
-          <div><Markdown text={contentBlock(content, "source-github-xnmp-tableau-frog-https-github")} inline /></div>
+          <div><Markdown {...bindBlock(content, "materialssvelte-5-typescript-tauri-v2")} inline /></div>
+          <div><Markdown {...bindBlock(content, "vintage2026-active")} inline /></div>
+          <div><Markdown {...bindBlock(content, "scale1m-rows-100ms-29-unit-30-e2e-suites")} inline /></div>
+          <div><Markdown {...bindBlock(content, "source-github-xnmp-tableau-frog-https-github")} inline /></div>
         </section>
 
       </main>
