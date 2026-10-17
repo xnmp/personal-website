@@ -1,22 +1,21 @@
-import type { Metadata } from "next";
-import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature, ProjectMeta, ProjectKicker, Folio } from "@/components/notebook";
-import { Screen, Key } from "@/components/rack";
+import { Feature, Features, Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Markdown } from "@/components/notebook/Markdown";
+import { Key, Screen } from "@/components/rack";
+import { contentBlock, contentField } from "@/lib/content";
+import { readContent } from "@/lib/content.server";
 
-export const metadata: Metadata = {
-  title: "Ballast: a mood diary made of markdown files",
-  description:
-    "A local-first mood diary for desktop and Android. Each entry is a markdown file with YAML frontmatter, and a hand-edited file that no longer parses is kept byte for byte.",
-};
+const content = readContent("projects/ballast");
+
+export const metadata = contentField<import("next").Metadata>(content, "metadata");
 
 export default function Page() {
   return (
     <>
       <RunningHead
-        brand="chong"
         meta={<ProjectMeta slug="ballast" />}
         nav={
           <>
-            <Key href="/">← all projects</Key>
+            <Key href="/"><Markdown text={contentBlock(content, "all-projects")} inline /></Key>
           </>
         }
       />
@@ -25,221 +24,106 @@ export default function Page() {
         <section className="detail-hero">
           <div>
             <ProjectKicker slug="ballast" />
-            <h1>A mood diary that keeps every entry as a plain markdown file.</h1>
-            <p>
-              The tagline in the README is “The weight that keeps a ship stable while it
-              changes course.” I use it the way I used Daylio: open it, pick one of five
-              moods, tick a few activities, write something if I feel like it.
-            </p>
-            <p>
-              The data is a folder of files I can grep and sync with Syncthing. It runs on the
-              desktop through Tauri 2 and on my phone as an Android app. The source is private.
-            </p>
+            <h1><Markdown text={contentBlock(content, "headline")} inline /></h1>
+            <Markdown text={contentBlock(content, "the-tagline-in-the-readme-is-the-weight-that-keeps-a-ship")} />
+            <Markdown text={contentBlock(content, "the-data-is-a-folder-of-files-i-can-grep-and-sync-with-syn")} />
           </div>
           <div>
             <Screen art="/screens/ballast.png" tone="olive" />
             <Tags>
-              <Tag>svelte 5</Tag>
-              <Tag>tauri 2</Tag>
-              <Tag>kotlin</Tag>
-              <Tag>local-first</Tag>
+              <Tag><Markdown text={contentBlock(content, "svelte-5")} inline /></Tag>
+              <Tag><Markdown text={contentBlock(content, "tauri-2")} inline /></Tag>
+              <Tag><Markdown text={contentBlock(content, "kotlin")} inline /></Tag>
+              <Tag><Markdown text={contentBlock(content, "local-first")} inline /></Tag>
             </Tags>
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker">What it is</div>
-            <h2>Daylio’s loop, minus the account</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "what-it-is")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "daylio-s-loop-minus-the-account")} inline /></h2>
           </div>
           <div>
-            <p>
-              Each entry has a timestamp, one of five moods (rad, good, meh, bad, awful), a list of
-              activities and a free-text note. Activities are mine to define at runtime. The
-              five-step mood scale is the one fixed vocabulary, which I took from Daylio on
-              purpose.
-            </p>
-            <p>
-              The bottom nav is Entries, a plus button, Calendar and More. Entries are paged by
-              month. Several entries on one day are normal, since I log a morning and an evening.
-            </p>
-            <p>
-              The app does no stats, goals, streaks or reminders. The bar for adding anything is
-              whether I would actually use it.
-            </p>
+            <Markdown text={contentBlock(content, "each-entry-has-a-timestamp-one-of-five-moods-rad-good-meh")} />
+            <Markdown text={contentBlock(content, "the-bottom-nav-is-entries-a-plus-button-calendar-and-more")} />
+            <Markdown text={contentBlock(content, "the-app-does-no-stats-goals-streaks-or-reminders")} />
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker">The data</div>
-            <h2>One file per entry</h2>
-            <p className="aside-note">
-              Layout from README.md and docs/rewrite-v1.md. The note and activity ids below are
-              placeholders, not one of my entries.
-            </p>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "the-data")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "one-file-per-entry")} inline /></h2>
+            <Markdown text={contentBlock(content, "layout-from-readme")} paragraphClassName="aside-note" />
           </div>
           <div>
             <Plate
-              figure="FIG. 1 · BallastData/"
-              caption="The filename is the authority on when an entry happened, so one directory listing is enough to build the month index."
+              figure={contentBlock(content, "figure-fig-1-ballastdata")}
+              caption={contentBlock(content, "caption-the-filename-is-the-authority-on-when-an-entry-hap")}
             >
-              <pre>{`BallastData/
-  entries/2026-07-27_1005.md
-  activities.json    # [{ id, name, icon, archived? }]
-  briefs/            # optional, written by something else
-  .ballast/          # recovery journals, normally empty
-
---- entries/2026-07-27_1005.md ---
----
-id: "entry-1fdd93a0-…"
-at: "2026-07-27T10:05"
-mood: "good"
-activities:
-  - "walk"
-  - "reading"
----
-Placeholder note text, kept verbatim.`}</pre>
+              <Markdown text={contentBlock(content, "code-ballastdata-entries-2026-07-27-1005-md-activities-jso")} />
             </Plate>
-            <p>
-              Moods are stored by name so a grep for <code>{`mood: "awful"`}</code> works. Activities
-              are stored by stable id, so renaming one in the settings changes how old entries
-              display without touching their files. Entries have their own opaque id, separate
-              from the filename, so changing an entry’s time does not change its identity.
-            </p>
+            <Markdown text={contentBlock(content, "moods-are-stored-by-name-so-a-grep-for-mood-awful-works")} />
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker">Technical choices</div>
-            <h2>Treating the files as something other tools will edit</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "technical-choices")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "treating-the-files-as-something-other-tools-will-edit")} inline /></h2>
           </div>
           <div>
             <Features>
-              <Feature label="Parsers never throw">
-                <code>parseEntry</code> in <code>src/lib/persistence/entryFile.ts</code> falls back
-                to the filename for the time and treats the whole file as the note when the
-                frontmatter will not parse. A file I broke by hand stays readable and is written
-                back unchanged.
-              </Feature>
-              <Feature label="Staged Daylio import">
-                <code>scripts/import-real.ts</code> refuses a target folder that already exists.
-                The import is staged and verified, then made visible, so it cannot overwrite a
-                diary. It prints counts only, never entry text.
-              </Feature>
-              <Feature label="Ports and adapters">
-                A pure domain, a framework-free application layer, and one{" "}
-                <code>StoragePort</code> with memory, Tauri filesystem and Android SAF
-                implementations. One shared contract suite runs against all of them.
-              </Feature>
-              <Feature label="Custom Tauri plugins">
-                Three in-repo plugins, each Rust plus Kotlin: <code>data-folder</code> (the Android
-                Storage Access Framework), <code>brief-notifications</code> and{" "}
-                <code>app-update</code>.
-              </Feature>
-              <Feature label="Daily brief via WorkManager">
-                Something else can drop a markdown brief and a <code>latest.json</code> into a
-                synced <code>briefs/</code> folder. Android checks it about every 15 minutes with
-                WorkManager, verifies the SHA-256 in the manifest, and posts a notification.
-              </Feature>
-              <Feature label="Feedback to GitHub issues">
-                The More screen files bugs and feature requests as GitHub issues. The token stays on
-                the machine, outside the synced folder, and a screenshot upload is rolled back if
-                the issue fails to create.
-              </Feature>
+              <Feature label={contentBlock(content, "label-parsers-never-throw")}><Markdown text={contentBlock(content, "parseentry-in-src-lib-persistence-entryfile")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-staged-daylio-import")}><Markdown text={contentBlock(content, "scripts-import-real")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-ports-and-adapters")}><Markdown text={contentBlock(content, "a-pure-domain-a-framework-free-application-layer-and-one-s")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-custom-tauri-plugins")}><Markdown text={contentBlock(content, "three-in-repo-plugins-each-rust-plus-kotlin-data-folder-th")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-daily-brief-via-workmanager")}><Markdown text={contentBlock(content, "something-else-can-drop-a-markdown-brief-and-a-latest")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-feedback-to-github-issues")}><Markdown text={contentBlock(content, "the-more-screen-files-bugs-and-feature-requests-as-github")} inline /></Feature>
             </Features>
-            <p>
-              Writes go through a temporary file and a rename on desktop, and a
-              temporary-and-backup swap on Android. Creating a new entry uses exclusive create, so
-              a stale directory listing cannot make it overwrite a file that Syncthing just
-              delivered. A malformed <code>activities.json</code> makes loading and saving fail
-              visibly instead of being treated as a first run.
-            </p>
+            <Markdown text={contentBlock(content, "writes-go-through-a-temporary-file-and-a-rename-on-desktop")} />
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker">Verified numbers</div>
-            <h2>What the last release recorded</h2>
-            <p className="aside-note">
-              From docs/handover-2026-10-02-release.txt and the git log. Counts are as of release
-              0.3.5.
-            </p>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "verified-numbers")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "what-the-last-release-recorded")} inline /></h2>
+            <Markdown text={contentBlock(content, "from-docs-handover-2026-10-02-release")} paragraphClassName="aside-note" />
           </div>
           <div>
             <ul>
-              <li>133 commits between 2026-07-05 and 2026-10-02.</li>
-              <li>
-                599 unit tests and 102 browser e2e tests passed for 0.3.5, plus Rust formatting,
-                tests and Clippy, Android plugin tests, and real-emulator keyboard tests in CI.
-              </li>
-              <li>
-                The signed Android bundle for 0.3.5 is 21,009,953 bytes and went to the Google Play
-                internal testing track.
-              </li>
-              <li>
-                A CI gate measures idle background behaviour on an API 35 emulator: it fails if the
-                app uses more than a small CPU allowance, touches the network, renders more than
-                three frames or holds wake locks over 250 ms while backgrounded.
-              </li>
+              <li><Markdown text={contentBlock(content, "133-commits-between-2026-07-05-and-2026-10-02")} inline /></li>
+              <li><Markdown text={contentBlock(content, "599-unit-tests-and-102-browser-e2e-tests-passed-for-0")} inline /></li>
+              <li><Markdown text={contentBlock(content, "the-signed-android-bundle-for-0")} inline /></li>
+              <li><Markdown text={contentBlock(content, "a-ci-gate-measures-idle-background-behaviour-on-an-api-35")} inline /></li>
             </ul>
-            <p>
-              Version 1 was a much larger personal research instrument, and the rewrite removed most
-              of it. It is still on the <code>pre-rewrite</code> git tag, and its snapshot document
-              records 104 passing tests (9 test files) at that point.
-            </p>
+            <Markdown text={contentBlock(content, "version-1-was-a-much-larger-personal-research-instrument-a")} />
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker">Rough edges</div>
-            <h2>The rewrite that cut scope, and what is unsettled</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "rough-edges")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "the-rewrite-that-cut-scope-and-what-is-unsettled")} inline /></h2>
           </div>
           <div>
-            <p>
-              <code>docs/rewrite-v1.md</code> is the plan for the rewrite. It lists what v2
-              leaves out: stats, goals, streaks, reminders, photos, search, encryption and sync.
-              Sync is Syncthing’s job. The old experiments, protocols and job board were removed
-              outright.
-            </p>
+            <Markdown text={contentBlock(content, "docs-rewrite-v1")} />
             <ul>
-              <li>
-                Edits are checked against a revision just before they are written, but the storage
-                providers have no atomic compare-and-swap. A writer that lands in the gap after
-                that check can still win.
-              </li>
-              <li>
-                The last release reached Play’s internal testing track. The handover says
-                installation on a physical phone was not observed during that session.
-              </li>
-              <li>
-                The source is private, so the numbers above are mine and nobody else can rerun them.
-              </li>
+              <li><Markdown text={contentBlock(content, "edits-are-checked-against-a-revision-just-before-they-are")} inline /></li>
+              <li><Markdown text={contentBlock(content, "the-last-release-reached-play-s-internal-testing-track")} inline /></li>
+              <li><Markdown text={contentBlock(content, "the-source-is-private-so-the-numbers-above-are-mine-and-no")} inline /></li>
             </ul>
-            <OpenQuestion>
-              Stats are deferred, not ruled out, and the bottom nav has room for a slot. I have no
-              rule yet for what “missed in practice” means, so I do not know when
-              one would get built.
-            </OpenQuestion>
+            <OpenQuestion><Markdown text={contentBlock(content, "stats-are-deferred-not-ruled-out-and-the-bottom-nav-has-ro")} inline /></OpenQuestion>
           </div>
         </section>
 
         <section className="colophon">
-          <div>
-            Materials<strong>Svelte 5, Tauri 2, Rust, Kotlin</strong>
-          </div>
-          <div>
-            Vintage<strong>July 2026 to now</strong>
-          </div>
-          <div>
-            Status<strong>Active, v0.3.5</strong>
-          </div>
-          <div>
-            Source<strong>private</strong>
-          </div>
+          <div><Markdown text={contentBlock(content, "materialssvelte-5-tauri-2-rust-kotlin")} inline /></div>
+          <div><Markdown text={contentBlock(content, "vintagejuly-2026-to-now")} inline /></div>
+          <div><Markdown text={contentBlock(content, "statusactive-v0")} inline /></div>
+          <div><Markdown text={contentBlock(content, "sourceprivate")} inline /></div>
         </section>
 
       </main>

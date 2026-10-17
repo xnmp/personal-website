@@ -1,4 +1,4 @@
-import { ledFor, type Status } from "@/data/projects";
+import { ledFor, type Status } from "@/lib/project";
 
 type Props = { className?: string } & (
   | { status: Status; color?: never; on?: never; blink?: never }

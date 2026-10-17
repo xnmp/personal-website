@@ -564,26 +564,37 @@
   color: var(--ink-2);
   tab-size: 2;
 }
-.tf-code .cm {
+.tf-code .cm,
+.tf-code .hljs-comment {
   color: var(--ink-3);
   font-style: italic;
 }
-.tf-code .kw {
+.tf-code .kw,
+.tf-code .hljs-keyword {
   color: var(--violet);
 }
-.tf-code .fn {
+.tf-code .fn,
+.tf-code .hljs-title,
+.tf-code .hljs-built_in,
+.tf-code .hljs-variable {
   color: var(--blue);
 }
-.tf-code .str {
+.tf-code .str,
+.tf-code .hljs-string {
   color: var(--aqua);
 }
-.tf-code .num {
+.tf-code .num,
+.tf-code .hljs-number {
   color: var(--yellow);
 }
-.tf-code .pn {
+.tf-code .pn,
+.tf-code .hljs-attr,
+.tf-code .hljs-params {
   color: var(--ink);
 }
-.tf-code .op {
+.tf-code .op,
+.tf-code .hljs-operator,
+.tf-code .hljs-literal {
   color: var(--magenta);
 }
 

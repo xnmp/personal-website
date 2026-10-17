@@ -6,7 +6,7 @@ import { about } from "../src/data/about";
 import { drawnBounds } from "../src/lib/drawn-bounds";
 import recorded from "../src/data/screen-bounds.json";
 
-// Adding a project is an entry in src/data/projects.ts, its page under
+// Adding a project is a file in content/projects/, its page under
 // src/app/(rack)/p/<slug>/ and its 1-bit art in public/screens/ (then
 // `bun run screens:bounds`). These keep those in step, so a project added
 // or removed fails here with its name rather than as a broken page.

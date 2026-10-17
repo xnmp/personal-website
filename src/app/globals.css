@@ -1476,7 +1476,7 @@ pre code {
   object-fit: cover;
 }
 
-/* a placeholder section (src/data/about.ts, draft: true), only seen in dev */
+/* a placeholder section (content/about.md, draft: true), only seen in dev */
 .section[data-draft] {
   opacity: 0.72;
 }

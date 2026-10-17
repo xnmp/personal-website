@@ -1,34 +1,32 @@
 import type { Metadata } from "next";
 import { RunningHead } from "@/components/notebook";
-import { Rich } from "@/components/notebook/Rich";
+import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
 import { about, publishable } from "@/data/about";
+import { contentField } from "@/lib/content";
+import { readContent } from "@/lib/content.server";
 
 export const metadata: Metadata = {
-  title: "About · chong",
+  ...contentField<Metadata>(readContent("about"), "metadata"),
   description: about.intro[0],
 };
 
 // drafts are for writing in dev; a production build leaves them out
 const drafts = process.env.NODE_ENV !== "production";
 
-/** The about page. Its content lives in src/data/about.ts. */
+/** The about page. Its content lives in content/about.md. */
 export default function AboutPage() {
   const sections = publishable(about.sections, drafts);
   const facts = publishable(about.facts, drafts);
   return (
     <>
-      <RunningHead brand="chong" meta="about" nav={<Key href="/">← all projects</Key>} />
+      <RunningHead meta="about" nav={<Key href="/">← all projects</Key>} />
       <main id="content" className="rack-main" tabIndex={-1}>
         <section className={about.portrait ? "detail-hero" : "detail-hero solo"}>
           <div>
             <div className="kicker">{about.kicker}</div>
             <h1>{about.headline}</h1>
-            {about.intro.map((p, i) => (
-              <p key={i}>
-                <Rich text={p} />
-              </p>
-            ))}
+            <Markdown text={about.intro.join("\n\n")} />
           </div>
           {about.portrait ? (
             <Screen label={about.portrait.alt} glass={false}>
@@ -47,17 +45,11 @@ export default function AboutPage() {
               </div>
               <h2>{s.heading}</h2>
               {s.aside ? (
-                <p className="aside-note">
-                  <Rich text={s.aside} />
-                </p>
+                <Markdown text={s.aside} paragraphClassName="aside-note" />
               ) : null}
             </div>
             <div>
-              {s.body.map((p, i) => (
-                <p key={i}>
-                  <Rich text={p} />
-                </p>
-              ))}
+              <Markdown text={s.body.join("\n\n")} />
             </div>
           </section>
         ))}
@@ -67,7 +59,7 @@ export default function AboutPage() {
             <div key={f.label}>
               {f.label}
               <strong>
-                <Rich text={f.value} />
+                <Markdown text={f.value} inline />
               </strong>
             </div>
           ))}

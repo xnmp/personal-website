@@ -1,23 +1,23 @@
+import { Feature, Features, Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Markdown } from "@/components/notebook/Markdown";
+import { Key, Screen } from "@/components/rack";
+import { contentBlock, contentField } from "@/lib/content";
+import { readContent } from "@/lib/content.server";
 import Image from "next/image";
-import { RunningHead, Tags, Tag, OpenQuestion, Plate, Features, Feature, Folio, ProjectMeta, ProjectKicker } from "@/components/notebook";
-import { Cap, Screen, Key } from "@/components/rack";
 
-export const metadata = {
-  title: "Tableau Frog: point at a difference, learn if it's real",
-  description:
-    "A keyboard-first, variables-first data explorer: a statistically rigorous contrast lens (z-test + FDR), a from-scratch random forest, and an AI Investigate mode that emits falsifiable hypotheses.",
-};
+const content = readContent("projects/tableau-frog");
+
+export const metadata = contentField<import("next").Metadata>(content, "metadata");
 
 export default function TableauFrogPage() {
   return (
     <>
       <RunningHead
-        brand="chong"
         meta={<ProjectMeta slug="tableau-frog" />}
         nav={
           <>
-            <Key href="/">← all projects</Key>
-            <Key href="/tableau-frog">the showcase →</Key>
+            <Key href="/"><Markdown text={contentBlock(content, "all-projects")} inline /></Key>
+            <Key href="/tableau-frog"><Markdown text={contentBlock(content, "the-showcase")} inline /></Key>
           </>
         }
       />
@@ -26,142 +26,87 @@ export default function TableauFrogPage() {
         <section className="detail-hero">
           <div>
             <ProjectKicker slug="tableau-frog" />
-            <h1>Point at a difference; it tells you if it’s real.</h1>
-            <p>
-              A data explorer that inverts the usual workflow: you never pick a
-              chart type. You assign variables to axis slots and the chart kind is
-              inferred. Then the contrast lens does the part dashboards skip,
-              deciding statistically which differences deserve color.
-            </p>
+            <h1><Markdown text={contentBlock(content, "headline")} inline /></h1>
+            <Markdown text={contentBlock(content, "a-data-explorer-that-inverts-the-usual-workflow-you-never")} />
           </div>
           <div>
             <Screen art="/screens/tableau-frog.png" tone="olive" />
             <Tags>
-              <Tag>svelte 5</Tag>
-              <Tag>tauri v2</Tag>
-              <Tag>~154k LoC</Tag>
-              <Tag>2026, active</Tag>
+              <Tag><Markdown text={contentBlock(content, "svelte-5")} inline /></Tag>
+              <Tag><Markdown text={contentBlock(content, "tauri-v2")} inline /></Tag>
+              <Tag><Markdown text={contentBlock(content, "154k-loc")} inline /></Tag>
+              <Tag><Markdown text={contentBlock(content, "2026-active")} inline /></Tag>
             </Tags>
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker">The lens</div>
-            <h2>Enrichment, with error control</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "the-lens")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "enrichment-with-error-control")} inline /></h2>
           </div>
           <div>
             <Plate
-              figure="FIG. 1 · Select anywhere, see everywhere"
-              caption="Fig. 1: a brushed selection recolors every panel by enrichment against the population; a two-proportion z-test with Benjamini–Hochberg correction greys out what isn't significant."
+              figure={contentBlock(content, "figure-fig-1-select-anywhere-see-everywhere")}
+              caption={contentBlock(content, "caption-fig-1-a-brushed-selection-recolors-every-panel-by")}
             >
               <Image
                 src="/tableau-frog/source-responders.webp"
-                alt="Tableau Frog contrast lens showing enrichment across linked panels"
+                alt={contentBlock(content, "alt-tableau-frog-contrast-lens-showing-enrichment-across-l")}
                 width={1280}
                 height={800}
                 style={{ width: "100%", height: "auto", display: "block" }}
               />
             </Plate>
-            <p style={{ marginTop: 20 }}>
-              Select a subset on any panel (a bar, a brushed range, a cell)
-              and every other panel becomes a comparison against the
-              population. Lenses compose with Shift (gestures AND together),
-              persist per dataset, and stay under 100ms end-to-end at a million
-              rows: the mask intersection runs in-place on typed arrays, 18ms
-              for an AND of two selections.
-            </p>
+            <Markdown text={contentBlock(content, "select-a-subset-on-any-panel-a-bar-a-brushed-range-a-cell")} paragraphStyle={{ marginTop: 20 }} />
           </div>
         </section>
 
 
         <section className="section">
           <div>
-            <div className="section-kicker">The assistant</div>
-            <h2>AI that has to show its work</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "the-assistant")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "ai-that-has-to-show-its-work")} inline /></h2>
           </div>
           <div>
             <Plate
-              figure="FIG. 2 · Hypothesis cards"
-              caption="Fig. 2: Investigate mode turns a selection into falsifiable hypothesis cards, each with a one-click test projection and a persisted verdict trail."
+              figure={contentBlock(content, "figure-fig-2-hypothesis-cards")}
+              caption={contentBlock(content, "caption-fig-2-investigate-mode-turns-a-selection-into-fals")}
             >
               <Image
                 src="/tableau-frog/investigate-cards.webp"
-                alt="AI Investigate mode generating hypothesis cards from a data selection"
+                alt={contentBlock(content, "alt-ai-investigate-mode-generating-hypothesis-cards-from-a")}
                 width={1280}
                 height={800}
                 style={{ width: "100%", height: "auto", display: "block" }}
               />
             </Plate>
-            <p style={{ marginTop: 20 }}>
-              <Cap inline>Ctrl+I</Cap> on a selection generates hypotheses. Each one is
-              phrased so the data can prove it wrong, has a one-click
-              projection that tests it, and gets its verdict recorded per dataset. The
-              privacy line is enforced by the architecture rather than by policy: only shape metadata
-              (column names, types, cardinalities) ever reaches the model; raw
-              rows cannot leave the machine, and the API key is stored outside
-              the exportable config.
-            </p>
+            <Markdown text={contentBlock(content, "kbdctrl-i-on-a-selection-generates-hypotheses")} paragraphStyle={{ marginTop: 20 }} />
             <Features>
-              <Feature label="Own random forest">
-                Deterministic, zero-dependency, pure TS, with permutation
-                importance, partial dependence, and OOB accuracy.
-              </Feature>
-              <Feature label="Plugin charts">
-                A documented <code>ChartPlugin</code> contract on{" "}
-                <code>window.tableauFrog</code>; custom chart kinds register at
-                runtime.
-              </Feature>
-              <Feature label="Eval-free expressions">
-                log, zscore, bucket, ternary, parsed and computed in one
-                columnar pass.
-              </Feature>
-              <Feature label="Domain-first">
-                27 pure-TS modules run identically in a plain browser; the Rust
-                shell only opens files.
-              </Feature>
+              <Feature label={contentBlock(content, "label-own-random-forest")}><Markdown text={contentBlock(content, "deterministic-zero-dependency-pure-ts-with-permutation-imp")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-plugin-charts")}><Markdown text={contentBlock(content, "a-documented-chartplugin-contract-on-window")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-eval-free-expressions")}><Markdown text={contentBlock(content, "log-zscore-bucket-ternary-parsed-and-computed-in-one-colum")} inline /></Feature>
+              <Feature label={contentBlock(content, "label-domain-first")}><Markdown text={contentBlock(content, "27-pure-ts-modules-run-identically-in-a-plain-browser-the")} inline /></Feature>
             </Features>
           </div>
         </section>
 
         <section className="section">
           <div>
-            <div className="section-kicker">The rough edges</div>
-            <h2>Open questions</h2>
+            <div className="section-kicker"><Markdown text={contentBlock(content, "the-rough-edges")} inline /></div>
+            <h2><Markdown text={contentBlock(content, "open-questions")} inline /></h2>
           </div>
           <div>
-            <OpenQuestion>
-              When non-significant differences are greyed out, do people stop
-              exploring, or start trusting what stays lit? The honest version
-              of this tool needs a study, not a hunch.
-            </OpenQuestion>
-            <OpenQuestion label="Open question II">
-              Inferred chart kinds remove the gallery-of-charts decision. But
-              power users eventually want to override the inference. Where does
-              the variables-first grammar put that escape hatch without
-              becoming the menu it replaced?
-            </OpenQuestion>
+            <OpenQuestion><Markdown text={contentBlock(content, "when-non-significant-differences-are-greyed-out-do-people")} inline /></OpenQuestion>
+            <OpenQuestion label={contentBlock(content, "label-open-question-ii")}><Markdown text={contentBlock(content, "inferred-chart-kinds-remove-the-gallery-of-charts-decision")} inline /></OpenQuestion>
           </div>
         </section>
 
         <section className="colophon">
-          <div>
-            Materials<strong>Svelte 5, TypeScript, Tauri v2</strong>
-          </div>
-          <div>
-            Vintage<strong>2026, active</strong>
-          </div>
-          <div>
-            Scale<strong>1M rows &lt; 100ms · 29 unit + 30 e2e suites</strong>
-          </div>
-          <div>
-            Source
-            <strong>
-              <a href="https://github.com/xnmp/tableau-frog">
-                github/xnmp/tableau-frog
-              </a>
-            </strong>
-          </div>
+          <div><Markdown text={contentBlock(content, "materialssvelte-5-typescript-tauri-v2")} inline /></div>
+          <div><Markdown text={contentBlock(content, "vintage2026-active")} inline /></div>
+          <div><Markdown text={contentBlock(content, "scale1m-rows-100ms-29-unit-30-e2e-suites")} inline /></div>
+          <div><Markdown text={contentBlock(content, "source-github-xnmp-tableau-frog-https-github")} inline /></div>
         </section>
 
       </main>

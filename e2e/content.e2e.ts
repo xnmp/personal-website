@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { STYLES } from "../src/lib/styles";
 
-// The projects are data (src/data/projects.ts): adding one, removing one or
+// The projects are data (content/projects/*.md): adding one, removing one or
 // featuring another must never need a style redrawn. These tests change how
 // many cards the page holds, in the page itself, and check that every style
 // still lays them out: the home row as one row of whole cards, the shelves

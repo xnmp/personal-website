@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { projects } from "@/data/projects";
-import { isEditable, modalOpen } from "@/lib/page-keys";
-import { rank } from "@/lib/search";
 import { Key } from "@/components/rack/Key";
 import { Screen } from "@/components/rack/Screen";
+import { isEditable, modalOpen } from "@/lib/page-keys";
+import type { Project } from "@/lib/project";
+import { rank } from "@/lib/search";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
 const OPEN_EVENT = "nb-open-index";
 export const THEME_EVENT = "nb-themechange";
@@ -44,7 +44,7 @@ export function toggleTheme() {
  * and focus goes back to wherever it was). Open with `/` or Ctrl/Cmd+K; `t`
  * outside a text field cycles the theme.
  */
-export function CommandIndex() {
+export function CommandIndex({ projects }: { projects: readonly Project[] }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [cursor, setCursor] = useState(0);
@@ -73,7 +73,7 @@ export function CommandIndex() {
     returnTo.current = null;
   };
 
-  const matches = useMemo(() => rank(projects, query), [query]);
+  const matches = useMemo(() => rank(projects, query), [projects, query]);
   const listId = useId();
   const optionId = (slug: string) => `${listId}-${slug}`;
   const active = matches[cursor];

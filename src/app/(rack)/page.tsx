@@ -1,9 +1,13 @@
-import Link from "next/link";
-import { Cap, Key, ModuleCard, RackKeys, Prop } from "@/components/rack";
-import { Masthead } from "@/components/landing/Masthead";
 import { ExplorerWindow } from "@/components/landing/ExplorerWindow";
+import { Masthead } from "@/components/landing/Masthead";
 import { ShowcaseCard } from "@/components/landing/ShowcaseCard";
+import { Markdown } from "@/components/notebook/Markdown";
+import { Key, ModuleCard, Prop, RackKeys } from "@/components/rack";
 import { FEATURED, FLAGSHIP, project, projects, shelves } from "@/data/projects";
+import { contentBlock, contentField } from "@/lib/content";
+import { readContent } from "@/lib/content.server";
+
+const content = readContent("home");
 
 // Atlas clips a viewport-sized sky to each text block; other styles hide it.
 function CopySky() {
@@ -21,7 +25,7 @@ export default function Home() {
   return (
     <>
       <RackKeys />
-      <Masthead brand="chong" tagline="tools, games, and the agents that play them" />
+      <Masthead brand={contentField<string>(content, "brand")} tagline={contentField<string>(content, "tagline")} />
       <main id="content" className="rack-main" tabIndex={-1}>
         {/* the first screen, composed as the style's mock (globals.css: home landing) */}
         <div className="landing">
@@ -32,15 +36,11 @@ export default function Home() {
                 <CopySky />
                 <span className="launchpad-title-ink">{flagship.title}</span>
               </h2>
-              <p className="launchpad-pitch"><CopySky />A keyboard-first file manager.</p>
-              <p className="launchpad-call"><CopySky />Alpha testers wanted.</p>
+              <p className="launchpad-pitch"><CopySky /><Markdown text={contentBlock(content, "a-keyboard-first-file-manager")} inline /></p>
+              <p className="launchpad-call"><CopySky /><Markdown text={contentBlock(content, "alpha-testers-wanted")} inline /></p>
               <div className="keys launchpad-keys">
-                <Key href={`${flagship.href}#alpha`} tone="signal" size="lg" ariaLabel={`Join the ${flagship.title} alpha`}>
-                  Join the alpha <span className="key-arrow" aria-hidden>{"\u2192"}</span>
-                </Key>
-                <Key href={`${flagship.href}#live`} size="lg">
-                  Try it live
-                </Key>
+                <Key href={`${flagship.href}#alpha`} tone="signal" size="lg" ariaLabel={`Join the ${flagship.title} alpha`}><Markdown text={contentBlock(content, "join-the-alpha-span-class-key-arrow")} inline /></Key>
+                <Key href={`${flagship.href}#live`} size="lg"><Markdown text={contentBlock(content, "try-it-live")} inline /></Key>
               </div>
             </div>
             <a href={flagship.href} className="launchpad-window" data-rack-stop aria-label={`${flagship.title} details`}>
@@ -48,9 +48,7 @@ export default function Home() {
             </a>
           </section>
           <section className="showcase" aria-labelledby="showcase-title">
-            <h2 id="showcase-title" className="showcase-title">
-              Projects
-            </h2>
+            <h2 id="showcase-title" className="showcase-title"><Markdown text={contentBlock(content, "projects")} inline /></h2>
             <ul className="showcase-row">
               {featured.map((p) => (
                 <li key={p.slug}>
@@ -63,19 +61,10 @@ export default function Home() {
 
         <div className="hero-copy faceplate intro">
           <Prop kind="pin" />
-          <div className="silk">Field notes, 2026</div>
-          <h2 className="title">
-            Tools I use every day, <span className="soft">and agents for the games I grew up on.</span>
-          </h2>
-          <p className="lede">
-            A file manager, a markdown editor, a mood diary and the bar at the
-            top of my screen. Next to them are agents learning Brood War, Magic
-            and our family card game. Each sheet is one project, with the
-            numbers I’ve measured and <b>the parts that didn’t work</b>.
-          </p>
-          <p className="hero-more">
-            <Link href="/about" className="text-action">More about me</Link>
-          </p>
+          <div className="silk"><Markdown text={contentBlock(content, "field-notes-2026")} inline /></div>
+          <h2 className="title"><Markdown text={contentBlock(content, "tools-i-use-every-day-spanand-agents-for-the-games-i-grew")} inline /></h2>
+          <Markdown text={contentBlock(content, "a-file-manager-a-markdown-editor-a-mood-diary-and-the-bar")} paragraphClassName="lede" />
+          <Markdown text={contentBlock(content, "linkmore-about-me-href-about-class-text-action")} paragraphClassName="hero-more" />
         </div>
 
         {mounted.map(({ shelf, items }) => {
@@ -102,30 +91,11 @@ export default function Home() {
       <footer className="statusline">
         {/* each key with what it does, unbroken, its separator trailing it (the
             spaces explicit: one before an entity on its line is dropped) */}
-        <span className="sl-keys fine-only">
-          <span>
-            <Cap inline>j</Cap>{" "}<Cap inline>k</Cap>{" "}projects&nbsp;&nbsp;·
-          </span>{" "}
-          <span>
-            <Cap inline>↵</Cap>{" "}open&nbsp;&nbsp;·
-          </span>{" "}
-          <span>
-            <Cap inline>/</Cap>{" "}search&nbsp;&nbsp;·
-          </span>{" "}
-          <span>
-            <Cap inline>t</Cap>{" "}theme
-          </span>
-        </span>
-        <span>
-          <a href="https://github.com/xnmp">github/xnmp</a>
-        </span>
-        <span>
-          <a href="mailto:chonw@proton.me">chonw@proton.me</a>
-        </span>
-        <span>
-          screens themed by <a href="https://github.com/xnmp/dotfiles">my dotfiles</a>
-        </span>
-        <span>art generated &amp; composited for this site</span>
+        <span className="sl-keys fine-only"><Markdown text={contentBlock(content, "spankbdj-kbdk-projects-spankbd-open-spankbd-search-spankbd")} inline /></span>
+        <span><Markdown text={contentBlock(content, "github-xnmp-https-github")} inline /></span>
+        <span><Markdown text={contentBlock(content, "chonw-proton")} inline /></span>
+        <span><Markdown text={contentBlock(content, "screens-themed-by-my-dotfiles-https-github")} inline /></span>
+        <span><Markdown text={contentBlock(content, "art-generated-composited-for-this-site")} inline /></span>
       </footer>
     </>
   );
