@@ -1,5 +1,5 @@
 import { scrollBehavior } from "@/lib/motion";
-import { modalOpen } from "@/lib/page-keys";
+import { overlayOpen } from "@/lib/page-keys";
 
 /**
  * The launch page's interaction model as one small external store:
@@ -77,7 +77,7 @@ const set = (next: ReadonlySet<string>) => {
 };
 const onDown = (e: KeyboardEvent) => {
   // under a modal (the index, the screenshot viewer) Ctrl+P is not the page's
-  if (isQuickOpen(e) && !modalOpen()) {
+  if (isQuickOpen(e) && !overlayOpen()) {
     e.preventDefault();
     powerOnDemo();
   }

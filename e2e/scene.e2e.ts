@@ -7,6 +7,10 @@ import { cssLayersShown, root } from "./scene-helpers";
  * the visitor must end up with a settled, drawn scene.
  */
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("nb-style", "paper"));
+});
+
 test("under reduced motion there is no 3D scene, and the CSS scene stands still", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");

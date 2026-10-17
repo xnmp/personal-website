@@ -78,7 +78,7 @@ keyboard handling and reading-page components remain shared.
 - **Registry** (`lib/styles.ts`, pure, tested): the shipped styles, in menu
   order. Only a style listed there can be chosen; the head script in
   `app/layout.tsx` applies the stored choice (`localStorage["nb-style"]`)
-  before paint and refuses anything unlisted, falling back to `paper`.
+  before paint and refuses anything unlisted, falling back to `margin` (Margin Index).
 - **Tokens**: Paper Diorama's are the base (`kit.css`: `:root` for night,
   `:root[data-rice="paper"]` for day). Every other raster style overrides all of them
   in `src/app/styles/<style>.css`, under `:root[data-style="<id>"]` (night)
@@ -121,11 +121,14 @@ keyboard handling and reading-page components remain shared.
 - **Type**: the three roles stay; a style may re-point `--font-display` at its
   own face, declared in `app/fonts.ts` with `preload: false`, so its file is
   only fetched when that style is worn.
-- **Menu** (`StyleMenu`, in the masthead's instruments beside the theme
-  key): a WAI-ARIA menu button whose menu lists the styles as
+- **Menus** (`ChoiceMenu`, used by `StyleMenu` and `ThemeMenu` in the masthead;
+  art direction and colour remain independent choices): WAI-ARIA menu
+  buttons listing their options as
   `menuitemradio` tiles, the chosen one the signal tile. The menu is a
   popover (`popover="auto"`), so the browser lays it over everything and
-  dismisses it on Escape or a click elsewhere. It is measured as it opens
+  dismisses it on Escape or a click elsewhere. Menus portal to the document
+  body so masthead-only surface tokens cannot remove their backing or ink.
+  Each is measured as it opens
   (`menuPlacement`, `lib/menu.ts`), placed in viewport coordinates on the side
   of its key with room, and constrained to scroll internally on short screens.
   A resize closes it. The keyboard opens it synchronously on the checked item (a
@@ -309,9 +312,11 @@ enforce it.
   Headings run h1 (page) → h2 (sections, home shelves) → h3 (items: home
   modules, feature tiles). A home module's link is named by its title and
   described by its one-line heading.
-- The theme key prints the theme's name beside its `t` legend, and "theme" on
-  touch; its accessible name carries both. `toggleTheme` announces the new
-  theme through a polite status region.
+- The theme key opens a radio menu of colour palettes; opening it leaves the
+  current palette unchanged. `setTheme` persists and announces a selection
+  through a polite status region. The `t` shortcut still cycles outside menus
+  and dialogs. Both menus share bounded placement, selection, focus return
+  and keyboard behavior through `ChoiceMenu`.
 - `.fine-only`/`.coarse-only` hide with `!important`: they are visibility
   utilities, and no component display rule may bring hidden copy back.
 - Type has three roles (Newsreader headlines, Archivo body, JetBrains Mono

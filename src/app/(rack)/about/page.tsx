@@ -21,7 +21,7 @@ export default function AboutPage() {
   return (
     <>
       <RunningHead meta="about" nav={<Key href="/">← all projects</Key>} />
-      <main id="content" className="rack-main" tabIndex={-1}>
+      <main id="content" className="rack-main about-page" tabIndex={-1}>
         <section className={about.portrait ? "detail-hero" : "detail-hero solo"}>
           <div>
             <div className="kicker">{about.kicker}</div>

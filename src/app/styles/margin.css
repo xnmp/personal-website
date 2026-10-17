@@ -6,6 +6,9 @@
 .instruments .margin-projects { display: none; }
 
 :root[data-style="margin"] {
+  --margin-radius: 8px;
+  --margin-panel: color-mix(in srgb, var(--paper-warm) 85%, var(--paper));
+  --margin-shadow: 0 3px 18px color-mix(in srgb, var(--shadow) 12%, transparent);
   --font-print: var(--font-inter);
   --font-display: var(--font-newsreader);
   --print: var(--ink);
@@ -159,7 +162,8 @@
 :root[data-style="margin"] .margin-entry .margin-stack { margin-top: 9px; font: 11px/1.6 var(--font-mono), monospace; color: var(--print-soft); }
 :root[data-style="margin"] .margin-project[data-featured] { grid-template-columns: 46px minmax(0, 1fr) minmax(0, 49%); margin-bottom: 4px; }
 :root[data-style="margin"] .margin-feature { padding-top: 0; }
-:root[data-style="margin"] .margin-capture { display: block; border: 1px solid var(--rule); }
+:root[data-style="margin"] .margin-capture { display: block; border: 1px solid var(--rule); border-radius: var(--margin-radius); overflow: hidden; }
+:root[data-style="margin"] .margin-capture { box-shadow: var(--margin-shadow); }
 :root[data-style="margin"] .margin-capture img { width: 100%; height: auto; }
 
 /* Existing page primitives keep their contents and behaviour, with plain surfaces. */
@@ -167,15 +171,15 @@
 :root[data-style="margin"] :is(.faceplate, .detail-hero, .section, .colophon, .folio, .blank-leaf, .statusline, .key)::before,
 :root[data-style="margin"] :is(.faceplate, .key)::after { content: none; }
 :root[data-style="margin"] :is(.prop, .screen-glass, .screen-edge, .tier-cut) { display: none; }
-:root[data-style="margin"] .key { background: transparent; border: 1px solid var(--rule); border-radius: 2px; padding: 8px 14px; box-shadow: none; }
+:root[data-style="margin"] .key { background: transparent; border: 1px solid var(--rule); border-radius: 6px; padding: 8px 14px; box-shadow: none; }
 :root[data-style="margin"] .instruments .key { border: 0; border-radius: 0; }
 :root[data-style="margin"] .key:hover { border-color: var(--signal); color: var(--signal); }
 :root[data-style="margin"] .key[data-tone="signal"] { border-color: var(--signal); }
 :root[data-style="margin"] .key > span { transform: none; }
 :root[data-style="margin"] .key:focus-visible,
 :root[data-style="margin"] [data-rack-stop]:focus-visible { outline: 2px solid var(--signal); outline-offset: 5px; }
-:root[data-style="margin"] .style-menu.faceplate { width: 220px; padding: 8px; border: 1px solid var(--rule); background: var(--paper); box-shadow: 0 8px 28px #00000012; }
-:root[data-style="margin"] .style-menu .key { border: 0; min-height: 40px; font: 14px/1.5 var(--font-print), sans-serif; }
+:root[data-style="margin"] .style-menu.faceplate { width: 220px; padding: 8px; border: 1px solid var(--rule); border-radius: 10px; background: var(--paper); box-shadow: 0 8px 28px #00000012; }
+:root[data-style="margin"] .style-menu .key { border: 0; border-radius: 6px; min-height: 40px; font: 14px/1.5 var(--font-print), sans-serif; }
 :root[data-style="margin"] .style-menu .key:hover,
 :root[data-style="margin"] .style-menu [aria-checked="true"] { background: var(--paper-warm); }
 :root[data-style="margin"] .rack-main > :is(.section, .detail-hero, .launch-hero, .colophon, .blank-leaf) { margin: 0; padding: 0 0 44px; }
@@ -188,10 +192,41 @@
 :root[data-style="margin"] .launch-hero { grid-template-columns: minmax(0, 1fr); gap: 28px; }
 :root[data-style="margin"] :is(.launch-copy, .launch-shot) { padding: 0; }
 :root[data-style="margin"] .launch-copy h1 { font-weight: 400; font-size: clamp(38px, 4.2vw, 58px); max-width: 19ch; }
-:root[data-style="margin"] .screen { padding: 0; border: 1px solid var(--rule); }
+:root[data-style="margin"] .screen { padding: 0; border: 1px solid var(--rule); border-radius: var(--margin-radius); }
+:root[data-style="margin"] .screen-face { border-radius: calc(var(--margin-radius) - 1px); }
 :root[data-style="margin"] .folio { grid-column: 2; padding: 24px 0; border-top: 1px solid var(--rule); }
 :root[data-style="margin"] .colophon .nowrap { white-space: normal; overflow-wrap: anywhere; }
-:root[data-style="margin"] :not(pre) > code { border-radius: 2px; background: var(--code-bg); }
+:root[data-style="margin"] :not(pre) > code { border-radius: 4px; background: var(--code-bg); }
+
+/* Reading pages feel like a kept notebook: inset paper, a clear title leaf,
+   numbered sections, and a little colour in the margin. */
+:root[data-style="margin"] .about-page { counter-reset: reading-section; }
+:root[data-style="margin"] .about-page > .detail-hero.solo {
+  padding: clamp(24px, 3vw, 40px); margin-bottom: 10px;
+  border: 1px solid var(--rule); border-radius: 14px;
+  background: var(--margin-panel); box-shadow: var(--margin-shadow);
+}
+:root[data-style="margin"] .about-page .detail-hero h1 {
+  font-size: clamp(34px, 3.4vw, 48px); max-width: 24ch; line-height: 1.12;
+  margin-bottom: 25px;
+}
+:root[data-style="margin"] .about-page .detail-hero .kicker { color: var(--signal); margin-bottom: 22px; }
+:root[data-style="margin"] .about-page .detail-hero p { font-size: 17px; line-height: 1.7; }
+:root[data-style="margin"] .about-page > .section {
+  counter-increment: reading-section; margin-top: 20px; padding: 28px;
+  border: 1px solid var(--rule); border-radius: 12px;
+  background: color-mix(in srgb, var(--margin-panel) 45%, var(--paper));
+}
+:root[data-style="margin"] .about-page .section-kicker { color: var(--signal); }
+:root[data-style="margin"] .about-page .section-kicker::before {
+  content: counter(reading-section, decimal-leading-zero) " / "; opacity: 0.75;
+}
+:root[data-style="margin"] .about-page .section h2 { font-weight: 500; font-size: 27px; }
+:root[data-style="margin"] .about-page .section p { font-size: 16px; line-height: 1.75; }
+:root[data-style="margin"] .about-page .section .aside-note { font-size: 13px; }
+:root[data-style="margin"] .about-page > .colophon {
+  margin-top: 28px; padding: 24px 0 0; border-top: 1px solid var(--rule);
+}
 
 @media (max-width: 1050px) {
   :root[data-style="margin"] .rack-inner { grid-template-columns: 140px minmax(0, 1fr); column-gap: 45px; }

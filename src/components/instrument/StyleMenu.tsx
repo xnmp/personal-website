@@ -1,7 +1,7 @@
 "use client";
 
-import { useId, useState, useSyncExternalStore, type KeyboardEvent } from "react";
-import { menuPlacement, nextItem } from "@/lib/menu";
+import { useSyncExternalStore } from "react";
+import { ChoiceMenu } from "./ChoiceMenu";
 import { DEFAULT_STYLE, STYLE_EVENT, STYLE_KEY, STYLES, sceneArt, styleName, type StyleId } from "@/lib/styles";
 
 function subscribe(cb: () => void) {
@@ -24,114 +24,13 @@ export function applyStyle(id: StyleId) {
   window.dispatchEvent(new Event(STYLE_EVENT));
 }
 
-const items = (menu: HTMLElement) => [...menu.querySelectorAll<HTMLElement>('[role="menuitemradio"]')];
-const focusChecked = (menu: HTMLElement) => (menu.querySelector<HTMLElement>('[aria-checked="true"]') ?? items(menu)[0])?.focus();
-
-/**
- * The art-direction menu, in the masthead beside the theme key: a menu
- * button (WAI-ARIA APG) whose menu lists the styles as radio items, the
- * current one checked and printed on the signal tile. The menu is a popover
- * (the browser dismisses it on Escape or a click elsewhere, and lays it over
- * everything), opened on the checked item; arrows, Home and End move,
- * Enter or Space chooses, and focus leaving the menu closes it. Not part of
- * the `t` cycle: the rice is the screens' colour, the style everything
- * round them.
- */
+/** Art direction and colour share a menu interaction, but independent choices. */
 export function StyleMenu() {
   const current = useSyncExternalStore(subscribe, readStyle, () => "");
-  const [open, setOpen] = useState(false);
-  const menuId = useId();
-  if (STYLES.length < 2) return null;
-
-  const button = () => document.querySelector<HTMLButtonElement>(`[popovertarget="${CSS.escape(menuId)}"]`);
-  const place = (menu: HTMLElement) => {
-    const b = button();
-    if (!b) return;
-    const at = menuPlacement(b.getBoundingClientRect(), menu.getBoundingClientRect(), {
-      width: document.documentElement.clientWidth, height: window.innerHeight,
-    });
-    menu.style.top = `${at.top}px`;
-    menu.style.left = `${at.left}px`;
-    menu.style.maxHeight = `${at.maxHeight}px`;
-    menu.style.visibility = "visible";
-  };
-
-  // the popover's own toggle events: placed before it shows, focused into
-  // once it has; closed, its button says so
-  const wire = (menu: HTMLDivElement | null) => {
-    if (!menu) return;
-    const close = () => menu.hidePopover();
-    const before = (e: Event) => {
-      const b = button();
-      if ((e as ToggleEvent).newState !== "open" || !b) return;
-      // The closed popover has no measurable box. Reveal it only once the
-      // toggle event can measure and place it, before focus scrolls an item.
-      menu.style.visibility = "hidden";
-      menu.style.maxHeight = "none";
-    };
-    const toggled = (e: Event) => {
-      const isOpen = (e as ToggleEvent).newState === "open";
-      setOpen(isOpen);
-      // laid out against the page as it was: a resize closes it
-      if (isOpen) {
-        place(menu);
-        window.addEventListener("resize", close);
-        // (unless a key that opened it has already moved focus in)
-        if (!menu.contains(document.activeElement)) focusChecked(menu);
-      } else window.removeEventListener("resize", close);
-    };
-    menu.addEventListener("beforetoggle", before);
-    menu.addEventListener("toggle", toggled);
-    return () => {
-      menu.removeEventListener("beforetoggle", before);
-      menu.removeEventListener("toggle", toggled);
-      window.removeEventListener("resize", close);
-    };
-  };
-
-  const choose = (menu: HTMLElement, id: StyleId) => {
-    applyStyle(id);
-    menu.hidePopover();
-    button()?.focus();
-  };
-
-  const onMenuKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    const all = items(e.currentTarget);
-    const to = nextItem(e.key, all.indexOf(document.activeElement as HTMLElement), all.length);
-    if (to !== null) {
-      e.preventDefault();
-      all[to].focus();
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      e.currentTarget.hidePopover();
-      button()?.focus();
-    }
-  };
-
-  // From the keyboard (Enter, Space, and the arrows, as on a native select)
-  // the menu opens here and focus goes straight in: the popover's toggle
-  // event comes a task later, and a key pressed before it would land on the
-  // button. A click opens it through popovertarget.
-  const onButtonKey = (e: KeyboardEvent<HTMLButtonElement>) => {
-    const menu = document.getElementById(menuId);
-    if (!["Enter", " ", "ArrowDown", "ArrowUp"].includes(e.key) || !menu) return;
-    e.preventDefault();
-    if (!menu.matches(":popover-open")) menu.showPopover();
-    place(menu);
-    focusChecked(menu);
-  };
-
   return (
-    <>
-      <button
-        type="button"
-        className="key style-key"
-        popoverTarget={menuId}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        aria-label={current ? `Art direction: ${styleName(current)}` : "Art direction"}
-        onKeyDown={onButtonKey}
-      >
+    <ChoiceMenu options={STYLES} current={current} label="Art direction"
+      triggerClass="style-key" triggerLabel={current ? `Art direction: ${styleName(current)}` : "Art direction"}
+      onChoose={applyStyle}>
         <span className="style-name fine-only" suppressHydrationWarning>
           {current ? styleName(current) : "style"}
         </span>
@@ -152,36 +51,6 @@ export function StyleMenu() {
         <span className="style-caret" aria-hidden>
           ▾
         </span>
-      </button>
-      <div
-        id={menuId}
-        ref={wire}
-        popover="auto"
-        role="menu"
-        aria-label="Art direction"
-        className="style-menu faceplate"
-        onKeyDown={onMenuKey}
-        onBlur={(e) => {
-          // focus left the menu (Tab, Shift+Tab, a click elsewhere): close
-          const menu = e.currentTarget;
-          if (!menu.contains(e.relatedTarget as Node | null) && menu.matches(":popover-open")) menu.hidePopover();
-        }}
-      >
-        {STYLES.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            role="menuitemradio"
-            aria-checked={current === s.id}
-            tabIndex={-1}
-            className="key style-opt"
-            data-tone={current === s.id ? "signal" : undefined}
-            onClick={(e) => choose(e.currentTarget.closest<HTMLElement>('[role="menu"]')!, s.id)}
-          >
-            <span>{s.name}</span>
-          </button>
-        ))}
-      </div>
-    </>
+    </ChoiceMenu>
   );
 }
