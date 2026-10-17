@@ -9,6 +9,7 @@ Live: [chong.md](https://chong.md) (pending DNS) · fallback: [personal-website-
 ```bash
 bun install
 bun run dev      # http://localhost:3000
+bun run studio   # local content editor, http://127.0.0.1:3210/studio
 bun run build    # production build
 bun run lint
 bun run test     # unit (bun:test)
@@ -23,7 +24,10 @@ See [`docs/architecture.md`](docs/architecture.md) for routes, the two colour-to
 
 ## Edit the content
 
-Website copy lives in [`content/`](content/). Edit Markdown, commit, and deploy;
+Run `bun run studio` for the local Margin Index content editor. Edit blocks, preview
+the actual site, and use **Deploy** in the bottom-left to publish. The [editor guide](docs/content-studio.md) covers drafts and the publishing workflow.
+
+Website copy lives in [`content/`](content/). You can also edit Markdown, commit, and deploy;
 you do not need to edit React to change the existing pages.
 
 - [`content/home.md`](content/home.md): home copy, featured projects, shelf labels, site title and description.

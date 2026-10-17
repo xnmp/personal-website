@@ -2,20 +2,21 @@ import type { Metadata } from "next";
 import { RunningHead } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
-import { about, publishable } from "@/data/about";
+import { readAbout, publishable } from "@/data/about";
 import { contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 
-export const metadata: Metadata = {
+export function generateMetadata(): Metadata { return {
   ...contentField<Metadata>(readContent("about"), "metadata"),
-  description: about.intro[0],
-};
+  description: readAbout().intro[0],
+}; }
 
 // drafts are for writing in dev; a production build leaves them out
 const drafts = process.env.NODE_ENV !== "production";
 
 /** The about page. Its content lives in content/about.md. */
 export default function AboutPage() {
+  const about = readAbout();
   const sections = publishable(about.sections, drafts);
   const facts = publishable(about.facts, drafts);
   return (

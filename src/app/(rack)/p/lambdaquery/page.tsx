@@ -4,11 +4,13 @@ import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 
-const content = readContent("projects/lambdaquery");
-
-export const metadata = contentField<import("next").Metadata>(content, "metadata");
+export function generateMetadata() {
+  return contentField<import("next").Metadata>(readContent("projects/lambdaquery"), "metadata");
+}
 
 export default function LambdaQueryPage() {
+  const content = readContent("projects/lambdaquery");
+
   return (
     <>
       <RunningHead

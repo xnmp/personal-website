@@ -5,12 +5,13 @@ import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 
-const content = readContent("projects/bwai");
-
-export const metadata = contentField<import("next").Metadata>(content, "metadata");
-
+export function generateMetadata() {
+  return contentField<import("next").Metadata>(readContent("projects/bwai"), "metadata");
+}
 
 export default function BwaiPage() {
+  const content = readContent("projects/bwai");
+
   return (
     <>
       <RunningHead

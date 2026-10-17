@@ -4,11 +4,9 @@ import { ShowcaseCard } from "@/components/landing/ShowcaseCard";
 import { MarginIndex } from "@/components/landing/MarginIndex";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, ModuleCard, Prop, RackKeys } from "@/components/rack";
-import { FEATURED, FLAGSHIP, project, projects, shelves } from "@/data/projects";
+import { readProjectCatalog } from "@/data/projects";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
-
-const content = readContent("home");
 
 // Atlas clips a viewport-sized sky to each text block; other styles hide it.
 function CopySky() {
@@ -16,6 +14,9 @@ function CopySky() {
 }
 
 export default function Home() {
+  const { FEATURED, FLAGSHIP, project, projects, shelves } = readProjectCatalog();
+  const content = readContent("home");
+
   const flagship = project(FLAGSHIP);
   const featured = FEATURED.map(project);
   const onFirstScreen = new Set([FLAGSHIP, ...FEATURED]);

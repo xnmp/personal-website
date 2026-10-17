@@ -119,8 +119,13 @@ portrait:
 bun run dev
 ```
 
-Content is loaded by server modules. Restart the development server after
-editing Markdown to refresh both page copy and the shared project index.
+Content is loaded by server components on each render, deduplicated within a
+request. Reload the page after saving Markdown to refresh both copy and the
+shared project index.
+
+For a browser editor with local saving, actual-page preview and one-click
+publishing, run `bun run studio` and open the address it prints. See the
+[content editor guide](content-studio.md).
 
 Before publishing:
 
@@ -135,4 +140,5 @@ git push origin main
 Run these on `main`, or use your normal pull request workflow. Vercel rebuilds
 the site on a push to `main`. The build includes every content file in its
 deployment trace. This is a static publishing workflow: saved edits become
-public on deployment, and are not edited through the browser.
+public on deployment. The local editor writes the same Markdown sources; the
+published website has no enabled editing endpoints.

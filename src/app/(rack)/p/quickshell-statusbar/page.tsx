@@ -4,13 +4,15 @@ import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 
-const content = readContent("projects/quickshell-statusbar");
-
-const REPO = contentField<string>(content, "repo");
-
-export const metadata = contentField<import("next").Metadata>(content, "metadata");
+export function generateMetadata() {
+  return contentField<import("next").Metadata>(readContent("projects/quickshell-statusbar"), "metadata");
+}
 
 export default function Page() {
+  const content = readContent("projects/quickshell-statusbar");
+
+  const REPO = contentField<string>(content, "repo");
+
   return (
     <>
       <RunningHead

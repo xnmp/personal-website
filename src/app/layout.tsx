@@ -1,5 +1,5 @@
 import { CommandIndex } from "@/components/instrument/CommandIndex";
-import { projects } from "@/data/projects";
+import { readProjectCatalog } from "@/data/projects";
 import { contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 import { DEFAULT_STYLE, SCENE_ART, STYLE_IDS, STYLE_KEY } from "@/lib/styles";
@@ -9,14 +9,16 @@ import { fontVariables } from "./fonts";
 import "./globals.css";
 import "./styles/margin.css";
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://chong.md"),
-  ...contentField<Metadata>(readContent("home"), "metadata"),
-  // The site has its own day and night finishes. Dark Reader would recolour
-  // them, and its stylesheet lays an opaque fill on every element, covering
-  // the scene's art; this tag asks it to leave the page as drawn.
-  other: { "darkreader-lock": "true" },
-};
+export function generateMetadata(): Metadata {
+  return {
+    metadataBase: new URL("https://chong.md"),
+    ...contentField<Metadata>(readContent("home"), "metadata"),
+    // The site has its own day and night finishes. Dark Reader would recolour
+    // them, and its stylesheet lays an opaque fill on every element, covering
+    // the scene's art; this tag asks it to leave the page as drawn.
+    other: { "darkreader-lock": "true" },
+  };
+}
 
 // Runs before paint so the stored style (lib/styles.ts) and rice apply
 // without a flash, so the home page's stage knows how much room the
@@ -29,6 +31,7 @@ const themeInit = `(function(){var d=document.documentElement;try{var p=document
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const { projects } = readProjectCatalog();
   return (
     <html
       lang="en"

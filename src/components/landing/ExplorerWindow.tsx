@@ -1,10 +1,9 @@
 import { ForOS } from "@/components/launch/ForOS";
-import { FLAGSHIP, projects } from "@/data/projects";
+import { readProjectCatalog } from "@/data/projects";
 
 /** ~/Repos as the app lists it: the app's own folder first (selected), then
  *  the other projects on this site, and the dotfiles that colour its
  *  screens. From the data, so a new project is in the list. */
-const REPOS = [FLAGSHIP, ...projects.map((p) => p.slug).filter((s) => s !== FLAGSHIP), "dotfiles"];
 
 /** The app's own folder, its top level as the repository has it. */
 const FILES: { name: string; kind: string }[] = [
@@ -53,6 +52,8 @@ function Pane({ path, rows, selected }: { path: string; rows: { name: string; ki
  * carries the name.
  */
 export function ExplorerWindow() {
+  const { FLAGSHIP, projects } = readProjectCatalog();
+  const REPOS = [FLAGSHIP, ...projects.map((p) => p.slug).filter((s) => s !== FLAGSHIP), "dotfiles"];
   return (
     <div className="xw" aria-hidden>
       <div className="xw-bar">

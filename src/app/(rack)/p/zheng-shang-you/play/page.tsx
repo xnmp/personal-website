@@ -5,11 +5,13 @@ import { ZsyGame } from "@/components/zsy/ZsyGame";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 
-const content = readContent("zheng-shang-you-play");
-
-export const metadata = contentField<import("next").Metadata>(content, "metadata");
+export function generateMetadata() {
+  return contentField<import("next").Metadata>(readContent("zheng-shang-you-play"), "metadata");
+}
 
 export default function ZsyPlayPage() {
+  const content = readContent("zheng-shang-you-play");
+
   return (
     <>
       <RunningHead

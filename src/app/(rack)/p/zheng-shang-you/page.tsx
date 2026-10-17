@@ -6,11 +6,13 @@ import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 
-const content = readContent("projects/zheng-shang-you");
-
-export const metadata = contentField<import("next").Metadata>(content, "metadata");
+export function generateMetadata() {
+  return contentField<import("next").Metadata>(readContent("projects/zheng-shang-you"), "metadata");
+}
 
 export default function ZsyPage() {
+  const content = readContent("projects/zheng-shang-you");
+
   return (
     <>
       <RunningHead
