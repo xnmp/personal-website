@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Cap, Led, Screen } from "@/components/rack";
-import { project, projects } from "@/data/projects";
+import { readProjectCatalog } from "@/data/projects";
 
 /**
  * Social cards, drawn with the real kit and captured to PNG by
@@ -15,6 +15,7 @@ export function generateStaticParams() {
 }
 
 function HomeCard() {
+  const { project, projects } = readProjectCatalog();
   // the four the alt text describes (opengraph-image.alt.txt)
   const tiles = ["tauri-explorer", "bwai", "ashen-cathedral", "scrivo"].map(project);
   return (

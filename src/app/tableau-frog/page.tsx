@@ -9,13 +9,25 @@ import { Reveal } from "./Reveal";
 import "./tf.css";
 import { Window } from "./Window";
 
-const content = readContent("tableau-frog");
-
-export const metadata = contentField<import("next").Metadata>(content, "metadata");
-
-const SHOT = contentField<string>(content, "shot");
+export function generateMetadata() {
+  return contentField<import("next").Metadata>(readContent("tableau-frog"), "metadata");
+}
 
 export default function TableauFrogPage() {
+  const content = readContent("tableau-frog");
+
+  const SHOT = contentField<string>(content, "shot");
+
+/* ---------- static content ---------- */
+
+const LEDGER: Array<{ title: string; key?: string; body: string }> = contentField<Array<{ title: string; key?: string; body: string }>>(content, "ledger");
+
+const GRAMMAR: Array<{ code: string; desc: string }> = contentField<Array<{ code: string; desc: string }>>(content, "grammar");
+
+const STATS: Array<{ value: string; label: string }> = contentField<Array<{ value: string; label: string }>>(content, "stats");
+
+/* syntax-highlighted code (hand-tagged spans matching the app's palette) */
+
   return (
     <div className={`tf-root ${mono.variable} ${display.variable} ${serif.variable}`}>
       <KeyboardLayer />
@@ -275,13 +287,3 @@ export default function TableauFrogPage() {
     </div>
   );
 }
-
-/* ---------- static content ---------- */
-
-const LEDGER: Array<{ title: string; key?: string; body: string }> = contentField<Array<{ title: string; key?: string; body: string }>>(content, "ledger");
-
-const GRAMMAR: Array<{ code: string; desc: string }> = contentField<Array<{ code: string; desc: string }>>(content, "grammar");
-
-const STATS: Array<{ value: string; label: string }> = contentField<Array<{ value: string; label: string }>>(content, "stats");
-
-/* syntax-highlighted code (hand-tagged spans matching the app's palette) */

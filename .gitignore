@@ -52,3 +52,6 @@ next-env.d.ts
 
 # isolated dev servers (NEXT_DIST_DIR, next.config.ts)
 /.next-*/
+
+# local content editor state and operation lock
+/.content-studio/

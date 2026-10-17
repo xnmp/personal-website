@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { APP_THEME } from "@/components/launch/appTheme";
 import { Markdown } from "@/components/notebook/Markdown";
-import { FLAGSHIP, projects, shelves } from "@/data/projects";
+import { readProjectCatalog } from "@/data/projects";
 import { contentBlock } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 
-const home = readContent("home");
-
-/** A second presentation of the shared project catalogue, without card art. */
 export function MarginIndex() {
+  const { FLAGSHIP, projects, shelves } = readProjectCatalog();
+  const home = readContent("home");
+
+  /** A second presentation of the shared project catalogue, without card art. */
+
   return (
     <div className="margin-index">
       <div className="margin-intro">

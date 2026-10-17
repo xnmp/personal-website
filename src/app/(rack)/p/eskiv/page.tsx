@@ -8,11 +8,13 @@ import { VideoScreen } from "@/components/rack/VideoScreen";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 
-const content = readContent("projects/eskiv");
-
-export const metadata = contentField<import("next").Metadata>(content, "metadata");
+export function generateMetadata() {
+  return contentField<import("next").Metadata>(readContent("projects/eskiv"), "metadata");
+}
 
 export default function EskivPage() {
+  const content = readContent("projects/eskiv");
+
   return (
     <>
       <RunningHead

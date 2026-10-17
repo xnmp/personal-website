@@ -9,45 +9,48 @@ import { DEMO_ANCHOR } from "@/components/launch/keyboard";
 import { Folio, ProjectMeta, RunningHead } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Led, Prop, Screen } from "@/components/rack";
-import { projects } from "@/data/projects";
+import { readProjectCatalog } from "@/data/projects";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 
-const content = readContent("projects/tauri-explorer");
-
-const REPO = contentField<string>(content, "repo");
-const VERSION = contentField<string>(content, "version");
-const EMAIL = contentField<string>(content, "email");
-const INVITE =
-  `mailto:${EMAIL}?subject=Tauri%20Explorer%20alpha&body=` +
-  encodeURIComponent(
-    "OS + version:\nDesktop environment (Linux):\nDisplay scale:\nWhat file manager do you use today?\n"
-  );
-const NIX_SCHEME = contentField<string>(content, "nix_scheme");
-const NIX_REPO = contentField<string>(content, "nix_repo");
-const NIX = NIX_SCHEME + NIX_REPO;
-/** The same counts the home rack prints on this module (minus the version,
- * which the kicker already shows). */
-const COUNTS = projects.find((p) => p.slug === "tauri-explorer")!.stats.filter((s) => !s.startsWith("v"));
-/** What a tester can check before writing in, next to the call to action.
- * `more` is dropped on phones, where the first three facts share one line. */
-type ProofFact = { text: string; more?: string };
-const PROOF = contentField<(ProofFact | { includeStats: true })[]>(content, "proof")
-  .flatMap<ProofFact>(fact => "includeStats" in fact ? COUNTS.map(text => ({ text })) : [fact]);
-/** Where screenshots swap to their phone crops. */
-const PHONE = "(max-width: 600px)";
-
-export const metadata = contentField<import("next").Metadata>(content, "metadata");
-
-/** Real bindings, from src/lib/state/commands/* in the app repo. */
-const REFLEXES: { chord: string[]; what: string }[] = contentField<{ chord: string[]; what: string }[]>(content, "reflexes");
-
-/** Feature crops at native resolution (w, h in 2x px), each shown at the app's
- * real size; tighter ones on phones so the text stays legible; the full window
- * is one click away. */
-const SHOTS: Shot[] = contentField<Shot[]>(content, "shots");
+export function generateMetadata() {
+  return contentField<import("next").Metadata>(readContent("projects/tauri-explorer"), "metadata");
+}
 
 export default function TauriExplorerPage() {
+  const { projects } = readProjectCatalog();
+  const content = readContent("projects/tauri-explorer");
+
+  const REPO = contentField<string>(content, "repo");
+  const VERSION = contentField<string>(content, "version");
+  const EMAIL = contentField<string>(content, "email");
+  const INVITE =
+    `mailto:${EMAIL}?subject=Tauri%20Explorer%20alpha&body=` +
+    encodeURIComponent(
+      "OS + version:\nDesktop environment (Linux):\nDisplay scale:\nWhat file manager do you use today?\n"
+    );
+  const NIX_SCHEME = contentField<string>(content, "nix_scheme");
+  const NIX_REPO = contentField<string>(content, "nix_repo");
+  const NIX = NIX_SCHEME + NIX_REPO;
+  /** The same counts the home rack prints on this module (minus the version,
+   * which the kicker already shows). */
+  const COUNTS = projects.find((p) => p.slug === "tauri-explorer")!.stats.filter((s) => !s.startsWith("v"));
+  /** What a tester can check before writing in, next to the call to action.
+   * `more` is dropped on phones, where the first three facts share one line. */
+  type ProofFact = { text: string; more?: string };
+  const PROOF = contentField<(ProofFact | { includeStats: true })[]>(content, "proof")
+    .flatMap<ProofFact>(fact => "includeStats" in fact ? COUNTS.map(text => ({ text })) : [fact]);
+  /** Where screenshots swap to their phone crops. */
+  const PHONE = "(max-width: 600px)";
+
+  /** Real bindings, from src/lib/state/commands/* in the app repo. */
+  const REFLEXES: { chord: string[]; what: string }[] = contentField<{ chord: string[]; what: string }[]>(content, "reflexes");
+
+  /** Feature crops at native resolution (w, h in 2x px), each shown at the app's
+   * real size; tighter ones on phones so the text stays legible; the full window
+   * is one click away. */
+  const SHOTS: Shot[] = contentField<Shot[]>(content, "shots");
+
   return (
     <>
       <RunningHead

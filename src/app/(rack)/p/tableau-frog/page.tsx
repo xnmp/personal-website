@@ -5,11 +5,13 @@ import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 import Image from "next/image";
 
-const content = readContent("projects/tableau-frog");
-
-export const metadata = contentField<import("next").Metadata>(content, "metadata");
+export function generateMetadata() {
+  return contentField<import("next").Metadata>(readContent("projects/tableau-frog"), "metadata");
+}
 
 export default function TableauFrogPage() {
+  const content = readContent("projects/tableau-frog");
+
   return (
     <>
       <RunningHead

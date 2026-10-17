@@ -13,7 +13,8 @@
     "hires": "node scripts/hires/upscale.mjs",
     "hires:css": "node scripts/hires/css.mjs",
     "kit:check": "node scripts/check-kit.mjs",
-    "screens:bounds": "bun scripts/screen-bounds.ts"
+    "screens:bounds": "bun scripts/screen-bounds.ts",
+    "studio": "node scripts/studio.mjs"
   },
   "dependencies": {
     "echarts": "^6.0.0",
@@ -27,7 +28,8 @@
     "rehype-highlight": "^7.0.2",
     "remark-directive": "^4.0.0",
     "remark-gfm": "^4.0.1",
-    "three": "^0.186.1"
+    "three": "^0.186.1",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",
