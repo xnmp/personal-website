@@ -665,11 +665,13 @@
     },
     {
       "src": "public/kit/cyanotype/frame-day.webp",
-      "provider": "api"
+      "provider": "api",
+      "apiMaxPixels": 1900000
     },
     {
       "src": "public/kit/cyanotype/frame-night.webp",
-      "provider": "api"
+      "provider": "api",
+      "apiMaxPixels": 1900000
     },
     {
       "src": "public/kit/cyanotype/mat-day.webp",

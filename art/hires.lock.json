@@ -4293,6 +4293,60 @@
       "height": 160,
       "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd"
     },
+    "public/kit/cyanotype/frame-day@2x.webp": {
+      "settingsDigest": "32fd8e218c0434692311c984acdc42c5db1c15d61cf04e75244069d474f962d3",
+      "sourceSha256": "ca4b845dde9daa90ac256eec8f5d25dfcdb0779aaa203c467447cedde6370313",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "df3beac58606d0419f6d6ad3a0054076c947da20c45c72522d4a655042fc63dd",
+      "outputSha256": "b7b976f8c28cb4ab474d83387648ee91f2f63583484b85d1f38b9b2f98d4d461",
+      "width": 3344,
+      "height": 1882,
+      "accepted": true,
+      "acceptedReasons": [
+        "whole: residual p90 1.06 source px > 1.0",
+        "tile 0: residual p90 4.47 source px > 1.0"
+      ]
+    },
+    "public/kit/cyanotype/frame-night@2x.webp": {
+      "settingsDigest": "32fd8e218c0434692311c984acdc42c5db1c15d61cf04e75244069d474f962d3",
+      "sourceSha256": "704ec29d8a6918769dfa3235a29f5356bb0f49a4d5a3a73a130d8f9cb8d57b3e",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "7b8d3d1eba169ae7970652bccff4a2a24d0e24878bdd1158986c68ffdfa8efd0",
+      "outputSha256": "e44fb006fde655b09af6cdf19a9f981ded4c29837b7104a7dd74d2e0d1bb7e61",
+      "width": 3344,
+      "height": 1882,
+      "accepted": true,
+      "acceptedReasons": [
+        "tile 0: residual p90 1.12 source px > 1.0"
+      ]
+    },
+    "public/kit/cyanotype/mat-day@2x.webp": {
+      "settingsDigest": "7cf4aa35c1d9c4aef8a5cf18d8c0ffa186dd9e6a4f988f0f04bc68c540bbf08b",
+      "sourceSha256": "74b7f3c33d1d101f2639d8010b3534e6c4f3e889ba2eeba2e032dd4d97e20be9",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "ebed860f08f3df6ba50a77ec8802aacf18e2eb0d20290862b9a904bd469a5d05",
+      "outputSha256": "76becae33f9759875661b0eac4446db3ddfcfd651391181171e101d4bdd83119",
+      "width": 2560,
+      "height": 1416,
+      "accepted": true,
+      "acceptedReasons": [
+        "whole: residual p90 1.25 source px > 1.0",
+        "tile 0: residual p90 1.25 source px > 1.0"
+      ]
+    },
+    "public/kit/cyanotype/mat-night@2x.webp": {
+      "settingsDigest": "7cf4aa35c1d9c4aef8a5cf18d8c0ffa186dd9e6a4f988f0f04bc68c540bbf08b",
+      "sourceSha256": "fb2b5d0ab642f22777dc352a289e89cd33559c20508752b5ec58b8d7739e27f9",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "096e7a3a6e252bec4d7271016d3be6ad161e40db4276c290a008393312f6d5c1",
+      "outputSha256": "93cc5acadd69966606936fea26d81b52b76d3f9d03f5a9745f8d37663163bb82",
+      "width": 2560,
+      "height": 1416
+    },
     "public/kit/cyanotype/plate-phone-day@2x.webp": {
       "sourceSha256": "fb377ad340000c5ee122ec517bfa57046af12ddc4e56e2e8915c8e00386b884f",
       "factor": 2,
@@ -4325,6 +4379,17 @@
       "width": 1800,
       "height": 4546,
       "settingsDigest": "1939224064ae42356aca0d185b62e95235d8306538c258a7c01d9f240c8562d0"
+    },
+    "public/kit/cyanotype/plate-phone-night@2x.webp": {
+      "settingsDigest": "7cf4aa35c1d9c4aef8a5cf18d8c0ffa186dd9e6a4f988f0f04bc68c540bbf08b",
+      "sourceSha256": "31779a1cdc846f06edf0249973138ad9b405f67ed8b093f3ed845bf7ef013b82",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "628fbebe0b73fcef23d3bad4d5afe98d7b18d833955f137ca878909206a1f72a",
+      "recipeDigest": "e682813ea8b15e3b06c0d612f77c735c539f4f52123e05ac2ed2eabc30fb2333",
+      "outputSha256": "72e6b2468a46fd46031b8e0b56e184658513a71daa83b6bbe3a00994ff40ac3b",
+      "width": 1800,
+      "height": 4546
     },
     "public/kit/cyanotype/scene/day/sky@2x.webp": {
       "sourceSha256": "9017f63eb89b416a2f5a4998c8abb47a9c7a4973e9b56a72a98771a06054d26d",

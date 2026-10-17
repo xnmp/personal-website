@@ -185,6 +185,7 @@
   --hero-align: start;
   --silk-shadow: none;
   --k-bezel: url(/kit/cyanotype/mat-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-bezel: image-set(url(/kit/cyanotype/mat-night@2x.webp) 2x); }
   --mat-t: 123;
   --mat-r: 140;
   --mat-b: 123;
@@ -236,6 +237,7 @@
 
   /* the print's own fittings (below): its torn edge, a piece of tape */
   --k-frame: url(/kit/cyanotype/frame-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-frame: image-set(url(/kit/cyanotype/frame-night@2x.webp) 2x); }
   --k-tape-bit: url(/kit/cyanotype/tape-bit-night.webp);
   /* the project print's brushed inner edge, both finishes' (kit.cuts print-edge) */
   --k-print-edge: url(/kit/cyanotype/print-edge.webp);
@@ -257,6 +259,7 @@
   --k-fern-band: url(/kit/cyanotype/fern-band.webp);
   /* the phone's own print, and its cream strip (below) */
   --k-phone-sky: url(/kit/cyanotype/plate-phone-night.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-phone-sky: url(/kit/cyanotype/plate-phone-night@2x.webp); }
   /* the print with everything drawn on it taken out, under the phone's
      outlined call (below) */
   --k-phone-ground: url(/kit/cyanotype/plate-phone-ground-night.webp);
@@ -446,6 +449,7 @@
   --k-plate-w-b-flat: url(/kit/cyanotype/sheet-day-w-c-flat.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate-w-b-flat: image-set(url(/kit/cyanotype/sheet-day-w-c-flat@2x.webp) 2x); }
   --k-bezel: url(/kit/cyanotype/mat-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-bezel: image-set(url(/kit/cyanotype/mat-day@2x.webp) 2x); }
   --mat-t: 123;
   --mat-r: 140;
   --mat-b: 123;
@@ -475,6 +479,7 @@
   --key-signal-ink: #15284a;
   --key-signal-under: #d6d3cc;
   --k-frame: url(/kit/cyanotype/frame-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-frame: image-set(url(/kit/cyanotype/frame-day@2x.webp) 2x); }
   --k-tape-bit: url(/kit/cyanotype/tape-bit-day.webp);
   /* light by day: the print's paper, not white */
   --k-screen-bezel: url(/kit/cyanotype/screen-bezel-day.webp);
