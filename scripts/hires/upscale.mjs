@@ -14,7 +14,8 @@ import { resample, seamStats, wrapRegion, periodicHalo } from './periodic.mjs';
 import { intendedChange, canonicaliseTransparent, registerState, stateRequestCrop, stateStats, derivationDigest, stateGateWeights, cropWeights, stateEvidence, residualRouting, transferResidual, residualDiagnostics, changeReproduction, statePolicy } from './states.mjs';
 import { protectGlyphs, protectedStats } from './protect.mjs';
 import { isNativeKit } from '../kit-native.mjs';
-import { smoothField, kitImage, kitConformance, kitRailSeams, kitRawProof } from './generators.mjs';
+import { smoothField, kitImage, kitConformance, kitRailSeams, kitRawProof, srImage } from './generators.mjs';
+import { verifySrWeights } from './sr.mjs';
 import { detailStats } from './detail.mjs';
 import { CandidateRejected, retrySelection } from './retries.mjs';
 import { sheenImage } from '../framed-pane.mjs';
@@ -199,6 +200,7 @@ export function prepareGeneratedPixels(source, master, asset, normal, reference)
   return reference ? registerState(source, normal, reference, protectedMaster) : protectedMaster;
 }
 
+/** Gates and ships a candidate; resolves true when it is the shipped output (written, or byte-identical under --verify). */
 export async function finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, reasons, stats) {
   const output = resolve(root, outputPath(asset));
   let derivation, reference, normal;
@@ -258,9 +260,11 @@ export async function finishAsset(asset, opts, root, sourceBytes, rgba, master, 
       stats.stateDerivation.conformance = stats.conformance;
     }
   }
-  if (isNativeKit(asset.generator)) {
+  if (isNativeKit(asset.generator) || asset.generator?.type === 'sr') {
     stats.ink = await kitConformance(rgba, decoded, asset.generator);
     reasons.push(...stats.ink.reasons);
+  }
+  if (isNativeKit(asset.generator)) {
     stats.railSeams = await kitRailSeams(rgba, decoded, asset.generator);
     if (stats.railSeams && !stats.railSeams.passes) reasons.push('decoded native rail wrap jump or first derivative exceeds baseline tolerance');
   }
@@ -286,15 +290,16 @@ export async function finishAsset(asset, opts, root, sourceBytes, rgba, master, 
     ...(stats.dependencies ? { dependencies: stats.dependencies } : {}) };
   const entry = lockEntry(sourceBytes, asset, key, { ...proof, ...(stats.acceptedOverride ? { accepted: true, acceptedReasons: reasons } : {}) });
   if (opts.verify) {
-    if (!await exists(output)) { console.log(`${relative(root, output)} not shipped; verified gates only`); return; }
+    if (!await exists(output)) { console.log(`${relative(root, output)} not shipped; verified gates only`); return false; }
     if (!encoded.equals(await readFile(output))) throw new Error('remerge differs from shipped bytes; output and lock left untouched');
     console.log(`${relative(root, output)} byte-identical; output and lock untouched`);
-    return;
+    return true;
   }
   await writeFile(output + '.pending', encoded);
   await rename(output + '.pending', output);
   await writeLockEntry(root, asset, entry);
   console.log(`${relative(root, output)} written${stats.acceptedOverride ? ' (--accept)' : ''}`);
+  return true;
 }
 
 async function processAttempt(asset, opts, promptText, root, invoke, context) {
@@ -371,8 +376,19 @@ async function processAttempt(asset, opts, promptText, root, invoke, context) {
     const cache = resolve(root, process.env.HIRES_CACHE ?? 'art/raw/hires', asset.src.slice(7, -extname(asset.src).length), key.slice(0, 12));
     await mkdir(cache, { recursive: true });
     if (asset.generator?.type === 'sheen' && (rgba.width !== rgba.height || rgba.width !== 256)) throw new Error('sheen generator requires a 256px square source');
-    const master = isNativeKit(asset.generator) ? await kitImage(asset.generator, { root, sourceBytes }) : dependency ? await smoothField(dependency.dependencyBytes, asset.generator) : asset.generator ? sheenImage(rgba.width * 2, asset.generator) : resample(rgba, 2, !!asset.periodic);
-    await finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, [], { detail, attempts: { requests: 0, retries: 0 }, generator: generatorName(asset), ...(context.stateDerivation ? { stateDerivation: context.stateDerivation } : {}), ...(dependency ? { dependencies: { [asset.generator.from]: sourceSha256(dependency.dependencyBytes) } } : {}) });
+    const sr = asset.generator?.type === 'sr' ? await srImage(sourceBytes, asset.generator, { cache, invoke, generate: !opts.remerge, verifyWeights: opts.srWeights }) : null;
+    if (asset.generator?.type === 'sr' && !sr) {
+      console.log(`${asset.src}: SKIPPED --remerge; missing cached sr output`);
+      return;
+    }
+    const master = isNativeKit(asset.generator) ? await kitImage(asset.generator, { root, sourceBytes }) : dependency ? await smoothField(dependency.dependencyBytes, asset.generator) : sr ? sr.image : asset.generator ? sheenImage(rgba.width * 2, asset.generator) : resample(rgba, 2, !!asset.periodic);
+    let shipped = false;
+    try {
+      shipped = await finishAsset(asset, opts, root, sourceBytes, rgba, master, cache, key, [], { detail, attempts: { requests: 0, retries: 0 }, generator: generatorName(asset), ...(context.stateDerivation ? { stateDerivation: context.stateDerivation } : {}), ...(dependency ? { dependencies: { [asset.generator.from]: sourceSha256(dependency.dependencyBytes) } } : {}) });
+    } finally {
+      // Cache the model output only once it is the shipped output.
+      await (shipped ? sr?.commit() : sr?.discard());
+    }
     return;
   }
   if (opts.requests && !external) return;
@@ -651,8 +667,8 @@ async function isUpToDate(asset, lock, root, assets) {
   }
 }
 
-export async function main(args = process.argv.slice(2), { root = ROOT, invoke = run, processAsset: processSelectedAsset = processAsset, apiMinPixels = API_MIN_OUTPUT_PIXELS } = {}) {
-  const opts = { ...cliOptions(args), apiMinPixels };
+export async function main(args = process.argv.slice(2), { root = ROOT, invoke = run, processAsset: processSelectedAsset = processAsset, apiMinPixels = API_MIN_OUTPUT_PIXELS, srWeights = verifySrWeights } = {}) {
+  const opts = { ...cliOptions(args), apiMinPixels, srWeights };
   const manifest = validateManifest(JSON.parse(await readFile(resolve(root, opts.manifest), 'utf8')));
   const prompt = await readFile(resolve(root, 'art/prompts/hires/upscale.txt'), 'utf8');
   const selected = new Set(manifest.assets.filter((a) => !opts.only || a.src.includes(opts.only)));

@@ -1099,6 +1099,37 @@ selected shipped files through the API or an external generator and conforms the
   includes transitive dependencies and families; stable topological ordering
   puts dependencies first, and cycles are rejected. No derived output ships
   when its dependency fails.
+- **Learned super-resolution**: flat line art that generative tiles restyle
+  (the atlas `page-frame` borders, where image_gen bevelled solid gold strokes)
+  uses `provider: "resample"` with `generator: { "type": "sr", "model":
+  "realesr-animevideov3" }`. `srImage` runs `realesrgan-ncnn-vulkan -s 2` in a
+  private temp directory of the asset's keyed cache. Like classic SR pipelines,
+  only luma and alpha come from the model, which also boosts chroma along
+  strokes (orange streaks on gold). Cb/Cr come from a Lanczos 2x of the source
+  wherever that is opaque enough to carry colour (`srLuma`). The output must
+  pass the same `kitConformance` gate as native kit art: its 2x downscale must
+  match the source. The `edgeStructure` check against the Lanczos 2x also
+  applies (no inset), because model texture at Nyquist averages away in a
+  downscale.
+  The raw model output becomes the cached `sr.png` only once the asset ships
+  (`finishAsset` resolves true: gates passed or `--accept`, or byte-identical
+  under `--verify`). A rejected output is never reused, and the next run asks
+  the model again. `--force` reprocesses the shipped pixels without rerunning
+  the model; `--remerge` never runs it and skips an asset with no cached
+  output. A lost Vulkan device can exit 0 with some or all tiles empty. The
+  gates reject a partial canvas. A uniform canvas (transparent, black, any
+  fill) from varied input is refused outright, even under `--accept`.
+  `scripts/hires/sr.mjs` pins each model name to the SHA-256 of its 2x weight
+  files. `srRecipe` (the pins plus an implementation version) joins the
+  processing recipe, as `kitRecipe` does, so new weights or post-processing
+  invalidate both cache and lock. Regeneration refuses missing or mismatched
+  weights before invoking the binary. The binary and weights are an optional
+  local install, needed only to regenerate: lock and CSS checks never touch
+  them. `HIRES_SR_BIN`, `HIRES_SR_MODELS` and `HIRES_SR_GPU` override the
+  binary path, weights directory and Vulkan device. `sr` entries must be
+  standalone, uncropped and non-periodic, without `glyphs`. Locks name
+  `real-esrgan-ncnn/<model>`. GPU inference is not bit-reproducible across
+  devices; the cache and `outputSha256` pin the shipped pixels instead.
 - **New provenance**: the manifest and lock remain version 1. New external
   locks name the real tool, `codex-image_gen`, in `model`; historical external
   entries carrying the API model still validate. An overridden conformance or

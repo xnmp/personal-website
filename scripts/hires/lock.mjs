@@ -9,7 +9,10 @@ import { derivationDigest, statePolicy, CURRENT_DERIVATION_GENERATION, HISTORICA
 
 export const outputPath = ({ src, factor }) => src.slice(0, -extname(src).length) + `@${factor}x.webp`;
 export const sourceSha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
-export const generatorName = (asset) => asset.provider === 'external' ? 'codex-image_gen' : asset.provider === 'resample' ? asset.generator ? asset.generator.type === 'kit' ? 'kit-native-raster-v1' : asset.generator.type === 'ink' ? 'kit-native-ink-v1' : asset.generator.type === 'smooth-field' ? 'smooth-field-v1' : 'framed-pane/sheen-v1' : 'premultiplied-bilinear-v1' : asset.model;
+const GENERATOR_NAMES = Object.freeze({ kit: 'kit-native-raster-v1', ink: 'kit-native-ink-v1', 'smooth-field': 'smooth-field-v1' });
+const resampleName = (generator) => !generator ? 'premultiplied-bilinear-v1'
+  : generator.type === 'sr' ? `real-esrgan-ncnn/${generator.model}` : GENERATOR_NAMES[generator.type] ?? 'framed-pane/sheen-v1';
+export const generatorName = (asset) => asset.provider === 'external' ? 'codex-image_gen' : asset.provider === 'resample' ? resampleName(asset.generator) : asset.model;
 export const lockEntry = (bytes, asset, key, proof = {}) => ({
   ...(asset.provider && asset.provider !== 'api' ? { provider: asset.provider } : {}),
   settingsDigest: settingsDigest(asset),

@@ -146,6 +146,30 @@
       "height": 2558,
       "settingsDigest": "7cf4aa35c1d9c4aef8a5cf18d8c0ffa186dd9e6a4f988f0f04bc68c540bbf08b"
     },
+    "public/kit/atlas/page-frame-day@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "1939224064ae42356aca0d185b62e95235d8306538c258a7c01d9f240c8562d0",
+      "sourceSha256": "2f972f70889f2c1321a8196c1a309ed2be942a6be2b36784471a2a13260b67c6",
+      "factor": 2,
+      "model": "real-esrgan-ncnn/realesr-animevideov3",
+      "cacheKey": "aabd8acc282e891b824eb03eeda01e982344ce38459bcf6e3b81b7978cdcf88a",
+      "recipeDigest": "74da4dbb8b0ad5e60852f5e47e77754a7dfdadb0832e3845ce4276609a876ce2",
+      "outputSha256": "2fb287c8f7fbaaad3ac4bba361ca9b0626eb47a544870fad5a82c0d059dc95aa",
+      "width": 3328,
+      "height": 1866
+    },
+    "public/kit/atlas/page-frame@2x.webp": {
+      "provider": "resample",
+      "settingsDigest": "1939224064ae42356aca0d185b62e95235d8306538c258a7c01d9f240c8562d0",
+      "sourceSha256": "09b53a3a5e984ee8152813e46fa00a311592be8a1650b580894f4d6e0ea3ad15",
+      "factor": 2,
+      "model": "real-esrgan-ncnn/realesr-animevideov3",
+      "cacheKey": "88b2e2c0dd5f876776782a0119c5f2c2ac333883b25614cd34614c5f28b6eb61",
+      "recipeDigest": "74da4dbb8b0ad5e60852f5e47e77754a7dfdadb0832e3845ce4276609a876ce2",
+      "outputSha256": "97bfe2a42bc577792dad3c265e43baff1e78c0196bafba75c2b859d952d7e613",
+      "width": 3328,
+      "height": 1866
+    },
     "public/kit/atlas/sheet-day-flat@2x.webp": {
       "sourceSha256": "9175520889e8ab447bd6857f4ff5d9b969afee25581b46caece2cb308353ad6d",
       "factor": 2,

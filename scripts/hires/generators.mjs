@@ -2,6 +2,7 @@ import sharp from 'sharp';
 import { edgeStructure } from './structure.mjs';
 import { kitRecipe, KIT_MAE_LIMIT, KIT_TAIL_LIMIT, KIT_PIXEL_TAIL_LIMIT } from '../kit-native.mjs';
 import { rasterGeometry, requireRasterResolution } from '../kit-raster.mjs';
+import { DEFAULT_SR_MODELS_DIR, verifySrWeights } from './sr.mjs';
 
 // Mulberry32, matching atlas/derive.mjs. One shared grain value per RGB pixel.
 const rng = (seed) => () => {
@@ -21,6 +22,71 @@ export async function smoothField(inputBytes, { median, blur, grain, seed }) {
     rgba[p * 4 + 3] = 255;
   }
   return { data: rgba, width: info.width, height: info.height, channels: 4 };
+}
+
+// Learned super-resolution (Real-ESRGAN, ncnn/Vulkan) for flat line art that
+// generative models redraw: it restores edges without inventing content, and
+// the kit conformance gate still bounds its round trip to the 1x. Like classic
+// SR pipelines (SRCNN et al.), only luma comes from the model: it also boosts
+// chroma along strokes (orange streaks on gold), so Cb/Cr come from a Lanczos 2x
+// of the source wherever that is opaque enough to carry colour.
+export function srLuma(model, reference) {
+  const data = new Uint8ClampedArray(model.data.length);
+  const luma = (px, i) => 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+  for (let i = 0; i < data.length; i += 4) {
+    const [y, yRef] = [luma(model.data, i), luma(reference.data, i)];
+    // Near-transparent reference pixels have no reliable colour: keep the model's there.
+    const w = Math.min(1, reference.data[i + 3] / 32);
+    const red = y + (1 - w) * (model.data[i] - y) + w * (reference.data[i] - yRef);
+    const blue = y + (1 - w) * (model.data[i + 2] - y) + w * (reference.data[i + 2] - yRef);
+    data[i] = red; data[i + 1] = (y - 0.299 * red - 0.114 * blue) / 0.587; data[i + 2] = blue; data[i + 3] = model.data[i + 3];
+  }
+  return { data: Buffer.from(data.buffer), width: model.width, height: model.height, channels: 4 };
+}
+
+// Runs the model in a private temp directory of the asset's keyed cache. The
+// raw model output becomes the cached sr.png only through commit(), which the
+// caller invokes once the asset ships (gates passed, or --accept), so a
+// rejected or partial output (a lost Vulkan device can exit 0 with some tiles
+// empty) is never reused. generate: false (--remerge) uses the cache only and
+// returns null without it. The binary is an optional local dependency
+// (HIRES_SR_BIN, HIRES_SR_MODELS; HIRES_SR_GPU picks a Vulkan device): without
+// it only sr regeneration fails.
+export async function srImage(sourceBytes, { model }, { cache, invoke, generate = true, verifyWeights = verifySrWeights, env = process.env }) {
+  const { mkdtemp, readFile, rename, rm } = await import('node:fs/promises');
+  const decode = async (bytes) => {
+    const { data, info } = await sharp(bytes).toColourspace('srgb').ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    return { data, width: info.width, height: info.height, channels: 4 };
+  };
+  const source = await decode(sourceBytes);
+  const check = (image) => {
+    if (image.width !== source.width * 2 || image.height !== source.height * 2) throw new Error(`sr output is ${image.width}x${image.height}, not exact 2x`);
+    // A uniform canvas (transparent, black, any fill) from varied art is a device
+    // failure, not a judgement call: refuse it even under --accept.
+    const uniform = ({ data }) => data.every((v, i) => v === data[i % 4]);
+    if (!uniform(source) && uniform(image)) throw new Error('sr output is a uniform canvas (Vulkan device failure?); try another device with HIRES_SR_GPU');
+    return image;
+  };
+  const reference = async () => decode(await sharp(sourceBytes).toColourspace('srgb').ensureAlpha()
+    .resize(source.width * 2, source.height * 2, { kernel: 'lanczos3' }).png().toBuffer());
+  const output = `${cache}/sr.png`;
+  const cached = await readFile(output).catch(() => null);
+  if (cached) return { image: srLuma(check(await decode(cached)), await reference()), commit: async () => {}, discard: async () => {} };
+  if (!generate) return null;
+  const models = env.HIRES_SR_MODELS ?? DEFAULT_SR_MODELS_DIR;
+  await verifyWeights(model, models);
+  const dir = await mkdtemp(`${cache}/sr-`);
+  const discard = () => rm(dir, { recursive: true, force: true });
+  try {
+    await sharp(source.data, { raw: { width: source.width, height: source.height, channels: 4 } }).png().toFile(`${dir}/in.png`);
+    await invoke(env.HIRES_SR_BIN ?? 'realesrgan-ncnn-vulkan', ['-i', `${dir}/in.png`, '-o', `${dir}/out.png`, '-s', '2', '-n', model,
+      '-m', models, ...(env.HIRES_SR_GPU ? ['-g', env.HIRES_SR_GPU] : [])]);
+    const image = check(await decode(await readFile(`${dir}/out.png`)));
+    return { image: srLuma(image, await reference()), commit: async () => { await rename(`${dir}/out.png`, output); await discard(); }, discard };
+  } catch (error) {
+    await discard();
+    throw error;
+  }
 }
 
 // Invoke the kit's shared builder in an isolated temporary directory. The raw
@@ -96,7 +162,9 @@ export async function kitConformance(source, output, generator = { type: 'ink' }
   // sheet pad96+corner56, in logical pixels. Only the legacy rail statistic
   // uses this inset; symmetric local structure covers the complete canvas.
   const inset = generator.type === 'kit' ? (kitRecipe(generator).kind === 'tiles' ? 120 : 304) : 0;
-  const structure = generator.type === 'kit' ? edgeStructure({ ...output, data: enlarged }, output, { inset }) : null;
+  // Learned SR can add texture at Nyquist that a 2x downscale averages away; the
+  // structure check against the Lanczos 2x sees it. It has no rail spans to inset.
+  const structure = generator.type === 'kit' || generator.type === 'sr' ? edgeStructure({ ...output, data: enlarged }, output, { inset }) : null;
   const reasons = [
     ...(mae > limit ? [`ink premultiplied MAE ${mae}/255 exceeds ${limit}/255`] : []),
     ...(tail > tailLimit ? [`ink premultiplied max-3x3-mean ${tail}/255 exceeds Lanczos baseline allowance ${tailLimit}/255`] : []),

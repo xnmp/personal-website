@@ -405,13 +405,19 @@
     },
     {
       "src": "public/kit/atlas/page-frame-day.webp",
-      "provider": "external",
-      "note": "This is a thin border of flat, solid, matte ink strokes with small ornaments around an empty page. Keep every stroke flat and evenly coloured exactly like the original: no bevel, emboss, outline, rim highlight or dark core, and the same stroke weight. Keep every ornament exactly its existing shape, size and solidity: a solid star stays solid, a soft mark stays a soft mark. Never turn a mark into a ring, bead, loop, diamond or knot."
+      "provider": "resample",
+      "generator": {
+        "type": "sr",
+        "model": "realesr-animevideov3"
+      }
     },
     {
       "src": "public/kit/atlas/page-frame.webp",
-      "provider": "external",
-      "note": "This is a thin border of flat, solid, matte ink strokes with small ornaments around an empty page. Keep every stroke flat and evenly coloured exactly like the original: no bevel, emboss, outline, rim highlight or dark core, and the same stroke weight. Keep every ornament exactly its existing shape, size and solidity: a solid star stays solid, a soft mark stays a soft mark. Never turn a mark into a ring, bead, loop, diamond or knot."
+      "provider": "resample",
+      "generator": {
+        "type": "sr",
+        "model": "realesr-animevideov3"
+      }
     },
     {
       "src": "public/kit/atlas/sheet-day-flat.webp",

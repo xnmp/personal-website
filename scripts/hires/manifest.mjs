@@ -5,6 +5,7 @@ import { CURRENT_DERIVATION_GENERATION, HISTORICAL_DERIVATION_GENERATIONS, state
 import { PERIODIC_RECIPE, periodicHalo } from './periodic.mjs';
 import { posix } from 'node:path';
 import { kitRecipe, isNativeKit } from '../kit-native.mjs';
+import { SR_MODELS, srRecipe } from './sr.mjs';
 
 export const DEFAULTS = Object.freeze({ provider: 'api', factor: 2, quality: 82, model: 'gpt-image-2.5-sunburst', apiQuality: 'high', sigma: 4 });
 const object = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -110,6 +111,10 @@ export function validateManifest(value, dimensions = {}) {
         if (!Number.isInteger(g.median) || g.median < 1 || g.median > 255 || g.median % 2 !== 1) fail(where, 'smooth-field median must be odd, 1–255 output px');
         if (!Number.isFinite(g.blur) || g.blur < 0.3 || g.blur > 1000) fail(where, 'smooth-field blur must be 0.3–1000 output px');
         if (!Number.isInteger(g.grain) || g.grain < 0 || g.grain > 255 || !Number.isSafeInteger(g.seed) || g.seed < 0 || g.seed > 0xffffffff) fail(where, 'invalid smooth-field grain or seed');
+      } else if (g.type === 'sr') {
+        keys(g, ['type', 'model'], where + '.generator');
+        if (!Object.hasOwn(SR_MODELS, g.model)) fail(where, `sr generator model must be one of ${Object.keys(SR_MODELS).join(', ')}`);
+        if (entry.family || entry.stateCrop || entry.periodic || entry.glyphs) fail(where, 'sr requires standalone, uncropped, non-periodic art without glyph resampling');
       } else fail(where, 'invalid analytic generator type');
     }
     return asset;
@@ -151,7 +156,7 @@ export const processingRecipe = (asset, legacyStates = false, generation = CURRE
     ...(asset.family ? { family: asset.family, reference: asset.reference, familyMembership: asset.familyMembership, states: generation.state, sigma: asset.sigma, stateCrop: asset.stateCrop ?? false } : {}),
     ...(!legacyStates && asset.family && asset.src !== asset.reference ? { stateDerivation: { ...statePolicy(asset), recipe: generation.residual } } : {}),
     ...(asset.periodic ? { periodic: PERIODIC_RECIPE, halo: periodicHalo(asset.sigma), sigma: asset.sigma } : {}),
-    ...(asset.provider === 'resample' ? { resample: 'premultiplied-bilinear-v1', generator: isNativeKit(asset.generator) ? { ...asset.generator, recipe: kitRecipe(asset.generator) } : asset.generator ?? null, ...(asset.glyphs ? { glyphs: true } : {}) } : {}),
+    ...(asset.provider === 'resample' ? { resample: 'premultiplied-bilinear-v1', generator: isNativeKit(asset.generator) ? { ...asset.generator, recipe: kitRecipe(asset.generator) } : asset.generator?.type === 'sr' ? { ...asset.generator, recipe: srRecipe(asset.generator) } : asset.generator ?? null, ...(asset.glyphs ? { glyphs: true } : {}) } : {}),
     ...(asset.protect ? { protect: asset.protect, protectFeather: asset.protectFeather ?? 6, protection: 'premultiplied-smoothstep-v1' } : {}),
   };
   return Object.keys(fields).length ? fields : null;
