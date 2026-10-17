@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Capture the /og/<card> routes to the Next.js metadata image files.
-// Needs a running server (bun run dev) and Playwright:  node scripts/render-og.mjs [baseUrl]
+// Needs a running server (bun run dev:site) and Playwright:  node scripts/render-og.mjs [baseUrl]
 import { chromium } from "@playwright/test";
 import sharp from "sharp";
 

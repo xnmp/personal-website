@@ -9,7 +9,7 @@ export default defineConfig({
   testMatch: "**/*.e2e.ts",
   fullyParallel: true,
   use: { baseURL, colorScheme: "dark" },
-  webServer: { command: "bun run dev", url: baseURL, reuseExistingServer: true },
+  webServer: { command: "bun run dev:site", url: baseURL, reuseExistingServer: true },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile", use: { ...devices["Pixel 7"] } },
