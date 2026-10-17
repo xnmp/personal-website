@@ -327,7 +327,7 @@
 }
 
 /* day: daylight on the print and the white paper */
-:root[data-style="cyanotype"][data-rice="paper"] {
+:root[data-style="cyanotype"][data-rice-mode="light"] {
   --k-tape: url(/kit/cyanotype/tape-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/cyanotype/tape-day@2x.webp) 2x); }
   --tape-ink: #142033;
@@ -1124,7 +1124,7 @@
   --card-dither: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192'%3E%3Cfilter id='n' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1.6 0 0 0 -0.3 1.6 0 0 0 -0.3 1.6 0 0 0 -0.3 0 0 0 0 0.04'/%3E%3C/filter%3E%3Crect width='192' height='192' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-:root[data-style="cyanotype"][data-rice="paper"] :is(.card.faceplate, .module.faceplate) {
+:root[data-style="cyanotype"][data-rice-mode="light"] :is(.card.faceplate, .module.faceplate) {
   --card-dither: linear-gradient(transparent, transparent);
 }
 
@@ -1835,7 +1835,7 @@
     @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ground: url(/kit/cyanotype/scene/ground-project-night/sky@2x.webp); }
   }
 
-  :root[data-style="cyanotype"][data-rice="paper"]:is(:has(.detail-hero .tags), :has(.detail-hero.solo)) {
+  :root[data-style="cyanotype"][data-rice-mode="light"]:is(:has(.detail-hero .tags), :has(.detail-hero.solo)) {
     --k-sky: url(/kit/cyanotype/scene/project-day/sky.webp);
     @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/project-day/sky@2x.webp); }
     --k-ground: url(/kit/cyanotype/scene/ground-project-day/sky.webp);
@@ -1849,7 +1849,7 @@
     @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-ground: url(/kit/cyanotype/scene/ground-launch-night/sky@2x.webp); }
   }
 
-  :root[data-style="cyanotype"][data-rice="paper"]:has(.launch-hero) {
+  :root[data-style="cyanotype"][data-rice-mode="light"]:has(.launch-hero) {
     --k-sky: url(/kit/cyanotype/scene/launch-day/sky.webp);
     @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/cyanotype/scene/launch-day/sky@2x.webp); }
     --k-ground: url(/kit/cyanotype/scene/ground-launch-day/sky.webp);

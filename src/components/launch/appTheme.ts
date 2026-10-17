@@ -1,6 +1,4 @@
-import type { RICES } from "@/components/instrument/CommandIndex";
-
-type Rice = (typeof RICES)[number];
+import type { Rice } from "@/lib/rice";
 
 /**
  * The app theme that wears each of the site's rices. The product screens on
@@ -15,6 +13,10 @@ export const APP_THEME = {
   horizon: "dracula",
   "cosmic-dusk": "tokyo-night",
   rapture: "aurora",
+  "ayu-mirage": "ayu-mirage",
+  // The deployed app has Mocha, so Latte uses the nearest available light theme.
+  "catppuccin-latte": "solarized",
+  gruvbox: "gruvbox",
 } as const satisfies Record<Rice, string>;
 
 export type AppTheme = (typeof APP_THEME)[Rice];

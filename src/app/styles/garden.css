@@ -144,7 +144,7 @@
 }
 
 /* day: soft late-morning sun, the original mock */
-:root[data-style="garden"][data-rice="paper"] {
+:root[data-style="garden"][data-rice-mode="light"] {
   --k-tape: url(/kit/garden/tape-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/garden/tape-day@2x.webp) 2x); }
   --tape-ink: #2a1d12; /* stamped into the copper */
@@ -282,7 +282,7 @@
 
 /* the mock's name and headline are set in a near-black moss, darker than
    the body copy's ink (measured on their heaviest strokes) */
-:root[data-style="garden"][data-rice="paper"] :is(.masthead .brand a, .launchpad-title) {
+:root[data-style="garden"][data-rice-mode="light"] :is(.masthead .brand a, .launchpad-title) {
   color: #0e1808;
 }
 
@@ -290,14 +290,14 @@
    olive-brown that reaches #292f1e on the thinnest of them (the body's ink,
    #343e2b, was greyer and lighter), cut finer so its ink mass stays the
    mock's (the mean of its darkest fifth, 128 against 119 at weight 400). */
-:root[data-style="garden"][data-rice="paper"] .masthead .tagline {
+:root[data-style="garden"][data-rice-mode="light"] .masthead .tagline {
   color: #262c1a;
   font-weight: 370;
 }
 
 /* by moonlight the same words are pale on the blue plaster, a shade of the
    night behind them where the flowers are busy */
-:root[data-style="garden"]:not([data-rice="paper"]) {
+:root[data-style="garden"]:not([data-rice-mode="light"]) {
   --l-ink: #f1ead8;
   --l-ink-soft: #e2dccb;
   --l-call: #e2dccb;
@@ -358,7 +358,7 @@
   opacity: 1;
 }
 
-:root[data-style="garden"][data-rice="paper"] .masthead .key {
+:root[data-style="garden"][data-rice-mode="light"] .masthead .key {
   --ki: #34432b;
 }
 
@@ -823,11 +823,11 @@
    brown line with a little shade inside it (the mock's screens sit in the
    card with a thin dark edge and no frame), not a hard black outline. The
    dark screens (a live capture) and the night keep the dark rim above. */
-:root[data-style="garden"][data-rice="paper"] .screen-face.has-art {
+:root[data-style="garden"][data-rice-mode="light"] .screen-face.has-art {
   background: color-mix(in srgb, var(--paper) 55%, #efe3c8);
 }
 
-:root[data-style="garden"][data-rice="paper"] .screen-face.has-art .screen-edge {
+:root[data-style="garden"][data-rice-mode="light"] .screen-face.has-art .screen-edge {
   box-shadow:
     inset 0 0 0 1px rgb(74 56 30 / 0.62),
     inset 0 0 0 2px rgb(255 250 236 / 0.28),
@@ -862,7 +862,7 @@
   letter-spacing: -0.02em;
 }
 
-:root[data-style="garden"][data-rice="paper"] :is(.title, .detail-hero h1, .launch-hero h1) {
+:root[data-style="garden"][data-rice-mode="light"] :is(.title, .detail-hero h1, .launch-hero h1) {
   color: #0e1808;
 }
 
@@ -971,7 +971,7 @@
     --l-halo: 0 0 3px rgba(248, 239, 224, 0.95), 0 0 9px rgba(248, 239, 224, 0.9), 0 0 20px rgba(248, 239, 224, 0.7);
   }
 
-  :root[data-style="garden"]:not([data-rice="paper"]) {
+  :root[data-style="garden"]:not([data-rice-mode="light"]) {
     --l-halo: 0 0 4px rgba(22, 30, 46, 0.9), 0 0 11px rgba(22, 30, 46, 0.75), 0 0 22px rgba(22, 30, 46, 0.55);
   }
 
@@ -987,7 +987,7 @@
     text-shadow: none;
   }
 
-  :root[data-style="garden"]:not([data-rice="paper"]) .masthead .instruments .key {
+  :root[data-style="garden"]:not([data-rice-mode="light"]) .masthead .instruments .key {
     background: rgba(26, 34, 54, 0.82);
     box-shadow:
       0 0 0 1px rgba(200, 210, 235, 0.22),

@@ -251,7 +251,7 @@
 
 /* day: the same plate under a pale sky, the engraving a deeper gilt, the
    fields ivory */
-:root[data-style="atlas"][data-rice="paper"] {
+:root[data-style="atlas"][data-rice-mode="light"] {
   --a-gilt: #9a7430;
   /* gold words on the pale sky: the gilt's shade, so they hold on it */
   --a-gold-ink: #6e4f1c;
@@ -387,7 +387,7 @@
   --a-star8: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cdefs%3E%3CradialGradient%20id='k'%3E%3Cstop%20offset='.6'%20stop-color='%23071a2d'/%3E%3Cstop%20offset='1'%20stop-color='%23071a2d'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse%20cx='12'%20cy='12'%20rx='12'%20ry='6.5'%20fill='url(%23k)'/%3E%3Cg%20fill='%23f0cf86'%20stroke='%23f0cf86'%20stroke-linecap='round'%3E%3Cpath%20d='M12%20.8V23.2'%20stroke-width='1.8'/%3E%3Cpath%20d='M7%2012H17'%20stroke-width='1.6'/%3E%3Cpath%20d='M8.2%208.2%2015.8%2015.8M15.8%208.2%208.2%2015.8'%20stroke-width='1.4'/%3E%3Ccircle%20cx='12'%20cy='12'%20r='2.6'%20stroke='none'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-:root[data-style="atlas"][data-rice="paper"] {
+:root[data-style="atlas"][data-rice-mode="light"] {
   --a-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 0 11.3 8.7 20 10 11.3 11.3 10 20 8.7 11.3 0 10 8.7 8.7Z' fill='%239a7430'/%3E%3C/svg%3E");
   --a-diamond: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 10 5 5 10 0 5Z' fill='%239a7430'/%3E%3C/svg%3E");  --a-star8: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cg%20fill='%239a7430'%20stroke='%239a7430'%20stroke-linecap='round'%3E%3Cpath%20d='M12%20.8V23.2'%20stroke-width='1.8'/%3E%3Cpath%20d='M7%2012H17'%20stroke-width='1.6'/%3E%3Cpath%20d='M8.2%208.2%2015.8%2015.8M15.8%208.2%208.2%2015.8'%20stroke-width='1.4'/%3E%3Ccircle%20cx='12'%20cy='12'%20r='2.6'%20stroke='none'/%3E%3C/g%3E%3C/svg%3E");
 }
@@ -606,7 +606,7 @@
 }
 
 /* the name in the mock's warmer gold-cream, a shade yellower than the nav's */
-:root[data-style="atlas"]:not([data-rice="paper"]) .masthead .brand a {
+:root[data-style="atlas"]:not([data-rice-mode="light"]) .masthead .brand a {
   color: #fce29a;
 }
 
@@ -932,7 +932,7 @@
    yellow and green measure 251,75,65, 253,190,41 and 70,180,85 at their
    cores; the rice's own tokens stand
    by day, on the ivory field). */
-:root[data-style="atlas"]:not([data-rice="paper"]) .xw {
+:root[data-style="atlas"]:not([data-rice-mode="light"]) .xw {
   --paper: #0e1927;
   --paper-warm: #051626;
   --rule: #14212f;
@@ -943,7 +943,7 @@
   --olive: #46b455;
 }
 
-:root[data-style="atlas"]:not([data-rice="paper"]) .xw-rows li[data-selected] {
+:root[data-style="atlas"]:not([data-rice-mode="light"]) .xw-rows li[data-selected] {
   color: #b4cee9;
 }
 
@@ -1391,7 +1391,7 @@
   /* by day the stacked screen has the cliff's painting behind "Projects":
      its gilt ink on grey-brown rock is faint, so it is set darker, in a
      close halo of the ivory field */
-  :root[data-style="atlas"][data-rice="paper"] .showcase-title {
+  :root[data-style="atlas"][data-rice-mode="light"] .showcase-title {
     color: #4a330c;
     text-shadow:
       0 0 2px #f8f2e2,

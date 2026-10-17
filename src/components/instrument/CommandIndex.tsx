@@ -5,6 +5,7 @@ import { Screen } from "@/components/rack/Screen";
 import { isEditable, overlayOpen } from "@/lib/page-keys";
 import type { Project } from "@/lib/project";
 import { rank } from "@/lib/search";
+import { RICES, riceLabel, riceMode, type Rice } from "@/lib/rice";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
@@ -15,15 +16,8 @@ export function openIndex() {
   window.dispatchEvent(new Event(OPEN_EVENT));
 }
 
-/** The rices, in cycle order — generated into rice.css from the dotfiles. */
-export const RICES = ["paper", "horizon", "cosmic-dusk", "rapture"] as const;
-
-/** A rice's name as people read it: "cosmic-dusk" is "cosmic dusk". */
-export const riceLabel = (rice: string) => rice.replace(/-/g, " ");
-
-export type Rice = (typeof RICES)[number];
-
 export function setTheme(next: Rice) {
+  document.documentElement.dataset.riceMode = riceMode(next);
   document.documentElement.dataset.rice = next;
   try {
     localStorage.setItem("nb-rice", next);

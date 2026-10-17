@@ -13,7 +13,7 @@ import { mkdirSync } from "node:fs";
 import { chromium } from "playwright";
 
 const APP = "https://tauri-explorer.vercel.app/";
-const THEMES = process.argv.slice(2).length ? process.argv.slice(2) : ["solarized", "dracula", "tokyo-night", "aurora"];
+const THEMES = process.argv.slice(2).length ? process.argv.slice(2) : ["solarized", "dracula", "tokyo-night", "aurora", "ayu-mirage", "gruvbox"];
 const [W, H] = (process.env.VIEW ?? "1280x800").split("x").map(Number);
 
 /** device scale factor per scene; 2 unless listed */
@@ -58,7 +58,7 @@ const SCENES = {
     //    "get it" links are the site's, not a file manager's);
     //  - the status line drops its key hints, as the app does when narrow;
     //  - the palette is 400 mock px wide, its prompt and rows set to the mock's
-    //    heights (ten rows of 31px), its list let run to all ten results, and
+    //    heights (nine rows of 31px), its list scrolls within that height, and
     //    it sits where the mock's does, under the toolbar;
     //  - the README preview's last line is faded out into the status line (a
     //    mask), not cut through its middle by the pane's edge;
@@ -83,7 +83,7 @@ const SCENES = {
         .overlay { background: rgba(${rgb}, ${dim}) !important; backdrop-filter: none !important; padding-top: ${u(121.5)}px !important; }
         .modal { width: ${u(400)}px !important; }
         .modal input { padding: ${u(7.5)}px ${u(16)}px !important; font-size: 15px; }
-        .modal ul { padding: ${u(4)}px !important; max-height: none !important; }
+        .modal ul { padding: ${u(4)}px !important; max-height: ${u(31 * 9 + 8)}px !important; }
         .modal li button { padding: ${(u(31) - 18.5) / 2}px 12px !important; }`,
     });
     await p.keyboard.press("Control+p");
