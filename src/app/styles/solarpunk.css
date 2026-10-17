@@ -197,6 +197,7 @@
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-strip: image-set(url(/kit/solarpunk/sheet-strip-day-normal@2x.webp) 2x); }
   --silk-shadow: 0 1px 0 rgba(255, 252, 238, 0.7);
   --k-bezel: url(/kit/solarpunk/mat-day.webp);
+  @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-bezel: image-set(url(/kit/solarpunk/mat-day@2x.webp) 2x); }
   --mat-t: 103;
   --mat-r: 94;
   --mat-b: 95;

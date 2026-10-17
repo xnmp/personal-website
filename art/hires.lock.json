@@ -25628,6 +25628,23 @@
       "cacheKey": "a57f217072e1c3d5c7cf66caf40d9505c95b760f88ea06732337f0628ca92257",
       "settingsDigest": "d7dc378a46178bd3cba901735a2db82efc30fec82fc7f81da9332b3cd9cb9fcd"
     },
+    "public/kit/solarpunk/mat-day@2x.webp": {
+      "provider": "external",
+      "settingsDigest": "77d191d8e539967c27be612ccf96f411f3d6579ef7d6ff51f79fc0294d519980",
+      "sourceSha256": "3b1b9f702fd27397a488d1bbd03f097c24e40ad547fb8a9c389406841a20e13a",
+      "factor": 2,
+      "model": "codex-image_gen",
+      "cacheKey": "3848e527ef3de547f2526bab5147c4875bf05ccb049760527f7dc018a216b56e",
+      "outputSha256": "708faa833970ae549861658c44f96aa94610eea104da13a33d8ea11ac456f98a",
+      "width": 2368,
+      "height": 1260,
+      "accepted": true,
+      "acceptedReasons": [
+        "whole: cannot establish alignment (13 reliable blocks; need 23 of 113 visible blocks)",
+        "tile 0: cannot establish alignment (3 reliable blocks; need 7 of 31 visible blocks)",
+        "tile 1: cannot establish alignment (2 reliable blocks; need 6 of 30 visible blocks)"
+      ]
+    },
     "public/kit/solarpunk/mat-night@2x.webp": {
       "provider": "external",
       "sourceSha256": "da15f02cb942b805277a525ea9a34299bfa26fdf464152590f0928b65a793262",

@@ -405,15 +405,13 @@
     },
     {
       "src": "public/kit/atlas/page-frame-day.webp",
-      "provider": "api",
-      "apiMaxPixels": 1900000,
-      "note": "This is a thin gold line border with small engraved ornaments around an empty page. Redraw every ornament with exactly its existing shape, size and solidity: a solid star stays solid, a soft blurred mark stays a soft mark. Never turn a mark into a ring, bead, loop, diamond or knot, and never hollow, split or add an ornament."
+      "provider": "external",
+      "note": "This is a thin border of flat, solid, matte ink strokes with small ornaments around an empty page. Keep every stroke flat and evenly coloured exactly like the original: no bevel, emboss, outline, rim highlight or dark core, and the same stroke weight. Keep every ornament exactly its existing shape, size and solidity: a solid star stays solid, a soft mark stays a soft mark. Never turn a mark into a ring, bead, loop, diamond or knot."
     },
     {
       "src": "public/kit/atlas/page-frame.webp",
-      "provider": "api",
-      "apiMaxPixels": 1900000,
-      "note": "This is a thin gold line border with small engraved ornaments around an empty page. Redraw every ornament with exactly its existing shape, size and solidity: a solid star stays solid, a soft blurred mark stays a soft mark. Never turn a mark into a ring, bead, loop, diamond or knot, and never hollow, split or add an ornament."
+      "provider": "external",
+      "note": "This is a thin border of flat, solid, matte ink strokes with small ornaments around an empty page. Keep every stroke flat and evenly coloured exactly like the original: no bevel, emboss, outline, rim highlight or dark core, and the same stroke weight. Keep every ornament exactly its existing shape, size and solidity: a solid star stays solid, a soft mark stays a soft mark. Never turn a mark into a ring, bead, loop, diamond or knot."
     },
     {
       "src": "public/kit/atlas/sheet-day-flat.webp",
@@ -2571,9 +2569,8 @@
     },
     {
       "src": "public/kit/solarpunk/mat-day.webp",
-      "provider": "api",
-      "apiMaxPixels": 1000000,
-      "note": "This is a brass frame of parallel mouldings. Keep every groove, bevel and highlight line exactly as drawn, with the same count, width and spacing on all four sides: a single dark groove stays one groove. Never split a groove into two lines or add a line."
+      "provider": "external",
+      "note": "This is a brass frame of parallel mouldings. Each groove is one soft dark channel exactly as drawn: keep it a single channel, never two dark lines with a bright lip between them. Keep every groove, bevel and highlight with the same count, width, spacing and softness on all four sides, so opposite rails match."
     },
     {
       "src": "public/kit/solarpunk/mat-night.webp",
