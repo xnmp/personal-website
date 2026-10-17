@@ -12,7 +12,7 @@ const origin = `http://127.0.0.1:${port}`;
 console.log(`\nContent editor: ${origin}/studio\n`);
 const child = spawn(
   "bun",
-  ["run", "dev", "--hostname", "127.0.0.1", "--port", port],
+  ["run", "dev:site", "--hostname", "127.0.0.1", "--port", port],
   {
     stdio: "inherit",
     env: {

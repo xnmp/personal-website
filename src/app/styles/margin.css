@@ -11,7 +11,7 @@
   --margin-radius: 8px;
   --margin-panel: color-mix(in srgb, var(--paper-warm) 85%, var(--paper));
   --margin-shadow: 0 3px 18px color-mix(in srgb, var(--shadow) 12%, transparent);
-  --font-print: var(--font-inter);
+  --font-print: var(--font-plex-sans);
   --font-display: var(--font-newsreader);
   --print: var(--ink);
   --print-soft: color-mix(in srgb, var(--ink) 73%, var(--paper));

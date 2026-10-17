@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import * as echarts from "echarts";
+import type * as echarts from "echarts";
 
 type Props = {
   option: echarts.EChartsOption;
@@ -17,6 +17,8 @@ export function Chart({ option, height = 360, ariaLabel, playWhileVisible = fals
   const container = useRef<HTMLDivElement>(null);
   const instance = useRef<echarts.ECharts | null>(null);
   const visible = useRef(false);
+  const latestOption = useRef(option);
+  const [status, setStatus] = useState<"waiting" | "loading" | "ready" | "error">("waiting");
 
   /** start or stop a timeline to match visibility and the motion setting */
   const syncPlay = (chart: echarts.ECharts) => {
@@ -25,31 +27,53 @@ export function Chart({ option, height = 360, ariaLabel, playWhileVisible = fals
   };
 
   useEffect(() => {
-    if (!container.current) return;
-    const chart = echarts.init(container.current, null, { renderer: "svg" });
-    instance.current = chart;
-    const onResize = () => chart.resize();
-    window.addEventListener("resize", onResize);
-    const io = playWhileVisible
-      ? new IntersectionObserver(
-          ([entry]) => {
-            visible.current = entry.isIntersecting;
-            syncPlay(chart);
-          },
-          { threshold: 0.4 }
-        )
-      : null;
-    io?.observe(container.current);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      io?.disconnect();
-      chart.dispose();
-      instance.current = null;
+    const element = container.current;
+    if (!element) return;
+    let disposed = false;
+    let started = false;
+    let release = () => {};
+    const load = async () => {
+      if (started) return;
+      started = true;
+      setStatus("loading");
+      try {
+        const echarts = await import("echarts");
+        if (disposed) return;
+        const chart = echarts.init(element, null, { renderer: "svg" });
+        instance.current = chart;
+        const sync = () => {
+          if (playWhileVisible) chart.dispatchAction({ type: "timelinePlayChange", playState: visible.current && !reducedMotion() });
+        };
+        const onResize = () => chart.resize();
+        const playback = playWhileVisible ? new IntersectionObserver(([entry]) => {
+          visible.current = entry.isIntersecting;
+          sync();
+        }, { threshold: 0.4 }) : null;
+        release = () => {
+          playback?.disconnect();
+          window.removeEventListener("resize", onResize);
+          chart.dispose();
+          instance.current = null;
+        };
+        window.addEventListener("resize", onResize);
+        playback?.observe(element);
+        chart.setOption(latestOption.current, { notMerge: true });
+        sync();
+        setStatus("ready");
+      } catch {
+        if (!disposed) { release(); setStatus("error"); }
+      }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- one chart instance per mount
-  }, []);
+    // Keep offscreen chart code and SVG construction out of page navigation.
+    const proximity = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { proximity.disconnect(); void load(); }
+    }, { rootMargin: "240px" });
+    proximity.observe(element);
+    return () => { disposed = true; proximity.disconnect(); release(); };
+  }, [playWhileVisible]);
 
   useEffect(() => {
+    latestOption.current = option;
     const chart = instance.current;
     if (!chart) return;
     chart.setOption(option, { notMerge: true });
@@ -59,11 +83,16 @@ export function Chart({ option, height = 360, ariaLabel, playWhileVisible = fals
 
   return (
     <div
-      ref={container}
       role="img"
       aria-label={ariaLabel}
-      style={{ width: "100%", height }}
-    />
+      aria-busy={status !== "ready" && status !== "error"}
+      style={{ width: "100%", height, position: "relative" }}
+    >
+      <div ref={container} style={{ width: "100%", height: "100%" }} />
+      {status !== "ready" && <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", color: "var(--ink-soft)", font: "12px var(--font-mono)" }}>
+        {status === "error" ? "Chart unavailable. Reload to retry." : "Loading chart…"}
+      </span>}
+    </div>
   );
 }
 

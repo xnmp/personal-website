@@ -8,13 +8,13 @@ Live: [chong.md](https://chong.md) (pending DNS) · fallback: [personal-website-
 
 ```bash
 bun install
-bun run dev      # http://localhost:3000
-bun run studio   # local content editor, http://127.0.0.1:3210/studio
+bun run dev      # editable site, http://127.0.0.1:3210
+bun run dev:site # plain site preview, http://localhost:3000
 bun run build    # production build
 bun run lint
 bun run test     # unit (bun:test)
-bun run e2e      # playwright, reuses the dev server
-bun run og       # re-capture the social cards (dev server must be running)
+bun run e2e      # playwright, starts/reuses the plain site preview
+bun run og       # re-capture social cards (dev:site must be running)
 bun run kit:check  # every kit state registers with its normal state
 ```
 
@@ -24,7 +24,7 @@ See [`docs/architecture.md`](docs/architecture.md) for routes, the two colour-to
 
 ## Edit the content
 
-Run `bun run studio` for the local Margin Index content editor. Edit text directly in the actual site layout,
+Run `bun run dev` for the local Margin Index content editor (`bun run studio` remains an alias). Edit text directly in the actual site layout,
 and use **Deploy** in the bottom-left to publish. The [editor guide](docs/content-studio.md) covers drafts and the publishing workflow.
 
 Website copy lives in [`content/`](content/). You can also edit Markdown, commit, and deploy;
