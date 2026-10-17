@@ -60,10 +60,10 @@ describe("authored content", () => {
     const preview = projectEntry(document).preview!;
     expect(preview.src).toBe("/tauri/hero-quick-open-{theme}.webp");
     expect(projectEntry({ ...document, data: { ...document.data, preview: undefined } }).preview).toBeUndefined();
-    for (const preview of [null, {}, { ...preview, src: "javascript:alert(1)" },
+    for (const candidate of [null, {}, { ...preview, src: "javascript:alert(1)" },
       { ...preview, src: "/../private.png" }, { ...preview, alt: "" },
       { ...preview, width: Infinity }, { ...preview, height: 0 }]) {
-      expect(() => projectEntry({ ...document, data: { ...document.data, preview } })).toThrow("preview");
+      expect(() => projectEntry({ ...document, data: { ...document.data, preview: candidate } })).toThrow("preview");
     }
   });
 });
