@@ -1,6 +1,6 @@
 /* ==========================================================================
    PAPER DIORAMA (art/briefs/paper.md): the default style. Its kit's tokens are
-   the base in kit.css (:root for night, :root[data-rice="paper"] for day),
+   the base in kit.css (:root for night, :root[data-rice-mode="light"] for day),
    which every other style overrides; what is Paper Diorama's alone, and must
    not reach the styles built on that base, is set here, under
    :root[data-style="paper"].
@@ -127,7 +127,7 @@
   --xw-shadow: 0 calc(3 * var(--u)) calc(6 * var(--u)) rgba(42, 30, 18, 0.34), 0 calc(14 * var(--u)) calc(30 * var(--u)) rgba(42, 30, 18, 0.4);
 }
 
-:root[data-style="paper"][data-rice="paper"] {
+:root[data-style="paper"][data-rice-mode="light"] {
   --plate-under: #d9c3ab;
   --key-under: #dac6ae;
   --k-card: url(/kit/paper/sheet-card-alpenglow-normal.webp);
@@ -241,7 +241,7 @@
   --left-anchor: 0;
 }
 
-:root[data-style="paper"][data-rice="paper"]:has(.detail-hero) {
+:root[data-style="paper"][data-rice-mode="light"]:has(.detail-hero) {
   --k-sky: url(/kit/paper/scene/project-day/sky.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/paper/scene/project-day/sky@2x.webp); }
   --k-mid: url(/kit/paper/scene/project-day/hills-far.webp);
@@ -252,7 +252,7 @@
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-right: url(/kit/paper/scene/project-day/pines-right@2x.webp); }
 }
 
-:root[data-style="paper"][data-rice="paper"]:has(.launch-hero) {
+:root[data-style="paper"][data-rice-mode="light"]:has(.launch-hero) {
   --k-sky: url(/kit/paper/scene/launch-day/sky.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/paper/scene/launch-day/sky@2x.webp); }
   --k-mid: url(/kit/paper/scene/launch-day/hills-far.webp);
@@ -434,7 +434,7 @@
   box-shadow: none;
 }
 
-:root[data-style="paper"][data-rice="paper"] .xw {
+:root[data-style="paper"][data-rice-mode="light"] .xw {
   --xw-select: #4c6a91; /* the mountains' slate: white on it 5.6:1 */
   /* the frame a deeper warm tan than the mount's cream it stands on (it was
      the mount's own, #e8dcc7: cream on cream, the window's edge lost, round 9),
@@ -498,7 +498,7 @@
   --xw-folder: #77a9ef;
 }
 
-:root[data-style="paper"][data-rice="paper"] .xw {
+:root[data-style="paper"][data-rice-mode="light"] .xw {
   --xw-folder: #4f87d6;
 }
 
@@ -703,7 +703,7 @@
   --well-grain-size: max(220px, calc(445 * var(--u)));
 }
 
-:root[data-style="paper"][data-rice="paper"] {
+:root[data-style="paper"][data-rice-mode="light"] {
   /* the card stock's mean is #ddc8b0: the sheet a paler, greyer cream, as a
      print on its own paper stands against the stock it is laid on */
   --screen-face: #e8dcc7;
@@ -815,7 +815,7 @@
     --divider-under: #363a4d;
   }
 
-  :root[data-style="paper"][data-rice="paper"] .divider {
+  :root[data-style="paper"][data-rice-mode="light"] .divider {
     --divider-under: #d4bca3;
   }
 }
@@ -841,12 +841,12 @@
     --divider-under: #3b445f;
   }
 
-  :root[data-style="paper"][data-rice="paper"] :is(.divider, .running-head) {
+  :root[data-style="paper"][data-rice-mode="light"] :is(.divider, .running-head) {
     --divider-under: #e4d6c3;
   }
 
   /* (the label's tan, a little below the strip's pale cream) */
-  :root[data-style="paper"][data-rice="paper"] :is(.divider, .running-head)::before {
+  :root[data-style="paper"][data-rice-mode="light"] :is(.divider, .running-head)::before {
     filter: brightness(0.95) saturate(1.12);
   }
 }
@@ -1183,7 +1183,7 @@
   color: var(--paper-ink);
 }
 
-:root[data-style="paper"][data-rice="paper"] .launch-hero h1 {
+:root[data-style="paper"][data-rice-mode="light"] .launch-hero h1 {
   color: #1d2829;
 }
 
@@ -1230,8 +1230,8 @@
   text-transform: none;
 }
 
-:root[data-style="paper"][data-rice="paper"] .detail-hero .kicker,
-:root[data-style="paper"][data-rice="paper"] .detail-hero .kicker * {
+:root[data-style="paper"][data-rice-mode="light"] .detail-hero .kicker,
+:root[data-style="paper"][data-rice-mode="light"] .detail-hero .kicker * {
   color: #0c0a09; /* 5:1 on the red tape */
 }
 
@@ -1316,9 +1316,9 @@
 
 /* the day's stock for a project's sheets and its print: the mock's paler,
    greyer cream, not the card sprites' warm tan (the speckle kept) */
-:root[data-style="paper"][data-rice="paper"] .detail-hero::before,
-:root[data-style="paper"][data-rice="paper"] .detail-hero .screen::after,
-:root[data-style="paper"][data-rice="paper"]:has(.detail-hero) .section::before {
+:root[data-style="paper"][data-rice-mode="light"] .detail-hero::before,
+:root[data-style="paper"][data-rice-mode="light"] .detail-hero .screen::after,
+:root[data-style="paper"][data-rice-mode="light"]:has(.detail-hero) .section::before {
   filter: saturate(0.65) brightness(1.06);
 }
 
@@ -1680,7 +1680,7 @@
 
   /* (this mock's cream is lighter than the home window mat's; and the sheet,
      the day's stock for a project's sheets: the mock's paler, greyer cream) */
-  :root[data-style="paper"][data-rice="paper"] .launch-shot.faceplate::before {
+  :root[data-style="paper"][data-rice-mode="light"] .launch-shot.faceplate::before {
     filter: brightness(1.07);
   }
 
@@ -1689,7 +1689,7 @@
     inset: calc(-20 * var(--u)) calc(-3 * var(--u)) calc(-25 * var(--u)) calc(-18 * var(--u));
   }
 
-  :root[data-style="paper"][data-rice="paper"] .launch-copy.faceplate::before {
+  :root[data-style="paper"][data-rice-mode="light"] .launch-copy.faceplate::before {
     filter: saturate(0.65) brightness(1.06);
   }
 
@@ -1790,7 +1790,7 @@
   }
 
   /* (by day its words are the headline's dark blue-green, as the mock's) */
-  :root[data-style="paper"][data-rice="paper"] .launch-hero .launch-keys .key:not([data-tone="signal"]) {
+  :root[data-style="paper"][data-rice-mode="light"] .launch-hero .launch-keys .key:not([data-tone="signal"]) {
     --ki: #1d2829;
   }
 
@@ -1861,7 +1861,7 @@
     box-shadow: 0 calc(2 * var(--u)) calc(6 * var(--u)) rgba(30, 24, 18, 0.3);
   }
 
-  :root[data-style="paper"][data-rice="paper"] .launch-shot .screen {
+  :root[data-style="paper"][data-rice-mode="light"] .launch-shot .screen {
     padding: 0;
     background: none;
     box-shadow:
@@ -1883,7 +1883,7 @@
     box-shadow: inset 0 0 0 1px rgba(10, 10, 14, 0.4);
   }
 
-  :root[data-style="paper"][data-rice="paper"] .launch-shot .screen-edge {
+  :root[data-style="paper"][data-rice-mode="light"] .launch-shot .screen-edge {
     box-shadow: none;
   }
 
@@ -1917,6 +1917,18 @@
     --k-app: url(/tauri/hero-quick-open-wide-aurora.webp);
   }
 
+  :root[data-style="paper"][data-rice="ayu-mirage"] {
+    --k-app: url(/tauri/hero-quick-open-wide-ayu-mirage.webp);
+  }
+
+  :root[data-style="paper"][data-rice="catppuccin-latte"] {
+    --k-app: url(/tauri/hero-quick-open-wide-solarized.webp);
+  }
+
+  :root[data-style="paper"][data-rice="gruvbox"] {
+    --k-app: url(/tauri/hero-quick-open-wide-gruvbox.webp);
+  }
+
   /* (the cut's own shape: the mock's window, 1.39:1; the shared 1396 x 876 is
      the product's still) */
   :root[data-style="paper"] .launch-shot .screen-face {
@@ -1932,7 +1944,7 @@
     border-radius: calc(8.2 * var(--u));
   }
 
-  :root[data-style="paper"][data-rice="paper"] .launch-shot .screen :is(.screen-face, .screen-edge) {
+  :root[data-style="paper"][data-rice-mode="light"] .launch-shot .screen :is(.screen-face, .screen-edge) {
     border-radius: calc(10 * var(--u));
   }
 
@@ -1987,7 +1999,7 @@
     --divider-under: #363a4d;
   }
 
-  :root[data-style="paper"][data-rice="paper"] .launch-shot-cap {
+  :root[data-style="paper"][data-rice-mode="light"] .launch-shot-cap {
     --divider-under: #d4bca3;
   }
 
@@ -2152,7 +2164,7 @@
     --right-anchor: 1;
   }
 
-  :root[data-style="paper"][data-rice="paper"]:not(:has(.detail-hero, .launch-hero)) {
+  :root[data-style="paper"][data-rice-mode="light"]:not(:has(.detail-hero, .launch-hero)) {
     --k-sky: url(/kit/paper/scene/phone-day/sky.webp);
     @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/paper/scene/phone-day/sky@2x.webp); }
     --k-mid: url(/kit/paper/scene/phone-day/hills-far.webp);
@@ -2225,7 +2237,7 @@
   }
 
   /* (the mock's card is a paler, greyer cream than the kit's card stock) */
-  :root[data-style="paper"][data-rice="paper"] .launchpad-copy::before {
+  :root[data-style="paper"][data-rice-mode="light"] .launchpad-copy::before {
     filter: saturate(0.7) brightness(1.04);
   }
 

@@ -2,7 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 import { ChoiceMenu } from "./ChoiceMenu";
-import { RICES, THEME_EVENT, riceLabel, setTheme } from "./CommandIndex";
+import { THEME_EVENT, setTheme } from "./CommandIndex";
+import { RICES, riceLabel } from "@/lib/rice";
 
 const options = RICES.map((id) => ({ id, name: riceLabel(id) }));
 const readRice = () => document.documentElement.dataset.rice ?? "paper";

@@ -3,7 +3,9 @@
 .margin-index,
 .margin-location,
 .margin-contact,
-.instruments .margin-projects { display: none; }
+.instruments .margin-projects,
+.about-file-head,
+.about-contents { display: none; }
 
 :root[data-style="margin"] {
   --margin-radius: 8px;
@@ -14,7 +16,7 @@
   --print: var(--ink);
   --print-soft: color-mix(in srgb, var(--ink) 73%, var(--paper));
   --print-faint: var(--print-soft);
-  --signal: #32684f;
+  --signal: var(--rice-accent, #32684f);
   --signal-ink: var(--signal);
   --signal-rule: var(--signal);
   --scene-ground: var(--paper);
@@ -75,7 +77,8 @@
   --k-glass: none;
   --k-drift-cloud: none;
 }
-:root[data-style="margin"]:not([data-rice="paper"]) { --signal: #99c7a8; }
+:root[data-style="margin"]:not([data-rice-mode="light"]) { --signal: var(--rice-accent, #99c7a8); }
+:root[data-style="margin"][data-rice-mode="light"] { --print-soft: var(--ink-soft); }
 :root[data-style="margin"] body { color: var(--print); }
 :root[data-style="margin"] .scene { display: none; }
 :root[data-style="margin"] .rack {
@@ -198,41 +201,61 @@
 :root[data-style="margin"] .colophon .nowrap { white-space: normal; overflow-wrap: anywhere; }
 :root[data-style="margin"] :not(pre) > code { border-radius: 4px; background: var(--code-bg); }
 
-/* Reading pages feel like a kept notebook: inset paper, a clear title leaf,
-   numbered sections, and a little colour in the margin. */
-:root[data-style="margin"] .about-page { counter-reset: reading-section; }
-:root[data-style="margin"] .about-page > .detail-hero.solo {
-  padding: clamp(24px, 3vw, 40px); margin-bottom: 10px;
-  border: 1px solid var(--rule); border-radius: 14px;
-  background: var(--margin-panel); box-shadow: var(--margin-shadow);
+/* A single reading leaf, with a source tab and a useful index in its margin. */
+:root[data-style="margin"] .about-page {
+  padding: clamp(24px, 3vw, 40px); margin-top: 28px;
+  border: 1px solid var(--rule); border-radius: 16px;
+  background: var(--margin-panel);
 }
+:root[data-style="margin"] .about-file-head {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 12px; margin: -8px 0 34px; padding-bottom: 16px; border-bottom: 1px solid var(--rule);
+  color: var(--print-soft); font: 13px/1.5 var(--font-print), sans-serif;
+}
+:root[data-style="margin"] .about-file-head a {
+  display: inline-flex; gap: 12px; align-items: center; padding: 6px 10px;
+  border-radius: 5px; background: var(--paper); color: var(--signal);
+  font: 11px/1.5 var(--font-mono), monospace; text-decoration: none;
+}
+:root[data-style="margin"] .about-file-head a:hover { text-decoration: underline; text-underline-offset: 3px; }
+:root[data-style="margin"] .about-page > .detail-hero { padding: 0 0 28px; }
 :root[data-style="margin"] .about-page .detail-hero h1 {
-  font-size: clamp(34px, 3.4vw, 48px); max-width: 24ch; line-height: 1.12;
-  margin-bottom: 25px;
+  font-size: clamp(36px, 3.6vw, 52px); max-width: 25ch; line-height: 1.08;
+  margin-bottom: 28px; text-wrap: balance;
 }
-:root[data-style="margin"] .about-page .detail-hero .kicker { color: var(--signal); margin-bottom: 22px; }
-:root[data-style="margin"] .about-page .detail-hero p { font-size: 17px; line-height: 1.7; }
+:root[data-style="margin"] .about-page .detail-hero .kicker { display: none; }
+:root[data-style="margin"] .about-page .detail-hero p { max-width: 68ch; font-size: 16px; line-height: 1.75; text-wrap: pretty; }
+:root[data-style="margin"] .about-contents {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 24px;
+  padding: 18px 0; border-block: 1px solid var(--rule); margin-bottom: 32px;
+  font: 13px/1.6 var(--font-print), sans-serif;
+}
+:root[data-style="margin"] .about-contents > span { color: var(--print-soft); margin-right: auto; }
+:root[data-style="margin"] .about-contents a { color: var(--signal); text-underline-offset: 4px; text-decoration-thickness: 1px; }
 :root[data-style="margin"] .about-page > .section {
-  counter-increment: reading-section; margin-top: 20px; padding: 28px;
-  border: 1px solid var(--rule); border-radius: 12px;
-  background: color-mix(in srgb, var(--margin-panel) 45%, var(--paper));
+  grid-template-columns: minmax(0, 180px) minmax(0, 1fr); gap: 32px;
+  margin: 0; padding: 0 0 32px; border: 0; scroll-margin-top: 28px;
 }
-:root[data-style="margin"] .about-page .section-kicker { color: var(--signal); }
-:root[data-style="margin"] .about-page .section-kicker::before {
-  content: counter(reading-section, decimal-leading-zero) " / "; opacity: 0.75;
-}
-:root[data-style="margin"] .about-page .section h2 { font-weight: 500; font-size: 27px; }
-:root[data-style="margin"] .about-page .section p { font-size: 16px; line-height: 1.75; }
-:root[data-style="margin"] .about-page .section .aside-note { font-size: 13px; }
+:root[data-style="margin"] .about-page > .section + .section { padding-top: 32px; border-top: 1px solid var(--rule); }
+:root[data-style="margin"] .about-page .section > :first-child { padding-left: 18px; border-left: 1px solid var(--signal); }
+:root[data-style="margin"] .about-page .section-kicker { display: none; }
+:root[data-style="margin"] .about-page .section h2 { font-weight: 400; font-size: 28px; line-height: 1.15; }
+:root[data-style="margin"] .about-page .section p { font-size: 15px; line-height: 1.8; text-wrap: pretty; }
+:root[data-style="margin"] .about-page .section .aside-note { font: 16px/1.5 var(--font-display), Georgia, serif; }
+:root[data-style="margin"] .about-page .section p:last-child { margin-bottom: 0; }
 :root[data-style="margin"] .about-page > .colophon {
-  margin-top: 28px; padding: 24px 0 0; border-top: 1px solid var(--rule);
+  grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 32px;
+  margin: 4px 0 0; padding: 24px 0 0; border-top: 1px solid var(--rule);
 }
+:root[data-style="margin"] .about-page .colophon div { font: 12px/1.5 var(--font-print), sans-serif; text-transform: none; letter-spacing: 0; }
+:root[data-style="margin"] .about-page .colophon strong { font: 14px/1.6 var(--font-print), sans-serif; }
 
 @media (max-width: 1050px) {
   :root[data-style="margin"] .rack-inner { grid-template-columns: 140px minmax(0, 1fr); column-gap: 45px; }
   :root[data-style="margin"] .margin-project[data-featured] { grid-template-columns: 36px minmax(0, 1fr); }
   :root[data-style="margin"] .margin-feature { grid-column: 2; max-width: 500px; }
   :root[data-style="margin"] .section { grid-template-columns: minmax(0, 1fr); }
+  :root[data-style="margin"] .about-page > .section { grid-template-columns: minmax(0, 1fr); gap: 22px; }
 }
 @media (max-width: 700px) {
   :root[data-style="margin"] .rack { padding: 26px 24px 48px; }
@@ -249,6 +272,12 @@
   :root[data-style="margin"] .margin-contact { display: none; }
   :root[data-style="margin"] .head-nav { flex-direction: row; margin-top: 8px; }
   :root[data-style="margin"] .rack-main { width: 100%; padding-top: 33px; }
+  :root[data-style="margin"] .about-page { margin-top: 24px; padding: 24px 20px; }
+  :root[data-style="margin"] .about-file-head { margin-bottom: 26px; }
+  :root[data-style="margin"] .about-page .detail-hero h1 { font-size: clamp(32px, 7.5vw, 42px); }
+  :root[data-style="margin"] .about-contents { align-items: flex-start; gap: 12px 20px; }
+  :root[data-style="margin"] .about-contents > span { flex-basis: 100%; }
+  :root[data-style="margin"] .about-page > .colophon { grid-template-columns: minmax(0, 1fr); }
   :root[data-style="margin"] .margin-intro { margin-bottom: 42px; }
   :root[data-style="margin"] .margin-intro .margin-statement { font-size: 25px; max-width: 25ch; }
   :root[data-style="margin"] .margin-intro p { font-size: 19px; }

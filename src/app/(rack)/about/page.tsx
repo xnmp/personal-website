@@ -22,6 +22,10 @@ export default function AboutPage() {
     <>
       <RunningHead meta="about" nav={<Key href="/">← all projects</Key>} />
       <main id="content" className="rack-main about-page" tabIndex={-1}>
+        <div className="about-file-head">
+          <span>{about.kicker}</span>
+          <a href="https://github.com/xnmp/personal-website/blob/main/content/about.md">about.md <span aria-hidden="true">↗</span></a>
+        </div>
         <section className={about.portrait ? "detail-hero" : "detail-hero solo"}>
           <div>
             <div className="kicker">{about.kicker}</div>
@@ -36,8 +40,13 @@ export default function AboutPage() {
           ) : null}
         </section>
 
-        {sections.map((s) => (
-          <section key={s.heading} className="section" data-draft={s.draft ? "" : undefined}>
+        {sections.length > 0 && <nav className="about-contents" aria-label="On this page">
+          <span>In this file</span>
+          {sections.map((s, index) => <a key={s.heading} href={`#about-section-${index}`}>{s.kicker}</a>)}
+        </nav>}
+
+        {sections.map((s, index) => (
+          <section id={`about-section-${index}`} key={s.heading} className="section" data-draft={s.draft ? "" : undefined}>
             <div>
               <div className="section-kicker">
                 {s.kicker}

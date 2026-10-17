@@ -13,7 +13,7 @@ import { mkdirSync } from "node:fs";
 import { chromium } from "playwright";
 
 const APP = "https://tauri-explorer.vercel.app/";
-const THEMES = process.argv.slice(2).length ? process.argv.slice(2) : ["solarized", "dracula", "tokyo-night", "aurora"];
+const THEMES = process.argv.slice(2).length ? process.argv.slice(2) : ["solarized", "dracula", "tokyo-night", "aurora", "ayu-mirage", "gruvbox"];
 const [W, H] = (process.env.VIEW ?? "1280x800").split("x").map(Number);
 
 /** device scale factor per scene; 2 unless listed */

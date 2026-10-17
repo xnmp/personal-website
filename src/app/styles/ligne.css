@@ -262,7 +262,7 @@
 }
 
 /* day: the album's daylight pages, the mock's */
-:root[data-style="ligne"][data-rice="paper"] {
+:root[data-style="ligne"][data-rice-mode="light"] {
   --ligne-page: #f9f3e2;
   --ligne-field: #f9f3e2;
   --ligne-band: #82caee;
@@ -1013,7 +1013,7 @@
 
 /* By night the headline is lettered as a title is on a night sky: cream,
    in a black ink outline. */
-:root[data-style="ligne"]:not([data-rice="paper"]) .launchpad-title {
+:root[data-style="ligne"]:not([data-rice-mode="light"]) .launchpad-title {
   --brush-ink: var(--ligne-ink); /* the outline rounded, not the cream */
   -webkit-text-stroke: calc(5 * var(--u)) var(--ligne-ink);
   paint-order: stroke fill;

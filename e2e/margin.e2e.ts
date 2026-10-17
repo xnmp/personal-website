@@ -138,3 +138,13 @@ test("new visitors get Margin Index while a saved style takes precedence", async
   await expect(page.locator("html")).toHaveAttribute("data-style", "paper");
   await expect(page.locator(".landing")).toBeVisible();
 });
+
+test("the About file index moves to the corresponding authored section", async ({ page }) => {
+  await seed(page);
+  await page.goto("/about");
+  const index = page.getByRole("navigation", { name: "On this page" });
+  await index.getByRole("link", { name: "Setup", exact: true }).click();
+  await expect(page).toHaveURL(/#about-section-1$/);
+  await expect(page.locator("#about-section-1 h2")).toBeInViewport();
+  await expect(page.locator(".about-file-head a")).toHaveAttribute("href", "https://github.com/xnmp/personal-website/blob/main/content/about.md");
+});

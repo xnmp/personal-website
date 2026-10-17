@@ -151,7 +151,7 @@
 }
 
 /* day: honey light through the glass, pale frosted panes, bright brass */
-:root[data-style="solarpunk"][data-rice="paper"] {
+:root[data-style="solarpunk"][data-rice-mode="light"] {
   --k-tape: url(/kit/solarpunk/tape-day.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-tape: image-set(url(/kit/solarpunk/tape-day@2x.webp) 2x); }
   --k-chip: url(/kit/solarpunk/chip-day.webp);
@@ -245,12 +245,12 @@
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/solarpunk/scene/launch-night/sky@2x.webp); }
 }
 
-:root[data-style="solarpunk"][data-rice="paper"]:has(.detail-hero) {
+:root[data-style="solarpunk"][data-rice-mode="light"]:has(.detail-hero) {
   --k-sky: url(/kit/solarpunk/scene/project-day/sky.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/solarpunk/scene/project-day/sky@2x.webp); }
 }
 
-:root[data-style="solarpunk"][data-rice="paper"]:has(.launch-hero) {
+:root[data-style="solarpunk"][data-rice-mode="light"]:has(.launch-hero) {
   --k-sky: url(/kit/solarpunk/scene/launch-day/sky.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/solarpunk/scene/launch-day/sky@2x.webp); }
 }
@@ -480,7 +480,7 @@
   --sp-desk-halo: 0 1px 2px rgb(10 14 8 / 0.7), 0 0 calc(12 * var(--u)) rgb(10 14 8 / 0.5);
 }
 
-:root[data-style="solarpunk"][data-rice="paper"] {
+:root[data-style="solarpunk"][data-rice-mode="light"] {
   --sp-stand: url(/kit/solarpunk/monitor-stand-day.webp);
   --sp-still: url(/kit/solarpunk/still-life-day.webp);
   --sp-deck: url(/kit/solarpunk/laptop-deck-day.webp);
@@ -643,7 +643,7 @@
 /* by night the app on the monitor is the mock's dark-themed Tauri Explorer
    (the live text stays live, in these inks); by day it is lit in the day
    theme, as every screen here is */
-:root[data-style="solarpunk"]:not([data-rice="paper"]) .launchpad-window {
+:root[data-style="solarpunk"]:not([data-rice-mode="light"]) .launchpad-window {
   --paper: #161b23;
   --paper-warm: #1d232d;
   --ink: #cfd6e0;
@@ -816,7 +816,7 @@
   /* the light screen is glass in warm light, not a flat sheet: a faint sun
      cast over it and a soft diagonal sheen (the dark screens, which are the
      mock's own, keep theirs) */
-  :root[data-style="solarpunk"][data-rice="paper"] .launchpad-window .xw::after {
+  :root[data-style="solarpunk"][data-rice-mode="light"] .launchpad-window .xw::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -965,7 +965,7 @@
       var(--sp-rivet) right 5px bottom 5px / 6px 6px no-repeat;
   }
 
-  :root[data-style="solarpunk"][data-rice="paper"]:has(.launchpad) {
+  :root[data-style="solarpunk"][data-rice-mode="light"]:has(.launchpad) {
     --k-sky: url(/kit/solarpunk/phone-day.webp);
     @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-sky: url(/kit/solarpunk/phone-day@2x.webp); }
     --sp-phone-ink: #12261a;
@@ -1403,7 +1403,7 @@
   --silk-shadow: 0 1px 1px rgb(0 0 0 / 0.6), 0 0 6px rgb(8 14 8 / 0.6);
 }
 
-:root[data-style="solarpunk"][data-rice="paper"] .card.faceplate {
+:root[data-style="solarpunk"][data-rice-mode="light"] .card.faceplate {
   --k-plate: url(/kit/solarpunk/sheet-card-normal.webp);
   @media (min-resolution: 1.5dppx), (min-width: 2200px) { --k-plate: image-set(url(/kit/solarpunk/sheet-card-normal@2x.webp) 2x); }
   --k-plate-hover: url(/kit/solarpunk/sheet-card-hover.webp);
@@ -1521,7 +1521,7 @@
 /* by night the screens are the mock's (a lit display in the lacquer): the
    1-bit art on a dark face in the night's inks; by day they are lit in the
    day theme, as every screen here is */
-:root[data-style="solarpunk"]:not([data-rice="paper"]) .card-screen {
+:root[data-style="solarpunk"]:not([data-rice-mode="light"]) .card-screen {
   --paper: #0f1a14;
   --rust: #e8708c;
   --amber: #f6c445;
@@ -1788,7 +1788,7 @@
   --plate-backdrop: blur(8px) saturate(1.05);
 }
 
-:root[data-style="solarpunk"][data-rice="paper"]:has(.detail-hero, .launch-hero) {
+:root[data-style="solarpunk"][data-rice-mode="light"]:has(.detail-hero, .launch-hero) {
   --sp-glass-a: rgb(251 247 234 / 0.74);
   --sp-glass-b: rgb(248 242 222 / 0.68);
   --sp-glass-foot: rgb(248 242 222 / 0.95);
@@ -2661,7 +2661,7 @@
     text-align: center;
   }
 
-  :root[data-style="solarpunk"]:not([data-rice="paper"]) .launch-live + .section {
+  :root[data-style="solarpunk"]:not([data-rice-mode="light"]) .launch-live + .section {
     --plate-fill:
       radial-gradient(60% 95% at 13% 14%, rgb(52 78 62 / 0.55), transparent 72%),
       linear-gradient(#1b2a21, #131f18);

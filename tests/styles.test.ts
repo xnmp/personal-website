@@ -37,7 +37,7 @@ const kit = readFileSync("src/app/kit.css", "utf8");
 // sheets or mounts at another scale, --plate-k / --mat-k, from the default).
 const SHARED = new Set(["--slice-plate", "--plate-k", "--plate-w", "--slice-key", "--key-k", "--key-w", "--mat-k", "--bezel-w", "--rack-gap"]);
 const night = [...block(kit, ":root").keys()].filter((k) => !SHARED.has(k));
-const day = [...block(kit, ':root[data-rice="paper"]').keys()];
+const day = [...block(kit, ':root[data-rice-mode="light"]').keys()];
 
 describe("every style is a complete kit", () => {
   test("the Paper Diorama's own token blocks were found", () => {
@@ -50,7 +50,7 @@ describe("every style is a complete kit", () => {
     describe(s.name, () => {
       const css = existsSync(file) ? readFileSync(file, "utf8") : "";
       const sNight = block(css, `:root[data-style="${s.id}"]`);
-      const sDay = block(css, `:root[data-style="${s.id}"][data-rice="paper"]`);
+      const sDay = block(css, `:root[data-style="${s.id}"][data-rice-mode="light"]`);
 
       test("its night finish sets every token the kit reads", () => {
         expect(night.filter((k) => !sNight.has(k))).toEqual([]);

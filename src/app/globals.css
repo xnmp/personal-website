@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./rice.css";
+@import "./palettes.css";
 @import "./kit.css";
 @import "./styles/paper.css";
 @import "./styles/solarpunk.css";
@@ -2238,7 +2239,10 @@ pre code {
 :root:not([data-rice]) [data-rice-shot="paper"] img,
 :root[data-rice="horizon"] [data-rice-shot="horizon"] img,
 :root[data-rice="cosmic-dusk"] [data-rice-shot="cosmic-dusk"] img,
-:root[data-rice="rapture"] [data-rice-shot="rapture"] img {
+:root[data-rice="rapture"] [data-rice-shot="rapture"] img,
+:root[data-rice="ayu-mirage"] [data-rice-shot="ayu-mirage"] img,
+:root[data-rice="catppuccin-latte"] [data-rice-shot="catppuccin-latte"] img,
+:root[data-rice="gruvbox"] [data-rice-shot="gruvbox"] img {
   display: block;
 }
 

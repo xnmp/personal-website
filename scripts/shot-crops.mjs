@@ -17,7 +17,7 @@ import sharp from "sharp";
 
 const RAW = "art/raw/tauri-shots";
 const OUT = "public/tauri";
-const THEMES = ["solarized", "dracula", "tokyo-night", "aurora"];
+const THEMES = process.argv.slice(2).length ? process.argv.slice(2) : ["solarized", "dracula", "tokyo-night", "aurora", "ayu-mirage", "gruvbox"];
 
 /**
  * [name, scene, left, top, width, height, options?] in raw pixels. Paired

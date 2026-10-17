@@ -25,7 +25,7 @@ group and `components/rack/`. Those names are historical. Mapping:
 |---|---|
 | Framework | Next.js 16 App Router (read `node_modules/next/dist/docs/`; APIs differ from older Next) |
 | Runtime | React 19 |
-| Styling | Plain CSS: `src/app/kit.css` (the raster kit, Paper Diorama's tokens) + `src/app/styles/<style>.css` (each other art direction's tokens) + `globals.css` (layout/type) + `rice.css` (generated palettes) |
+| Styling | Plain CSS: `src/app/kit.css` (the raster kit, Paper Diorama's tokens) + `src/app/styles/<style>.css` (each other art direction's tokens) + `globals.css` (layout/type) + `rice.css` + `palettes.css` (generated palettes) |
 | Fonts | `next/font/google`: Newsreader (`--font-display`, headlines), Archivo (`--font-print`, body and UI), JetBrains Mono (`--font-mono`, tape labels, key legends, screens) |
 | Art | Generated bitmaps in `public/kit/<style>` and `public/screens`, composited with 9-slice `border-image` |
 | Tests | `bun test tests/` (unit), `bunx playwright test` (e2e, `e2e/*.e2e.ts`) |
@@ -54,18 +54,28 @@ linked.
 - **Paper** (`kit.css`): `--print`, `--print-soft`, `--print-faint`, `--signal`,
   plus the `--k-*` bitmap URLs and the `--*-under` centre colours. This is ink
   on the sheets and tiles. There are two finishes: **night** (`:root`, worn by
-  every dark rice) and **alpenglow** (`:root[data-rice="paper"]`, the light
-  rice). Each finish swaps the scene layers, sheets, tiles, mat and
+  every dark rice) and **alpenglow** (`:root[data-rice-mode="light"]`, all light
+  rices). Each finish swaps the scene layers, sheets, tiles, mat and
   inks. Terracotta (`--signal`) is the one accent. A link's underline is
   `--signal-rule` (falls back to `--signal`): a rule needs 3:1 on its
   ground where the signal as text needs 4.5:1, so a style with a deep
   accent on a dark page rules in the accent itself.
 - **Screen** (`rice.css`, generated from the dotfiles by
   `scripts/theme-from-dotfiles.mjs`): `--paper`, `--ink`, `--cyan`, `--rust`,
-  `--amber`, `--olive`. These are only used *inside* `<Screen>`: figures,
-  charts, code on screens, the index. Pressing `t` cycles the rice,
+  `--amber`, `--olive`. The illustrated styles use these *inside* `<Screen>`: figures,
+  charts, code on screens, the index. Margin Index also uses them for its page
+  surfaces, text and accent. Pressing `t` cycles the rice,
   which reflashes every screen and swaps the paper finish when it switches
-  to/from `paper`. Screens take rice colours in both finishes.
+  between light and dark modes. Screens take rice colours in both finishes.
+  `lib/rice.ts` owns palette IDs and their light/dark mode. The head script sets
+  both `data-rice` and `data-rice-mode` before paint; menu selection and `t` use
+  the same registry. Paper and Catppuccin Latte are light; the other palettes
+  are dark. Ayu Mirage, Catppuccin Latte and Gruvbox come from upstream colour
+  definitions in `scripts/theme-palettes.mjs`; regenerate `palettes.css` with
+  `bun scripts/build-palettes.mjs`, independently of local dotfiles. Secondary
+  text colours are adjusted to meet 4.5:1 contrast on their page surfaces.
+  Product captures and the live demo use the nearest theme actually supported
+  by the app (`launch/appTheme.ts`); Latte uses its light Solarized theme.
 
 ## Art directions (styles)
 
@@ -80,9 +90,9 @@ keyboard handling and reading-page components remain shared.
   `app/layout.tsx` applies the stored choice (`localStorage["nb-style"]`)
   before paint and refuses anything unlisted, falling back to `margin` (Margin Index).
 - **Tokens**: Paper Diorama's are the base (`kit.css`: `:root` for night,
-  `:root[data-rice="paper"]` for day). Every other raster style overrides all of them
+  `:root[data-rice-mode="light"]` for day). Every other raster style overrides all of them
   in `src/app/styles/<style>.css`, under `:root[data-style="<id>"]` (night)
-  and `:root[data-style="<id>"][data-rice="paper"]` (day). `tests/styles.test.ts`
+  and `:root[data-style="<id>"][data-rice-mode="light"]` (day). `tests/styles.test.ts`
   fails if a style leaves a token unset (which would show the diorama's art),
   names another style's bitmap, or names a file that doesn't exist. Geometry
   (`--slice-*`, `--*-k`) is shared: every kit is built to the same source sizes.
