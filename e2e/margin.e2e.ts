@@ -12,6 +12,9 @@ const seed = (page: Page, rice = "paper") => page.addInitScript((r) => {
 }, rice);
 
 test("Margin Index can be selected, survives navigation and reload, and can be switched back", async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!localStorage.getItem("nb-style")) localStorage.setItem("nb-style", "paper");
+  });
   await page.goto("/");
   await choose(page, "Margin Index");
   await expect(page.locator(".margin-index")).toBeVisible();
@@ -93,6 +96,7 @@ test("real screenshots follow the colour theme and alpha/live links still work",
   await expect(shot).toHaveAttribute("src", /solarized/);
   await expect.poll(() => shot.evaluate((e) => (e as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   await page.getByRole("button", { name: /^Theme:/ }).click();
+  await page.getByRole("menuitemradio", { name: "horizon", exact: true }).click();
   await expect(shot).not.toHaveAttribute("src", /solarized/);
   await page.getByRole("link", { name: "Tauri Explorer", exact: true }).click();
   await page.getByRole("link", { name: "Try it live", exact: true }).first().click();
@@ -122,4 +126,15 @@ test("the rail menu remains fully usable on short screens", async ({ page }) => 
   expect(bounds.y + bounds.height).toBeLessThanOrEqual(390);
   await page.getByRole("menuitemradio", { name: "Paper Diorama", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-style", "paper");
+});
+
+test("new visitors get Margin Index while a saved style takes precedence", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-style", "margin");
+  await expect(page.locator(".margin-index")).toBeVisible();
+  await expect(page.locator(".scene")).toBeHidden();
+  await choose(page, "Paper Diorama");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-style", "paper");
+  await expect(page.locator(".landing")).toBeVisible();
 });

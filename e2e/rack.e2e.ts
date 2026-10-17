@@ -68,22 +68,28 @@ test("the index ranks names first and tells assistive tech which result is selec
   await expect(page).toHaveURL(/\/p\/eskiv$/);
 });
 
-test("the rice key reflashes the screens and remembers the choice", async ({ page }) => {
-  await page.goto("/");
+test("the theme menu applies a chosen palette and remembers it", async ({ page }) => {
+  await page.goto("/p/tauri-explorer");
   await hydrated(page);
   const before = await page.evaluate(() => document.documentElement.dataset.rice);
-  const screenBg = () =>
-    page.locator(".screen-face").first().evaluate((el) => getComputedStyle(el).backgroundColor);
-  const bgBefore = await screenBg();
-  await page.getByRole("button", { name: /Switch theme/ }).click();
-  const after = await page.evaluate(() => document.documentElement.dataset.rice);
-  expect(after).not.toBe(before);
-  const label = after!.replace(/-/g, " "); // "cosmic-dusk" reads "cosmic dusk"
-  await expect(page.getByRole("button", { name: /Switch theme/ })).toContainText(label);
-  await expect(page.locator("[data-theme-status]")).toHaveText(`Theme: ${label}`);
-  expect(await screenBg()).not.toBe(bgBefore);
+  const chosen = before === "paper" ? "horizon" : "paper";
+  const shot = page.locator(".launch-shot img:visible");
+  const shotBefore = await shot.getAttribute("src");
+  const button = page.getByRole("button", { name: /^Theme:/ });
+  await button.click();
+  const menu = page.getByRole("menu", { name: "Colour theme" });
+  await expect(menu).toBeVisible();
+  // Opening the chooser must leave the current palette alone.
+  await expect(page.locator("html")).toHaveAttribute("data-rice", before!);
+  await menu.getByRole("menuitemradio", { name: chosen, exact: true }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-rice", chosen);
+  await expect(menu).toBeHidden();
+  await expect(button).toBeFocused();
+  await expect(page.locator("[data-theme-status]")).toHaveText(`Theme: ${chosen}`);
+  await expect(shot).not.toHaveAttribute("src", shotBefore!);
+  await expect.poll(() => shot.evaluate((img) => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   await page.reload();
-  expect(await page.evaluate(() => document.documentElement.dataset.rice)).toBe(after);
+  await expect(page.locator("html")).toHaveAttribute("data-rice", chosen);
 });
 
 test("closing the index hands focus back to where it was", async ({ page, isMobile }) => {
@@ -212,7 +218,7 @@ test.describe("the Eskiv heatmap's timeline", () => {
 
 test("the about page is linked from home and prints its facts", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: "More about me" }).click();
+  await page.getByRole("link", { name: "About me" }).click();
   await expect(page).toHaveURL(/\/about$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Chong");
   const facts = page.getByRole("region", { name: "Facts" });

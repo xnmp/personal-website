@@ -13,8 +13,7 @@ export function isEditable(el: EventTarget | null): boolean {
   );
 }
 
-/** Is a modal dialog open, other than `except`? Every <dialog> here opens
- * with showModal, so an open one is a modal one. */
-export function modalOpen(except?: Element | null): boolean {
-  return Array.from(document.querySelectorAll("dialog[open]")).some((d) => d !== except);
+/** A dialog or chooser owns the keyboard while open; `except` may handle its own shortcuts. */
+export function overlayOpen(except?: Element | null): boolean {
+  return Array.from(document.querySelectorAll("dialog[open], [popover]:popover-open")).some((d) => d !== except);
 }

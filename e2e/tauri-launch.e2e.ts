@@ -235,7 +235,11 @@ test.describe("Tauri Explorer launch page", () => {
     await expect(shot).toHaveCount(1);
     await expect.poll(async () => shot.evaluate((img: HTMLImageElement) => img.currentSrc)).toContain(`-${await theme()}`);
     const before = await theme();
-    await page.getByRole("button", { name: /Switch theme/ }).click(); // each rice has its own app theme
+    await page.getByRole("button", { name: /^Theme:/ }).click();
+    const currentRice = await page.locator("html").getAttribute("data-rice");
+    await page.getByRole("menu", { name: "Colour theme" }).getByRole("menuitemradio", {
+      name: currentRice === "paper" ? "horizon" : "paper", exact: true,
+    }).click(); // each rice has its own app theme
     await expect.poll(theme).not.toBe(before);
     const after = await theme();
     await expect.poll(async () => shot.evaluate((img: HTMLImageElement) => img.currentSrc)).toContain(`-${after}`);

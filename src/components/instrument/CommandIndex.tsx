@@ -2,7 +2,7 @@
 
 import { Key } from "@/components/rack/Key";
 import { Screen } from "@/components/rack/Screen";
-import { isEditable, modalOpen } from "@/lib/page-keys";
+import { isEditable, overlayOpen } from "@/lib/page-keys";
 import type { Project } from "@/lib/project";
 import { rank } from "@/lib/search";
 import { useRouter } from "next/navigation";
@@ -21,11 +21,10 @@ export const RICES = ["paper", "horizon", "cosmic-dusk", "rapture"] as const;
 /** A rice's name as people read it: "cosmic-dusk" is "cosmic dusk". */
 export const riceLabel = (rice: string) => rice.replace(/-/g, " ");
 
-export function toggleTheme() {
-  const root = document.documentElement;
-  const current = root.dataset.rice ?? "paper";
-  const next = RICES[(RICES.indexOf(current as (typeof RICES)[number]) + 1) % RICES.length];
-  root.dataset.rice = next;
+export type Rice = (typeof RICES)[number];
+
+export function setTheme(next: Rice) {
+  document.documentElement.dataset.rice = next;
   try {
     localStorage.setItem("nb-rice", next);
   } catch {
@@ -36,6 +35,12 @@ export function toggleTheme() {
   // nothing is read out on load
   const status = document.querySelector("[data-theme-status]");
   if (status) status.textContent = `Theme: ${riceLabel(next)}`;
+}
+
+/** The keyboard shortcut remains a quick cycle; the button offers a menu. */
+export function toggleTheme() {
+  const current = document.documentElement.dataset.rice ?? "paper";
+  setTheme(RICES[(RICES.indexOf(current as Rice) + 1) % RICES.length]);
 }
 
 /**
@@ -82,7 +87,7 @@ export function CommandIndex({ projects }: { projects: readonly Project[] }) {
   useEffect(() => {
     const onGlobalKey = (e: KeyboardEvent) => {
       // another modal (the screenshot viewer) has the page: its keys, not ours
-      if (modalOpen(dialog.current)) return;
+      if (overlayOpen(dialog.current)) return;
       if ((e.key === "k" || e.key === "K") && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         if (dialog.current?.open) close();

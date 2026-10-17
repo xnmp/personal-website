@@ -34,7 +34,7 @@ export const STYLES = [
 
 export type StyleId = (typeof STYLES)[number]["id"];
 
-export const DEFAULT_STYLE: StyleId = "paper";
+export const DEFAULT_STYLE: StyleId = "margin";
 
 /** localStorage key the choice persists under (beside the rice's "nb-rice") */
 export const STYLE_KEY = "nb-style";

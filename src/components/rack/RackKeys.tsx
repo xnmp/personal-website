@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { scrollBehavior } from "@/lib/motion";
-import { isEditable, modalOpen } from "@/lib/page-keys";
+import { isEditable, overlayOpen } from "@/lib/page-keys";
 
 const TARGETS = "[data-rack-stop]";
 
@@ -21,7 +21,7 @@ export function nextStop(current: number, count: number, key: "j" | "k"): number
 export function RackKeys() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey || e.altKey || isEditable(e.target) || modalOpen()) return;
+      if (e.ctrlKey || e.metaKey || e.altKey || isEditable(e.target) || overlayOpen()) return;
       if (e.key !== "j" && e.key !== "k") return;
       const stops = Array.from(document.querySelectorAll<HTMLElement>(TARGETS))
         .filter((stop) => stop.getClientRects().length > 0);

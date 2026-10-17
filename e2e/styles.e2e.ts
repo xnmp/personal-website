@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import sharp from "sharp";
-import { STYLES } from "../src/lib/styles";
+import { DEFAULT_STYLE, STYLES } from "../src/lib/styles";
 
 /** Every kit bitmap the page fetched, with its status. */
 function kitRequests(page: Page) {
@@ -73,6 +73,7 @@ test("a plate style's scene is left to the CSS, drawn from the top of the page",
 
 test("the art-direction menu is a menu button the keyboard can drive", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard");
+  await asStyle(page, "paper");
   await page.goto("/");
   const key = styleKey(page);
   await expect(key).toHaveAccessibleName(`Art direction: ${STYLES[0].name}`); // hydrated
@@ -115,7 +116,7 @@ test("a click outside the menu closes it, choosing nothing", async ({ page }) =>
   await expect(styleMenu(page)).toBeVisible();
   await page.mouse.click(8, 400);
   await expect(styleMenu(page)).toBeHidden();
-  await expect(page.locator("html")).toHaveAttribute("data-style", STYLES[0].id);
+  await expect(page.locator("html")).toHaveAttribute("data-style", DEFAULT_STYLE);
 });
 
 test("the menu hangs under its key, inside the screen, on a phone too", async ({ page }) => {
@@ -136,7 +137,7 @@ test("the menu hangs under its key, inside the screen, on a phone too", async ({
 test("an unknown stored style falls back to the default", async ({ page }) => {
   await asStyle(page, "retired-style");
   await page.goto("/");
-  await expect(page.locator("html")).toHaveAttribute("data-style", "paper");
+  await expect(page.locator("html")).toHaveAttribute("data-style", DEFAULT_STYLE);
 });
 
 test("the style is not part of the t cycle", async ({ page, isMobile }) => {

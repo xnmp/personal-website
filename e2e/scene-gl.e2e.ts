@@ -10,6 +10,7 @@ import { sceneStats, cssLayersShown, root } from "./scene-helpers";
 test.use({ channel: "chrome", launchOptions: { args: ["--enable-gpu"] } });
 test.skip(({ isMobile }) => isMobile, "the system Chrome stands in for a desktop browser");
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("nb-style", "paper"));
   await page.goto("about:blank");
   const renderer = await page.evaluate(() => {
     const gl = document.createElement("canvas").getContext("webgl2", { failIfMajorPerformanceCaveat: true });
@@ -37,7 +38,8 @@ test("switching the rice re-dresses the 3D scene", async ({ page }) => {
   await page.goto("/");
   await expect.poll(() => root(page, "scene"), { timeout: 15_000 }).toBe("settled");
   const before = await sceneStats(page);
-  await page.getByRole("button", { name: /Switch theme/ }).click();
+  await page.getByRole("button", { name: /^Theme:/ }).click();
+  await page.getByRole("menuitemradio", { name: "horizon", exact: true }).click();
   await expect
     .poll(async () => {
       const { mean } = await sceneStats(page);
