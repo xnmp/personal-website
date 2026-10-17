@@ -1,3 +1,5 @@
+import { EditableText } from "@/components/studio/EditableText";
+import type { ContentBinding } from "@/lib/studio/bindings";
 import Image from "next/image";
 
 /** A window-chrome frame around a real product screenshot. */
@@ -5,6 +7,7 @@ export function Window({
   src,
   alt,
   title,
+  titleBinding,
   width,
   height,
   priority = false,
@@ -13,6 +16,7 @@ export function Window({
   src: string;
   alt: string;
   title: string;
+  titleBinding?: ContentBinding;
   width: number;
   height: number;
   priority?: boolean;
@@ -24,7 +28,9 @@ export function Window({
         <span className="tf-dot" />
         <span className="tf-dot" />
         <span className="tf-dot" />
-        <span className="tf-window-title">{title}</span>
+        <span className="tf-window-title">
+          <EditableText binding={titleBinding}>{title}</EditableText>
+        </span>
       </div>
       <div className="tf-window-shot">
         <Image

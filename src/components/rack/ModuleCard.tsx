@@ -1,3 +1,6 @@
+import { EditableText } from "@/components/studio/EditableText";
+import { bindField } from "@/lib/studio/bindings";
+import { readContent } from "@/lib/content.server";
 import Link from "next/link";
 import { statusLabel, type Project } from "@/data/projects";
 import { Led } from "./Led";
@@ -10,6 +13,7 @@ import { Screen } from "./Screen";
  * than every word on the plate.
  */
 export function ModuleCard({ p }: { p: Project }) {
+  const content = readContent(`projects/${p.slug}`);
   return (
     <Link
       href={p.href}
@@ -29,16 +33,16 @@ export function ModuleCard({ p }: { p: Project }) {
         <Screen art={p.art} tone={p.tone} />
         <div className="module-body">
           <h3 className="module-title" id={`${p.slug}-title`}>
-            {p.title}
+            <EditableText binding={bindField(content, ["title"])}>{p.title}</EditableText>
           </h3>
           <span className="module-heading" id={`${p.slug}-heading`}>
-            {p.heading}
+            <EditableText binding={bindField(content, ["heading"])}>{p.heading}</EditableText>
           </span>
         </div>
         <hr className="engraved" />
         <span className="module-stats silk">
-          {p.stats.map((s) => (
-            <span key={s}>{s}</span>
+          {p.stats.map((s, index) => (
+            <span key={s}><EditableText binding={bindField(content, ["stats", index])}>{s}</EditableText></span>
           ))}
         </span>
       </div>

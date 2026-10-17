@@ -1,3 +1,6 @@
+import { EditableText } from "@/components/studio/EditableText";
+import { bindField } from "@/lib/studio/bindings";
+import { readContent } from "@/lib/content.server";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import type { Project } from "@/data/projects";
@@ -11,6 +14,7 @@ import { Screen } from "@/components/rack/Screen";
  * project it is, so the row takes any project.
  */
 export function ShowcaseCard({ p }: { p: Project }) {
+  const content = readContent(`projects/${p.slug}`);
   return (
     <Link
       href={p.href}
@@ -22,11 +26,11 @@ export function ShowcaseCard({ p }: { p: Project }) {
       style={{ "--glyph": JSON.stringify(p.glyph) } as CSSProperties}
     >
       <h3 className="card-title" id={`${p.slug}-card`}>
-        {p.title}
+        <EditableText binding={bindField(content, ["title"])}>{p.title}</EditableText>
       </h3>
       <Screen art={p.art} tone={p.tone} className="card-screen" />
       <span className="sr-only" id={`${p.slug}-card-heading`}>
-        {p.heading}
+        <EditableText binding={bindField(content, ["heading"])}>{p.heading}</EditableText>
       </span>
       {/* a style's mark on the card (a seal, a sprig), drawn in its CSS;
           a seal may stamp the project's glyph (content: var(--glyph)) */}

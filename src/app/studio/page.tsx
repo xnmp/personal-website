@@ -1,8 +1,6 @@
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
-import { ContentStudio } from "@/components/studio/ContentStudio";
+import { notFound, redirect } from "next/navigation";
 import { studioEnabled } from "@/lib/studio/security.server";
-import "./studio.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -18,5 +16,5 @@ export default async function StudioPage() {
     incoming.get("sec-fetch-site") === "cross-site"
   )
     notFound();
-  return <ContentStudio token={process.env.CONTENT_STUDIO_TOKEN!} />;
+  redirect("/");
 }
