@@ -27894,6 +27894,45 @@
       "height": 920,
       "derivationDigest": "9671708d3bbda994f2a27584413561c85ad98a300a8388dbfc434459469b7eb0"
     },
+    "public/kit/solarpunk/sheet-strip-day-normal@2x.webp": {
+      "settingsDigest": "ebbff2b974d3f86f7630b4e2be6cb2db6df9dc31ab5f0b0a55f9cfefc27b068b",
+      "sourceSha256": "e973e102d15da89f57a1c316bf7918dce2f14370c33232defd95957a34ef55a9",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "4911cd8537df69c4b23aecf8c473abc41a09e957ec68087023edcc4dce2b156d",
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-strip-day-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-strip-day-normal.webp"
+        ]
+      },
+      "recipeDigest": "60bb32fa59b5c80f99c920c8ef936b268e2c435a841bd3b50a1130965e5eb044",
+      "outputSha256": "5e157ed66c9aa712ea2d14c892d68dd658f9abf17b7c68a91e7f009a0fb8fa19",
+      "width": 2384,
+      "height": 2258
+    },
+    "public/kit/solarpunk/sheet-strip-night-normal@2x.webp": {
+      "settingsDigest": "ebbff2b974d3f86f7630b4e2be6cb2db6df9dc31ab5f0b0a55f9cfefc27b068b",
+      "sourceSha256": "f3d7998a4bbcc4e11f5cdf5f867d5c1c853dfb1fc2e640ead02a6ed8b414e27a",
+      "factor": 2,
+      "model": "gpt-image-2.5-sunburst",
+      "cacheKey": "366703cdf76744f927825e0840ed4372f62da7172e10c3b7bbae5b3293b58559",
+      "familyMembership": {
+        "reference": "public/kit/solarpunk/sheet-strip-night-normal.webp",
+        "members": [
+          "public/kit/solarpunk/sheet-strip-night-normal.webp"
+        ]
+      },
+      "recipeDigest": "c7df0498ca5440dddd8d21aec275628e1e4936618ffa597fb980256e6aaf3ac4",
+      "outputSha256": "12ca1b0eaaa3c84d0217e94a8799484d5ea3098e348cf1dbe7b80d9fa3d3a0e4",
+      "width": 2384,
+      "height": 2246,
+      "accepted": true,
+      "acceptedReasons": [
+        "tile 0: residual p90 1.27 source px > 1.0",
+        "tile 2: cannot establish alignment (2 reliable blocks; need 4 of 19 visible blocks)"
+      ]
+    },
     "public/kit/solarpunk/tape-day@2x.webp": {
       "provider": "external",
       "sourceSha256": "dff6b892e3260f29234b91a47f960b2f9a5b98efa7e30c0947cc5218ba6295d6",
