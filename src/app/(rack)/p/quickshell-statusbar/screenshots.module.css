@@ -1,0 +1,23 @@
+.shot + .shot {
+  margin-top: 26px;
+}
+
+.shot :global(.screen-face) {
+  padding: 0;
+}
+
+/* The bar is only 38px high; a glass shadow would obscure its text. */
+.shot :global(.screen-face)::after {
+  box-shadow: none;
+}
+
+.viewport {
+  overflow-x: auto;
+}
+
+.shot .viewport img {
+  width: auto;
+  max-width: none;
+  height: 38px;
+  margin: 0;
+}

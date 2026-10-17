@@ -54,6 +54,42 @@ local-first
 <!-- block: what-it-is -->
 What it is
 
+<!-- block: screenshots-kicker -->
+In use
+
+<!-- block: screenshots-title -->
+The diary, calendar and editor
+
+<!-- block: screenshots-intro -->
+Phone-sized release screenshots from October 2026, captured from the real app with seeded example entries. The notes shown are demo text.
+
+<!-- block: diary-figure -->
+FIG. 1 · the diary
+
+<!-- block: diary-caption -->
+Several entries can share a day, each with its own mood, activities and note. [Open full-size screenshot](/ballast/diary.webp).
+
+<!-- block: diary-alt -->
+Ballast diary showing sample entries grouped by day, with mood faces, activity chips and notes above the bottom navigation.
+
+<!-- block: calendar-figure -->
+FIG. 2 · a month at a glance
+
+<!-- block: calendar-caption -->
+The calendar marks recorded days with mood faces and a summary beneath the month. [Open full-size screenshot](/ballast/calendar.webp).
+
+<!-- block: calendar-alt -->
+Ballast calendar for August 2026, showing coloured mood faces on recorded days and a monthly mood summary.
+
+<!-- block: entry-figure -->
+FIG. 3 · capture an entry
+
+<!-- block: entry-caption -->
+A mood, a few activities and space to write. Save stays at the bottom of the editor. [Open full-size screenshot](/ballast/entry.webp).
+
+<!-- block: entry-alt -->
+Ballast entry editor with the good mood selected, activity chips, an example note and a Save button below the writing area.
+
 <!-- block: daylio-s-loop-minus-the-account -->
 Daylio’s loop, minus the account
 
@@ -76,7 +112,7 @@ One file per entry
 Layout from README.md and docs/rewrite-v1.md. The note and activity ids below are placeholders, not one of my entries.
 
 <!-- block: figure-fig-1-ballastdata -->
-FIG. 1 · BallastData/
+FIG. 4 · BallastData/
 
 <!-- block: caption-the-filename-is-the-authority-on-when-an-entry-hap -->
 The filename is the authority on when an entry happened, so one directory listing is enough to build the month index.

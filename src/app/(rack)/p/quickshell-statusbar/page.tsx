@@ -1,9 +1,11 @@
+import Image from "next/image";
 import { bindBlock } from "@/lib/studio/bindings";
 import { Feature, Features, Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
+import styles from "./screenshots.module.css";
 
 export function generateMetadata() {
   return contentField<import("next").Metadata>(readContent("projects/quickshell-statusbar"), "metadata");
@@ -42,6 +44,32 @@ export default function Page() {
               <Tag><Markdown {...bindBlock(content, "python")} inline /></Tag>
               <Tag><Markdown {...bindBlock(content, "ricing")} inline /></Tag>
             </Tags>
+          </div>
+        </section>
+
+        <section className="section">
+          <div>
+            <div className="section-kicker"><Markdown {...bindBlock(content, "screenshots-kicker")} inline /></div>
+            <h2><Markdown {...bindBlock(content, "screenshots-title")} inline /></h2>
+            <Markdown {...bindBlock(content, "screenshots-intro")} paragraphClassName="aside-note" />
+          </div>
+          <div>
+            {([
+              { name: "bar", width: 3440 },
+              { name: "workspaces", width: 650 },
+              { name: "telemetry", width: 590 },
+            ] as const).map((shot) => (
+              <div key={shot.name} className={styles.shot}>
+                <Plate
+                  figure={contentBlock(content, `${shot.name}-figure`)} figureBinding={bindBlock(content, `${shot.name}-figure`).binding}
+                  caption={contentBlock(content, `${shot.name}-caption`)} captionBinding={bindBlock(content, `${shot.name}-caption`).binding}
+                >
+                  <div className={styles.viewport} role="region" aria-label={contentBlock(content, `${shot.name}-figure`)} tabIndex={0}>
+                    <Image src={`/quickshell-statusbar/${shot.name}.webp`} alt={contentBlock(content, `${shot.name}-alt`)} width={shot.width} height={38} unoptimized />
+                  </div>
+                </Plate>
+              </div>
+            ))}
           </div>
         </section>
 

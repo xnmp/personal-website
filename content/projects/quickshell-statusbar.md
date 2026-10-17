@@ -58,6 +58,42 @@ ricing
 <!-- block: what-it-is -->
 What it is
 
+<!-- block: screenshots-kicker -->
+On my desktop
+
+<!-- block: screenshots-title -->
+One strip, with the details close up
+
+<!-- block: screenshots-intro -->
+Captured from the running bar on my Hyprland desktop, 18 October 2026. The close-ups are crops of the same capture; the readings are a moment in time. Scroll each capture horizontally to see it at its original, readable size.
+
+<!-- block: bar-figure -->
+FIG. 1 · the whole bar
+
+<!-- block: bar-caption -->
+Workspaces on the left, the clock in the middle, and system metrics, AI quotas and Focus on the right. [Open full-size screenshot](/quickshell-statusbar/bar.webp).
+
+<!-- block: bar-alt -->
+The complete Quickshell bar across a 3440-pixel desktop, with workspace chips, a central clock, system telemetry, Claude and Codex quotas and Focus.
+
+<!-- block: workspaces-figure -->
+FIG. 2 · workspaces and agents
+
+<!-- block: workspaces-caption -->
+Workspace chips carry application icons and Claude or Codex session counts. The active workspace is highlighted. [Open full-size screenshot](/quickshell-statusbar/workspaces.webp).
+
+<!-- block: workspaces-alt -->
+Close-up of workspace chips 1 and 2, with application icons and Claude and Codex counts; workspace 2 is highlighted.
+
+<!-- block: telemetry-figure -->
+FIG. 3 · telemetry and quotas
+
+<!-- block: telemetry-caption -->
+CPU, temperature, RAM, GPU and VRAM sit beside the Claude and Codex quota cells and the Focus control. [Open full-size screenshot](/quickshell-statusbar/telemetry.webp).
+
+<!-- block: telemetry-alt -->
+Close-up of CPU use and temperature, RAM, GPU, VRAM, Claude and Codex quota percentages with reset times, and the Focus icon.
+
 <!-- block: a-qml-bar-fed-by-two-python-streams -->
 A QML bar fed by two Python streams
 
@@ -83,7 +119,7 @@ A pure core, an imperative shell, and a contract between languages
 `lib/hypr_status_stream.py` and `lib/ai_usage_stream.py` have the same shape. A pure domain core holds the parsers and rules: `parse_cpu_times`, `cpu_percent`, `parse_diskstats`, `assign_wezterm_windows` and so on. A thin shell in `lib/stream_kit.py` runs subprocesses with a timeout, throttles the expensive refreshes, and prints one compact JSON object per line. The hypr stream defaults to one line per second.
 
 <!-- block: figure-fig-1-one-line-of-the-stream-reformatted -->
-FIG. 1 · one line of the stream, reformatted
+FIG. 4 · one line of the stream, reformatted
 
 <!-- block: caption-from-tests-fixtures-stream-contract-json-trimmed-t -->
 From tests/fixtures/stream_contract.json, trimmed to one workspace and the Claude quota. The real stream prints each object on a single line.
