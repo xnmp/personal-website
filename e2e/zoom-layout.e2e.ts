@@ -28,7 +28,7 @@ test.describe.configure({ timeout: 60_000 });
 
 for (const theme of THEMES) {
   test(`zoom ${theme}: phone decorations cannot widen Garden or Solarpunk`, async ({ browser, baseURL }) => {
-    for (const [style, paths] of [["garden", ["/"]], ["solarpunk", ["/", ...INNER_PAGES]]] as const) {
+    for (const [style, paths] of [["garden", ["/projects"]], ["solarpunk", ["/projects", ...INNER_PAGES]]] as const) {
       for (const path of paths) {
         const job = { style, path, theme, config: "phone-z100" };
         const { context, page, config } = await openZoomPage(browser, baseURL!, job);
@@ -45,7 +45,7 @@ for (const theme of THEMES) {
 
   test(`zoom ${theme}: Garden monitor rests on books and its mug handle stays attached`, async ({ browser, baseURL }) => {
     for (const zoom of [50, 100, 150, 175, 200]) {
-      const job = { style: "garden", path: "/", theme, config: `desktop-z${zoom}` };
+      const job = { style: "garden", path: "/projects", theme, config: `desktop-z${zoom}` };
       const { context, page } = await openZoomPage(browser, baseURL!, job);
       try {
         const { garden } = await measureLayout(page, job);
@@ -60,7 +60,7 @@ for (const theme of THEMES) {
   test(`zoom ${theme}: Atlas headline and pitch contain no constellation ink`, async ({ browser, baseURL }, info) => {
     test.setTimeout(180_000);
     for (const { id: config } of CONFIGS) {
-      const job = { style: "atlas", path: "/", theme, config };
+      const job = { style: "atlas", path: "/projects", theme, config };
       const { context, page, config: dimensions } = await openZoomPage(browser, baseURL!, job);
       try {
         const { viewport } = await measureLayout(page, job);
@@ -79,7 +79,7 @@ for (const theme of THEMES) {
   test(`zoom ${theme}: Atlas touch copy stays registered after scroll and in tablet orientations`, async ({ browser, baseURL }, info) => {
     test.setTimeout(180_000);
     for (const config of ["phone-z100", ...TOUCH_CONFIGS.map(({ id }) => id)]) {
-      const { context, page } = await openZoomPage(browser, baseURL!, { style: "atlas", path: "/", theme, config });
+      const { context, page } = await openZoomPage(browser, baseURL!, { style: "atlas", path: "/projects", theme, config });
       try {
         for (const y of [0, 32]) {
           await page.evaluate((y: number) => scrollTo(0, y), y);
@@ -95,7 +95,7 @@ for (const theme of THEMES) {
 
   test(`zoom ${theme}: iOS attachment emulation rejects the round-3 phone treatment`, async ({ browser, baseURL }) => {
     const { context, page } = await openZoomPage(browser, baseURL!, {
-      style: "atlas", path: "/", theme, config: "phone-z100",
+      style: "atlas", path: "/projects", theme, config: "phone-z100",
     });
     try {
       // Negative control: the old smooth asset can still pass the ink scan
@@ -108,7 +108,7 @@ for (const theme of THEMES) {
 
   test(`zoom ${theme}: Atlas entrance keeps copy sky in the scene's viewport`, async ({ browser, baseURL }) => {
     for (const config of ["phone-z100", "ipad-portrait-z100"]) {
-      const { context, page } = await openZoomPage(browser, baseURL!, { style: "atlas", path: "/", theme, config });
+      const { context, page } = await openZoomPage(browser, baseURL!, { style: "atlas", path: "/projects", theme, config });
       try {
         await page.emulateMedia({ reducedMotion: "no-preference" });
         // Hold the entrance during its delay, when sheet-down would create

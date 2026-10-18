@@ -25,7 +25,7 @@ const styleKey = (page: Page) => page.getByRole("button", { name: /^Art directio
 const styleMenu = (page: Page) => page.getByRole("menu", { name: "Art direction" });
 
 test("picking a style from the masthead's menu dresses the page in its kit and survives a reload", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/projects");
   await styleKey(page).click();
   await expect(styleMenu(page)).toBeVisible();
   await styleMenu(page).getByRole("menuitemradio", { name: "Solarpunk" }).click();
@@ -55,7 +55,7 @@ test("a plate style's scene is left to the CSS, drawn from the top of the page",
   const went3d = () => page.evaluate(() => sessionStorage.getItem("went-3d") === "1");
   const clear = () => page.evaluate(() => sessionStorage.removeItem("went-3d"));
   await asStyle(page, "garden");
-  await page.goto("/");
+  await page.goto("/projects");
   await expect(page.locator("html")).toHaveAttribute("data-scene-art", "plate");
   expect(await went3d()).toBe(false);
   const sky = page.locator('[data-layer="sky"]');
@@ -74,7 +74,7 @@ test("a plate style's scene is left to the CSS, drawn from the top of the page",
 test("the art-direction menu is a menu button the keyboard can drive", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard");
   await asStyle(page, "paper");
-  await page.goto("/");
+  await page.goto("/projects");
   const key = styleKey(page);
   await expect(key).toHaveAccessibleName(`Art direction: ${STYLES[0].name}`); // hydrated
   await expect(key).toHaveAttribute("aria-expanded", "false");
@@ -111,7 +111,7 @@ test("the art-direction menu is a menu button the keyboard can drive", async ({ 
 });
 
 test("a click outside the menu closes it, choosing nothing", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/projects");
   await styleKey(page).click();
   await expect(styleMenu(page)).toBeVisible();
   await page.mouse.click(8, 400);
@@ -122,7 +122,7 @@ test("a click outside the menu closes it, choosing nothing", async ({ page }) =>
 test("the menu hangs under its key, inside the screen, on a phone too", async ({ page }) => {
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 800 });
-    await page.goto("/");
+    await page.goto("/projects");
     await styleKey(page).click();
     const k = (await styleKey(page).boundingBox())!;
     const m = (await styleMenu(page).boundingBox())!;
@@ -136,14 +136,14 @@ test("the menu hangs under its key, inside the screen, on a phone too", async ({
 
 test("an unknown stored style falls back to the default", async ({ page }) => {
   await asStyle(page, "retired-style");
-  await page.goto("/");
+  await page.goto("/projects");
   await expect(page.locator("html")).toHaveAttribute("data-style", DEFAULT_STYLE);
 });
 
 test("the style is not part of the t cycle", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard shortcut");
   await asStyle(page, "solarpunk");
-  await page.goto("/");
+  await page.goto("/projects");
   await expect(page.locator(".rice-name")).not.toHaveText(/^(rice)?$/);
   await page.keyboard.press("t");
   await expect(page.locator("html")).toHaveAttribute("data-style", "solarpunk");
@@ -153,7 +153,7 @@ for (const s of STYLES.filter((style) => style.scene !== "none")) {
   test(`${s.name}: every kit asset loads, and only this style's kit is fetched`, async ({ page }) => {
     const seen = kitRequests(page);
     await asStyle(page, s.id);
-    await page.goto("/", { waitUntil: "networkidle" });
+    await page.goto("/projects", { waitUntil: "networkidle" });
     // a tile and a mount are on every style's first screen (a status pin is
     // not: a style may fasten its sheets with tape instead)
     expect(seen.length).toBeGreaterThan(5);
@@ -179,7 +179,7 @@ test("a glass style's panes frost the scene behind them, after a change of finis
     localStorage.setItem("nb-style", "solarpunk");
     localStorage.setItem("nb-scene", "flat");
   });
-  await page.goto("/", { waitUntil: "networkidle" });
+  await page.goto("/projects", { waitUntil: "networkidle" });
   await expect(page.locator("html")).toHaveAttribute("data-scene", "settled");
   // the sheets' entrance has played (the scene's own layers move on with scroll)
   await page.waitForFunction(() =>
@@ -234,7 +234,7 @@ for (const s of STYLES.filter((style) => style.scene !== "none")) {
     const lum: Record<string, number> = {};
     for (const rice of ["paper", "cosmic-dusk"]) {
       await page.addInitScript((r) => localStorage.setItem("nb-rice", r), rice);
-      await page.goto("/", { waitUntil: "networkidle" });
+      await page.goto("/projects", { waitUntil: "networkidle" });
       await expect(page.locator("html")).toHaveAttribute("data-rice", rice);
       const rows = page.locator(".xw-rows").first();
       await rows.scrollIntoViewIfNeeded();

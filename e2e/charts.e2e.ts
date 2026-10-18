@@ -22,7 +22,7 @@ test("opens the project before loading offscreen charts, then renders each chart
   }
   // A remounted project must initialize charts again after navigating away.
   await page.getByRole("link", { name: "projects", exact: true }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/projects$/);
   await page.locator('h3 a[href="/p/eskiv"]').click();
   const chart = page.getByRole("img", { name: "Path ratio vs number of balls", exact: true });
   await chart.scrollIntoViewIfNeeded();

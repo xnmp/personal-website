@@ -8,8 +8,8 @@ edits without a CMS, database or browser fetch.
 
 | File | Controls |
 | --- | --- |
-| `content/home.md` | Home text, branding, site metadata, flagship/featured projects, shelf labels |
-| `content/about.md` | Biography, facts, portrait, draft sections |
+| `content/home.md` | Project index at `/projects`, branding, site metadata, flagship/featured projects, shelf labels |
+| `content/about.md` | Landing page at `/` (also `/about`), biography, facts, portrait, draft sections |
 | `content/projects/<slug>.md` | Project card/search data, metadata, headings, paragraphs, captions, image descriptions, feature descriptions and measurements |
 | `content/tableau-frog.md` | Standalone Tableau Frog showcase, feature ledger, measurements and code examples |
 | `content/zheng-shang-you-play.md` | Game instructions and surrounding copy |
@@ -24,6 +24,8 @@ The YAML between the first two `---` lines holds structured information. For
 example, a project's `title`, `heading`, `tags`, `stats`, `status` and `repo`
 control its cards and command-index entry. `metadata` controls its browser/search
 title and description. `order` determines its place in the project list.
+The optional `website` is a public HTTPS URL; Tauri Explorer's project page links
+to it beside GitHub, with the editable label in its `website` Markdown block.
 
 Margin Index uses the optional project `summary` for its short description
 (falling back to `heading`), and the shared `tags` for the stack line. Its

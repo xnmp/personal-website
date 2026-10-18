@@ -20,7 +20,7 @@ export default function Page() {
         meta={<ProjectMeta slug="quickshell-statusbar" />}
         nav={
           <>
-            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
             <Key href={REPO}><Markdown {...bindBlock(content, "github")} inline allowLinks={false} /></Key>
           </>
         }

@@ -23,6 +23,7 @@ export default function TauriExplorerPage() {
   const content = readContent("projects/tauri-explorer");
 
   const REPO = contentField<string>(content, "repo");
+  const WEBSITE = contentField<string>(content, "website");
   const VERSION = contentField<string>(content, "version");
   const EMAIL = contentField<string>(content, "email");
   const INVITE =
@@ -71,7 +72,8 @@ export default function TauriExplorerPage() {
         meta={<ProjectMeta slug="tauri-explorer" />}
         nav={
           <>
-            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key href={WEBSITE}><Markdown {...bindBlock(content, "website")} inline allowLinks={false} /></Key>
             <Key href={REPO}><Markdown {...bindBlock(content, "github")} inline allowLinks={false} /></Key>
           </>
         }

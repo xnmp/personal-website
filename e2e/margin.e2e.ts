@@ -1,9 +1,16 @@
 import { expect, test, type Page } from "@playwright/test";
 import { projects } from "../src/data/projects";
 
+test.use({ channel: "chrome", launchOptions: { args: ["--disable-dev-shm-usage", "--disable-gpu", "--renderer-process-limit=2"] } });
+
 const styleKey = (page: Page) => page.getByRole("button", { name: /^Art direction/ });
+const openStyleMenu = async (page: Page) => {
+  const trigger = styleKey(page);
+  await expect.poll(() => trigger.evaluate(element => Boolean((element as HTMLButtonElement).popoverTargetElement))).toBe(true);
+  await trigger.click();
+};
 const choose = async (page: Page, name: string) => {
-  await styleKey(page).click();
+  await openStyleMenu(page);
   await page.getByRole("menuitemradio", { name, exact: true }).click();
 };
 const seed = (page: Page, rice = "paper") => page.addInitScript((r) => {
@@ -15,7 +22,7 @@ test("Margin Index can be selected, survives navigation and reload, and can be s
   await page.addInitScript(() => {
     if (!localStorage.getItem("nb-style")) localStorage.setItem("nb-style", "paper");
   });
-  await page.goto("/");
+  await page.goto("/projects");
   await choose(page, "Margin Index");
   await expect(page.locator(".margin-index")).toBeVisible();
   await expect(page.locator(".landing")).toBeHidden();
@@ -36,7 +43,7 @@ test("the complete Markdown catalogue is navigable without generated kit assets"
   page.on("request", (request) => { if (new URL(request.url()).pathname.startsWith("/kit/")) kit.push(request.url()); });
   page.on("pageerror", (error) => errors.push(error.message));
   await seed(page);
-  await page.goto("/", { waitUntil: "networkidle" });
+  await page.goto("/projects", { waitUntil: "networkidle" });
   for (const p of projects) {
     const link = page.getByRole("link", { name: p.title, exact: true });
     await expect(link).toBeVisible();
@@ -46,7 +53,7 @@ test("the complete Markdown catalogue is navigable without generated kit assets"
   await expect(page.locator("html")).toHaveAttribute("data-scene-art", "none");
   await expect(page.locator(".scene")).toBeHidden();
   await page.getByRole("link", { name: "About me" }).click();
-  await expect(page).toHaveURL(/\/about$/);
+  await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Hi, I’m Chong");
   expect(kit).toEqual([]);
   expect(errors).toEqual([]);
@@ -57,12 +64,12 @@ test("the directory and reading pages fit narrow phones, tablets and desktop", a
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const width of [320, 701, 900, 1448]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const route of ["/", "/about", "/p/tauri-explorer", "/p/zheng-shang-you/play"]) {
+    for (const route of ["/", "/projects", "/about", "/p/tauri-explorer", "/p/zheng-shang-you/play"]) {
       await page.goto(route);
       await page.evaluate(() => document.fonts.ready);
       expect(await page.evaluate(() => document.documentElement.scrollWidth), `${route} at ${width}`).toBeLessThanOrEqual(width);
       await expect(styleKey(page)).toBeVisible();
-      await styleKey(page).click();
+      await openStyleMenu(page);
       const menu = page.getByRole("menu", { name: "Art direction" });
       const bounds = (await menu.boundingBox())!;
       expect(bounds.x).toBeGreaterThanOrEqual(0);
@@ -75,7 +82,7 @@ test("the directory and reading pages fit narrow phones, tablets and desktop", a
 test("keyboard navigation opens the visible directory entry and search still finds projects", async ({ page, isMobile }) => {
   test.skip(isMobile, "physical keyboard");
   await seed(page);
-  await page.goto("/");
+  await page.goto("/projects");
   await expect(styleKey(page)).toHaveAccessibleName("Art direction: Margin Index");
   await page.keyboard.press("j");
   await expect(page.locator(".margin-list h3 a").first()).toBeFocused();
@@ -91,7 +98,7 @@ test("keyboard navigation opens the visible directory entry and search still fin
 
 test("real screenshots follow the colour theme and alpha/live links still work", async ({ page }) => {
   await seed(page);
-  await page.goto("/");
+  await page.goto("/projects");
   const shot = page.locator(".margin-capture img:visible");
   await expect(shot).toHaveAttribute("src", /solarized/);
   await expect.poll(() => shot.evaluate((e) => (e as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -117,8 +124,8 @@ test("child pages keep a visible path back to the project", async ({ page }) => 
 test("the rail menu remains fully usable on short screens", async ({ page }) => {
   await seed(page);
   await page.setViewportSize({ width: 900, height: 390 });
-  await page.goto("/");
-  await styleKey(page).click();
+  await page.goto("/projects");
+  await openStyleMenu(page);
   const menu = page.getByRole("menu", { name: "Art direction" });
   const bounds = (await menu.boundingBox())!;
   expect(bounds.x).toBeGreaterThanOrEqual(0);
@@ -129,7 +136,7 @@ test("the rail menu remains fully usable on short screens", async ({ page }) => 
 });
 
 test("new visitors get Margin Index while a saved style takes precedence", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/projects");
   await expect(page.locator("html")).toHaveAttribute("data-style", "margin");
   await expect(page.locator(".margin-index")).toBeVisible();
   await expect(page.locator(".scene")).toBeHidden();

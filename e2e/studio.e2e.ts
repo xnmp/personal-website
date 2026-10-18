@@ -18,7 +18,7 @@ test("renders authored Markdown after preview, save and reload on the actual sit
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
   try {
-    await page.goto("/about");
+    await page.goto("/");
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
     const intro = page.getByRole("textbox", { name: "intro", exact: true });
     const originalFirst = await intro.inputValue();
@@ -46,7 +46,7 @@ test("renders authored Markdown after preview, save and reload on the actual sit
     await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue("## Field notes");
     await expect(page.getByRole("textbox", { name: "intro · part 3", exact: true })).toHaveValue("- Keep the source\n- Publish the result");
 
-    await page.goto("/");
+    await page.goto("/projects");
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
     const entry = page.locator(".margin-project").filter({ has: page.locator('h3 a[href="/p/scrivo"]') });
     await entry.getByRole("textbox", { name: "title", exact: true }).fill("**Scrivo** notes");
@@ -62,12 +62,12 @@ test("renders authored Markdown after preview, save and reload on the actual sit
     if (process.env.STUDIO_REFERENCE_URL) {
       const publicPage = await context.newPage();
       try {
-        await publicPage.goto(`${process.env.STUDIO_REFERENCE_URL}/about`);
+        await publicPage.goto(`${process.env.STUDIO_REFERENCE_URL}/`);
         await expect(publicPage.locator("h1 strong")).toHaveText("working");
         await expect(publicPage.getByRole("heading", { name: "Field notes", exact: true })).toBeVisible();
         await expect(publicPage.locator(".detail-hero ul > li")).toHaveText(["Keep the source", "Publish the result"]);
         await expect(publicPage.locator("textarea, [contenteditable], .studio-dock")).toHaveCount(0);
-        await publicPage.goto(`${process.env.STUDIO_REFERENCE_URL}/`);
+        await publicPage.goto(`${process.env.STUDIO_REFERENCE_URL}/projects`);
         const publicEntry = publicPage.locator('.margin-entry').filter({ has: publicPage.locator('h3 a[href="/p/scrivo"]') });
         await expect(publicEntry.locator("h3 a strong")).toHaveText("Scrivo");
         await expect(publicEntry.getByRole("heading", { name: "Latest notes", exact: true })).toBeVisible();
@@ -88,10 +88,13 @@ test("edits the actual pages, saves exact Markdown and deploys from the bottom-l
   try {
     await page.goto("/studio");
     await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator(".about-page")).toBeVisible();
+    await page.getByRole("link", { name: "projects", exact: true }).click();
+    await expect(page).toHaveURL(/\/projects$/);
     await expect(page.locator(".margin-index")).toBeVisible();
     await expect(page.locator("iframe, .studio-shell, .studio-block")).toHaveCount(0);
     for (const scenario of [
-      { route: "/", document: "home", field: "margin intro", value: "A private garden, edited in place.", visible: "A private garden, edited in place." },
+      { route: "/projects", document: "home", field: "margin intro", value: "A private garden, edited in place.", visible: "A private garden, edited in place." },
       { route: "/about", document: "about", field: "intro", value: "A new introduction, edited in place.", visible: "A new introduction, edited in place." },
       { route: "/p/scrivo", document: "projects/scrivo", field: "headline", value: "A locally edited Scrivo headline.", visible: "A locally edited Scrivo headline." },
     ]) {
@@ -109,7 +112,7 @@ test("edits the actual pages, saves exact Markdown and deploys from the bottom-l
       await page.reload();
       await expect(page.getByText(scenario.visible, { exact: true })).toBeVisible();
     }
-    await page.goto("/");
+    await page.goto("/projects");
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
     // A linked title edits in place; Browsing restores the actual site's navigation.
     const title = page.locator('.margin-entry h3 [data-studio-document="projects/scrivo"] textarea');
@@ -158,7 +161,7 @@ test("recovers other pages' drafts and refuses to overwrite an external edit", a
     await page.getByRole("textbox", { name: "intro", exact: true }).press("Control+Enter");
     await page.getByRole("button", { name: "Editing on", exact: true }).click();
     await page.getByRole("link", { name: "projects", exact: true }).click();
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/projects$/);
     await page.reload();
     await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Recovered unsaved edits");
     await page.getByRole("button", { name: "Save locally", exact: true }).click();
@@ -190,7 +193,7 @@ test("matches normal site geometry on the same pages and viewport", async ({ pag
     .filter((element) => element.getBoundingClientRect().width > 0)
     .map((element) => { const r = element.getBoundingClientRect(); return { tag: element.tagName, text: element.matches(".rack, .instruments, main") ? "" : element.textContent, x: Math.round(r.x * 10), y: Math.round(r.y * 10), width: Math.round(r.width * 10), height: Math.round(r.height * 10) }; });
   try {
-    for (const route of ["/", "/about", "/p/scrivo", "/p/tauri-explorer"]) {
+    for (const route of ["/", "/projects", "/about", "/p/scrivo", "/p/tauri-explorer"]) {
       await page.goto(route);
       await reference.goto(`${process.env.STUDIO_REFERENCE_URL}${route}`);
       await page.evaluate(() => document.fonts.ready);

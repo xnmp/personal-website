@@ -13,7 +13,7 @@ export default function NotFound() {
           that is actually here.
         </p>
         <div className="blank-keys">
-          <Key href="/" size="lg">
+          <Key href="/projects" size="lg">
             ← Back to all projects
           </Key>
         </div>

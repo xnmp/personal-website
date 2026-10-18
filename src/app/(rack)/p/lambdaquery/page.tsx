@@ -18,7 +18,7 @@ export default function LambdaQueryPage() {
         meta={<ProjectMeta slug="lambdaquery" />}
         nav={
           <>
-            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
           </>
         }
       />
