@@ -255,6 +255,8 @@
   :root[data-style="margin"] .margin-project[data-featured] { grid-template-columns: 36px minmax(0, 1fr); }
   :root[data-style="margin"] .margin-feature { grid-column: 2; max-width: 500px; }
   :root[data-style="margin"] .section { grid-template-columns: minmax(0, 1fr); }
+  /* A heading above its body must scroll with it, rather than stick over it. */
+  :root[data-style="margin"] .section:not(.stack) > :first-child { position: static; }
   :root[data-style="margin"] .about-page > .section { grid-template-columns: minmax(0, 1fr); gap: 22px; }
 }
 @media (max-width: 700px) {
