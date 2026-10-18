@@ -52,7 +52,7 @@ test("list continuation and exit support native undo, redo and the Save shortcut
   await input.press("Control+Enter");
   await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
   await expect(input).toHaveValue("- First\n\nAfter the list");
-  await expect(input).toBeFocused();
+  await expect(input).not.toBeFocused();
   expect(saved.sources.get("about")).toContain("- First\n\nAfter the list");
   expect(saved.requests).toEqual([expect.objectContaining({ action: "save", id: "about" })]);
 });
@@ -84,6 +84,7 @@ test("Enter cannot change a list while Save has locked the textarea", async ({ p
     await input.fill("* First");
     await input.press("End");
     await input.press("Control+Enter");
+    await expect(input).not.toBeFocused();
     await expect(input).toHaveAttribute("readonly", "");
     await input.press("Enter");
     await expect(input).toHaveValue("* First");
