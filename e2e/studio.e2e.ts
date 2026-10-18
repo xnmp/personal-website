@@ -105,9 +105,8 @@ test("edits the actual pages, saves exact Markdown and deploys from the bottom-l
       await expect(input).toBeFocused();
       await input.fill(scenario.value);
       await input.press("Control+Enter");
-      await expect(page.getByText(scenario.visible, { exact: true })).toBeVisible();
-      await page.getByRole("button", { name: "Save locally", exact: true }).click();
       await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+      await expect(input).toBeFocused();
       expect(await readFile(`content/${scenario.document}.md`, "utf8")).toContain(scenario.value);
       await page.reload();
       await expect(page.getByText(scenario.visible, { exact: true })).toBeVisible();
@@ -158,7 +157,7 @@ test("recovers other pages' drafts and refuses to overwrite an external edit", a
     await page.getByRole("textbox", { name: "headline", exact: true }).press("Escape");
     await page.getByRole("textbox", { name: "intro", exact: true }).click();
     await page.getByRole("textbox", { name: "intro", exact: true }).fill("Recovered from another page, with my edits.");
-    await page.getByRole("textbox", { name: "intro", exact: true }).press("Control+Enter");
+    await page.getByRole("textbox", { name: "intro", exact: true }).press("Tab");
     await page.getByRole("button", { name: "Editing on", exact: true }).click();
     await page.getByRole("link", { name: "projects", exact: true }).click();
     await expect(page).toHaveURL(/\/projects$/);
@@ -175,7 +174,7 @@ test("recovers other pages' drafts and refuses to overwrite an external edit", a
     await expect(page.getByText("Recovered from another page, with my edits.", { exact: true })).toBeVisible();
     await page.getByRole("textbox", { name: "intro", exact: true }).click();
     await page.getByRole("textbox", { name: "intro", exact: true }).fill("An unsaved draft to preserve.");
-    await page.getByRole("textbox", { name: "intro", exact: true }).press("Control+Enter");
+    await page.getByRole("textbox", { name: "intro", exact: true }).press("Tab");
     const external = (await readFile("content/about.md", "utf8")) + "\n";
     await writeFile("content/about.md", external, "utf8");
     await page.getByRole("button", { name: "Save locally", exact: true }).click();

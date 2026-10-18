@@ -133,7 +133,7 @@ export function useStudioController(token: string) {
     return () => clearInterval(interval);
   }, [deploying, request]);
 
-  const persist = (id: string, next: Drafts) => {
+  const persist = useCallback((id: string, next: Drafts) => {
     try {
       const draft = next[id];
       if (draft && hasEdits(draft))
@@ -147,7 +147,7 @@ export function useStudioController(token: string) {
         "Browser draft storage is unavailable. Save before closing this tab.",
       );
     }
-  };
+  }, []);
 
   const update = (binding: ContentBinding, value: string) => {
     if (operation.current || deploying || !ready) return;
@@ -157,7 +157,7 @@ export function useStudioController(token: string) {
     persist(binding.documentId, next);
   };
 
-  const save = async (deploy = false) => {
+  const save = useCallback(async (deploy = false) => {
     if (operation.current || deploying || !ready) return;
     operation.current = true;
     setSaving(true);
@@ -189,7 +189,18 @@ export function useStudioController(token: string) {
       operation.current = false;
       setSaving(false);
     }
-  };
+  }, [deploying, ready, request, replaceDrafts, persist, router]);
+
+  useEffect(() => {
+    const saveShortcut = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.isComposing || event.key !== "Enter" ||
+        !(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey) return;
+      event.preventDefault();
+      if (!event.repeat && Object.values(draftsRef.current).some(hasEdits)) void save();
+    };
+    window.addEventListener("keydown", saveShortcut);
+    return () => window.removeEventListener("keydown", saveShortcut);
+  }, [save]);
 
   const discard = () => {
     if (
