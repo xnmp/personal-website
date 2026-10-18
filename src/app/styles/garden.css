@@ -282,7 +282,7 @@
 
 /* the mock's name and headline are set in a near-black moss, darker than
    the body copy's ink (measured on their heaviest strokes) */
-:root[data-style="garden"][data-rice-mode="light"] :is(.masthead .brand a, .launchpad-title) {
+:root[data-style="garden"][data-rice-mode="light"] :is(.masthead .brand :is(a, :where([data-studio-link])), .launchpad-title) {
   color: #0e1808;
 }
 

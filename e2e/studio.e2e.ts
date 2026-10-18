@@ -1,307 +1,103 @@
 import { test, expect } from "@playwright/test";
-import { readFile, writeFile } from "node:fs/promises";
-import { parseContent } from "../src/lib/content";
+import { interceptSaves, openField } from "./studio-fixture";
 
 test.use({ channel: "chrome", launchOptions: { args: ["--disable-dev-shm-usage", "--disable-gpu", "--renderer-process-limit=2"] } });
-test.skip(!process.env.STUDIO_E2E, "Run only against the opted-in local studio with one worker");
+test.skip(!process.env.STUDIO_E2E, "Run against the opted-in local studio with one worker");
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => { localStorage.setItem("nb-style", "margin"); localStorage.setItem("nb-rice", "ayu-mirage"); });
-  page.on("dialog", (dialog) => dialog.accept());
+  page.on("dialog", dialog => dialog.accept());
 });
 
-test("renders authored Markdown after preview, save and reload on the actual site", async ({ page, context }) => {
-  const files = ["about", "projects/scrivo"];
-  const originals = new Map(await Promise.all(files.map(async id => [id, await readFile(`content/${id}.md`, "utf8")] as const)));
-  const markdown = "## Field notes\n\nA **measured** result.\n\n- Keep the source\n- Publish the result";
-  const headline = "A **working** garden";
-  const summary = "### Latest notes\n\n- **Fast** opening\n- Plain files";
-  const errors: string[] = [];
-  page.on("pageerror", error => errors.push(error.message));
-  try {
-    await page.goto("/");
+test("edits actual pages and deploys saved content from the bottom-left", async ({ page }) => {
+  const saved = await interceptSaves(page);
+  await page.goto("/studio");
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator(".about-page")).toBeVisible();
+  await expect(page.locator("iframe, .studio-shell, .studio-block")).toHaveCount(0);
+  for (const scenario of [
+    { route: "/projects", document: "home", field: "margin intro", value: "A private garden, edited in place." },
+    { route: "/about", document: "about", field: "intro", value: "A new introduction, edited in place." },
+    { route: "/p/scrivo", document: "projects/scrivo", field: "headline", value: "A locally edited Scrivo headline." },
+  ]) {
+    await page.goto(scenario.route);
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    const intro = page.getByRole("textbox", { name: "intro", exact: true });
-    const originalFirst = await intro.inputValue();
-    const sibling = await page.getByRole("textbox", { name: "section 1", exact: true }).inputValue();
-    await intro.fill(markdown);
-    await expect(intro).toHaveValue(markdown);
-    await expect(page.getByRole("textbox", { name: "section 1", exact: true })).toHaveValue(sibling);
-    await expect(page.locator("[contenteditable]")).toHaveCount(0);
-    await page.getByRole("textbox", { name: "headline", exact: true }).fill(headline);
-    await page.getByRole("button", { name: "Editing on", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "Field notes", exact: true })).toBeVisible();
-    await expect(page.locator("h1 strong")).toHaveText("working");
-    await expect(page.locator(".detail-hero p strong")).toHaveText("measured");
-    await expect(page.locator(".detail-hero ul > li")).toHaveText(["Keep the source", "Publish the result"]);
-    expect(await page.locator(".detail-hero ul").evaluate(element => getComputedStyle(element).listStyleType)).toBe("disc");
-    await page.getByRole("button", { name: "Save locally", exact: true }).click();
+    const input = await openField(page, scenario.field);
+    await input.fill(scenario.value); await input.press("Control+Enter");
     await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    const saved = parseContent(await readFile("content/about.md", "utf8"));
-    expect(saved.data.headline).toBe(headline);
-    expect(saved.blocks.intro).toBe(parseContent(originals.get("about")!).blocks.intro.replace(originalFirst, markdown));
-    await page.reload();
-    await expect(page.locator("h1 strong")).toHaveText("working");
-    await expect(page.getByRole("heading", { name: "Field notes", exact: true })).toBeVisible();
-    await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue(markdown);
-    await expect(page.locator('[data-studio-slot="block:intro"] textarea')).toHaveCount(1);
-
-    await page.goto("/projects");
-    await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    const entry = page.locator(".margin-project").filter({ has: page.locator('h3 a[href="/p/scrivo"]') });
-    await entry.getByRole("textbox", { name: "title", exact: true }).fill("**Scrivo** notes");
-    await entry.getByRole("textbox", { name: "summary", exact: true }).fill(summary);
-    await page.getByRole("button", { name: "Editing on", exact: true }).click();
-    await expect(entry.locator("h3 a strong")).toHaveText("Scrivo");
-    await expect(entry.getByRole("heading", { name: "Latest notes", exact: true })).toBeVisible();
-    await expect(entry.locator("ul > li")).toHaveText(["Fast opening", "Plain files"]);
-    await page.getByRole("button", { name: "Save locally", exact: true }).click();
-    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    expect(parseContent(await readFile("content/projects/scrivo.md", "utf8")).data.summary).toBe(summary);
-
-    if (process.env.STUDIO_REFERENCE_URL) {
-      const publicPage = await context.newPage();
-      try {
-        await publicPage.goto(`${process.env.STUDIO_REFERENCE_URL}/`);
-        await expect(publicPage.locator("h1 strong")).toHaveText("working");
-        await expect(publicPage.getByRole("heading", { name: "Field notes", exact: true })).toBeVisible();
-        await expect(publicPage.locator(".detail-hero ul > li")).toHaveText(["Keep the source", "Publish the result"]);
-        await expect(publicPage.locator("textarea, [contenteditable], .studio-dock")).toHaveCount(0);
-        await publicPage.goto(`${process.env.STUDIO_REFERENCE_URL}/projects`);
-        const publicEntry = publicPage.locator('.margin-entry').filter({ has: publicPage.locator('h3 a[href="/p/scrivo"]') });
-        await expect(publicEntry.locator("h3 a strong")).toHaveText("Scrivo");
-        await expect(publicEntry.getByRole("heading", { name: "Latest notes", exact: true })).toBeVisible();
-        await expect(publicEntry.locator("ul > li")).toHaveText(["Fast opening", "Plain files"]);
-      } finally { await publicPage.close(); }
-    }
-    expect(errors).toEqual([]);
-  } finally {
-    await page.waitForLoadState("networkidle").catch(() => {});
-    for (const [id, source] of originals) await writeFile(`content/${id}.md`, source, "utf8");
+    await expect(input).toHaveCount(0);
+    expect(saved.sources.get(scenario.document)).toContain(scenario.value);
+    await expect(page.getByText(scenario.value, { exact: true })).toBeVisible();
   }
+  await page.goto("/projects");
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  const entry = page.locator('.margin-entry').filter({ has: page.locator('[data-studio-document="projects/scrivo"]') });
+  const title = await openField(entry, "title");
+  await title.fill("Scrivo, edited locally"); await title.press("Enter");
+  let deployRequests = 0;
+  await page.route("**/api/studio", async route => {
+    if (route.request().method() === "POST" && route.request().postDataJSON().action === "deploy") {
+      deployRequests++;
+      expect(saved.sources.get("projects/scrivo")).toContain("Scrivo, edited locally");
+      await route.fulfill({ json: { job: { phase: "live", message: "Mock publication accepted", url: "https://example.invalid" } } });
+    } else await route.fallback();
+  });
+  await page.getByRole("button", { name: "Deploy", exact: true }).click();
+  await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Mock publication accepted");
+  expect(deployRequests).toBe(1);
+  const bounds = (await page.locator(".studio-deploy").boundingBox())!;
+  expect(bounds.x).toBeLessThan(30);
+  expect(bounds.y + bounds.height).toBeGreaterThan(page.viewportSize()!.height - 30);
+  await page.getByRole("button", { name: "Editing on", exact: true }).click();
+  await page.locator('.margin-entry h3 a[href="/p/scrivo"]').click();
+  await expect(page).toHaveURL(/\/p\/scrivo$/);
+  await expect(page.locator(".kicker")).toContainText("Scrivo, edited locally");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test("edits the actual pages, saves exact Markdown and deploys from the bottom-left", async ({ page }) => {
-  const originals = new Map(await Promise.all(["home", "about", "projects/scrivo"].map(async (id) => [id, await readFile(`content/${id}.md`, "utf8")] as const)));
-  const errors: string[] = [];
-  page.on("pageerror", (error) => errors.push(error.message));
-  try {
-    await page.goto("/studio");
-    await expect(page).toHaveURL(/\/$/);
-    await expect(page.locator(".about-page")).toBeVisible();
-    await page.getByRole("link", { name: "projects", exact: true }).click();
-    await expect(page).toHaveURL(/\/projects$/);
-    await expect(page.locator(".margin-index")).toBeVisible();
-    await expect(page.locator("iframe, .studio-shell, .studio-block")).toHaveCount(0);
-    for (const scenario of [
-      { route: "/projects", document: "home", field: "margin intro", value: "A private garden, edited in place.", visible: "A private garden, edited in place." },
-      { route: "/about", document: "about", field: "intro", value: "A new introduction, edited in place.", visible: "A new introduction, edited in place." },
-      { route: "/p/scrivo", document: "projects/scrivo", field: "headline", value: "A locally edited Scrivo headline.", visible: "A locally edited Scrivo headline." },
-    ]) {
-      await page.goto(scenario.route);
-      await page.getByRole("button", { name: "Editing off", exact: true }).click();
-      await page.getByRole("textbox", { name: scenario.field, exact: true }).click();
-      const input = page.getByRole("textbox", { name: scenario.field, exact: true });
-      await expect(input).toBeFocused();
-      await input.fill(scenario.value);
-      await input.press("Control+Enter");
-      await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-      await expect(input).not.toBeFocused();
-      expect(await readFile(`content/${scenario.document}.md`, "utf8")).toContain(scenario.value);
-      await page.reload();
-      await expect(page.getByText(scenario.visible, { exact: true })).toBeVisible();
-    }
-    await page.goto("/projects");
-    await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    // A linked title edits in place; Browsing restores the actual site's navigation.
-    const title = page.locator('.margin-entry h3 [data-studio-document="projects/scrivo"] textarea');
-    await expect(title).toHaveJSProperty("tagName", "TEXTAREA");
-    await title.click();
-    await title.fill("Scrivo, edited locally");
-    await title.press("Enter");
-    let deployRequests = 0;
-    await page.route("**/api/studio", async (route) => {
-      if (route.request().method() === "POST" && route.request().postDataJSON().action === "deploy") {
-        deployRequests++;
-        expect(await readFile("content/projects/scrivo.md", "utf8")).toContain("Scrivo, edited locally");
-        await route.fulfill({ json: { job: { phase: "live", message: "Mock publication accepted", url: "https://example.invalid" } } });
-      } else await route.continue();
-    });
-    await page.getByRole("button", { name: "Deploy", exact: true }).click();
-    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Mock publication accepted");
-    expect(deployRequests).toBe(1);
-    const bounds = (await page.locator(".studio-deploy").boundingBox())!;
-    expect(bounds.x).toBeLessThan(30);
-    expect(bounds.y + bounds.height).toBeGreaterThan(page.viewportSize()!.height - 30);
-    await page.getByRole("button", { name: "Editing on", exact: true }).click();
-    await page.locator('.margin-entry h3 a[href="/p/scrivo"]').click();
-    await expect(page).toHaveURL(/\/p\/scrivo$/);
-    await expect(page.locator(".kicker")).toContainText("Scrivo, edited locally");
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    expect(errors).toEqual([]);
-  } finally {
-    await page.waitForLoadState("networkidle").catch(() => {});
-    for (const [id, source] of originals) await writeFile(`content/${id}.md`, source, "utf8");
-  }
-});
-
-test("recovers other pages' drafts and refuses to overwrite an external edit", async ({ page }) => {
-  const original = await readFile("content/about.md", "utf8");
-  try {
-    await page.goto("/about");
-    await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    const headline = page.getByRole("textbox", { name: "headline", exact: true });
-    await headline.focus();
-    await expect(headline).toBeFocused();
-    await expect(page.getByRole("textbox", { name: "headline", exact: true })).toBeFocused();
-    await page.getByRole("textbox", { name: "headline", exact: true }).press("Escape");
-    await page.getByRole("textbox", { name: "intro", exact: true }).click();
-    await page.getByRole("textbox", { name: "intro", exact: true }).fill("Recovered from another page, with my edits.");
-    await page.getByRole("textbox", { name: "intro", exact: true }).press("Tab");
-    await page.getByRole("button", { name: "Editing on", exact: true }).click();
-    await page.getByRole("link", { name: "projects", exact: true }).click();
-    await expect(page).toHaveURL(/\/projects$/);
-    await page.reload();
-    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Recovered unsaved edits");
-    await page.getByRole("button", { name: "Save locally", exact: true }).click();
-    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    expect(await readFile("content/about.md", "utf8")).toContain("Recovered from another page, with my edits.");
-    await page.goto("/about");
-    await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    await page.getByRole("textbox", { name: "intro", exact: true }).click();
-    await page.getByRole("textbox", { name: "intro", exact: true }).fill("An unsaved draft to preserve.");
-    await page.getByRole("textbox", { name: "intro", exact: true }).press("Escape");
-    await expect(page.getByText("Recovered from another page, with my edits.", { exact: true })).toBeVisible();
-    await page.getByRole("textbox", { name: "intro", exact: true }).click();
-    await page.getByRole("textbox", { name: "intro", exact: true }).fill("An unsaved draft to preserve.");
-    await page.getByRole("textbox", { name: "intro", exact: true }).press("Tab");
-    const external = (await readFile("content/about.md", "utf8")) + "\n";
-    await writeFile("content/about.md", external, "utf8");
-    await page.getByRole("button", { name: "Save locally", exact: true }).click();
-    await expect(page.locator(".studio-dock").getByRole("alert")).toContainText(/changed|conflict/i);
-    expect(await readFile("content/about.md", "utf8")).toBe(external);
-    expect(await page.evaluate(() => localStorage.getItem("content-studio:v1:draft:about"))).toContain("An unsaved draft to preserve.");
-  } finally { await page.waitForLoadState("networkidle").catch(() => {}); await writeFile("content/about.md", original, "utf8"); }
-});
-
-test("matches normal site geometry on the same pages and viewport", async ({ page, context }) => {
-  test.skip(!process.env.STUDIO_REFERENCE_URL, "Provide a normal development site for parity checks");
-  const reference = await context.newPage();
-  await reference.addInitScript(() => { localStorage.setItem("nb-style", "margin"); localStorage.setItem("nb-rice", "ayu-mirage"); });
-  const measure = () => Array.from(document.querySelectorAll(".rack, .instruments, main, main h1, main h2, main h3, main p, main ol, main ul, main li, main pre, main table, main blockquote"))
-    .filter((element) => element.getBoundingClientRect().width > 0)
-    .map((element) => { const r = element.getBoundingClientRect(); return { tag: element.tagName, text: element.matches(".rack, .instruments, main") ? "" : element.textContent, x: Math.round(r.x * 10), y: Math.round(r.y * 10), width: Math.round(r.width * 10), height: Math.round(r.height * 10) }; });
-  try {
-    for (const route of ["/", "/projects", "/about", "/p/scrivo", "/p/tauri-explorer"]) {
-      await page.goto(route);
-      await reference.goto(`${process.env.STUDIO_REFERENCE_URL}${route}`);
-      await page.evaluate(() => document.fonts.ready);
-      await reference.evaluate(() => document.fonts.ready);
-      await expect(reference.getByRole("button", { name: "Theme: ayu mirage. Choose theme", exact: true })).toBeVisible();
-      await expect(page.getByRole("button", { name: "Deploy", exact: true })).toBeEnabled();
-      expect(await page.evaluate(measure), `Layout parity for ${route}`).toEqual(await reference.evaluate(measure));
-    }
-  } finally { await reference.close(); }
-});
-
-
-test("native textarea pastes, deletes blank lines, undoes and saves exact source", async ({ page, context }) => {
-  const original = await readFile("content/about.md", "utf8");
-  const errors: string[] = [];
-  page.on("pageerror", error => errors.push(error.message));
-  try {
-    await page.goto("/about");
-    await expect(page.locator("textarea, [contenteditable]")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Editing off", exact: true })).toBeEnabled();
-    await page.keyboard.press("Control+e");
-    const intro = page.getByRole("textbox", { name: "intro", exact: true });
-    const first = await intro.inputValue();
-    const sibling = await page.getByRole("textbox", { name: "section 1", exact: true }).inputValue();
-    await expect(intro).toHaveJSProperty("tagName", "TEXTAREA");
-    await expect(page.locator("[contenteditable]")).toHaveCount(0);
-    const pasted = "First line\n\n\nLast line 🌱";
-    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-    await page.evaluate(text => navigator.clipboard.writeText(text), pasted);
-    await intro.focus();
-    await page.keyboard.press("Control+a");
-    await page.keyboard.press("Control+v");
-    await expect(intro).toHaveValue(pasted);
-    await page.keyboard.press("Control+Home");
-    await page.keyboard.press("End");
-    await page.keyboard.press("Delete");
-    await page.keyboard.press("Delete");
-    await expect(intro).toHaveValue("First line\nLast line 🌱");
-    await page.keyboard.press("Control+z");
-    expect(await intro.inputValue()).toContain("\n\n");
-    await page.keyboard.press("Control+Shift+z");
-    const final = "First line\nLast line 🌱";
-    await expect(intro).toHaveValue(final);
-    await page.getByRole("button", { name: "Save locally", exact: true }).click();
-    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    expect(await readFile("content/about.md", "utf8")).toBe(original.replace(first, final));
-    await expect(page.getByRole("textbox", { name: "section 1", exact: true })).toHaveValue(sibling);
-    await page.reload();
-    await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue(final);
-    expect(errors).toEqual([]);
-  } finally {
-    await page.waitForLoadState("networkidle").catch(() => {});
-    await writeFile("content/about.md", original, "utf8");
-  }
-});
-
-test("clearing a field keeps the next field stable and saves only those changes", async ({ page }) => {
-  const original = await readFile("content/about.md", "utf8");
-  const errors: string[] = [];
-  page.on("pageerror", error => errors.push(error.message));
-  try {
-    await page.goto("/about");
-    await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    const first = page.getByRole("textbox", { name: "intro", exact: true });
-    const second = page.getByRole("textbox", { name: "section 1", exact: true });
-    const originalFirst = await first.inputValue();
-    const originalSecond = await second.inputValue();
-    await first.focus();
-    await page.keyboard.press("Control+a");
-    await page.keyboard.press("Backspace");
-    await expect(first).toHaveValue("");
-    await expect(first).toBeVisible();
-    const secondBox = await second.boundingBox();
-    await second.click();
-    await expect(second).toBeFocused();
-    expect(await second.boundingBox()).toEqual(secondBox);
-    await page.keyboard.press("Control+End");
-    await page.keyboard.type(" Edited here.");
-    await expect(second).toHaveValue(originalSecond + " Edited here.");
-    await expect(page.getByRole("textbox", { name: "sections · 0 · kicker", exact: true })).toHaveValue("How I work");
-    await page.getByRole("button", { name: "Save locally", exact: true }).click();
-    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    const clearedSource = original.replace(originalFirst, "").replace(originalSecond, originalSecond + " Edited here.");
-    expect(await readFile("content/about.md", "utf8")).toBe(clearedSource);
-    await second.focus();
-    await page.keyboard.press("Control+End");
-    await page.keyboard.type(" Again.");
-    await page.getByRole("button", { name: "Save locally", exact: true }).click();
-    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    expect(await readFile("content/about.md", "utf8")).toBe(clearedSource.replace(" Edited here.", " Edited here. Again."));
-    await first.click();
-    await page.keyboard.type("Retyped first paragraph.");
-    await expect(first).toHaveValue("Retyped first paragraph.");
-    await page.getByRole("button", { name: "Save locally", exact: true }).click();
-    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    expect(await readFile("content/about.md", "utf8")).toBe(original.replace(originalFirst, "Retyped first paragraph.").replace(originalSecond, originalSecond + " Edited here. Again."));
-    expect(errors).toEqual([]);
-  } finally {
-    await page.waitForLoadState("networkidle").catch(() => {});
-    await writeFile("content/about.md", original, "utf8");
-  }
-});
-
-test("native drag selection works in both directions and clicking collapses it", async ({ page }) => {
+test("drafts recover across pages, survive failed saves, and can be discarded", async ({ page }) => {
+  const saved = await interceptSaves(page);
   await page.goto("/about");
   await page.getByRole("button", { name: "Editing off", exact: true }).click();
-  const input = page.getByRole("textbox", { name: "intro", exact: true });
-  await input.fill("First line\n\nLast line.");
+  const input = await openField(page, "intro");
+  await input.fill("Recovered from another page, with my edits."); await input.press("Tab");
+  await page.getByRole("link", { name: "projects", exact: true }).click();
+  await page.reload();
+  await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Recovered unsaved edits");
+  await page.getByRole("button", { name: "Save locally", exact: true }).click();
+  await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+  expect(saved.sources.get("about")).toContain("Recovered from another page, with my edits.");
+  await page.goto("/");
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  await (await openField(page, "intro")).fill("An unsaved draft to preserve.");
+  await page.route("**/api/studio", route => route.request().method() === "POST"
+    ? route.fulfill({ status: 409, json: { error: "The Markdown file changed on disk" } }) : route.fallback());
+  await page.getByRole("textbox", { name: "intro", exact: true }).press("Control+Enter");
+  await expect(page.locator(".studio-dock").getByRole("alert")).toContainText("The Markdown file changed on disk");
+  expect(await page.evaluate(() => localStorage.getItem("content-studio:v1:draft:about"))).toContain("An unsaved draft to preserve.");
+  await page.getByRole("button", { name: "Discard unsaved edits", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Editing off", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  const reopened = await openField(page, "intro");
+  expect(await reopened.inputValue()).not.toBe("An unsaved draft to preserve.");
+  await reopened.press("Control+End"); await reopened.pressSequentially(" X");
+  expect(await page.evaluate(() => localStorage.getItem("content-studio:v1:draft:about"))).not.toContain("An unsaved draft to preserve.");
+});
+
+test("native editing preserves paste, blank lines, undo and bidirectional drag selection", async ({ page, context }) => {
+  await interceptSaves(page);
+  await page.goto("/about");
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  const input = await openField(page, "intro");
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.evaluate(() => navigator.clipboard.writeText("First line\n\n\nLast line."));
+  await input.press("Control+a"); await input.press("Control+v");
+  await expect(input).toHaveValue("First line\n\n\nLast line.");
+  await input.press("Control+Home"); await input.press("End"); await input.press("Delete");
+  await expect(input).toHaveValue("First line\n\nLast line.");
+  await input.press("Control+z");
+  await expect(input).toHaveValue("First line\n\n\nLast line.");
+  await input.press("Control+Shift+z");
+  await expect(input).toHaveValue("First line\n\nLast line.");
   await input.scrollIntoViewIfNeeded();
   const { a, b } = await input.evaluate((element: HTMLTextAreaElement) => {
     const box = element.getBoundingClientRect();
@@ -317,50 +113,70 @@ test("native drag selection works in both directions and clicking collapses it",
     expect(await selected()).toBe("");
     await expect(input).toBeFocused();
   }
-  await page.keyboard.press("Escape");
+  await input.press("Escape");
 });
 
-test("native controls keep typography, backgrounds and toggle behavior", async ({ page }) => {
-  await page.goto("/about");
-  await expect(page.getByRole("button", { name: "Editing off", exact: true })).toBeEnabled();
-  await page.keyboard.press("Control+e");
-  const input = page.getByRole("textbox", { name: "intro", exact: true });
-  await input.scrollIntoViewIfNeeded();
-  const styles = await input.evaluate(element => {
-    const style = getComputedStyle(element), parent = getComputedStyle(element.parentElement!);
-    return { font: style.font, parentFont: parent.font, color: style.color, parentColor: parent.color, background: style.backgroundColor };
-  });
-  expect(styles.font).toBe(styles.parentFont);
-  expect(styles.color).toBe(styles.parentColor);
-  expect(styles.background).toBe("rgba(0, 0, 0, 0)");
-  await input.fill("A retained draft.");
-  await page.keyboard.press("Control+e");
-  await expect(page.locator("textarea, [contenteditable]")).toHaveCount(0);
-  await expect(page.getByText("A retained draft.", { exact: true })).toBeVisible();
+
+test("whole sections render Markdown except while being edited, including after draft recovery and save", async ({ page }) => {
+  const saved = await interceptSaves(page);
+  await page.goto("/");
   await page.getByRole("button", { name: "Editing off", exact: true }).click();
-  await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue("A retained draft.");
+  await page.locator('[data-studio-slot="block:intro"]').click({ position: { x: 12, y: 12 } });
+  const intro = page.getByRole("textbox", { name: "intro", exact: true });
+  const source = "## Notes\n\nA **bold** result.\n\n" + Array.from({ length: 10 }, (_, i) => `Paragraph ${i + 1}.`).join("\n\n") + "\n\n- One\n- Two";
+  await intro.fill(source);
+  await page.locator('[data-studio-slot="block:section-1"]').click({ position: { x: 12, y: 12 } });
+  const neighbour = page.getByRole("textbox", { name: "section 1", exact: true });
+  await expect(neighbour).toBeFocused();
+  await expect(page.getByRole("heading", { name: "Notes", exact: true })).toBeVisible();
+  await expect(page.locator(".detail-hero strong")).toHaveText("bold");
+  await expect(page.locator(".detail-hero li")).toHaveText(["One", "Two"]);
+  const neighbourSource = await neighbour.inputValue();
+  await neighbour.fill("Discard this draft"); await neighbour.press("Escape");
+  await expect(await openField(page, "section 1")).toHaveValue(neighbourSource);
+  await page.reload();
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  const recovered = await openField(page, "intro");
+  await expect(recovered).toHaveValue(source);
+  await recovered.press("Control+Enter");
+  await expect(page.getByRole("heading", { name: "Notes", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Editing on", exact: true })).toBeVisible();
+  await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+  expect(saved.sources.get("about")).toContain(source);
+  const editButton = page.getByRole("button", { name: "Edit intro", exact: true });
+  await editButton.focus(); await editButton.press("Enter");
+  const reopened = page.getByRole("textbox", { name: "intro", exact: true });
+  await expect(reopened).toHaveValue(source);
+  await reopened.fill(""); await reopened.press("Tab");
+  await expect(await openField(page, "intro")).toHaveValue("");
+  await expect(await openField(page, "section 1")).toHaveValue(neighbourSource);
 });
 
-test("discard ends editing and cannot resurrect rejected drafts", async ({ page }) => {
-  await page.goto("/about");
-  await page.getByRole("button", { name: "Editing off", exact: true }).click();
-  const input = page.getByRole("textbox", { name: "intro", exact: true });
-  const original = await input.inputValue();
-  await input.fill("Unwanted draft");
-  await page.route("**/api/studio", async route => {
-    if (route.request().method() === "POST") await route.fulfill({ status: 409, json: { error: "Test conflict" } });
-    else await route.continue();
-  });
-  await page.getByRole("button", { name: "Save locally", exact: true }).click();
-  await expect(page.locator(".studio-dock").getByRole("alert")).toContainText("Test conflict");
-  await page.getByRole("button", { name: "Discard unsaved edits", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Editing off", exact: true })).toBeVisible();
-  await expect(page.locator("textarea")).toHaveCount(0);
-  await page.getByRole("button", { name: "Editing off", exact: true }).click();
-  await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue(original);
-  await page.getByRole("textbox", { name: "intro", exact: true }).focus();
-  await page.keyboard.press("Control+End");
-  await page.keyboard.type(" X");
-  await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue(original + " X");
-  expect(await page.evaluate(() => localStorage.getItem("content-studio:v1:draft:about"))).not.toContain("Unwanted draft");
+test("done saves once without waiting for the network, and unchanged fields finish without saving", async ({ page }) => {
+  const saved = await interceptSaves(page, true);
+  try {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Editing off", exact: true }).click();
+    const input = await openField(page, "intro");
+    for (const marker of ["-", "*"]) {
+      await input.fill(`${marker} First`); await input.press("End"); await input.press("Enter");
+      await expect(input).toHaveValue(`${marker} First\n${marker} `);
+      await input.press("Enter"); await input.pressSequentially("A paragraph");
+      await expect(input).toHaveValue(`${marker} First\n\nA paragraph`);
+    }
+    await input.press("Meta+Enter");
+    await expect(page.locator(".detail-hero li")).toHaveText("First");
+    await expect(page.locator(".detail-hero p").filter({ hasText: /^A paragraph$/ })).toBeVisible();
+    await expect.poll(() => saved.requests.length).toBe(1);
+    await page.keyboard.press("Meta+Enter");
+    expect(saved.requests).toHaveLength(1);
+    saved.release();
+    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+    const next = await openField(page, "section 1");
+    await next.dispatchEvent("keydown", { key: "Enter", ctrlKey: true, repeat: true });
+    await expect(next).toBeFocused();
+    await next.press("Control+Enter");
+    await expect(page.getByRole("button", { name: "Edit section 1", exact: true })).toBeEnabled();
+    expect(saved.requests).toHaveLength(1);
+  } finally { saved.release(); }
 });

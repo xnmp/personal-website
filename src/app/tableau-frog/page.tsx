@@ -3,7 +3,7 @@ import { bindBlock, bindField } from "@/lib/studio/bindings";
 import { Markdown } from "@/components/notebook/Markdown";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
-import Link from "next/link";
+import { EditableLink } from "@/components/studio/EditableLink";
 import { display, mono, serif } from "./fonts";
 import KeyboardLayer from "./KeyboardLayer";
 import LensDemo from "./LensDemo";
@@ -38,10 +38,10 @@ export default function TableauFrogPage() {
       <header className="tf-nav" id="tf-top">
         <span className="tf-brand"><Markdown {...bindBlock(content, "tableauspan-frog-class-frog")} inline /></span>
         <nav className="tf-nav-right">
-          <a href="#demo"><Markdown {...bindBlock(content, "demo")} inline allowLinks={false} /></a>
-          <a href="#investigate"><Markdown {...bindBlock(content, "investigate")} inline allowLinks={false} /></a>
-          <a href="#hack"><Markdown {...bindBlock(content, "hack-it")} inline allowLinks={false} /></a>
-          <Link href="/"><Markdown {...bindBlock(content, "notebook")} inline allowLinks={false} /></Link>
+          <EditableLink href="#demo"><Markdown {...bindBlock(content, "demo")} inline allowLinks={false} /></EditableLink>
+          <EditableLink href="#investigate"><Markdown {...bindBlock(content, "investigate")} inline allowLinks={false} /></EditableLink>
+          <EditableLink href="#hack"><Markdown {...bindBlock(content, "hack-it")} inline allowLinks={false} /></EditableLink>
+          <EditableLink href="/"><Markdown {...bindBlock(content, "notebook")} inline allowLinks={false} /></EditableLink>
         </nav>
       </header>
 

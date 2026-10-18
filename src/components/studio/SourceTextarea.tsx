@@ -16,12 +16,11 @@ export function SourceTextarea({ value, label, readOnly, inline, onChange, onAct
     control.style.height = "auto";
     control.style.height = `${control.scrollHeight}px`;
   }, [value]);
-  return <textarea ref={input} className="studio-input" aria-label={label}
+  return <textarea ref={input} className="studio-input" aria-label={label} autoFocus
     value={value} readOnly={readOnly} rows={1} spellCheck
     onChange={event => onChange(event.currentTarget.value)}
     onFocus={() => { snapshot.current = value; onActiveChange(true); }}
     onBlur={() => onActiveChange(false)}
-    onClick={event => { if (event.currentTarget.closest("a")) event.preventDefault(); }}
     onKeyDown={event => {
       if (event.defaultPrevented || event.nativeEvent.isComposing) return;
       if (event.key === "Escape") {

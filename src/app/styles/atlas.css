@@ -606,7 +606,7 @@
 }
 
 /* the name in the mock's warmer gold-cream, a shade yellower than the nav's */
-:root[data-style="atlas"]:not([data-rice-mode="light"]) .masthead .brand a {
+:root[data-style="atlas"]:not([data-rice-mode="light"]) .masthead .brand :is(a, :where([data-studio-link])) {
   color: #fce29a;
 }
 

@@ -1,7 +1,12 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { documentSlots, editDocument, previewRoute } from "../src/lib/studio/document";
+
+export async function openField(scope: Page | Locator, label: string) {
+  await scope.getByRole("button", { name: `Edit ${label}`, exact: true }).click();
+  return scope.getByRole("textbox", { name: label, exact: true });
+}
 
 /** Keep editor tests safe for an editor containing the owner's unsaved work. */
 export async function interceptSaves(page: Page, holdFirst = false) {

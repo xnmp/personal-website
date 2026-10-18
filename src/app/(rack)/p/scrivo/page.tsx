@@ -20,8 +20,8 @@ export default function Page() {
         meta={<ProjectMeta slug="scrivo" />}
         nav={
           <>
-            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
-            <Key href={REPO}><Markdown {...bindBlock(content, "github")} inline allowLinks={false} /></Key>
+            <Key editableLabel href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key editableLabel href={REPO}><Markdown {...bindBlock(content, "github")} inline allowLinks={false} /></Key>
           </>
         }
       />

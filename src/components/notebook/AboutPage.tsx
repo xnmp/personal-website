@@ -1,4 +1,5 @@
 import { bindBlock, bindField } from "@/lib/studio/bindings";
+import { BoundText } from "@/components/studio/BoundText";
 import { EditableText } from "@/components/studio/EditableText";
 import type { Metadata } from "next";
 import { RunningHead } from "@/components/notebook";
@@ -55,8 +56,8 @@ export function AboutPage() {
         </section>
 
         {sections.length > 0 && <nav className="about-contents" aria-label="On this page">
-          <span>In this file</span>
-          {sections.map((s, index) => <a key={s.heading} href={`#about-section-${index}`}><EditableText binding={bindField(content, ["sections", s.sourceIndex, "kicker"])}>{s.kicker}</EditableText></a>)}
+          <span className="about-contents-label">In this file</span>
+          {sections.map((s, index) => <a key={s.heading} href={`#about-section-${index}`}><BoundText text={s.heading} binding={bindField(content, ["sections", s.sourceIndex, "heading"])} /></a>)}
         </nav>}
 
         {sections.map((s, index) => (

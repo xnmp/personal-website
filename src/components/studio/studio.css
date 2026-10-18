@@ -1,4 +1,6 @@
 .studio-region { display: inline; }
+/* Draft status must not reduce readability while authoring. */
+:root .section[data-draft] { opacity: 1; }
 [data-studio-editable] {
   position: relative;
   cursor: text;
@@ -6,33 +8,25 @@
   --studio-edit-right: -12px;
 }
 [data-studio-editable]:hover,
-[data-studio-editable]:focus-visible { outline: 1px dashed color-mix(in srgb, var(--signal) 48%, transparent); outline-offset: 4px; border-radius: 3px; }
-/* Pseudo-elements preserve the site's markup, line wrapping and spacing. */
-[data-studio-editable]:is(:hover, :focus-visible)::after {
-  content: "";
-  position: absolute;
-  top: var(--studio-edit-top);
-  right: var(--studio-edit-right);
-  width: 24px;
-  height: 24px;
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  background: var(--paper);
+[data-studio-editable]:has(> .studio-edit-trigger:focus-visible) { outline: 1px dashed color-mix(in srgb, var(--signal) 48%, transparent); outline-offset: 4px; border-radius: 3px; }
+/* A real button is keyboard accessible and stays out of the text flow. */
+.studio-edit-trigger {
+  appearance: none; position: absolute;
+  top: var(--studio-edit-top); right: var(--studio-edit-right);
+  width: 24px; height: 24px; padding: 3px;
+  border: 1px solid var(--rule); border-radius: 6px;
+  background: var(--paper); color: var(--signal);
   box-shadow: 0 1px 4px color-mix(in srgb, var(--print) 12%, transparent);
-  cursor: pointer;
-  z-index: 2;
+  cursor: pointer; opacity: 0; z-index: 3;
 }
-[data-studio-editable]:is(:hover, :focus-visible)::before {
-  content: "";
-  position: absolute;
-  top: calc(var(--studio-edit-top) + 4px);
-  right: calc(var(--studio-edit-right) + 4px);
-  width: 16px;
-  height: 16px;
-  background: var(--signal);
+[data-studio-editable]:hover > .studio-edit-trigger,
+.studio-edit-trigger:focus-visible { opacity: 1; }
+.studio-edit-trigger:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.studio-edit-trigger:disabled { cursor: default; }
+.studio-edit-trigger::before {
+  content: ""; display: block; width: 16px; height: 16px;
+  background: currentColor;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.83 2.83 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3ZM15 5l4 4'/%3E%3C/svg%3E") center / contain no-repeat;
-  pointer-events: none;
-  z-index: 3;
 }
 /* Keep the badge inside scrollable code blocks, where overflow is clipped. */
 pre[data-studio-editable] { --studio-edit-top: 4px; --studio-edit-right: 4px; }
@@ -48,6 +42,11 @@ pre[data-studio-editable] { --studio-edit-top: 4px; --studio-edit-right: 4px; }
   outline: none; caret-color: var(--signal);
 }
 .studio-input::selection { background: var(--signal); color: var(--paper); }
+/* Artwork headings may use transparent clipped ink; source controls need solid ink. */
+:is(.brand, .launchpad-title, .launchpad-pitch, .launchpad-call, .showcase-title) .studio-input {
+  color: var(--print); -webkit-text-fill-color: currentColor;
+}
+:is(.brand [data-studio-link], .launchpad-title, .showcase-title):has([data-studio-active])::before { visibility: hidden; }
 .studio-region:has(> .studio-input) { display: inline-block; max-width: 100%; vertical-align: middle; }
 .studio-region > .studio-input { width: auto; }
 [data-studio-active] {

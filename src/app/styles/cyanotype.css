@@ -703,7 +703,7 @@
    laid at the print's scale: small bites of the blue inside the strokes and
    along their edges, no tonal drift across a letter). Clipped to the letters,
    so a focus ring or underline is drawn as ever. */
-:root[data-style="cyanotype"] :is(:where(.masthead .brand a), .launchpad-title, .launchpad-pitch, .launchpad-call, .showcase-title) {
+:root[data-style="cyanotype"] :is(:where(.masthead .brand :is(a, :where([data-studio-link]))), .launchpad-title, .launchpad-pitch, .launchpad-call, .showcase-title) {
   background: var(--k-type) 0 0 / calc(384 * var(--u)) repeat;
   -webkit-background-clip: text;
   background-clip: text;
@@ -735,7 +735,7 @@
    the hairlines are no longer eaten by a mottle. (The phone's name is
    measured at the text cut, its own comment below.) */
 @media (min-width: 721px) {
-  :root[data-style="cyanotype"] :is(.masthead .brand a, .launchpad-title) {
+  :root[data-style="cyanotype"] :is(.masthead .brand :is(a, :where([data-studio-link])), .launchpad-title) {
     font-variation-settings: "opsz" 36;
   }
 }
@@ -1480,7 +1480,7 @@
     letter-spacing: 0.04em;
   }
 
-  :root[data-style="cyanotype"] .masthead .brand a {
+  :root[data-style="cyanotype"] .masthead .brand :is(a, :where([data-studio-link])) {
     background: none;
     -webkit-background-clip: border-box;
     background-clip: border-box;
@@ -1731,7 +1731,7 @@
 /* (the running head's wordmark is small, ~24 px: the worn tile's bites are as
    big as its hairlines there and took a letter's bowl, so it is set with the
    clean tile, from the part of it that has no bite wide enough to do that) */
-:root[data-style="cyanotype"] .running-head .brand a {
+:root[data-style="cyanotype"] .running-head .brand :is(a, :where([data-studio-link])) {
   background: var(--k-type-clean) -328px -44px / 384px repeat;
   -webkit-background-clip: text;
   background-clip: text;
@@ -2009,7 +2009,7 @@
     color: var(--l-ink);
   }
 
-  :root[data-style="cyanotype"] .detail-hero:is(:has(.tags), .solo) p + p {
+  :root[data-style="cyanotype"] .detail-hero:is(:has(.tags), .solo) :is(p + p, :where(.content-block + .content-block > p:first-of-type)) {
     margin-top: calc(10 * var(--u));
     font-size: max(13px, calc(19 * var(--u)));
     line-height: 1.38;
@@ -2022,7 +2022,7 @@
     line-height: 1.28;
   }
 
-  :root[data-style="cyanotype"] .detail-hero:has(.tags) p + p {
+  :root[data-style="cyanotype"] .detail-hero:has(.tags) :is(p + p, :where(.content-block + .content-block > p:first-of-type)) {
     margin-top: calc(6 * var(--u));
     line-height: 1.34;
   }

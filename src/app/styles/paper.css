@@ -344,14 +344,14 @@
 }
 
 /* the name, on every page, in the mock's black */
-:root[data-style="paper"] .brand a {
+:root[data-style="paper"] .brand :is(a, :where([data-studio-link])) {
   color: var(--paper-ink);
 }
 
 /* the masthead's wordmark: the mock's stems measure 6.75px mean (dark runs
    through the x-height's rows at 1672x941), the book face at 700 gave 6.98,
    at 660 6.71 (round 8) */
-:root[data-style="paper"] .masthead .brand a {
+:root[data-style="paper"] .masthead .brand :is(a, :where([data-studio-link])) {
   font-weight: 660;
 }
 
@@ -1549,11 +1549,11 @@
     color: var(--paper-ink-small);
   }
 
-  :root[data-style="paper"] .detail-hero h1 + p {
+  :root[data-style="paper"] .detail-hero h1 + :is(p, :where(.content-block)) {
     margin-top: calc(28 * var(--u));
   }
 
-  :root[data-style="paper"] .detail-hero p + p {
+  :root[data-style="paper"] .detail-hero :is(p + p, :where(.content-block + .content-block > p:first-of-type)) {
     margin-top: calc(6 * var(--u));
   }
 

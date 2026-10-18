@@ -1,6 +1,6 @@
 import type { ContentBinding } from "@/lib/studio/bindings";
 import { EditableText } from "@/components/studio/EditableText";
-import Link from "next/link";
+import { EditableLink } from "@/components/studio/EditableLink";
 import { Instruments } from "@/components/instrument/Instruments";
 import { Led } from "@/components/rack/Led";
 import { MarginDetails } from "@/components/notebook/MarginDetails";
@@ -30,9 +30,9 @@ export function Masthead({
       <div className="masthead-brand">
         <h1 className="brand">
           <Led color="green" />
-          <Link href="/">
+          <EditableLink href="/">
             <EditableText binding={brandBinding}>{brand}</EditableText>
-          </Link>
+          </EditableLink>
         </h1>
         <p className="tagline">
           <EditableText binding={taglineBinding}>{tagline}</EditableText>

@@ -298,7 +298,7 @@
   font-size: 36px;
 }
 
-:root[data-style="solarpunk"] .running-head :is(.brand a, .meta, .meta .filed) {
+:root[data-style="solarpunk"] .running-head :is(.brand :is(a, :where([data-studio-link])), .meta, .meta .filed) {
   color: inherit;
 }
 
@@ -1011,7 +1011,7 @@
     text-shadow: none;
   }
 
-  :root[data-style="solarpunk"] .masthead .brand a {
+  :root[data-style="solarpunk"] .masthead .brand :is(a, :where([data-studio-link])) {
     color: #f4ecd3;
   }
 
@@ -2141,7 +2141,7 @@
     color: var(--sp-ink-soft);
   }
 
-  :root[data-style="solarpunk"] .detail-hero p + p {
+  :root[data-style="solarpunk"] .detail-hero :is(p + p, :where(.content-block + .content-block > p:first-of-type)) {
     margin-top: calc(14 * var(--u));
   }
 
