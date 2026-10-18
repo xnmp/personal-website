@@ -1,0 +1,18 @@
+/* Authored Markdown shares the site's typography and palette. */
+.md-heading {
+  margin: 1em 0 0.4em;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 500;
+  line-height: 1.2;
+}
+h1.md-heading { font-size: 2em; }
+h2.md-heading { font-size: 1.5em; }
+h3.md-heading { font-size: 1.25em; }
+h4.md-heading { font-size: 1.125em; }
+h5.md-heading, h6.md-heading { font-size: 1em; }
+.md-list { margin: 0.75em 0; padding-inline-start: 1.5em; list-style-position: outside; }
+ul.md-list { list-style-type: disc; }
+ol.md-list { list-style-type: decimal; }
+.md-list .md-list { margin-block: 0.25em; }
+.md-list > li { padding-inline-start: 0.2em; }
+.md-list > li > p { margin-block: 0.25em; }

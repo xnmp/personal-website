@@ -19,8 +19,8 @@ export default function TableauFrogPage() {
         meta={<ProjectMeta slug="tableau-frog" />}
         nav={
           <>
-            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline /></Key>
-            <Key href="/tableau-frog"><Markdown {...bindBlock(content, "the-showcase")} inline /></Key>
+            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key href="/tableau-frog"><Markdown {...bindBlock(content, "the-showcase")} inline allowLinks={false} /></Key>
           </>
         }
       />

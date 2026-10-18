@@ -2,7 +2,6 @@ import { EditableText } from "@/components/studio/EditableText";
 import { bindBlock, bindField, type ContentBinding } from "@/lib/studio/bindings";
 import { CopyKey } from "@/components/launch/CopyKey";
 import { DownloadKey } from "@/components/launch/DownloadKey";
-import { ForOS } from "@/components/launch/ForOS";
 import { LiveCaps } from "@/components/launch/LiveCaps";
 import { LiveSection } from "@/components/launch/LiveDemo";
 import { ShotGallery, type Shot } from "@/components/launch/ShotGallery";
@@ -72,8 +71,8 @@ export default function TauriExplorerPage() {
         meta={<ProjectMeta slug="tauri-explorer" />}
         nav={
           <>
-            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline /></Key>
-            <Key href={REPO}><Markdown {...bindBlock(content, "github")} inline /></Key>
+            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key href={REPO}><Markdown {...bindBlock(content, "github")} inline allowLinks={false} /></Key>
           </>
         }
       />
@@ -91,13 +90,13 @@ export default function TauriExplorerPage() {
             <Markdown {...bindBlock(content, "a-keyboard-first-file-manager-for-linux-macos-and-windows")} paragraphClassName="launch-sub" />
             <Markdown {...bindBlock(content, "fuzzy-find-any-file-search-inside-all-of-them-and-run-ever")} paragraphClassName="launch-lede" />
             <div className="launch-keys">
-              <Key href={INVITE} tone="signal" size="lg"><Markdown {...bindBlock(content, "join-the-alpha")} inline /></Key>
-              <Key href={`#${DEMO_ANCHOR}`} size="lg"><Markdown {...bindBlock(content, "try-it-live")} inline /></Key>
+              <Key href={INVITE} tone="signal" size="lg"><Markdown {...bindBlock(content, "join-the-alpha")} inline allowLinks={false} /></Key>
+              <Key href={`#${DEMO_ANCHOR}`} size="lg"><Markdown {...bindBlock(content, "try-it-live")} inline allowLinks={false} /></Key>
             </div>
             <p className="launch-keys-note note">
               <span><Markdown {...bindBlock(content, "opens-an-email-to-email")} inline /></span>
               <CopyKey text={EMAIL} variant="text" />
-              <a href="#alpha" className="text-action keys-note-terms"><Markdown {...bindBlock(content, "what-testers-get")} inline /></a>
+              <a href="#alpha" className="text-action keys-note-terms"><Markdown {...bindBlock(content, "what-testers-get")} inline allowLinks={false} /></a>
             </p>
             <ul className="launch-proof seplist silk" aria-label="At a glance">
               {PROOF.map((p) => (
@@ -158,7 +157,7 @@ export default function TauriExplorerPage() {
               <li key={r.chord.join("+")}>
                 <LiveCaps chord={r.chord} />
                 <span>
-                  <EditableText binding={bindField(content, ["reflexes", index, "what"])} shortcuts><ForOS>{r.what}</ForOS></EditableText>
+                  <EditableText binding={bindField(content, ["reflexes", index, "what"])} shortcuts>{r.what}</EditableText>
                 </span>
               </li>
             ))}
@@ -240,7 +239,7 @@ export default function TauriExplorerPage() {
             <div className="section-kicker"><Markdown {...bindBlock(content, "the-alpha")} inline /></div>
             <h2><Markdown {...bindBlock(content, "looking-for-a-small-first-cohort-of-people-who-live-in-a-f")} inline /></h2>
             <div className="alpha-keys">
-              <Key href={INVITE} tone="signal" size="lg"><Markdown {...bindBlock(content, "join-the-alpha-2")} inline /></Key>
+              <Key href={INVITE} tone="signal" size="lg"><Markdown {...bindBlock(content, "join-the-alpha-2")} inline allowLinks={false} /></Key>
               <DownloadKey repo={REPO} version={VERSION} />
             </div>
           </div>
