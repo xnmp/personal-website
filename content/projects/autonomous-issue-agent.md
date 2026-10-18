@@ -2,8 +2,8 @@
 slug: autonomous-issue-agent
 glyph: 工
 title: Issue Agent
-summary: A local harness that turns GitHub issues into reviewed pull requests.
-heading: From a GitHub issue to a tested, independently reviewed merge.
+summary: "My local harness for handing issues to coding agents and a separate reviewer."
+heading: "Letting the agents work through my issue queue"
 href: /p/autonomous-issue-agent
 repo: https://github.com/xnmp/autonomous-issue-agent
 tags:
@@ -11,21 +11,18 @@ tags:
   - claude / codex
   - sqlite
   - react
-index: Local coding-agent harness · GitHub issues to reviewed PRs · sandboxed fixer and reviewer
+index: "My coding-agent harness · issue queue, review and spend limits"
 stats:
-  - 10/10 issues merged
-  - ~$5.60 / merged PR
-  - 7/10 first-pass approvals
+  - "Local harness"
+  - "Separate reviewer"
+  - "Spend limits"
 art: /screens/autonomous-issue-agent.png
 status: producing
 shelf: tools
 tone: amber
 metadata:
-  title: 'Autonomous Issue Agent: issues to reviewed pull requests'
-  description: >-
-    A local Python harness that takes GitHub issues through planning, isolated
-    implementation, CI and independent AI review, then merges to a development
-    branch. With an operator dashboard and explicit spend limits.
+  title: "Issue Agent · chong"
+  description: "Trying to hand small fixes to coding agents without supervising every command, with a separate reviewer and a local dashboard."
 order: 12
 ---
 <!-- block: all-projects -->
@@ -35,22 +32,22 @@ order: 12
 Source on GitHub
 
 <!-- block: headline -->
-From a GitHub issue to a tested, independently reviewed merge.
+Letting the agents work through my issue queue
 
 <!-- block: intro -->
-I wanted to hand off small fixes without supervising every command. Label an issue `ai-ready`: the harness plans it, routes it to a Claude or Codex agent, opens a pull request, waits for CI and gets a separate agent to review the change.
+I wanted to hand off small fixes without supervising every command. The idea here is that I label an issue `ai-ready`, an agent works on it, and a separate agent reviews the change. Failed checks or review comments send it back for another attempt.
 
 <!-- block: ownership -->
-Approved and green means a merge into the development branch, `dev` by default. Production is still my decision. The harness runs on my own Linux machine, against my repositories, using my AI accounts.
+It runs on my Linux machine against my repositories. Approved changes go to a development branch. I still decide what reaches production.
 
 <!-- block: workflow-kicker -->
 The loop
 
 <!-- block: workflow-title -->
-A fixer and an independent reviewer
+What happens after I label an issue
 
 <!-- block: workflow-body -->
-A planning pass writes acceptance criteria and grades difficulty before the fixer starts. The fixer works in an isolated checkout and writes tests first. Failed CI or a request for changes sends it back with the evidence it needs. The reviewer uses a different GitHub identity, so it cannot approve its own work.
+A planning pass writes down what done should mean and estimates the difficulty. The fixer gets its own checkout. When it opens a PR, the harness waits for CI and asks a different agent to review it. The review is submitted under a separate GitHub identity.
 
 <!-- block: workflow-figure -->
 FIG. 1 · the path to dev
@@ -71,10 +68,10 @@ A PR with no CI checks cannot merge. Changes under `.github/` stop for human rev
 The dashboard
 
 <!-- block: dashboard-title -->
-See what is moving, and what needs me
+Which issues need me?
 
 <!-- block: dashboard-body -->
-The React dashboard puts work that needs a person ahead of running and blocked issues. Each issue has a stage history, agent runs, model and cost information. The backend reads the control store without writing to it; operator actions change GitHub labels to promote an issue or release a hold.
+The dashboard puts questions and stuck issues ahead of work that's still running. I can look at the attempts, cost and history without following every agent terminal. The screenshots below use fixture issues, not live work.
 
 <!-- block: board-figure -->
 FIG. 2 · the in-flight board
@@ -98,52 +95,50 @@ Completed issues in the Issue Agent dashboard, with linked pull requests, cost, 
 Underneath
 
 <!-- block: architecture-title -->
-Agents do the work; the harness owns the boundaries
+What I want the harness to keep track of
 
 <!-- block: decisions-label -->
-Pure decisions, explicit effects
+Restarts
 
 <!-- block: decisions-body -->
-Two Python daemons observe GitHub and derive the next action from the current world. Domain logic stays free of I/O; adapters own processes, GitHub and persistence. Remote mutations go through an idempotent act layer so a restart does not blindly repeat them.
+The next action is derived from GitHub and local state. Remote writes go through an idempotent layer, so restarting the harness doesn't blindly repeat them.
 
 <!-- block: money-label -->
-Reserve before spending
+Spending
 
 <!-- block: money-body -->
-SQLite is the authority for agent runs, leases and money. A paid run reserves its maximum charge in a transaction before it starts. Per-run, per-issue, daily and optional global limits include outstanding reservations, including when several agents run concurrently.
+A run reserves its maximum charge in SQLite before starting. Limits include runs still in flight, which matters when several agents are working at once.
 
 <!-- block: sandbox-label -->
-Separate trust domains
+What an agent can see
 
 <!-- block: sandbox-body -->
-Each agent runs under Linux bubblewrap with its own checkout and private home. It cannot read the harness configuration, operator credentials or other repositories. The fixer gets a scoped GitHub token; the reviewer gets none. The harness submits the review under the separate reviewer identity.
+Each agent gets a checkout and private home inside a bubblewrap sandbox. The fixer has a scoped GitHub token. The reviewer doesn't hold one; the harness submits its review.
 
 <!-- block: results-kicker -->
 Measured so far
 
 <!-- block: results-title -->
-One overnight run, not a benchmark
+One overnight run
 
 <!-- block: results-source -->
 Reported in the project README for 14–15 October 2026, on a Tauri desktop app repository.
 
 <!-- block: results-body -->
-- **10 of 10 issues merged.**
-- **About $5.60 per merged PR** on average, ranging from $0.40 to $37.80.
-- **7 of 10 approved on the first review.**
+The README records ten issues merged overnight on 14–15 October 2026, at an average accounted cost of about $5.60 per PR. Seven passed their first review. One cost $37.80.
 
-Earlier batches were roughly $5–7 per merged PR. These are observations on my repositories, not a forecast for someone else’s. Costs are the harness’s token-based accounting at configured rates, rather than provider invoices.
+That's useful experience on one of my repositories, but too small a sample to know what a typical issue will cost. These are the harness's token-cost estimates, not provider invoices.
 
 <!-- block: limits-kicker -->
-Still my responsibility
+The bits I still own
 
 <!-- block: limits-title -->
-A sandbox and a second opinion have limits
+A second agent can miss things too
 
 <!-- block: limits-body -->
-An AI reviewer can miss a bad change. Agents can run commands and access the network inside their sandbox, and a hostile issue can still try to steer them. Reliable tests, branch protection and a development branch where a bad merge is cheap to undo are part of how I use it.
+A separate AI reviewer can still approve a bad change. The sandbox limits what the agents can reach, but they can run commands and use the network inside it. I still need useful tests and a development branch where mistakes are recoverable.
 
-The harness stops with `needs-human` when intent is unclear, an issue looks like a duplicate, attempts run out or an issue reaches its spend limit. It still needs someone to answer those questions and decide what ships.
+Unclear intent, exhausted attempts and spend limits end in `needs-human`. The queue still has questions I need to answer; the aim is to spend less time supervising the mechanical parts.
 
 <!-- block: materials -->
 Materials **Python, SQLite, bubblewrap, FastAPI, React / TypeScript**
