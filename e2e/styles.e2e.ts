@@ -73,7 +73,7 @@ test("a plate style's scene is left to the CSS, drawn from the top of the page",
 
 test("the art-direction menu is a menu button the keyboard can drive", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard");
-  await asStyle(page, "paper");
+  await asStyle(page, STYLES[0].id);
   await page.goto("/projects");
   const key = styleKey(page);
   await expect(key).toHaveAccessibleName(`Art direction: ${STYLES[0].name}`); // hydrated

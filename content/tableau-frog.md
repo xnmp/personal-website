@@ -1,38 +1,26 @@
 ---
 metadata:
-  title: tableau-frog — the hacker's data explorer
-  description: >-
-    Keyboard-first, AI-native, variables-first data exploration. You don't pick
-    charts — you pick variables. Brush any panel and every other recolours by
-    significance-tested contrast. Built-in random forest, AI Investigate, a
-    plugin API, 1M-row interactivity.
+  title: "Tableau Frog · experiments and screenshots"
+  description: "An interactive selection example and notes from my data-exploration project."
   openGraph:
-    title: tableau-frog — the hacker's data explorer
-    description: >-
-      You don't pick charts. You pick variables. One global lens; every panel
-      recolours by significance-tested contrast.
+    title: "Tableau Frog · experiments and screenshots"
+    description: "Linked charts, variable-driven views and some AI experiments."
     type: website
   twitter:
     card: summary_large_image
-    title: tableau-frog — the hacker's data explorer
-    description: You don't pick charts. You pick variables.
+    title: "Tableau Frog · experiments and screenshots"
+    description: "Linked charts, variable-driven views and some AI experiments."
 shot: /tableau-frog
 ledger:
   - title: Inferred charts
-    body: >-
-      Assign columns to **x / y / z** and `inferChartKind` derives the family
-      from the axis type signature — scatter, clusters, line, histogram, bar,
-      distribution, crosstab. You never open a chart-type menu.
+    body: "Assign columns to x, y and z. The app infers a chart from the types of those columns."
   - title: One global lens
     body: >-
       Brush, click a bar, drag a lineX, click a crosstab cell — it all becomes
       one **Selection**. Shift composes with AND; the chip pops the newest
       clause; Esc clears all.
-  - title: Significance-aware contrast
-    body: >-
-      Per-panel `ratio` vs `significant` metric. The latter greys out any group
-      whose enrichment isn't statistically real — two-proportion z-test against
-      the *complement*, then Benjamini-Hochberg FDR.
+  - title: "Statistical filtering"
+    body: "Significant mode uses a two-proportion z-test against the complement and Benjamini–Hochberg correction. Passing the threshold isn't a guarantee that a difference is important or causal."
   - title: 'Missing values, first-class'
     body: >-
       The sidebar shows ∅ counts; bar / crosstab / distribution render a
@@ -80,13 +68,13 @@ grammar:
     desc: string predicate → boolean
 stats:
   - value: '*<100* ms'
-    label: mask + contrast + build at 1M rows — brush→recolour stays interactive
+    label: "Recorded mask, contrast and chart-build time at 1M rows"
   - value: ≈*0.4* s
-    label: '36k-row random forest, trained from scratch in the browser'
-  - value: '*355*'
-    label: Vitest unit tests over the pure domain layer
-  - value: '*67*'
-    label: Playwright e2e tests driving the real pipeline — no mocking
+    label: "Recorded random-forest run on 36k rows in the browser"
+  - value: "*Browser*"
+    label: "Most of the exploration runs without the desktop shell"
+  - value: "*Desktop*"
+    label: "Tauri adds native file access"
 ---
 <!-- block: 1 -->
 1
@@ -110,36 +98,34 @@ hack it
 ← notebook
 
 <!-- block: keyboard-first-ai-native-variables-first -->
-keyboard-first · ai-native · variables-first
+data exploration experiments
 
 <!-- block: headline -->
-You don’t pick charts.\
-You pick :span[variables.]{class="em"}
+Some experiments with :span[data exploration]{class="em"}
 
 <!-- block: tableau-frog-is-a-data-explorer-for-people-who-d-rather-ty -->
-**tableau-frog** is a data explorer for people who’d rather type than click. Assign columns to :span[x / y / z]{variant="ink"} slots and the chart is inferred. Brush any panel and one global :span[lens]{variant="ink"} recolours every other panel by statistical contrast — over-represented in red, under in blue, and **every colour is significance-tested**.
+This is a closer look at Tableau Frog, a project where I've been trying variable-driven charts and linked selections. There's a small interactive example below, followed by screenshots and notes from the app.
 
 <!-- block: linkbrush-the-live-demo-href-demo-class-tf-btn-primary-lin -->
-:link[brush the live demo ↓]{href="#demo" class="tf-btn primary"}:link[git clone & run]{href="#quickstart" class="tf-btn"}:span[or press :span[?]{class="tf-kbd"}]{variant="keyboard-hint"}
+:link[try the selection example ↓]{href="#demo" class="tf-btn primary"}:link[run it locally]{href="#quickstart" class="tf-btn"}
 
 <!-- block: span01-class-idx-the-lens-live -->
 :span[01]{class="idx"} the lens, live
 
 <!-- block: this-isn-t-a-video -->
-This isn’t a video. :span[Drag a box.]{class="em"}
+Try selecting a group
 
 <!-- block: 2-000-synthetic-signups-with-a-cohort-hiding-in-them -->
-2,000 synthetic signups with a cohort hiding in them. The scatter is the source panel — brush a region and the responder panels recolour by real log-ratio prevalence, each group two-proportion z-tested with a Benjamini-Hochberg correction. Try the dense high-session cloud.
+The example uses 2,000 synthetic signups. Drag a box in the scatter plot to select some of them, then watch how the other panels change. The colours compare that subset with the population; a statistical filter mutes some of the noisier differences.
 
 <!-- block: span02-class-idx-one-lens-every-panel -->
 :span[02]{class="idx"} one lens, every panel
 
 <!-- block: colours-you-can-trust -->
-Colours you can trust.\
-:span[Every contrast is significance-tested.]
+Comparing the selection with the rest
 
 <!-- block: the-source-panel-keeps-population-colours-with-an-accent-r -->
-The source panel keeps population colours with an accent ring; every responder colours its groups by prevalence log-ratio, clamped to ±ln 4 so a 2× lift reads half-saturated. Switch a panel to :code[significant]{variant="yellow"} mode and groups whose enrichment isn’t statistically real fade to neutral gray. Shift-brush composes; the chip pops the newest clause; :span[Esc]{class="tf-kbd"} clears.
+The source panel keeps its original colours and marks the selection. The other panels show relative prevalence. In significant mode, a two-proportion z-test and Benjamini–Hochberg correction mute differences that don't pass the threshold. This is an exploratory aid, not evidence of a cause. Shift adds another condition; Esc clears the selection.
 
 <!-- block: alt-one-brushed-source-panel-the-other-panels-recolour-by -->
 One brushed source panel; the other panels recolour by contrast on a blue–gray–red diverging scale.
@@ -148,22 +134,22 @@ One brushed source panel; the other panels recolour by contrast on a blue–gray
 :span[03]{class="idx"} the shape of it
 
 <!-- block: nine-things-no-chart-picker -->
-Nine things, no chart picker.
+Some of the pieces in the app
 
 <!-- block: span04-class-idx-ai-investigate-ctrl-i -->
 :span[04]{class="idx"} ai investigate · Ctrl+I
 
 <!-- block: point-at-something-odd -->
-Point at something odd. :span[Get falsifiable cards.]{class="em"}
+Questions to investigate
 
 <!-- block: investigate-is-the-bidirectional-counterpart-to-the-assist -->
-Investigate is the bidirectional counterpart to the assistant: brush a notable subset, and the model returns 2–4 hypotheses — each with concrete, one-click test projections and a stated expectation, grounded strictly in significance-aware contrast stats. Apply, then mark each confirmed or rejected. The verdict trail persists.
+Investigate asks a model for possible explanations of a selection. Each suggestion includes a view or calculation to try. I can apply those suggestions and record a verdict with the dataset. The suggestions still need checking.
 
 <!-- block: brush-generate-hypotheses -->
 Brush → generate hypotheses
 
 <!-- block: a-brushed-cohort-becomes-the-lens -->
-A brushed cohort becomes the lens. Hit :span[Ctrl+I]{class="tf-kbd"} and cards appear in a side drawer, ranked by confidence and carrying the contrast that motivated them.
+After selecting a group, Ctrl+I opens the hypothesis drawer. These screenshots show the proposed questions and the views suggested for checking them.
 
 <!-- block: alt-ai-investigate-drawer-hypothesis-cards-with-confidence -->
 AI Investigate drawer: hypothesis cards with confidence badges and applyable test projections.
@@ -187,22 +173,22 @@ Natural-language bar turning a request into panels and a lens.
 :span[05]{class="idx"} ai assistant · Ctrl+J
 
 <!-- block: natural-language-grounded-in-the-real-stats -->
-Natural language, grounded in the real stats.
+Asking for a view in words
 
 <!-- block: the-assistant-summarises-your-dataset-to-shape-only-types -->
-The assistant summarises your dataset to *shape only* — types, ranges, capped category counts, row count; **never a row of data leaves** — then returns a validated plan of panels, a composed lens, and derived columns. “Explain selection” answers from the actual contrast summaries, not a hallucinated story.
+The assistant receives metadata such as column names, types, ranges, category counts and row counts. Raw rows are excluded, but the metadata is sent to an external model. It can propose panels, selections and derived columns. An explanation is still a model-generated interpretation that needs checking against the data.
 
 <!-- block: spanshape-only-schema-no-rows-class-tf-callout-aqua-spanst -->
-:span[shape-only schema · no rows]{class="tf-callout aqua"}:span[strict JSON output · validatePlan]{class="tf-callout"}:span[explain grounded in p / q]{class="tf-callout red"}
+:span[metadata sent to the model]{class="tf-callout aqua"}:span[validated panel plans]{class="tf-callout"}
 
 <!-- block: span06-class-idx-built-in-ml-no-dependencies -->
 :span[06]{class="idx"} built-in ml · no dependencies
 
 <!-- block: a-random-forest-that-trains-in-your-browser -->
-A random forest that trains in your browser.
+A local random forest
 
 <!-- block: codemodel-predict-column-style-color-var-blue-grows-a-from -->
-:code[model: predict <column>]{variant="blue"} grows a from-scratch, deterministic random forest over the columnar arrays — histogram-binned splits, seeded mulberry32 for reproducibility — then explains it with permutation importance and Friedman partial-dependence curves. 36k rows in ≈0.4 s. No data leaves the tab.
+:code[model: predict <column>]{variant="blue"} trains a TypeScript random forest in the browser. Feature importance and partial-dependence views give another way to inspect relationships. This local modelling step doesn't send the dataset to a model service.
 
 <!-- block: alt-permutation-feature-importance-bars-sorted-summing-to -->
 Permutation feature-importance bars, sorted, summing to one.
@@ -217,10 +203,10 @@ Pairwise-complete Pearson correlation matrix as a diverging heatmap.
 :span[07]{class="idx"} a scripting seam, on purpose
 
 <!-- block: hack-it-2 -->
-Hack it.
+Trying other chart types
 
 <!-- block: everything-is-exposed-at-runtime-on-codewindow -->
-Everything is exposed at runtime on :code[window.tableauFrog]{variant="aqua"}. Claim an axis-type signature with a chart plugin, or just drive the live app from the console.
+The app exposes :code[window.tableauFrog]{variant="aqua"} for experiments from the console. A chart plugin can register another way to display an axis-type combination.
 
 <!-- block: derived-column-grammar-eval-free-pratt-parser -->
 derived-column grammar · eval-free Pratt parser
@@ -229,22 +215,22 @@ derived-column grammar · eval-free Pratt parser
 :span[08]{class="idx"} the numbers, precisely
 
 <!-- block: no-superlatives -->
-No superlatives. Just measurements.
+A couple of recorded timings
 
 <!-- block: span09-class-idx-open-source-style-quickstart -->
 :span[09]{class="idx"} open-source-style quickstart
 
 <!-- block: clone-it -->
-Clone it. Run it.
+Running the project
 
 <!-- block: a-tauri-v2-desktop-app-that-runs-identically-in-a-plain-br -->
-A Tauri v2 desktop app that runs identically in a plain browser. Pure-TypeScript domain, ECharts on the SVG renderer, Rust only for the native file dialog.
+Most of the app runs in a plain browser. The Tauri desktop shell adds native file access. The source has setup instructions and notes on the implementation.
 
 <!-- block: spancsv-tsv-parquet-json-jsonl-clipboard-class-tf-callout -->
 :span[CSV · TSV · Parquet · JSON · JSONL · clipboard]{class="tf-callout"}:span[Ctrl+P quick open]{class="tf-callout aqua"}:span[Ctrl+Shift+P palette]{class="tf-callout red"}
 
 <!-- block: tableauspan-frog-style-color-var-aqua-a-variables-first-da -->
-tableau:span[ frog]{variant="aqua"} — a variables-first data explorer.
+tableau:span[ frog]{variant="aqua"} — notes and experiments.
 
 <!-- block: showcase-built-on-the-notebook-press-span -->
 Showcase built on [the notebook](/) · press :span[?]{class="tf-kbd"}
@@ -270,8 +256,8 @@ frog.deriveColumn("ltv", "monthly_revenue * tenure_months");
 
 <!-- block: quickstart -->
 ```bash
-# variables-first, keyboard-first, AI-native
-git clone git@github.com:you/tableau-frog.git
+# Run the browser version locally
+git clone https://github.com/xnmp/tableau-frog.git
 cd tableau-frog
 
 bun install

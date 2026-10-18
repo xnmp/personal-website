@@ -22,6 +22,7 @@
 export type SceneArt = "diorama" | "plate" | "none";
 
 export const STYLES = [
+  { id: "margin", name: "plain", note: "text and real screenshots", scene: "none", emphasized: true },
   { id: "paper", name: "Paper Diorama", note: "cut paper in a shadow box", scene: "diorama" },
   { id: "solarpunk", name: "Solarpunk", note: "brass and frosted glass in a greenhouse", scene: "plate" },
   { id: "sumi", name: "Sumi-e Ink", note: "hanging scrolls before an ink-wash landscape", scene: "plate" },
@@ -29,7 +30,6 @@ export const STYLES = [
   { id: "garden", name: "Natural Garden", note: "limestone tablets in a walled cottage garden", scene: "plate" },
   { id: "ligne", name: "Ligne Claire", note: "comic panels over a desert outpost", scene: "plate" },
   { id: "atlas", name: "Celestial Atlas", note: "enamel plates in gilt over a star chart", scene: "plate" },
-  { id: "margin", name: "Margin Index", note: "a quiet directory in type and rules", scene: "none" },
 ] as const;
 
 export type StyleId = (typeof STYLES)[number]["id"];

@@ -46,11 +46,10 @@ export default function ProjectsPage() {
                 <CopySky />
                 <span className="launchpad-title-ink"><EditableText binding={bindField(flagshipContent, ["title"])}>{flagship.title}</EditableText></span>
               </h2>
-              <p className="launchpad-pitch"><CopySky /><Markdown {...bindBlock(content, "a-keyboard-first-file-manager")} inline /></p>
-              <p className="launchpad-call"><CopySky /><Markdown {...bindBlock(content, "alpha-testers-wanted")} inline /></p>
+              <p className="launchpad-pitch"><CopySky /><EditableText binding={bindField(flagshipContent, [flagship.summary === undefined ? "heading" : "summary"])}>{flagship.summary ?? flagship.heading}</EditableText></p>
               <div className="keys launchpad-keys">
-                <Key editableLabel href={`${flagship.href}#alpha`} tone="signal" size="lg" ariaLabel={`Join the ${flagship.title} alpha`}><Markdown {...bindBlock(content, "join-the-alpha-span-class-key-arrow")} inline allowLinks={false} /></Key>
-                <Key editableLabel href={`${flagship.href}#live`} size="lg"><Markdown {...bindBlock(content, "try-it-live")} inline allowLinks={false} /></Key>
+                {flagship.website && <Key editableLabel href={flagship.website} tone="signal" size="lg">{flagshipContent.blocks.website !== undefined ? <Markdown {...bindBlock(flagshipContent, "website")} inline allowLinks={false} /> : `${flagship.title} website ↗`}</Key>}
+                <Key editableLabel href={flagship.href} size="lg">{flagshipContent.blocks["project-notes"] !== undefined ? <Markdown {...bindBlock(flagshipContent, "project-notes")} inline allowLinks={false} /> : <EditableText binding={bindField(flagshipContent, ["title"])}>{flagship.title}</EditableText>}</Key>
               </div>
             </div>
             <a href={flagship.href} className="launchpad-window" data-rack-stop aria-label={`${flagship.title} details`}>

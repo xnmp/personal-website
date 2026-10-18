@@ -2,8 +2,8 @@
 slug: lambdaquery
 glyph: 查
 title: LambdaQuery
-summary: Python comprehensions, compiled to SQL.
-heading: 'Python comprehensions, compiled to SQL.'
+summary: "An old project for writing SQL queries as Python expressions, revisited."
+heading: "An old query compiler, revisited"
 href: /p/lambdaquery
 repo: 'https://github.com/xnmp/LambdaQuery_2'
 tags:
@@ -11,34 +11,33 @@ tags:
   - compiler
   - sql
   - semantics
-index: 'A query compiler · dependent joins, correlated aggregates'
+index: "Python-to-SQL compiler · started in 2017, revisited in 2026"
 stats:
-  - 150 tests
-  - 2 bugs caught
-  - 4.7k loc
+  - "Python → SQL"
+  - "Nested queries"
+  - "DuckDB comparisons"
 art: /screens/lambdaquery.png
 status: producing
 shelf: tools
 tone: amber
 metadata:
-  title: 'LambdaQuery: Python comprehensions, compiled to SQL'
-  description: >-
-    A compiler from Python comprehension-style queries to SQL: dependent-join
-    decorrelation, empty-group semantics, and an adversarial DuckDB oracle that
-    caught two real bugs.
+  title: "LambdaQuery · chong"
+  description: "Revisiting a Python-to-SQL query compiler, including the awkward cases where empty groups and nested queries change the answer."
 order: 6
 ---
 <!-- block: 4 -->
-~4.7k LoC
+Python → SQL
 
 <!-- block: all-projects -->
 ← all projects
 
 <!-- block: headline -->
-Python compre&shy;hensions, compiled to SQL.
+An old query compiler, revisited
 
 <!-- block: queries-built-as-composable-value-objects-fmap-filter-get -->
-Queries built as composable value objects (`fmap`, `filter`, `get_foreign`) run through a multi-pass compiler into standalone SQL. The interesting part is what it refuses to get wrong. A `count()` over an empty related set is `0`, exactly like `len([])`, and the row never silently vanishes.
+This goes back to 2017, and I've been revisiting it in 2026. The idea is to build a query out of Python expressions and have a compiler turn it into SQL.
+
+The awkward part is keeping the meaning the same. If I count an empty list in Python I get zero. A SQL join can make that whole row disappear instead. A lot of the work here is in details like that.
 
 <!-- block: python -->
 python
@@ -50,19 +49,19 @@ python
 2017, rebuilt 2026
 
 <!-- block: the-idea -->
-The idea
+An example
 
 <!-- block: say-it-once-in-python -->
-Say it once, in Python
+What I want to ask the database
 
 <!-- block: for-each-school-with-at-least-one-program-the-average-over -->
-For each school with at least one program: the average, over its departments, of the number of courses worth more than 3 credits.
+For each school with at least one program, find the average number of courses worth more than three credits across its departments. Here's what that looks like in the query API and in the generated SQL.
 
 <!-- block: figure-fig-1-three-levels-of-correlation -->
 FIG. 1 · Three levels of correlation
 
 <!-- block: caption-fig-1-the-count-0-filter-compiles-to-an-exists-sem -->
-Fig. 1: the count() > 0 filter compiles to an EXISTS semi-join; the nested aggregate becomes two grouped LEFT JOINs with COALESCE guarding the empty groups.
+The EXISTS checks for a program. LEFT JOIN and COALESCE keep a department with no matching courses in the calculation, with a count of zero.
 
 <!-- block: written -->
 written
@@ -109,58 +108,58 @@ WHERE EXISTS (
 ```
 
 <!-- block: an-inner-lambda-can-reference-an-outer-lambda-s-row-at-any -->
-An inner lambda can reference an outer lambda’s row at any depth. The compiler handles it by *dependent-join unnesting*: the subquery gets a private copy of the outer table as its correlation domain, and successive passes pull the join conditions up until everything is flat. Aggregate subqueries are marked `LEFT JOIN` so an empty group still produces a row, and that is where the Python semantics live.
+The nested lambdas can refer to outer rows. The compiler has to turn those references into joins while keeping the empty groups. That ends up being more involved than translating each method call into a SQL keyword.
 
 <!-- block: the-pipeline -->
-The pipeline
+Underneath
 
 <!-- block: passes-to-a-fixpoint -->
-Passes, to a fixpoint
+Untangling the nested queries
 
 <!-- block: decorrelate -->
-**Decorrelate.** `internalize_correlated_tables` gives each inner scope its own copy of the outer tables it closes over; join conditions are pulled upward. Iterated to a fixpoint, because pulling one join condition up can expose the next.
+**Outer references.** Give an inner scope its own correlation domain, then pull the join conditions upwards. One pass can expose another reference, so this repeats until nothing changes.
 
 <!-- block: flatten -->
-**Flatten.** Non-aggregate subqueries are merged into their parent. Aggregates are *refused*, because flattening one would silently drop empty-group rows.
+**Flattening.** Merge subqueries where that's safe. Aggregates need more care, because flattening them can lose rows for empty groups.
 
 <!-- block: optimize-cost-only -->
-**Optimize, cost-only.** `count() > 0` rewrites to `EXISTS`; a `COALESCE` is elided when the surrounding predicate already rejects NULL the same way it rejects zero, which keeps the LEFT JOIN eligible for the engine’s own join simplification. Every rewrite is result-preserving, and the test suite is the proof.
+**Simplifying.** A condition like `count() > 0` can become EXISTS. These rewrites are intended to keep the result the same; comparing actual query outputs is how I check that.
 
 <!-- block: one-hard-won-invariant-straight-from-a-comment-in-compile -->
-One hard-won invariant, straight from a comment in `compile.py`: the passes track shared subqueries by object identity, so the pipeline must run in place on a single private deep copy. Copy mid-pipeline and shared subqueries diverge into inconsistent twins with dangling aliases.
+One implementation detail that matters more than it first appears: shared subqueries are tracked by object identity. The passes work on one private copy. Copying again halfway through can give two different versions of what was meant to be the same subquery.
 
 <!-- block: the-oracle -->
-The oracle
+Checking the answers
 
 <!-- block: tested-against-two-ground-truths -->
-Tested against two ground truths
+Running the same question in Python and SQL
 
 <!-- block: a-quarter-of-the-codebase-is-the-adversarial-suite -->
-A quarter of the codebase is the adversarial suite. Every compiled query is executed in DuckDB and diffed against a plain Python comprehension over the same in-memory data.
+The useful check is to run the generated SQL in DuckDB and compare it with a plain Python comprehension over the same data.
 
 <!-- block: the-fixture-data-is-built-to-hurt-a-school-with-zero-depar -->
-The fixture data is built to hurt: a school with zero departments, a department with zero courses, the rows that vanish when correlated SQL is written by hand. One suite crosses every comparison operator with thresholds around the NULL/0 boundary, including reflected forms like `0 < count(...)`. Another nests aggregates three deep with filters at every level.
+The examples include schools with no departments and departments with no courses. Those are easy to overlook when a query looks right on a more convenient dataset.
 
 <!-- block: the-harness-caught-two-genuine-compiler-bugs-both-document -->
-The harness caught two genuine compiler bugs, both documented in the suite rather than quietly fixed:
+Two bugs that this caught:
 
 <!-- block: unparenthesized-or -->
-**Unparenthesized OR.** `filter(A | B).filter(C)` emitted `x OR y AND z`, which SQL parses as `x OR (y AND z)`, silently changing which rows match. Survived every structural test; fell to the adversarial suite.
+**OR precedence.** `filter(A | B).filter(C)` generated `x OR y AND z`. Without parentheses, SQL answers a different question. Checking the generated query's shape hadn't caught it.
 
 <!-- block: unscoped-cross-scope-joins -->
-**Unscoped cross-scope joins.** A reference to a non-key outer column joined against an *unconstrained* copy of the outer table, giving large, quiet over-counting. Pinned down with `xfail` regression tests that record the exact wrong numbers.
+**Outer references.** One non-key reference joined against an unconstrained copy of the outer table and quietly over-counted. Comparing the result with Python made the mistake visible.
 
 <!-- block: the-rough-edges -->
-The rough edges
+Unfinished bits
 
 <!-- block: open-questions -->
-Open questions
+What I'd work on next
 
 <!-- block: the-or-precedence-bug-survived-148-structural-tests-and-fe -->
-The OR-precedence bug survived 148 structural tests and fell to the oracle in an afternoon. What is the smallest differential harness that would have caught it on day one, and is it small enough to write *before* the compiler?
+I'd start the result-comparison checks much earlier if I were doing it again. They caught mistakes that plenty of tests of the query structure had missed.
 
 <!-- block: child-to-parent-traversal-many-to-one-get-foreign-and-quer -->
-Child-to-parent traversal (many-to-one `get_foreign`) and `Query.bind` are unimplemented. Do they fall out of the same decorrelation machinery, or is the value-object encoding hiding a monad that wants to exist?
+Child-to-parent traversal and `Query.bind` aren't implemented. There's also a limitation where filtering after `fmap` discards the projection, so this is still a project to work on rather than a finished query library.
 
 <!-- block: label-open-question-ii -->
 Open question II
@@ -172,7 +171,7 @@ Materials**Python, DuckDB, networkx**
 Vintage**2017, rebuilt 2026**
 
 <!-- block: scale4 -->
-Scale**4.7k LoC · 150 tests · 2 bugs, documented**
+Notes**Nested queries, empty groups and result comparisons**
 
 <!-- block: source-github-xnmp-lambdaquery-2-https-github -->
 Source **[github/xnmp/LambdaQuery_2 ](https://github.com/xnmp/LambdaQuery_2)**

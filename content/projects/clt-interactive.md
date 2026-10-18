@@ -2,26 +2,26 @@
 slug: clt-interactive
 glyph: Φ
 title: Chaos, Added Up
-summary: An interactive guide to the central limit theorem.
-heading: Five hands-on ways to build intuition for the bell curve.
+summary: "An interactive essay about why sums of random things tend towards a bell curve."
+heading: "Chaos, Added Up"
 href: /p/clt-interactive
 essay: /clt/index.html
 tags:
   - mathematics
   - probability
   - vanilla JavaScript
-index: Central limit theorem · interactive probability essay
+index: "Central limit theorem · interactive mathematical exposition"
 stats:
-  - 5 experiments
-  - no dependencies
+  - "5 experiments"
+  - "Interactive essay"
 art: /screens/clt-interactive.svg
 status: complete
 shelf: tools
 tone: amber
 order: 13
 metadata:
-  title: 'Chaos, Added Up: an interactive tour of the central limit theorem'
-  description: An interactive essay exploring probability through dice, distributions, entropy and geometry.
+  title: "Chaos, Added Up · chong"
+  description: "An experiment in explaining the central limit theorem through things you can change and watch, rather than starting with the formula."
 ---
 <!-- block: all-projects -->
 ← all projects
@@ -33,20 +33,22 @@ Open the interactive essay ↗
 Chaos, Added Up
 
 <!-- block: intro -->
-An interactive essay about the central limit theorem, written for intuition rather than a maths prerequisite. Change the inputs and watch what happens to the distributions.
+I'm interested in using AI to make maths more accessible. This is one experiment in that direction: explaining the central limit theorem through things you can change and watch.
+
+Adding up independent random quantities often gives a distribution close to a bell curve. The essay approaches that from a few different angles, starting with dice and working through to geometry.
 
 <!-- block: experiments-heading -->
-Five experiments, one bell curve
+A few ways into the same idea
 
 <!-- block: experiments -->
-- **Counting:** add dice and inspect the exact distribution of their sums.
-- **Blending:** draw a distribution, then repeatedly convolve it with itself.
-- **The truce:** adjust the jitter and tether in a particle swarm.
-- **The budget:** reshape a distribution while holding its variance fixed, and compare its entropy with the bell curve.
-- **Geometry:** rotate a sample cloud and watch its shadow distribution.
+- **Counting:** add dice and look at how many ways there are to get each sum.
+- **Blending:** draw a distribution and repeatedly combine it with itself.
+- **The truce:** change the jitter and tether in a particle swarm.
+- **The budget:** reshape a distribution while keeping its variance fixed.
+- **Geometry:** rotate a cloud of samples and watch the distribution of its shadow.
 
 <!-- block: construction-heading -->
-A single HTML file
+How it's put together
 
 <!-- block: construction -->
-Canvas, CSS and vanilla JavaScript. No dependencies or network requests. The experiments pause when they leave the screen, and the essay supports light, dark and reduced-motion preferences.
+It's a single HTML file with canvas experiments, CSS and JavaScript. The experiments are different ways to build intuition around the bell curve; they aren't all proofs of the central limit theorem. There are no dependencies to install, and the copy here opens as a standalone page.

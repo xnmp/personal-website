@@ -18,18 +18,18 @@ const seed = (page: Page, rice = "paper") => page.addInitScript((r) => {
   localStorage.setItem("nb-rice", r);
 }, rice);
 
-test("Margin Index can be selected, survives navigation and reload, and can be switched back", async ({ page }) => {
+test("plain can be selected, survives navigation and reload, and can be switched back", async ({ page }) => {
   await page.addInitScript(() => {
     if (!localStorage.getItem("nb-style")) localStorage.setItem("nb-style", "paper");
   });
   await page.goto("/projects");
-  await choose(page, "Margin Index");
+  await choose(page, "plain");
   await expect(page.locator(".margin-index")).toBeVisible();
   await expect(page.locator(".landing")).toBeHidden();
   await page.getByRole("link", { name: "Scrivo", exact: true }).click();
   await expect(page).toHaveURL(/\/p\/scrivo$/);
   await page.reload();
-  await expect(styleKey(page)).toHaveAccessibleName("Art direction: Margin Index");
+  await expect(styleKey(page)).toHaveAccessibleName("Art direction: plain");
   await page.getByRole("link", { name: "projects", exact: true }).click();
   await expect(page.locator(".margin-index")).toBeVisible();
   await choose(page, "Paper Diorama");
@@ -83,7 +83,7 @@ test("keyboard navigation opens the visible directory entry and search still fin
   test.skip(isMobile, "physical keyboard");
   await seed(page);
   await page.goto("/projects");
-  await expect(styleKey(page)).toHaveAccessibleName("Art direction: Margin Index");
+  await expect(styleKey(page)).toHaveAccessibleName("Art direction: plain");
   await page.keyboard.press("j");
   await expect(page.locator(".margin-list h3 a").first()).toBeFocused();
   await page.keyboard.press("j");
@@ -96,7 +96,7 @@ test("keyboard navigation opens the visible directory entry and search still fin
   await expect(page).toHaveURL(/\/p\/ballast$/);
 });
 
-test("real screenshots follow the colour theme and alpha/live links still work", async ({ page }) => {
+test("real screenshots follow the colour theme across project navigation", async ({ page }) => {
   await seed(page);
   await page.goto("/projects");
   const shot = page.locator(".margin-capture img:visible");
@@ -105,11 +105,9 @@ test("real screenshots follow the colour theme and alpha/live links still work",
   await page.getByRole("button", { name: /^Theme:/ }).click();
   await page.getByRole("menuitemradio", { name: "horizon", exact: true }).click();
   await expect(shot).not.toHaveAttribute("src", /solarized/);
+  const selectedShot = await shot.getAttribute("src");
   await page.getByRole("link", { name: "Tauri Explorer", exact: true }).click();
-  await page.getByRole("link", { name: "Try it live", exact: true }).first().click();
-  await expect(page).toHaveURL(/\/p\/tauri-explorer#live$/);
-  await expect(page.locator("#live")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Join the alpha", exact: true }).first()).toHaveAttribute("href", /^mailto:/);
+  await expect(page.locator(".detail-hero img:visible")).toHaveAttribute("src", selectedShot!);
 });
 
 test("child pages keep a visible path back to the project", async ({ page }) => {
@@ -135,7 +133,7 @@ test("the rail menu remains fully usable on short screens", async ({ page }) => 
   await expect(page.locator("html")).toHaveAttribute("data-style", "paper");
 });
 
-test("new visitors get Margin Index while a saved style takes precedence", async ({ page }) => {
+test("new visitors get plain while a saved style takes precedence", async ({ page }) => {
   await page.goto("/projects");
   await expect(page.locator("html")).toHaveAttribute("data-style", "margin");
   await expect(page.locator(".margin-index")).toBeVisible();

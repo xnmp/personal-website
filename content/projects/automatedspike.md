@@ -2,42 +2,41 @@
 slug: automatedspike
 glyph: 法
 title: AutomatedSpike
-summary: Searching for Magic decks and agents to pilot them.
-heading: 'Looking for Magic decks nobody has built yet, and agents that can pilot them.'
+summary: "Seeing what an AI might brew in Magic, and teaching it to play the decks."
+heading: "Magic decks I wouldn't think to build"
 href: /p/automatedspike
 tags:
   - python
   - reinforcement learning
   - xmage
   - mtg
-index: MTG Modern deck search + RL pilots · confidence-gated results
+index: "Magic deck search · learned pilots · XMage experiments"
 stats:
-  - 800-game check
-  - 95% vs naive
-  - 72 test files
+  - "Deck search"
+  - "Learned pilots"
+  - "XMage"
 art: /screens/automatedspike.png
 status: producing
 shelf: games
 tone: amber
 metadata:
-  title: 'AutomatedSpike: Magic decks nobody has built yet'
-  description: >-
-    Research into finding inventive Magic: The Gathering Modern decks and
-    training agents to pilot them. So far it works on a restricted starter pool,
-    with confidence bounds on every claim and a list of what failed.
+  title: "AutomatedSpike · chong"
+  description: "I like unusual Magic brews. This project explores deck search and agents that can play the decks well enough to evaluate them."
 order: 9
 ---
 <!-- block: all-projects -->
 ← all projects
 
 <!-- block: headline -->
-Looking for Magic decks nobody has built yet, and agents that can pilot them.
+Magic decks I wouldn't think to build
 
 <!-- block: this-is-research-into-finding-inventive-decks-for-magic-th -->
-This is research into finding inventive decks for Magic: The Gathering Modern, and into training agents that can actually play them. You cannot tell whether a new deck is good until something plays it well, so the two problems have to be solved together.
+I've always liked seeing a new Magic brew where the cards fit together in some unexpected way. I wonder what reinforcement learning would come up with: more one-ofs, perhaps, or cards that look wrong until you play enough games with them.
+
+That's the idea behind AutomatedSpike. The difficulty is that to find out whether a deck is good, something has to play it reasonably well. So there's a deck-building problem and a piloting problem tangled together.
 
 <!-- block: full-modern-is-not-working-yet -->
-Full Modern is not working yet. The card pool the engine supports today is Plains and nine vanilla creatures. Everything below is true inside that small world.
+The early experiments below used a tiny pool of Plains and nine vanilla creatures. Later work moved onto XMage and real starter decks. That's still a long way from evaluating arbitrary Modern brews.
 
 <!-- block: python -->
 python
@@ -55,46 +54,46 @@ behaviour cloning
 reinforcement learning
 
 <!-- block: the-shape -->
-The shape
+The pieces
 
 <!-- block: brewer-pilot-evaluator-environment -->
-Brewer, pilot, evaluator, environment
+Something to build decks, something to play them
 
 <!-- block: from-docs-mission-and-architecture -->
-From `docs/mission-and-architecture.md` and the layout of `src/automated_spike/`.
+The project separates the rules, the player, the deck search and the evaluation.
 
 <!-- block: four-parts-with-separate-jobs -->
-Four parts with separate jobs. The brewer proposes legal deck changes. The pilot chooses actions from what a player is allowed to see. The evaluator schedules games, computes uncertainty and decides whether a result counts. The environment runs the rules and produces replays. The package mirrors that: `brewer`, `pilot`, `evaluation`, `environment`, `domain`, `corpus` and `infrastructure`.
+The brewer proposes a deck change, the pilot plays it, and the evaluator compares the results. The environment handles the game rules and records the replay. Keeping those jobs separate helps when a result looks odd: was it the deck, the player or the engine?
 
 <!-- block: two-rules-from-the-design-matter-most -->
-Two rules from the design matter most. The brewer cannot change the evaluation criteria after seeing results, and the pilot never receives engine state or the opponent’s hand, only an immutable observation.
+The pilot only gets information a player is allowed to see. The evaluation settings are fixed before a run, so a promising-looking result doesn't change its own test.
 
 <!-- block: two-real-engines-are-pinned-next-to-the-python-xmage-and-a -->
-Two real engines are pinned next to the Python: XMage and Argentum, both built locally under `integrations/`. On a panel of 202 card names from twelve real decks, XMage had 191 by exact name and Argentum had 103, so XMage is the one I am qualifying for Modern. Argentum stays as a smaller comparator. I also found it accepting illegal damage underassignment in a fixture, which is recorded in `argentum-pinned-audit.md`.
+I looked at both XMage and Argentum. XMage covered more of the cards in a sample of real Modern decks, so that became the route beyond the little Python engine. Argentum remains a useful smaller comparison.
 
 <!-- block: the-starter-engine -->
-The starter engine
+The first version
 
 <!-- block: small-on-purpose-and-strict-about-it -->
-Small on purpose, and strict about it
+Starting with a very small card pool
 
 <!-- block: until-an-upstream-engine-could-run-here-i-wrote-a-starter -->
-Until an upstream engine could run here I wrote a starter engine in Python. It implements the real rules that apply to its pool: priority, the stack, explicit mana payment, London mulligans, summoning sickness, full attack and block declarations, arbitrary legal damage assignment, and state-based actions. Anything outside the whitelist is rejected when the game resets.
+The Python starter engine only accepts its small whitelist, but within it there are real choices about mana, mulligans, attacks, blocks and damage assignment. It gave the pilot something bounded to learn before dealing with a full card database.
 
 <!-- block: it-is-deterministic -->
-It is deterministic. Every game saves its action transcript and observation hashes, and a replay re-executes the actions against the engine to check them. The audit of the main confirmation run reproduced 800 of 800 engine transcripts and 800 of 800 policy reruns.
+Each game saves its actions and observations so I can replay it and check what happened. The early 800-game confirmation run reproduced both the engine transcripts and the policy reruns.
 
 <!-- block: the-pilots -->
 The pilots
 
 <!-- block: a-teacher-then-a-student -->
-A teacher, then a student
+Learning from a scripted player
 
 <!-- block: the-teacher-is-a-heuristic-pilot-in-pilot-heuristics -->
-The teacher is a heuristic pilot in `pilot/heuristics.py`. It estimates public damage clocks, keeps blockers back against a lethal counterattack, splits damage among multiple blockers, chooses affordable spells and keeps playable opening hands.
+The first teacher is a hand-written player. It estimates damage, keeps blockers back when necessary and chooses spells it can afford. It gives the learning system a starting point.
 
 <!-- block: the-student-learns-combat-only -->
-The student learns combat only. It is a 44-feature linear softmax policy over complete combat proposals, first trained by behaviour cloning on 32 teacher games, then updated with REINFORCE for four batches of 16 games. Hands and spell sequencing still come from the teacher.
+The early student only learned combat. It copied the teacher first, then had a few reinforcement-learning updates. Playing lands and sequencing spells still belonged to the teacher, so these results only describe part of a player.
 
 <!-- block: figure-fig-1-the-teacher-against-two-weak-baselines -->
 FIG. 1 · the teacher against two weak baselines
@@ -117,28 +116,28 @@ gate: lower bound > 0.55 in every stratum  -> passed
 ```
 
 <!-- block: the-evidence-rules -->
-The evidence rules
+Comparing runs
 
 <!-- block: declare-the-test-before-you-run-it -->
-Declare the test before you run it
+Trying not to fool myself with a good run
 
 <!-- block: evaluation-statistics -->
 `evaluation/statistics.py`, `evaluation/promotion.py`.
 
 <!-- block: each-experiment-fixes-its-seeds-decks-opponents-game-count -->
-Each experiment fixes its seeds, decks, opponents, game count and source files before any confirmation game. The bounds are Hoeffding intervals on the score, which are conservative: with 200 games and the alpha split across four strata, a perfect run gets a lower bound of 0.880 and not 1.0.
+Seeds, decks, opponents and game counts are fixed before confirmation runs. The reported bounds are deliberately conservative, because trying lots of variants makes a lucky result quite easy to find.
 
 <!-- block: the-alpha-budget-is-0 -->
-The alpha budget is `0.05 / [k(k+1)]` for attempt `k`, and attempts are recorded in a SQLite ledger before the games start. A failed or interrupted run still uses its attempt, so I cannot retry until it looks good. Any technical failure in a game voids the run, and no game may be dropped. Passing the statistics is not enough either; the protocol also requires an independent review of rules behaviour and hidden-information separation.
+Attempts are recorded before games start, including failures and interruptions. A technical failure voids the run. There are also checks that the rules and hidden-information boundary behaved as intended.
 
 <!-- block: what-failed -->
-What failed
+The early results
 
 <!-- block: the-negative-results -->
-The negative results
+Copying the teacher was easier than improving on it
 
 <!-- block: these-are-the-numbers-i-would-hide-if-i-were-selling-it -->
-These are the numbers I would hide if I were selling it.
+These are the restricted-pool experiments. They were useful for finding what to work on next.
 
 <!-- block: figure-fig-2-the-first-learning-run-against-the-teacher -->
 FIG. 2 · the first learning run against the teacher
@@ -157,58 +156,58 @@ learned combat student, 304 games, 16 per cell
 ```
 
 <!-- block: rl-won-4-of-16-against-the-teacher -->
-**RL won 4 of 16 against the teacher.** Cloning alone won 3 of 16. With 8 games per stratum even a perfect score only has a lower bound of 0.345, so the doc says RL is not shown to be better than cloning. The later guarded model won 45 of 64 against the teacher in a 256-game paired comparison, but the paper trail says uncertainty still prevents a strength claim.
+The first RL version won 4 of 16 against the teacher; cloning alone won 3 of 16. That sample couldn't distinguish them reliably. A later guarded model did better in another comparison, but there still wasn't enough evidence for the strength claim I wanted to make.
 
 <!-- block: the-first-brewing-search-found-nothing -->
-**The first brewing search found nothing.** It played 280 games over six legal deck mutations plus the original. The best, swapping a Pillarfield Ox for a Plains, scored 60.0% against 52.5% for the reference, but the simultaneous bounds on the difference were about -0.72 to +0.87. `confirmed_improvement` stayed false.
+The first deck search didn't establish an improvement either. Replacing a Pillarfield Ox with a Plains looked better in the sample, but the uncertainty was far too wide to know whether it helped.
 
 <!-- block: a-tactical-gate-failed -->
-**A tactical gate failed.** A fresh set of 48 board positions came back 42 of 48, 34 of 40 on the critical cases. Three new attack and block positions failed in both seats, and the 800-game confirmation I had planned was deferred. A corrective guard on combat then passed 48 of 48 new cases and the 800-game check (187/200 and 180/200 against naive, 400/400 against random), but it carries no claim of beating the teacher.
+Some new attack and block positions exposed mistakes in both seats, so the planned confirmation run had to wait. Fixing those positions eventually got the guarded player through the starter checks, without showing it was better than the teacher.
 
 <!-- block: a-tactical-rewrite-did-not-move-scores -->
-**A tactical rewrite did not move scores.** A 16-game comparison of a native XMage pilot with search over combat declarations scored the same as the original teacher against every opponent tested. It fixed specific positions, and it did not change a result.
+A combat-search rewrite fixed individual positions but didn't change the scores in a small XMage comparison. Another reminder that a sensible code change isn't automatically a stronger player.
 
 <!-- block: the-corpus -->
-The corpus
+Real decks
 
 <!-- block: real-decks-partly-collected -->
-Real decks, partly collected
+Collecting things to try
 
 <!-- block: all-135-modern-archetype-pages-were-fetched-and-normalised -->
-All 135 Modern archetype pages were fetched and normalised into 143 unique deck compositions. Of the 3,556 constituent deck URLs they list, 3,555 are still queued and one was blocked with HTTP 403.
+An early collection pass normalised 135 Modern archetype pages into 143 distinct deck lists. The much larger set of linked deck pages was still mostly queued.
 
 <!-- block: label-goldfish-snapshot -->
 Goldfish snapshot
 
 <!-- block: raw-bytes-are-stored-requests-respect-robots -->
-Raw bytes are stored, requests respect robots.txt and wait two seconds apart, and a card name only resolves through an evidenced alias. Ten quarantined captures were recovered with three exact-name lookups.
+The collection keeps the source captures and resolves card names against recorded evidence, so an odd list can be traced back to where it came from.
 
 <!-- block: label-provenance -->
 Provenance
 
 <!-- block: the-moxfield-profile-hit-a-cloudflare-block-youtube-discov -->
-The Moxfield profile hit a Cloudflare block, YouTube discovery needs credentials I have not configured, and Spike discovery is incomplete.
+Some sources were blocked or needed credentials. The collection is incomplete.
 
 <!-- block: label-gaps -->
 Gaps
 
 <!-- block: where-it-stands -->
-Where it stands
+More recently
 
 <!-- block: full-modern-is-still-ahead -->
-Full Modern is still ahead
+Moving onto XMage
 
 <!-- block: counts-are-from-docs-implementation-status -->
-Counts are from `docs/implementation-status.md`, observed 6 October 2026.
+The later notes are in the 8 October 2026 Arena v1 report.
 
 <!-- block: the-restricted-starter-engine-is-qualified-and-so-are-two -->
-The restricted starter engine is qualified, and so are two starter pilots, the heuristic and the guarded learned one. Nothing here shows a pilot that beats the teacher, an improved deck, or competence on Modern. The status document says so directly: no broadly qualified Modern engine, no confirmed strength advancement, no confirmed deck improvement, and no complete corpus.
+Arena v1 plays real starter decks in XMage: Burn, Green Stompy, White Weenie and Black removal. It combines a public-information heuristic player with determinized search. That opens up more interesting deck experiments than the vanilla-creature pool.
 
 <!-- block: a-separate-xmage-pilot-also-plays-the-starter-pool-plus-re -->
-A separate XMage pilot also plays the starter pool plus Rebuke, which is the first instant-speed interaction in the project. It runs real XMage games, one of which lasted 108 turns. The tests are standard-library Python, 72 `test_*.py` files in `tests/`.
+The report records a Burn-list improvement of 0.121 in win rate on 3,200 fresh confirmation games. That's a result in that particular experiment, rather than evidence that it can brew or pilot arbitrary Modern decks.
 
 <!-- block: does-any-of-this-transfer -->
-Does any of this transfer? The 800-game gate says the pilot is competent against two weak baselines on a tiny pool. Whether the same approach works once there are instants, many colours and a sideboard is what the next engine work has to answer.
+What I'd like to see is a deck with an idea I wouldn't have come up with myself, played well enough that I can take the result seriously. That's still the interesting question for me.
 
 <!-- block: materialspython-xmage-argentum-sqlite -->
 Materials**Python, XMage, Argentum, SQLite**

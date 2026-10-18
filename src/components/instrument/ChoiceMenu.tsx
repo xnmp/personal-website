@@ -11,7 +11,7 @@ const readHost = () => document.body;
 const serverHost = () => null;
 
 type Props<Id extends string> = {
-  options: readonly { id: Id; name: string }[];
+  options: readonly { id: Id; name: string; emphasized?: boolean }[];
   current: string;
   label: string;
   triggerLabel: string;
@@ -109,7 +109,7 @@ export function ChoiceMenu<Id extends string>({ options, current, label, trigger
               event.currentTarget.closest<HTMLElement>('[role="menu"]')?.hidePopover();
               trigger.current?.focus();
             }}>
-            <span>{option.name}</span>
+            <span>{option.emphasized ? <strong>{option.name}</strong> : option.name}</span>
           </button>
         ))}
       </div>, host)}
