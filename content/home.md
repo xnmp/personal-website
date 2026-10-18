@@ -23,7 +23,7 @@ metadata:
     family card game.
 ---
 <!-- block: margin-intro -->
-I build the software I want to use, then measure it.
+Building the apps that I want to use
 
 <!-- block: margin-description -->
 Tools, games, and notes from the work.

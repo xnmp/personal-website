@@ -1,7 +1,7 @@
 ---
 slug: bwai
 glyph: 智
-title: Brood War
+title: "Brood War AI"
 summary: "Trying to train an agent for the game I grew up playing."
 heading: "Trying to teach an agent Brood War"
 href: /p/bwai
