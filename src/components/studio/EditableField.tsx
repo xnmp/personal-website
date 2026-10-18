@@ -15,11 +15,12 @@ export function EditableField({ binding, source, inline, paragraphClassName, par
   if (!studio.editing || !studio.ready) return inline ? children : <div className="content-block">{children}</div>;
   if (active) {
     const Tag = inline ? "span" : "p";
-    return <Tag className={inline ? "studio-region" : paragraphClassName} style={inline ? undefined : paragraphStyle}
+    const field = <Tag className={inline ? "studio-region" : paragraphClassName} style={inline ? undefined : paragraphStyle}
       data-studio-slot={binding.slotId} data-studio-document={binding.documentId} data-studio-active>
       <SourceTextarea value={source} label={binding.label} inline={inline} readOnly={studio.locked}
         onActiveChange={setActive} onChange={value => studio.update(binding, value)} />
     </Tag>;
+    return inline ? field : <div className="content-block">{field}</div>;
   }
   const Tag = inline ? "span" : "div";
   const canActivate = (target: EventTarget) => !studio.locked &&
