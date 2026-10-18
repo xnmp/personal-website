@@ -77,6 +77,17 @@ describe("source editing", () => {
     );
   });
 
+  test("repeated saves after clearing a boundary paragraph do not accumulate blank lines", () => {
+    for (const eol of ["\n", "\r\n"]) {
+      const source = ["<!-- block: intro -->", "First.", "", "Second.", "", "<!-- block: end -->", "Unchanged.", ""].join(eol);
+      const cleared = editDocument(source, { "block:intro": `${eol}${eol}Second.${eol}${eol}` });
+      expect(cleared).toBe(source.replace(`First.${eol}${eol}`, ""));
+      const edited = editDocument(cleared, { "block:intro": `${eol}${eol}Second. More.${eol}${eol}` });
+      expect(edited).toBe(cleared.replace("Second.", "Second. More."));
+      expect(editDocument(edited, { "block:intro": `${eol}${eol}Second. More.${eol}${eol}` })).toBe(edited);
+    }
+  });
+
   test("rejects unknown slots, malformed values, structural injection and invalid project metadata", async () => {
     const source = await readFile("content/projects/scrivo.md", "utf8");
     expect(() => editDocument(source, { unknown: "x" })).toThrow("Unknown");
