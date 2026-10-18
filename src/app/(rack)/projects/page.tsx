@@ -1,4 +1,5 @@
 import { EditableText } from "@/components/studio/EditableText";
+import { BoundText } from "@/components/studio/BoundText";
 import { bindBlock, bindField } from "@/lib/studio/bindings";
 import { ExplorerWindow } from "@/components/landing/ExplorerWindow";
 import { Masthead } from "@/components/landing/Masthead";
@@ -20,17 +21,16 @@ function CopySky() {
 }
 
 export default function ProjectsPage() {
-  const { FEATURED, FLAGSHIP, project, projects, shelves } = readProjectCatalog();
+  const { FEATURED, FLAGSHIP, project, groups } = readProjectCatalog();
   const content = readContent("home");
+  const about = readContent("about");
+  const grouping = readContent("project-groups");
 
   const flagship = project(FLAGSHIP);
   const flagshipContent = readContent(`projects/${flagship.slug}`);
   const featured = FEATURED.map(project);
   const onFirstScreen = new Set([FLAGSHIP, ...FEATURED]);
-  // the shelves hold the rest, each shelf only if it has any
-  const mounted = shelves
-    .map((shelf, sourceIndex) => ({ shelf, sourceIndex, items: projects.filter((p) => p.shelf === shelf.id && !onFirstScreen.has(p.slug)) }))
-    .filter(({ items }) => items.length > 0);
+  const mounted = groups.map(group => ({ group, items: group.projects.filter(p => !onFirstScreen.has(p.slug)) }));
   return (
     <>
       <RackKeys />
@@ -77,23 +77,22 @@ export default function ProjectsPage() {
           <Markdown {...bindBlock(content, "linkmore-about-me-href-about-class-text-action")} paragraphClassName="hero-more" />
         </div>
 
-        {mounted.map(({ shelf, sourceIndex, items }) => {
+        {mounted.map(({ group, items }) => {
           return (
-            <div key={shelf.id} className="shelf-group">
+            <section key={group.id} className="shelf-group" aria-labelledby={`rack-${group.id}`}>
               {/* a 1U blanking panel, silkscreened with the shelf's name */}
               <div className="divider faceplate">
-                <h2 className="shelf-label">
-                  <EditableText binding={bindField(content, ["shelves", sourceIndex, "label"])}>{shelf.label}</EditableText>{" "}
-                  <span className="shelf-note"><EditableText binding={bindField(content, ["shelves", sourceIndex, "note"])}>{shelf.note}</EditableText></span>
+                <h2 className="shelf-label" id={`rack-${group.id}`}>
+                  <BoundText text={group.heading} binding={bindField(about, ["sections", group.sourceIndex, "heading"])} />
                 </h2>
                 <span className="shelf-count">{items.length} {items.length === 1 ? "project" : "projects"}</span>
               </div>
-              <div className="shelf">
+              {items.length > 0 ? <div className="shelf">
                 {items.map((p) => (
                   <ModuleCard key={p.slug} p={p} />
                 ))}
-              </div>
-            </div>
+              </div> : <Markdown {...bindBlock(grouping, group.projects.length > 0 ? "featured-note" : "empty-note")} />}
+            </section>
           );
         })}
 

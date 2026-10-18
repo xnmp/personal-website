@@ -10,6 +10,7 @@ import {
 } from "node:fs/promises";
 import { join } from "node:path";
 import { parseContent, contentBlock } from "../content";
+import { groupProjects } from "../project-groups";
 import {
   documentSlots,
   editDocument,
@@ -146,6 +147,13 @@ export async function validateCollection(
   contentBlock(about, String(about.data.intro));
   for (const section of about.data.sections as { body: string }[])
     contentBlock(about, section.body);
+  const grouping = documents.get("project-groups");
+  if (!grouping) throw new Error("Missing content/project-groups.md");
+  groupProjects(
+    ids.filter(id => id.startsWith("projects/")).map(id => ({ slug: id.slice(9) })),
+    about.data.sections as { body: string; heading: string }[],
+    grouping.data,
+  );
 }
 
 export async function saveDocument(
