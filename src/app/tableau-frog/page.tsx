@@ -38,10 +38,10 @@ export default function TableauFrogPage() {
       <header className="tf-nav" id="tf-top">
         <span className="tf-brand"><Markdown {...bindBlock(content, "tableauspan-frog-class-frog")} inline /></span>
         <nav className="tf-nav-right">
-          <a href="#demo"><Markdown {...bindBlock(content, "demo")} inline /></a>
-          <a href="#investigate"><Markdown {...bindBlock(content, "investigate")} inline /></a>
-          <a href="#hack"><Markdown {...bindBlock(content, "hack-it")} inline /></a>
-          <Link href="/"><Markdown {...bindBlock(content, "notebook")} inline /></Link>
+          <a href="#demo"><Markdown {...bindBlock(content, "demo")} inline allowLinks={false} /></a>
+          <a href="#investigate"><Markdown {...bindBlock(content, "investigate")} inline allowLinks={false} /></a>
+          <a href="#hack"><Markdown {...bindBlock(content, "hack-it")} inline allowLinks={false} /></a>
+          <Link href="/"><Markdown {...bindBlock(content, "notebook")} inline allowLinks={false} /></Link>
         </nav>
       </header>
 
@@ -101,7 +101,7 @@ export default function TableauFrogPage() {
               <div className="tf-ledger-row">
                 <h4>
                   <EditableText binding={bindField(content, ["ledger", index, "title"])}>{row.title}</EditableText>
-                  {row.key && <span className="tf-kbd key"><EditableText binding={bindField(content, ["ledger", index, "key"])}>{row.key}</EditableText></span>}
+                  {row.key && <span className="tf-kbd key"><EditableText binding={bindField(content, ["ledger", index, "key"])} format="plain">{row.key}</EditableText></span>}
                 </h4>
                 <Markdown text={row.body} binding={bindField(content, ["ledger", index, "body"])} />
               </div>
@@ -236,7 +236,7 @@ export default function TableauFrogPage() {
             <div className="tf-grammar">
               {GRAMMAR.map((g, index) => (
                 <div key={g.code}>
-                  <code><EditableText binding={bindField(content, ["grammar", index, "code"])}>{g.code}</EditableText></code>
+                  <code><EditableText binding={bindField(content, ["grammar", index, "code"])} format="plain">{g.code}</EditableText></code>
                   <span><EditableText binding={bindField(content, ["grammar", index, "desc"])}>{g.desc}</EditableText></span>
                 </div>
               ))}

@@ -1,11 +1,84 @@
 import { test, expect } from "@playwright/test";
 import { readFile, writeFile } from "node:fs/promises";
+import { parseContent } from "../src/lib/content";
 
 test.use({ channel: "chrome", launchOptions: { args: ["--disable-dev-shm-usage", "--disable-gpu", "--renderer-process-limit=2"] } });
 test.skip(!process.env.STUDIO_E2E, "Run only against the opted-in local studio with one worker");
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => { localStorage.setItem("nb-style", "margin"); localStorage.setItem("nb-rice", "ayu-mirage"); });
   page.on("dialog", (dialog) => dialog.accept());
+});
+
+test("renders authored Markdown after preview, save and reload on the actual site", async ({ page, context }) => {
+  const files = ["about", "projects/scrivo"];
+  const originals = new Map(await Promise.all(files.map(async id => [id, await readFile(`content/${id}.md`, "utf8")] as const)));
+  const markdown = "## Field notes\n\nA **measured** result.\n\n- Keep the source\n- Publish the result";
+  const headline = "A **working** garden";
+  const summary = "### Latest notes\n\n- **Fast** opening\n- Plain files";
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  try {
+    await page.goto("/about");
+    await page.getByRole("button", { name: "Editing off", exact: true }).click();
+    const intro = page.getByRole("textbox", { name: "intro", exact: true });
+    const originalFirst = await intro.inputValue();
+    const sibling = await page.getByRole("textbox", { name: "intro · part 2", exact: true }).inputValue();
+    await intro.fill(markdown);
+    await expect(intro).toHaveValue(markdown);
+    await expect(page.getByRole("textbox", { name: "intro · part 2", exact: true })).toHaveValue(sibling);
+    await expect(page.locator("[contenteditable]")).toHaveCount(0);
+    await page.getByRole("textbox", { name: "headline", exact: true }).fill(headline);
+    await page.getByRole("button", { name: "Editing on", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Field notes", exact: true })).toBeVisible();
+    await expect(page.locator("h1 strong")).toHaveText("working");
+    await expect(page.locator(".detail-hero p strong")).toHaveText("measured");
+    await expect(page.locator(".detail-hero ul > li")).toHaveText(["Keep the source", "Publish the result"]);
+    expect(await page.locator(".detail-hero ul").evaluate(element => getComputedStyle(element).listStyleType)).toBe("disc");
+    await page.getByRole("button", { name: "Save locally", exact: true }).click();
+    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+    const saved = parseContent(await readFile("content/about.md", "utf8"));
+    expect(saved.data.headline).toBe(headline);
+    expect(saved.blocks.intro).toBe(parseContent(originals.get("about")!).blocks.intro.replace(originalFirst, markdown));
+    await page.reload();
+    await expect(page.locator("h1 strong")).toHaveText("working");
+    await expect(page.getByRole("heading", { name: "Field notes", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Editing off", exact: true }).click();
+    await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue("## Field notes");
+    await expect(page.getByRole("textbox", { name: "intro · part 3", exact: true })).toHaveValue("- Keep the source\n- Publish the result");
+
+    await page.goto("/");
+    await page.getByRole("button", { name: "Editing off", exact: true }).click();
+    const entry = page.locator(".margin-project").filter({ has: page.locator('h3 a[href="/p/scrivo"]') });
+    await entry.getByRole("textbox", { name: "title", exact: true }).fill("**Scrivo** notes");
+    await entry.getByRole("textbox", { name: "summary", exact: true }).fill(summary);
+    await page.getByRole("button", { name: "Editing on", exact: true }).click();
+    await expect(entry.locator("h3 a strong")).toHaveText("Scrivo");
+    await expect(entry.getByRole("heading", { name: "Latest notes", exact: true })).toBeVisible();
+    await expect(entry.locator("ul > li")).toHaveText(["Fast opening", "Plain files"]);
+    await page.getByRole("button", { name: "Save locally", exact: true }).click();
+    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+    expect(parseContent(await readFile("content/projects/scrivo.md", "utf8")).data.summary).toBe(summary);
+
+    if (process.env.STUDIO_REFERENCE_URL) {
+      const publicPage = await context.newPage();
+      try {
+        await publicPage.goto(`${process.env.STUDIO_REFERENCE_URL}/about`);
+        await expect(publicPage.locator("h1 strong")).toHaveText("working");
+        await expect(publicPage.getByRole("heading", { name: "Field notes", exact: true })).toBeVisible();
+        await expect(publicPage.locator(".detail-hero ul > li")).toHaveText(["Keep the source", "Publish the result"]);
+        await expect(publicPage.locator("textarea, [contenteditable], .studio-dock")).toHaveCount(0);
+        await publicPage.goto(`${process.env.STUDIO_REFERENCE_URL}/`);
+        const publicEntry = publicPage.locator('.margin-entry').filter({ has: publicPage.locator('h3 a[href="/p/scrivo"]') });
+        await expect(publicEntry.locator("h3 a strong")).toHaveText("Scrivo");
+        await expect(publicEntry.getByRole("heading", { name: "Latest notes", exact: true })).toBeVisible();
+        await expect(publicEntry.locator("ul > li")).toHaveText(["Fast opening", "Plain files"]);
+      } finally { await publicPage.close(); }
+    }
+    expect(errors).toEqual([]);
+  } finally {
+    await page.waitForLoadState("networkidle").catch(() => {});
+    for (const [id, source] of originals) await writeFile(`content/${id}.md`, source, "utf8");
+  }
 });
 
 test("edits the actual pages, saves exact Markdown and deploys from the bottom-left", async ({ page }) => {

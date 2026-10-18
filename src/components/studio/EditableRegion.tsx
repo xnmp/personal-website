@@ -6,13 +6,13 @@ import type { ContentBinding } from "@/lib/studio/bindings";
 import { useStudio } from "./StudioContext";
 import { EditableMarkdown } from "./EditableMarkdown";
 import { SourceTextarea } from "./SourceTextarea";
-import { ForOS } from "@/components/launch/ForOS";
+import { TextContent, type TextFormat } from "./TextContent";
 
-function EditableScalar({ binding, children, shortcuts }: { binding: ContentBinding; children: ReactNode; shortcuts: boolean }) {
+function EditableScalar({ binding, children, shortcuts, format }: { binding: ContentBinding; children: ReactNode; shortcuts: boolean; format: TextFormat }) {
   const studio = useStudio()!;
   const [active, setActive] = useState(false);
   const value = studio.value(binding);
-  if (!studio.editing || !studio.ready) return value === binding.value ? children : shortcuts ? <ForOS>{value}</ForOS> : value;
+  if (!studio.editing || !studio.ready) return value === binding.value ? children : <TextContent text={value} shortcuts={shortcuts} format={format} />;
   return <span className="studio-region" data-studio-slot={binding.slotId} data-studio-document={binding.documentId}
     data-studio-editable={!active || undefined} data-studio-active={active || undefined}>
     <SourceTextarea value={value} label={binding.label} inline readOnly={studio.locked}
@@ -20,8 +20,8 @@ function EditableScalar({ binding, children, shortcuts }: { binding: ContentBind
   </span>;
 }
 
-export function EditableRegion({ binding, markdown, children, shortcuts = false }: { binding: ContentBinding; markdown?: MarkdownProps; inline?: boolean; children: ReactNode; shortcuts?: boolean }) {
+export function EditableRegion({ binding, markdown, children, shortcuts = false, format = "markdown" }: { binding: ContentBinding; markdown?: MarkdownProps; inline?: boolean; children: ReactNode; shortcuts?: boolean; format?: TextFormat }) {
   const studio = useStudio();
   if (!studio) return children;
-  return markdown ? <EditableMarkdown binding={binding} markdown={markdown} /> : <EditableScalar binding={binding} shortcuts={shortcuts}>{children}</EditableScalar>;
+  return markdown ? <EditableMarkdown binding={binding} markdown={markdown} /> : <EditableScalar binding={binding} shortcuts={shortcuts} format={format}>{children}</EditableScalar>;
 }
