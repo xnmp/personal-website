@@ -26,9 +26,28 @@ V8 old-space limit. Earlier Turbopack sessions retained over 23 GiB RSS and
 17 GiB of JavaScript heap in the saved Next development trace. Switching
 bundlers isolates that development path; the exact retained objects have not
 been identified. The heap limit does not cap native allocations or total RSS.
+The launcher supplies the limit in `NODE_OPTIONS`: this Next version can
+overwrite a limit given only as a Node CLI argument when forking its server.
 If memory starts climbing again, stop the server; do not increase the heap
 limit to keep it running. Avoid broad automated route sweeps on the editor
 process used for hand editing.
+
+### Memory diagnostics
+
+`bun run dev` and `bun run dev:site` log the actual Next server process to
+`.content-studio/logs/dev-memory.jsonl` every 10 seconds. The previous file is
+`dev-memory.jsonl.previous`; rotation keeps both files within about 2 MiB total.
+Logs survive an interrupted server. Startup records the effective child heap
+limit and Node/Next versions. Samples include:
+
+- RSS, JS heap, external memory, array buffers, growth and peak RSS.
+- CPU use and garbage collection count, duration and major collections.
+- Active/completed requests and recent paths, with query strings removed.
+
+Console warnings flag high memory or rapid growth. Logs contain no request
+bodies, headers or session tokens. Logging never forces garbage collection,
+takes a heap snapshot or restarts the server. If memory grows again, preserve
+these two files along with `.next-studio/dev/trace` before clearing caches.
 
 ## Deploy
 
