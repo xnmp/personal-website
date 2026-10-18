@@ -196,7 +196,10 @@ export function useStudioController(token: string) {
       if (event.defaultPrevented || event.isComposing || event.key !== "Enter" ||
         !(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey) return;
       event.preventDefault();
-      if (!event.repeat && Object.values(draftsRef.current).some(hasEdits)) void save();
+      if (event.repeat) return;
+      const active = document.activeElement;
+      if (active instanceof HTMLTextAreaElement && active.matches(".studio-input")) active.blur();
+      if (Object.values(draftsRef.current).some(hasEdits)) void save();
     };
     window.addEventListener("keydown", saveShortcut);
     return () => window.removeEventListener("keydown", saveShortcut);

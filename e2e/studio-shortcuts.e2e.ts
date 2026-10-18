@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const chord of ["Control+Enter", "Meta+Enter"]) {
-  test(`${chord} saves body text once, preserves newlines and keeps focus`, async ({ page }) => {
+  test(`${chord} saves body text once, preserves newlines and finishes editing`, async ({ page }) => {
     const saved = await interceptSaves(page, true);
     try {
       await page.goto("/");
@@ -20,18 +20,27 @@ for (const chord of ["Control+Enter", "Meta+Enter"]) {
       await input.pressSequentially("Second line");
       await expect(input).toHaveValue("First line\nSecond line");
       await input.press(chord);
+      await expect(input).not.toBeFocused();
+      await expect(input.locator("..")).not.toHaveAttribute("data-studio-active", "true");
+      await expect(page.getByRole("button", { name: "Editing on", exact: true })).toBeVisible();
       await expect.poll(() => saved.requests.length).toBe(1);
       await expect(input).toHaveAttribute("readonly", "");
       await input.press(chord);
       await input.dispatchEvent("keydown", { key: "Enter", ctrlKey: true, repeat: true });
       expect(saved.requests).toEqual([expect.objectContaining({ action: "save", id: "about" })]);
+      const next = page.getByRole("textbox", { name: "section 1", exact: true });
+      await next.focus();
+      await next.dispatchEvent("keydown", { key: "Enter", ctrlKey: true, repeat: true });
+      await expect(next).toBeFocused();
       saved.release();
       await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-      await expect(input).toBeFocused();
+      await expect(input).not.toBeFocused();
+      await expect(next).toBeFocused();
       await expect(input).toHaveValue("First line\nSecond line");
       expect(saved.sources.get("about")).toContain("First line\nSecond line");
       await expect(page.getByRole("button", { name: "Save locally", exact: true })).toBeDisabled();
       await input.press(chord);
+      await expect(input).not.toBeFocused();
       expect(saved.requests).toHaveLength(1);
     } finally { saved.release(); }
   });
@@ -49,9 +58,41 @@ test("the save shortcut works in inline titles and saves pending edits from othe
   await title.fill("A saved project title");
   await title.press("Control+Enter");
   await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-  await expect(title).toBeFocused();
+  await expect(title).not.toBeFocused();
   await expect(title).toHaveValue("A saved project title");
   expect(saved.sources.get("about")).toContain("An unsaved About headline");
   expect(saved.sources.get("projects/scrivo")).toContain("A saved project title");
   expect(saved.requests.map(request => [request.action, request.id])).toEqual([["save", "about"], ["save", "projects/scrivo"]]);
+});
+
+test("the shortcut finishes an unchanged field without sending a save request", async ({ page }) => {
+  const saved = await interceptSaves(page);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  const input = page.getByRole("textbox", { name: "intro", exact: true });
+  const original = await input.inputValue();
+  await input.focus();
+  await expect(input.locator("..")).toHaveAttribute("data-studio-active", "true");
+  await input.press("Control+Enter");
+  await expect(input).not.toBeFocused();
+  await expect(input.locator("..")).not.toHaveAttribute("data-studio-active", "true");
+  await expect(input).toHaveValue(original);
+  expect(saved.requests).toEqual([]);
+});
+
+test("a failed save finishes the field but preserves the draft and reports the error", async ({ page }) => {
+  await page.route("**/api/studio", route => route.request().method() === "POST"
+    ? route.fulfill({ status: 409, json: { error: "The Markdown file changed on disk" } })
+    : route.continue());
+  await page.goto("/");
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  const input = page.getByRole("textbox", { name: "intro", exact: true });
+  await input.fill("A draft that must survive the conflict");
+  await input.press("Control+Enter");
+  await expect(page.locator(".studio-dock").getByRole("alert")).toContainText("The Markdown file changed on disk");
+  await expect(input).not.toBeFocused();
+  await expect(input).toHaveValue("A draft that must survive the conflict");
+  await page.reload();
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  await expect(input).toHaveValue("A draft that must survive the conflict");
 });

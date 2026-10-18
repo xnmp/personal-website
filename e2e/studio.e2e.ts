@@ -106,7 +106,7 @@ test("edits the actual pages, saves exact Markdown and deploys from the bottom-l
       await input.fill(scenario.value);
       await input.press("Control+Enter");
       await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-      await expect(input).toBeFocused();
+      await expect(input).not.toBeFocused();
       expect(await readFile(`content/${scenario.document}.md`, "utf8")).toContain(scenario.value);
       await page.reload();
       await expect(page.getByText(scenario.visible, { exact: true })).toBeVisible();

@@ -155,3 +155,25 @@ test("the About file index moves to the corresponding authored section", async (
   await expect(page.locator("#about-section-1 h2")).toBeInViewport();
   await expect(page.locator(".about-file-head a")).toHaveAttribute("href", "https://github.com/xnmp/personal-website/blob/main/content/about.md");
 });
+
+for (const editing of [false, true]) {
+  test(`section headings stay clear of the body while scrolling in ${editing ? "editing" : "preview"} mode`, async ({ page }) => {
+    test.skip(editing && !process.env.STUDIO_E2E, "Editing requires the opted-in local studio");
+    await seed(page, "solarized-light");
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+    if (editing) await page.getByRole("button", { name: "Editing off", exact: true }).click();
+    const section = page.locator("#about-section-0");
+    const heading = section.locator(":scope > div").first();
+    const body = section.locator(":scope > div").last();
+    for (const width of [900, 901, 1000, 1050, 1051, 1280]) {
+      await page.setViewportSize({ width, height: 800 });
+      await body.evaluate(element => window.scrollTo({ top: window.scrollY + element.getBoundingClientRect().top - 20, behavior: "instant" }));
+      if (width === 1000) await page.screenshot({ path: test.info().outputPath("section-scroll.png") });
+      const head = (await heading.boundingBox())!;
+      const copy = (await body.boundingBox())!;
+      if (width <= 1050) expect(head.y + head.height, `stacked at ${width}`).toBeLessThanOrEqual(copy.y + 1);
+      else expect(head.x + head.width, `columns at ${width}`).toBeLessThanOrEqual(copy.x + 1);
+    }
+  });
+}
