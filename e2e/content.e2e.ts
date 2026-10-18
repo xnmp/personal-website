@@ -10,7 +10,7 @@ import { STYLES } from "../src/lib/styles";
 async function open(page: Page, style: string) {
   await page.emulateMedia({ reducedMotion: "reduce" }); // the sheets' drop would move the boxes
   await page.addInitScript((s) => localStorage.setItem("nb-style", s), style);
-  await page.goto("/");
+  await page.goto("/projects");
   await page.evaluate(() => document.fonts.ready);
   // hydrated (the rice key names the live theme only then): a list changed
   // before it would be put back by React

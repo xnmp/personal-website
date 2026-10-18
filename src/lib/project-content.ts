@@ -18,6 +18,13 @@ export function projectEntry(document: ContentDocument): ProjectEntry & { order:
   if (!art.startsWith("/screens/") || art.includes("..")) fail("art");
   const repo = data.repo === undefined ? undefined : text("repo");
   if (repo && (!safeHref(repo) || !repo.startsWith("https://"))) fail("repo");
+  const website = data.website === undefined ? undefined : text("website");
+  if (website) {
+    try {
+      const url = new URL(website);
+      if (!/^https:\/\//i.test(website) || url.protocol !== "https:" || !url.hostname || url.username || url.password) fail("website");
+    } catch { fail("website"); }
+  }
   if (typeof data.order !== "number" || !Number.isSafeInteger(data.order) || data.order < 1) fail("order");
   const preview = data.preview as ProjectEntry["preview"];
   if (preview !== undefined && (!preview || typeof preview !== "object"
@@ -25,7 +32,7 @@ export function projectEntry(document: ContentDocument): ProjectEntry & { order:
     || typeof preview.alt !== "string" || !preview.alt.trim()
     || ![preview.width, preview.height].every((n) => Number.isSafeInteger(n) && n > 0 && n <= 10_000))) fail("preview");
   return {
-    slug, glyph, title: text("title"), heading: text("heading"), href: text("href"), repo,
+    slug, glyph, title: text("title"), heading: text("heading"), href: text("href"), repo, website,
     summary: data.summary === undefined ? undefined : text("summary"),
     preview,
     tags: list("tags"), index: text("index"), stats: list("stats"), art,

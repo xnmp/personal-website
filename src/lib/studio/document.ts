@@ -166,11 +166,9 @@ export function validateDocument(
   }
 }
 
-export const previewRoute = (id: string) =>
-  id === "home"
-    ? "/"
-    : id === "zheng-shang-you-play"
-      ? "/p/zheng-shang-you/play"
-      : id.startsWith("projects/")
-        ? `/p/${id.slice(9)}`
-        : `/${id}`;
+export function previewRoute(id: string): string {
+  if (id === "about") return "/";
+  if (id === "home") return "/projects";
+  if (id === "zheng-shang-you-play") return "/p/zheng-shang-you/play";
+  return id.startsWith("projects/") ? `/p/${id.slice(9)}` : `/${id}`;
+}

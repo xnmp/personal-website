@@ -7,7 +7,7 @@ bun run dev
 
 Open **http://127.0.0.1:3210**. `STUDIO_PORT=3211 bun run dev` chooses another port. `bun run studio` remains an alias. The process binds to loopback and uses the same Next application, Margin Index CSS, fonts, Markdown renderer and source content as the public website. `bun run dev:site` starts a plain site preview at http://localhost:3000 for development and browser tests.
 
-The editor opens the **actual website**. Navigate its usual pages and links; there is no separate preview or editing layout. The only added interface is the small editing/deployment dock at the bottom-left.
+The editor opens the **actual website**, starting with About at `/`. The project directory is at `/projects`; `/about` remains an alias for About. Navigate its usual pages and links; there is no separate preview or editing layout. The only added interface is the small editing/deployment dock at the bottom-left.
 
 The editor starts with **Editing off**. Press **Ctrl+E** (Cmd+E on Mac), or click the status indicator in the bottom-left dock, to toggle editing. Pencil badges appear on hover or keyboard focus while editing is on. The active block has an accent outline and an “editing” label, with its background unchanged. Drag through text to select and replace it directly.
 
