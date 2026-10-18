@@ -31,7 +31,7 @@ test("About is the landing page, with a navigable project directory and working 
 
 test("Tauri Explorer's project page links to its main website", async ({ page }) => {
   await page.goto("/p/tauri-explorer");
-  const website = page.getByRole("link", { name: "Website ↗", exact: true });
+  const website = page.locator("main").getByRole("link", { name: "Tauri Explorer website ↗", exact: true });
   await expect(website).toBeVisible();
   await expect(website).toHaveAttribute("href", "https://tauri-explorer.vercel.app");
   await expect(page.getByRole("link", { name: "GitHub ↗", exact: true })).toHaveAttribute("href", "https://github.com/xnmp/tauri-explorer");

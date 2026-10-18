@@ -2,39 +2,39 @@
 slug: eskiv
 glyph: 避
 title: Eskiv
-summary: A dodger, a brute-force agent, and what the runs reveal.
-heading: A brute-force AI that plays a dodger.
+summary: "A game from high school, and the bot I wrote for it during Covid."
+heading: "A game from high school"
 href: /p/eskiv
 repo: 'https://github.com/xnmp/Eskiv_new'
 tags:
   - python
   - pygame
-  - brute-force
-  - '10,000 games'
-index: '2016 game, 2026 analysis · how it walks, stands, and dies'
+  - "lookahead search"
+  - "game analysis"
+index: "A game from high school · recreated during Covid · search-based bot"
 stats:
-  - '10,000 games'
-  - n_hit = 0
-  - 16.4M steps
+  - "Search-based bot"
+  - "100-step lookahead"
+  - "10,000-game analysis"
 art: /screens/eskiv.png
 status: complete
 shelf: games
 tone: olive
 metadata:
-  title: 'Eskiv: a brute-force AI that plays a dodger'
-  description: >-
-    A dodger game and its brute-force AI. 10,000 games, three questions, three
-    plates: path ratio vs clutter, where the agent stands, and how it dies.
+  title: "Eskiv · chong"
+  description: "I recreated Eskiv during Covid and wrote a search-based bot for it. Later I looked at how it moved and why its runs ended."
 order: 11
 ---
 <!-- block: all-projects -->
 ← all projects
 
 <!-- block: headline -->
-A brute-force AI that plays a dodger.
+A game from high school
 
 <!-- block: eskiv-is-a-2016-game-you-move-a-square-dodge-balls-grab-a -->
-Eskiv is a 2016 game: you move a square, dodge balls, grab a new square each tick. Every pickup spawns another ball, so the field fills up until the agent can’t find a safe path home. Ten thousand games, one brute-force agent with `lookahead=100`, three plates of how it behaves.
+We used to play Eskiv in high school. During Covid I recreated it and wrote a bot that got pretty good at it. This was before I was using coding agents; the game and bot were my own work.
+
+It's different from the learning agents elsewhere on this site. This one looks ahead through possible moves and chooses somewhere it thinks it can survive.
 
 <!-- block: python -->
 python
@@ -43,10 +43,10 @@ python
 pygame
 
 <!-- block: brute-force-search -->
-brute-force search
+lookahead search
 
 <!-- block: game-from-2016 -->
-game from 2016
+recreated during Covid
 
 <!-- block: the-game -->
 The game
@@ -64,16 +64,16 @@ A recording of the brute-force agent playing, on YouTube (about 10 minutes).
 Watch the run
 
 <!-- block: the-large-square-is-the-player -->
-The large square is the player. The circles are enemies; they bounce and accelerate, and there are more of them every second. Small squares are pickups worth one point each. (In the recording the player is grey, the enemies blue and the pickups light grey.) The agent searches over reachable pickup targets and picks the one whose safe-neighbourhood survives the next hundred ticks of simulation. When no such target exists, the game ends.
+The large square is the player, the circles are enemies and the small squares are pickups. As more balls fill the field, getting to a pickup safely becomes harder. The bot looks a hundred ticks ahead. If it can't find a target with a safe enough future, the run ends.
 
 <!-- block: the-setup -->
-The setup
+Looking back at the bot
 
 <!-- block: 10-000-games-three-questions -->
-10,000 games, three questions
+What is it actually doing?
 
 <!-- block: the-engine-was-rewritten-headless-vectorised-enemies-no-py -->
-The engine was rewritten headless (vectorised enemies, no pygame in the hot loop), so ten thousand 5-minute games finish in an afternoon. Every frame of every game is saved. Three questions, chosen because I was curious and the answers weren’t obvious from watching one game:
+Later I made a headless version and ran 10,000 games, recording the frames. Watching a run gives a feel for it, but I wanted to look at a few things across many games:
 
 <!-- block: does-the-agent-move-in-straight-lines -->
 **Does the agent move in straight lines?** How close to the shortest route does it actually walk, and does that change as the field gets crowded?
@@ -100,7 +100,7 @@ FIG. 1 · 742,146 pickups across 10,000 games
 Mean ratio (line), interquartile range (band), sample count (bars).
 
 <!-- block: with-an-empty-field-the-agent-walks-at-76-of-the-straight -->
-With an empty field the agent walks at ~76% of the straight line, not 100%, because it’s already dodging a few enemies. By the time there are 60+ balls it’s down to 40%, and at 100+ it’s taking routes more than four times longer than the crow flies. The fall-off is smooth and roughly linear from ~20 balls onward. Not surprising, but this is the shape of the concession.
+Even early on, the bot takes detours around enemies. As the field gets crowded, the paths become much longer. With over a hundred balls, a pickup can require a route more than four times the direct distance.
 
 <!-- block: where-it-stands -->
 Where it stands
@@ -118,7 +118,7 @@ FIG. 2 · 12 score buckets, smoothed density
 Top-left is the top-left corner of the game field. Watch it crawl to the walls.
 
 <!-- block: up-to-about-200-points-the-agent-hugs-the-centre-which-giv -->
-Up to about 200 points the agent hugs the centre, which gives maximum optionality and minimum wall risk. Somewhere between 300 and 400 it flips: the centre becomes so ball-dense that the only safe pockets are against the edges. By the time scores hit 500 it’s spending most of its steps pinned to a single wall. Nobody told the agent to do this. It’s where an agent that only minimises immediate risk ends up.
+It spends the early part of a run near the centre, then moves towards the walls as the middle fills up. At high scores it often stays near one edge. There's no explicit instruction to hug a wall; that pattern comes out of the search.
 
 <!-- block: how-it-dies -->
 How it dies
@@ -136,25 +136,25 @@ FIG. 3 · 10,000 games · mean 381.1 · median 385
 Every death was by trap; zero deaths by direct hit.
 
 <!-- block: the-distribution-is-tight-stddev-58-p10-p90-range-of-310-4 -->
-The distribution is tight: stddev 58, p10–p90 range of ~310–445. More striking, **not a single game** ended by getting hit. Every death was a trap, with the search raising `DeathError` because no target had a safe enough 100-step future. The agent dodges perfectly right up until it corners itself, a very specific failure mode of conservative search.
+In these 10,000 runs, every ending was recorded as a trap, not a direct hit. The search ran out of targets it considered safe before a ball collided with the player. So the zero-hit count says something about how the bot stops, as well as how it dodges.
 
 <!-- block: the-rough-edges -->
-The rough edges
+Things I'm curious about
 
 <!-- block: open-questions -->
-Open questions
+How cautious does it need to be?
 
 <!-- block: if-the-agent-never-gets-hit-it-s-over-spending-its-lookahe -->
-If the agent never gets hit, it’s over-spending its lookahead on safety. What’s the smallest lookahead that preserves the `n_hit=0` property, and does the score distribution stay this tight?
+A hundred ticks of lookahead may be more caution than it needs. I'd be interested to see how the scores change with a shorter horizon, including whether it starts ending through collisions instead.
 
 <!-- block: the-corner-stickiness-in-late-game-emerges-without-being-d -->
-The corner-stickiness in late game emerges without being designed in. Would an RL agent (DQN, PPO) discover the same strategy, or does the value function let it take risks a brute search won’t?
+I'd also like to compare it with a learned policy. Would it end up on the same walls, or take risks this search rules out?
 
 <!-- block: label-open-question-ii -->
 Open question II
 
 <!-- block: the-path-ratio-curve-bends-smoothly-through-20-balls -->
-The path-ratio curve bends smoothly through ~20 balls. Is there a principled ball-density above which straight-line motion is provably unsafe, like a critical percolation threshold for a moving agent?
+The routes get steadily more indirect as balls accumulate. I wonder how much of that is unavoidable and how much belongs to this particular bot.
 
 <!-- block: label-open-question-iii -->
 Open question III
@@ -163,7 +163,7 @@ Open question III
 Materials**Python, NumPy, SciPy, pygame**
 
 <!-- block: vintage2016-analysis-2026 -->
-Vintage**2016, analysis 2026**
+When**Recreated during Covid · analysis in 2026**
 
 <!-- block: scale10-000-games-16 -->
 Scale**10,000 games · 16.4M steps · 742k pickups**

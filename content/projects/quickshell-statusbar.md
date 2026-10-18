@@ -2,8 +2,8 @@
 slug: quickshell-statusbar
 glyph: 欄
 title: Quickshell bar
-summary: A status bar for my desktop and coding agents.
-heading: A status bar that shows what my coding agents are doing.
+summary: "The bar on my Hyprland desktop, including what the coding agents are doing."
+heading: "Keeping track of my desktop"
 href: /p/quickshell-statusbar
 repo: 'https://github.com/xnmp-setup/quickshell-statusbar'
 tags:
@@ -11,21 +11,18 @@ tags:
   - hyprland
   - python
   - ricing
-index: Hyprland status bar · live Claude/Codex agent state · quota pacing
+index: "My Hyprland bar · agent state and quota pacing"
 stats:
-  - 53 commits
-  - 275 tests (py + qml)
-  - 1 Hz JSON stream
+  - "Hyprland"
+  - "Agent state"
+  - "Quota history"
 art: /screens/quickshell-statusbar.png
 status: producing
 shelf: tools
 tone: cyan
 metadata:
-  title: 'Quickshell bar: what my coding agents are doing'
-  description: >-
-    A Quickshell status bar for Hyprland. Workspace chips show per-window icons
-    and live Claude and Codex agent state, and the quota cells pace my usage
-    against a budget learned from my active hours.
+  title: "Quickshell bar · chong"
+  description: "Notes on my Hyprland status bar: workspace windows, coding-agent state, machine load and AI quota pacing."
 order: 4
 ---
 <!-- block: all-projects -->
@@ -35,13 +32,13 @@ order: 4
 GitHub ↗
 
 <!-- block: headline -->
-A status bar that shows what my coding agents are doing.
+The bar on my desktop
 
 <!-- block: i-usually-have-several-terminals-running-claude-code-or-co -->
 I usually have several terminals running Claude Code or Codex at once. The bar puts each workspace’s windows and the state of the agents inside them in one strip, so I can see which one is waiting for me without switching to it.
 
 <!-- block: it-also-shows-cpu-ram-io-gpu-and-vram-with-hover-sparkline -->
-It also shows CPU, RAM, IO, GPU and VRAM with hover sparklines, and two quota cells that tell me whether I am spending my Claude and Codex allowance too fast.
+I also want to know when the machine is getting busy, and whether I'm burning through my Claude or Codex allowance too quickly. Those ended up in the same bar.
 
 <!-- block: qml -->
 qml
@@ -59,28 +56,28 @@ ricing
 What it is
 
 <!-- block: a-qml-bar-fed-by-two-python-streams -->
-A QML bar fed by two Python streams
+How the information gets there
 
 <!-- block: from-readme -->
-From README.md and the sources in the repo.
+It started in my dotfiles and now has its own repository.
 
 <!-- block: the-bar-is-a-quickshell-qt-6-configuration-for-hyprland -->
-The bar is a Quickshell (Qt 6) configuration for Hyprland. Each workspace is a chip with the application icon of every window in it. For terminal windows the chip also carries counts and a state for each Claude and Codex session running inside.
+It's a Quickshell configuration for Hyprland. Each workspace shows the icons of its windows. Terminals also show counts and states for the Claude and Codex sessions inside them.
 
 <!-- block: other-cells-wi-fi-with-a-picker-backed-by-nmcli-battery-on -->
-Other cells: Wi-Fi with a picker backed by `nmcli`, battery on laptops, a clock, an optional now-playing cell, and Focus. Focus turns on mako’s do-not-disturb mode and blocks a list of sites in `/etc/hosts`.
+There are the usual Wi-Fi, battery and clock cells, plus an optional music cell. Focus switches off notifications and can block a list of sites through `/etc/hosts`.
 
 <!-- block: the-agent-state-comes-from-files-a-wezterm-hook-writes-und -->
-The agent state comes from files a WezTerm hook writes under `$XDG_RUNTIME_DIR`. That hook lives in my dotfiles, not in this repo, and the bar only reads what it leaves.
+The agent state comes from a terminal hook in my dotfiles, which leaves files under `$XDG_RUNTIME_DIR`. The bar reads those files. Without the hook, it can still show windows, but it doesn't know what the agents are doing.
 
 <!-- block: technical-choices -->
-Technical choices
+Underneath
 
 <!-- block: a-pure-core-an-imperative-shell-and-a-contract-between-lan -->
-A pure core, an imperative shell, and a contract between languages
+Python gathers it, QML displays it
 
 <!-- block: lib-hypr-status-stream -->
-`lib/hypr_status_stream.py` and `lib/ai_usage_stream.py` have the same shape. A pure domain core holds the parsers and rules: `parse_cpu_times`, `cpu_percent`, `parse_diskstats`, `assign_wezterm_windows` and so on. A thin shell in `lib/stream_kit.py` runs subprocesses with a timeout, throttles the expensive refreshes, and prints one compact JSON object per line. The hypr stream defaults to one line per second.
+Two Python streams gather workspace, system and quota information, then send JSON to QML. The parsing and pacing rules are separate from the subprocesses that collect the readings. The workspace stream normally updates once a second.
 
 <!-- block: figure-fig-1-one-line-of-the-stream-reformatted -->
 FIG. 1 · one line of the stream, reformatted
@@ -111,73 +108,73 @@ From tests/fixtures/stream_contract.json, trimmed to one workspace and the Claud
 ```
 
 <!-- block: tests-test-stream-contract -->
-`tests/test_stream_contract.py` proves the Python streams emit the fixture’s exact structure. `tests/tst_statusbar.qml` proves the QML sanitiser accepts the same file without dropping or renaming a field. Neither side can drift alone.
+The Python and QML tests share this fixture. It helps catch a change on one side that the other side doesn't understand.
 
 <!-- block: label-contract-test-from-both-ends -->
-Contract test from both ends
+Keeping the two sides in sync
 
 <!-- block: python-coerces-untrusted-values-with-helpers-like-bounded -->
-Python coerces untrusted values with helpers like `bounded_percent`. `StatusSanitizer.js` then caps the payload again: 64 workspaces, 128 clients per workspace, 32 activities per client, 2,048 usage samples.
+Both ends check the values they receive. Missing telemetry shouldn't become a wild percentage or an enormous list of windows.
 
 <!-- block: label-sanitised-on-both-sides -->
-Sanitised on both sides
+Missing or odd readings
 
 <!-- block: quickshell-usagebudget -->
-`quickshell/UsageBudget.js` takes the median number of clock hours per day in which my quota actually rose, clamps it to 4 to 16, and uses 8 until two complete days are on record.
+The quota calculation estimates my active hours from days when usage actually rose. Until it has enough history, it assumes eight hours.
 
 <!-- block: label-pacing-that-learns -->
-Pacing that learns
+An estimate of my day
 
 <!-- block: bin-focus-block-rewrites-only-a-marker-fenced-section-refu -->
-`bin/focus-block` rewrites only a marker-fenced section, refuses a symlinked hosts file (NixOS), and refuses to install one without the localhost line. The sudoers grant allows only `on` and `off`.
+The site blocker only edits its marked section of `/etc/hosts`. It needs a one-time privileged setup; notification silencing works separately.
 
 <!-- block: label-focus-edits-etc-hosts-carefully -->
-Focus edits /etc/hosts carefully
+The site blocker
 
 <!-- block: quota-pacing -->
 Quota pacing
 
 <!-- block: budget-per-day-instead-of-per-hour -->
-Budget per day instead of per hour
+How much can I use today?
 
 <!-- block: dividing-what-is-left-by-the-hours-until-reset-is-far-too -->
-Dividing what is left by the hours until reset is far too strict, because nobody spends quota around the clock. So for windows of at least two days the bar takes the quota left when today began and spreads it over the wall-clock time to reset. That is today’s allowance. The hourly burn line divides the allowance by the active hours per day learned above.
+Dividing the remaining quota by every hour until reset treats sleeping as wasted allowance. For longer quota windows, I spread what's left at the start of the day across the remaining days instead. The hourly line uses an estimate of how many hours I'm actually active.
 
 <!-- block: where-a-quota-went-is-attributed-from-the-history-of-readi -->
-Where a quota went is attributed from the history of readings. A rise is charged to the day of the reading that first shows it. If two readings are more than three hours apart with a midnight between them, the rise is left unattributed instead of being guessed. The pieces always add up to the percentage the bar shows.
+The history is still just a sequence of readings. A rise belongs to the day when I first saw it. If there's a long gap across midnight, I leave it unattributed rather than pretend to know when it happened.
 
 <!-- block: claude-s-numbers-come-from-the-oauth-usage-endpoint-that-c -->
 Claude’s numbers come from the OAuth usage endpoint that Claude Code itself uses, with the credentials Claude Code already has on disk. Codex’s come from the Codex CLI. History is kept in the cache directory and is only re-recorded every 30 minutes when a reading has not changed.
 
 <!-- block: verified-numbers -->
-Verified numbers
+My setup
 
 <!-- block: what-is-in-the-repo -->
-What is in the repo
+Part of the dotfiles
 
 <!-- block: counted-from-the-checkout-test-counts-are-def-test-and-fun -->
-Counted from the checkout; test counts are `def test_` and `function test_` matches.
+The repository was extracted from my chezmoi configuration, with its history.
 
 <!-- block: 53-commits-between-2026-08-06-and-2026-09-28 -->
-53 commits between 2026-08-06 and 2026-09-28.
+Chezmoi deploys the bar and links the stream helpers into place.
 
 <!-- block: 138-python-test-methods-across-the-stream-kit-contract-and -->
-138 Python test methods across the stream, kit, contract and Wi-Fi tests, and 137 QML test functions (98 in `tst_statusbar.qml`, 27 on `UsageBudget.js`).
+Python handles the readings and quota calculations. QML handles the bar and its menus.
 
 <!-- block: three-shell-test-scripts-for-focus-block-rename-hypr-works -->
-Three shell test scripts, for `focus-block`, `rename-hypr-workspace` and `wifi-control`.
+A few shell helpers cover Wi-Fi, workspace renaming and the site blocker.
 
 <!-- block: about-9-700-lines-across-the-python-qml-and-javascript-sou -->
-About 9,700 lines across the Python, QML and JavaScript sources.
+Some of the pieces depend on the rest of my desktop configuration, especially terminal-side agent state.
 
 <!-- block: the-qml-tests-run-offscreen-with-a-stub-for-the-quickshell -->
-The QML tests run offscreen with a stub for the Quickshell module, whose C++ plugin only loads inside the `quickshell` binary. They need the Qt 6 `qmltestrunner`. The one on `PATH` is often Qt 5 and fails silently, which the README calls out.
+One small setup trap: the QML checks need the Qt 6 test runner. The `qmltestrunner` on PATH can be Qt 5, which led to some unhelpful failures.
 
 <!-- block: rough-edges -->
-Rough edges
+The dependencies show
 
 <!-- block: what-it-assumes-and-what-can-break -->
-What it assumes and what can break
+It's quite specific to my desktop
 
 <!-- block: it-targets-hyprland-on-wayland-with-quickshell -->
 It targets Hyprland on Wayland with Quickshell. Nothing in it is meant to work on other compositors, and I have not tested any.
@@ -192,10 +189,10 @@ Agent state needs a hook on the terminal side. Without the WezTerm hook, the chi
 Focus needs a one-time root setup: install the script and add a sudoers entry. Without it, the cell still silences notifications and the site blocking fails quietly.
 
 <!-- block: i-have-not-measured-the-streams-own-cpu-cost-so-i-cannot-s -->
-I have not measured the streams’ own CPU cost, so I cannot say what the bar costs to run.
+I haven't measured the bar's own CPU cost yet.
 
 <!-- block: the-active-hours-figure-is-a-median-over-days-that-saw-any -->
-The active-hours figure is a median over days that saw any use, clamped to 4 to 16. I do not know if a median is the right statistic for a schedule as uneven as mine, and the comments in the code say it errs toward a looser hourly line.
+The quota pacing is an approximation. My schedule is uneven, and I'm still figuring out what would make the hourly line useful without making it nag me.
 
 <!-- block: materialsqml-qt-6-python-3 -->
 Materials**QML (Qt 6), Python 3.12 via uv, shell**
