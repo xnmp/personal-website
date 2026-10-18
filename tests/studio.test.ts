@@ -31,6 +31,7 @@ const roots: string[] = [];
 test("editor document routes follow the landing page and project directory", () => {
   expect(previewRoute("about")).toBe("/");
   expect(previewRoute("home")).toBe("/projects");
+  expect(previewRoute("project-groups")).toBe("/projects");
   expect(previewRoute("projects/tauri-explorer")).toBe("/p/tauri-explorer");
   expect(previewRoute("zheng-shang-you-play")).toBe("/p/zheng-shang-you/play");
   expect(previewRoute("tableau-frog")).toBe("/tableau-frog");
@@ -173,6 +174,14 @@ describe("local persistence and authorization", () => {
       }),
     ).rejects.toThrow("must exist");
     expect((await readDocument(root, "home")).source).toBe(saved.source);
+    for (const [id, edits] of [
+      ["project-groups", { 'field:["sections",0,"projects",0]': "missing-project" }],
+      ["about", { 'field:["sections",0,"heading"]': "" }],
+    ] as const) {
+      const original = await readDocument(root, id);
+      await expect(saveDocument(root, { id, revision: original.revision, edits })).rejects.toThrow("content/project-groups.md:");
+      expect((await readDocument(root, id)).source).toBe(original.source);
+    }
     await expect(readDocument(root, "../package")).rejects.toThrow("Unknown");
   });
 

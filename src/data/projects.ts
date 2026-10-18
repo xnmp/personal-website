@@ -1,8 +1,9 @@
 import { cache } from "react";
 import { contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
-import type { Project, Shelf } from "@/lib/project";
+import type { Project } from "@/lib/project";
 import { projectEntry } from "@/lib/project-content";
+import { groupProjects } from "@/lib/project-groups";
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
 
@@ -27,9 +28,10 @@ export const readProjectCatalog = cache(function readProjectCatalog() {
   const home = readContent("home");
   const flagship = contentField<string>(home, "flagship");
   const featured = contentField<string[]>(home, "featured");
-  const shelves = contentField<{ id: Shelf; label: string; note: string }[]>(
-    home,
-    "shelves",
+  const groups = groupProjects(
+    projects,
+    contentField<{ body: string; heading: string }[]>(readContent("about"), "sections"),
+    readContent("project-groups").data,
   );
   const project = (slug: string): Project => {
     const entry = projects.find((p) => p.slug === slug);
@@ -41,10 +43,10 @@ export const readProjectCatalog = cache(function readProjectCatalog() {
     throw new Error(
       "content/home.md: flagship and featured projects must be unique",
     );
-  return { projects, project, FLAGSHIP: flagship, FEATURED: featured, shelves };
+  return { projects, project, FLAGSHIP: flagship, FEATURED: featured, groups };
 });
 
 // Compatibility exports for build-time tools. Rendered pages read a fresh catalogue.
-export const { projects, project, FLAGSHIP, FEATURED, shelves } =
+export const { projects, project, FLAGSHIP, FEATURED, groups } =
   readProjectCatalog();
 export const bySlug = new Map(projects.map((p) => [p.slug, p]));

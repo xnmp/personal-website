@@ -8,8 +8,9 @@ edits without a CMS, database or browser fetch.
 
 | File | Controls |
 | --- | --- |
-| `content/home.md` | Project index at `/projects`, branding, site metadata, flagship/featured projects, shelf labels |
+| `content/home.md` | Project index at `/projects`, branding, site metadata, flagship/featured projects |
 | `content/about.md` | Landing page at `/` (also `/about`), biography, facts, portrait, draft sections |
+| `content/project-groups.md` | Project membership in each About section; group titles and order follow About |
 | `content/projects/<slug>.md` | Project card/search data, metadata, headings, paragraphs, captions, image descriptions, feature descriptions and measurements |
 | `content/tableau-frog.md` | Standalone Tableau Frog showcase, feature ledger, measurements and code examples |
 | `content/zheng-shang-you-play.md` | Game instructions and surrounding copy |
@@ -50,12 +51,23 @@ metadata:
 
 Quote a value containing `: `, `#`, or other YAML punctuation. Status values are
 `alpha`, `producing`, `paused`, and `complete`; shelf values are `tools` and
-`games`. Keep the filename, `slug`, and `href` consistent. Invalid project
+`games` (used for card artwork, independently of directory groups). Keep the filename, `slug`, and `href` consistent. Invalid project
 metadata stops the build and names the field.
 
 `content/home.md` chooses the `flagship` and the `featured` slugs. Entries must
 exist and occur only once across those lists. Other projects appear on their
-assigned shelves.
+About groups. Group headings mirror `sections[].heading` from `content/about.md`.
+In `content/project-groups.md`, each `section` names the corresponding About
+`body` slot, such as `section-1`, and `projects` lists its slugs. Renaming or
+reordering About sections updates the project groups automatically. New projects
+not yet listed go to the configured `unassigned` group; duplicates and unknown
+references stop the build. The older `home.md` shelf labels no longer control
+directory groups.
+
+The CLT essay is an unchanged standalone snapshot at `public/clt/index.html`,
+copied from `~/Repos/clt-interactive/index.html`. To update it, rebuild that
+repository and copy its generated `index.html` here; no second implementation
+or dependency installation is needed.
 
 ## Markdown blocks
 
