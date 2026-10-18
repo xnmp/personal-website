@@ -25,6 +25,7 @@ metadata:
   description: "I recreated Eskiv during Covid and wrote a search-based bot for it. Later I looked at how it moved and why its runs ended."
 order: 11
 ---
+
 <!-- block: all-projects -->
 ← all projects
 
@@ -72,17 +73,12 @@ Looking back at the bot
 <!-- block: 10-000-games-three-questions -->
 What is it actually doing?
 
-<!-- block: the-engine-was-rewritten-headless-vectorised-enemies-no-py -->
+<!-- block: body-what-is-it-actually-doing -->
 Later I made a headless version and ran 10,000 games, recording the frames. Watching a run gives a feel for it, but I wanted to look at a few things across many games:
 
-<!-- block: does-the-agent-move-in-straight-lines -->
-**Does the agent move in straight lines?** How close to the shortest route does it actually walk, and does that change as the field gets crowded?
-
-<!-- block: where-does-it-spend-its-time -->
-**Where does it spend its time?** Does a brute-force agent with no notion of “danger zones” still discover them empirically?
-
-<!-- block: how-does-it-die -->
-**How does it die?** Is it mostly clipped by fast enemies, or does it trap itself in corners when the field fills up?
+1. **Does the agent move in straight lines?** How close to the shortest route does it actually walk, and does that change as the field gets crowded?
+2. **Where does it spend its time?** Does a brute-force agent with no notion of “danger zones” still discover them empirically?
+3. **How does it die?** Is it mostly clipped by fast enemies, or does it trap itself in corners when the field fills up?
 
 <!-- block: path-ratio -->
 Path ratio
@@ -144,20 +140,18 @@ Things I'm curious about
 <!-- block: open-questions -->
 How cautious does it need to be?
 
-<!-- block: if-the-agent-never-gets-hit-it-s-over-spending-its-lookahe -->
+<!-- block: body-how-cautious-does-it-need-to-be -->
+### Open question
+
 A hundred ticks of lookahead may be more caution than it needs. I'd be interested to see how the scores change with a shorter horizon, including whether it starts ending through collisions instead.
 
-<!-- block: the-corner-stickiness-in-late-game-emerges-without-being-d -->
+### Open question II
+
 I'd also like to compare it with a learned policy. Would it end up on the same walls, or take risks this search rules out?
 
-<!-- block: label-open-question-ii -->
-Open question II
+### Open question III
 
-<!-- block: the-path-ratio-curve-bends-smoothly-through-20-balls -->
 The routes get steadily more indirect as balls accumulate. I wonder how much of that is unavoidable and how much belongs to this particular bot.
-
-<!-- block: label-open-question-iii -->
-Open question III
 
 <!-- block: materialspython-numpy-scipy-pygame -->
 Materials**Python, NumPy, SciPy, pygame**

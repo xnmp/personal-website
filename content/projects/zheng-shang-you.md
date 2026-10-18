@@ -24,6 +24,7 @@ metadata:
   description: "Trying imitation learning, self-play and search on my family's card game, Zheng Shang You."
 order: 10
 ---
+
 <!-- block: all-projects -->
 ← all projects
 
@@ -59,10 +60,9 @@ Early attempts
 <!-- block: self-play-with-zero-signal -->
 Self-play wasn't getting me very far
 
-<!-- block: the-obvious-approach-douzero-style-deep-monte-carlo-self-p -->
+<!-- block: body-self-play-wasnt-getting-me-very-far -->
 An early Monte Carlo self-play setup kept returning scores around 33%, without giving me a useful way to tell whether the networks were improving. The training log records that dead end. I moved to cloning a scripted player, then using it as a starting point for further training.
 
-<!-- block: what-replaced-it-is-a-recipe-and-each-step-is-measurable-c -->
 The later setup combines imitation learning and PPO. The critic can see all the hands during training, while the policy only gets the player's information. There's also a small oracle that estimates how many moves a hand needs to shed.
 
 <!-- block: the-recipe -->
@@ -98,10 +98,9 @@ FIG. 2 · League self-play runs
 <!-- block: caption-fig-2-gen-1-reached-0-471-1-000-games-ci-0-44-0-50 -->
 Fig. 2: gen-1 reached 0.471 (1,000 games, CI [0.44, 0.50]); gen-2 beats three gen-1s at 0.409 over 450 games; gen-3 is currently flat, and the log says so.
 
-<!-- block: each-generation-trains-against-a-mixture-of-the-frozen-pre -->
+<!-- block: body-training-against-earlier-versions -->
 Each generation plays a mixture of the previous champion, older snapshots and itself. Fixed opponents and pure self-play each ran into problems. The third generation's logged proxy results were flat, and I hadn't settled whether that was the model or the opponents.
 
-<!-- block: supporting-cast-a-pyo3-rust-engine-that-simulates-a-game-i -->
 There were some less glamorous problems too. Crossing between Python and Rust only paid off once whole workloads were batched. And wildcard hands can have so many legal moves that the cloning pipeline ran out of memory. Sampling alternative moves bounded that cost.
 
 <!-- block: the-rough-edges -->
@@ -110,14 +109,14 @@ Things to try
 <!-- block: open-questions -->
 Where the next improvement might come from
 
-<!-- block: gen-3-s-proxy-matchups-are-flat-against-a-same-class-ancho -->
+<!-- block: body-where-the-next-improvement-might-come-from -->
+### Open question
+
 I'd like to separate the value of a larger policy from the value of more search. The flat third-generation runs didn't answer that.
 
-<!-- block: winning-games-average-1 -->
-The logs also suggest passive endgames are a problem. It would be interesting to see whether training can learn when to spend a bomb without me encoding that advice into the reward.
+### Open question II
 
-<!-- block: label-open-question-ii -->
-Open question II
+The logs also suggest passive endgames are a problem. It would be interesting to see whether training can learn when to spend a bomb without me encoding that advice into the reward.
 
 <!-- block: materialspytorch-rust-pyo3-python -->
 Materials**PyTorch, Rust/PyO3, Python**

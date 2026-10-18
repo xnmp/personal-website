@@ -25,6 +25,7 @@ metadata:
   description: "Revisiting a Python-to-SQL query compiler, including the awkward cases where empty groups and nested queries change the answer."
 order: 6
 ---
+
 <!-- block: 4 -->
 Python → SQL
 
@@ -116,16 +117,11 @@ Underneath
 <!-- block: passes-to-a-fixpoint -->
 Untangling the nested queries
 
-<!-- block: decorrelate -->
-**Outer references.** Give an inner scope its own correlation domain, then pull the join conditions upwards. One pass can expose another reference, so this repeats until nothing changes.
+<!-- block: body-untangling-the-nested-queries -->
+1. **Outer references.** Give an inner scope its own correlation domain, then pull the join conditions upwards. One pass can expose another reference, so this repeats until nothing changes.
+2. **Flattening.** Merge subqueries where that's safe. Aggregates need more care, because flattening them can lose rows for empty groups.
+3. **Simplifying.** A condition like `count() > 0` can become EXISTS. These rewrites are intended to keep the result the same; comparing actual query outputs is how I check that.
 
-<!-- block: flatten -->
-**Flattening.** Merge subqueries where that's safe. Aggregates need more care, because flattening them can lose rows for empty groups.
-
-<!-- block: optimize-cost-only -->
-**Simplifying.** A condition like `count() > 0` can become EXISTS. These rewrites are intended to keep the result the same; comparing actual query outputs is how I check that.
-
-<!-- block: one-hard-won-invariant-straight-from-a-comment-in-compile -->
 One implementation detail that matters more than it first appears: shared subqueries are tracked by object identity. The passes work on one private copy. Copying again halfway through can give two different versions of what was meant to be the same subquery.
 
 <!-- block: the-oracle -->
@@ -137,17 +133,13 @@ Running the same question in Python and SQL
 <!-- block: a-quarter-of-the-codebase-is-the-adversarial-suite -->
 The useful check is to run the generated SQL in DuckDB and compare it with a plain Python comprehension over the same data.
 
-<!-- block: the-fixture-data-is-built-to-hurt-a-school-with-zero-depar -->
+<!-- block: body-running-the-same-question-in-python-and-sql -->
 The examples include schools with no departments and departments with no courses. Those are easy to overlook when a query looks right on a more convenient dataset.
 
-<!-- block: the-harness-caught-two-genuine-compiler-bugs-both-document -->
 Two bugs that this caught:
 
-<!-- block: unparenthesized-or -->
-**OR precedence.** `filter(A | B).filter(C)` generated `x OR y AND z`. Without parentheses, SQL answers a different question. Checking the generated query's shape hadn't caught it.
-
-<!-- block: unscoped-cross-scope-joins -->
-**Outer references.** One non-key reference joined against an unconstrained copy of the outer table and quietly over-counted. Comparing the result with Python made the mistake visible.
+1. **OR precedence.** `filter(A | B).filter(C)` generated `x OR y AND z`. Without parentheses, SQL answers a different question. Checking the generated query's shape hadn't caught it.
+2. **Outer references.** One non-key reference joined against an unconstrained copy of the outer table and quietly over-counted. Comparing the result with Python made the mistake visible.
 
 <!-- block: the-rough-edges -->
 Unfinished bits
@@ -155,14 +147,14 @@ Unfinished bits
 <!-- block: open-questions -->
 What I'd work on next
 
-<!-- block: the-or-precedence-bug-survived-148-structural-tests-and-fe -->
+<!-- block: body-what-id-work-on-next -->
+### Open question
+
 I'd start the result-comparison checks much earlier if I were doing it again. They caught mistakes that plenty of tests of the query structure had missed.
 
-<!-- block: child-to-parent-traversal-many-to-one-get-foreign-and-quer -->
-Child-to-parent traversal and `Query.bind` aren't implemented. There's also a limitation where filtering after `fmap` discards the projection, so this is still a project to work on rather than a finished query library.
+### Open question II
 
-<!-- block: label-open-question-ii -->
-Open question II
+Child-to-parent traversal and `Query.bind` aren't implemented. There's also a limitation where filtering after `fmap` discards the projection, so this is still a project to work on rather than a finished query library.
 
 <!-- block: materialspython-duckdb-networkx -->
 Materials**Python, DuckDB, networkx**

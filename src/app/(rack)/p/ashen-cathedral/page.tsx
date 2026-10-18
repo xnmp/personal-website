@@ -1,5 +1,5 @@
 import { bindBlock } from "@/lib/studio/bindings";
-import { Feature, Features, Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Folio, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
@@ -28,8 +28,7 @@ export default function AshenCathedralPage() {
           <div>
             <ProjectKicker slug="ashen-cathedral" />
             <h1><Markdown {...bindBlock(content, "headline")} inline /></h1>
-            <Markdown {...bindBlock(content, "an-original-first-person-game-for-unreal-engine-5")} />
-            <Markdown {...bindBlock(content, "it-is-paused-as-a-work-in-progress")} />
+            <Markdown {...bindBlock(content, "introduction")} />
           </div>
           <div>
             <Screen art="/screens/diablo-clone.png" tone="rust" />
@@ -49,15 +48,13 @@ export default function AshenCathedralPage() {
             <Markdown {...bindBlock(content, "seven-headers-in-source-ashencathedral-domain-871-lines-co")} paragraphClassName="aside-note" />
           </div>
           <div>
-            <Markdown {...bindBlock(content, "combat-resources-items-trading-abilities-enemy-stats-the-t")} />
-            <Markdown {...bindBlock(content, "that-split-is-what-makes-the-tests-cheap")} />
+            <Markdown {...bindBlock(content, "body-working-without-the-editor-open")} />
             <Plate
               figure={contentBlock(content, "figure-fig-1-one-of-eight-sanitizer-runs")} figureBinding={bindBlock(content, "figure-fig-1-one-of-eight-sanitizer-runs").binding}
               caption={contentBlock(content, "caption-from-scripts-test-rules-sh-the-other-seven-follow")} captionBinding={bindBlock(content, "caption-from-scripts-test-rules-sh-the-other-seven-follow").binding}
             >
               <Markdown {...bindBlock(content, "code-clang-std-c-17-wall-wextra-werror-fsanitize-address-u")} />
             </Plate>
-            <Markdown {...bindBlock(content, "the-tests-include-hostile-input")} />
           </div>
         </section>
 
@@ -67,14 +64,7 @@ export default function AshenCathedralPage() {
             <h2><Markdown {...bindBlock(content, "what-is-playable")} inline /></h2>
           </div>
           <div>
-            <Features>
-              <Feature label={contentBlock(content, "label-built-at-runtime")} labelBinding={bindBlock(content, "label-built-at-runtime").binding}><Markdown {...bindBlock(content, "the-dungeon-geometry-and-encounters-are-constructed-by-the")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-fog-of-war")} labelBinding={bindBlock(content, "label-fog-of-war").binding}><Markdown {...bindBlock(content, "in-the-dungeon-the-minimap-reveals-cells-by-integer-line-o")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-grid-inventory")} labelBinding={bindBlock(content, "label-grid-inventory").binding}><Markdown {...bindBlock(content, "a-10-by-4-pack")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-the-butcher")} labelBinding={bindBlock(content, "label-the-butcher").binding}><Markdown {...bindBlock(content, "below-half-health-he-attacks-faster")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-greyhollow")} labelBinding={bindBlock(content, "label-greyhollow").binding}><Markdown {...bindBlock(content, "a-small-village-with-a-healer-a-blacksmith-who-buys-and-se")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-short-on-purpose")} labelBinding={bindBlock(content, "label-short-on-purpose").binding}><Markdown {...bindBlock(content, "the-readme-calls-it-a-short-horror-vertical-slice")} inline /></Feature>
-            </Features>
+            <Markdown {...bindBlock(content, "body-what-you-can-walk-around-in")} />
           </div>
         </section>
 
@@ -85,8 +75,7 @@ export default function AshenCathedralPage() {
             <Markdown {...bindBlock(content, "scripts-has-12-generate")} paragraphClassName="aside-note" />
           </div>
           <div>
-            <Markdown {...bindBlock(content, "props-the-reliquary-the-gate-the-town-and-several-characte")} />
-            <Markdown {...bindBlock(content, "the-butcher-shows-how-this-goes")} />
+            <Markdown {...bindBlock(content, "body-making-things-with-blender-scripts")} />
             <Plate
               figure={contentBlock(content, "figure-fig-2-the-butcher-idle-wind-up-walk-death")} figureBinding={bindBlock(content, "figure-fig-2-the-butcher-idle-wind-up-walk-death").binding}
               caption={contentBlock(content, "caption-a-review-sheet-from-artsource-candidates-butcherde")} captionBinding={bindBlock(content, "caption-a-review-sheet-from-artsource-candidates-butcherde").binding}
@@ -124,10 +113,7 @@ export default function AshenCathedralPage() {
             <Markdown {...bindBlock(content, "sources-docs-gpu-incident")} paragraphClassName="aside-note" />
           </div>
           <div>
-            <Markdown {...bindBlock(content, "on-7-september-2026-while-a-packaged-native-build-was-runn")} />
-            <Markdown {...bindBlock(content, "the-cause-is-still-open")} />
-            <Markdown {...bindBlock(content, "what-i-could-do-was-reduce-the-load-and-record-better-evid")} />
-            <Markdown {...bindBlock(content, "it-was-tested-20-lightweight-guard-tests-passed-on-23-sept")} />
+            <Markdown {...bindBlock(content, "body-then-the-gpu-fell-off-the-bus")} />
           </div>
         </section>
 
@@ -137,8 +123,7 @@ export default function AshenCathedralPage() {
             <h2><Markdown {...bindBlock(content, "paused-with-a-known-gap")} inline /></h2>
           </div>
           <div>
-            <Markdown {...bindBlock(content, "the-repository-has-4-commits-between-25-and-26-september-2")} />
-            <OpenQuestion><Markdown {...bindBlock(content, "is-the-fault-the-gpu-the-pcie-link-the-driver-or-load-i-cr")} inline /></OpenQuestion>
+            <Markdown {...bindBlock(content, "body-an-experiment-to-come-back-to")} />
           </div>
         </section>
 

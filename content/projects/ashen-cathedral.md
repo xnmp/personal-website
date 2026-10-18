@@ -24,16 +24,16 @@ metadata:
   description: "An experiment in asking GPT-6 Astra to make a first-person Diablo-like game in Unreal, and seeing how far it got."
 order: 7
 ---
+
 <!-- block: all-projects -->
 ← all projects
 
 <!-- block: headline -->
 First-person Diablo, more or less
 
-<!-- block: an-original-first-person-game-for-unreal-engine-5 -->
+<!-- block: introduction -->
 When GPT-6 Astra came out, I tried asking it to make a first-person version of Diablo 1 in Unreal Engine 5. Basically that was the brief. I wanted to see how far it could get from an idea like that.
 
-<!-- block: it-is-paused-as-a-work-in-progress -->
 The result was… passable for a 2010 game, I suppose, but still not there yet. There's a village, a cathedral to descend through and a Butcher to fight. It's paused at the moment.
 
 <!-- block: unreal-5 -->
@@ -57,11 +57,12 @@ Working without the editor open
 <!-- block: seven-headers-in-source-ashencathedral-domain-871-lines-co -->
 The rules live in ordinary C++ headers, separate from the Unreal actors.
 
-<!-- block: combat-resources-items-trading-abilities-enemy-stats-the-t -->
+<!-- block: body-working-without-the-editor-open -->
 Combat, items, trading and exploration can be checked without launching Unreal. The actors call those rules when something happens in the game. That makes a small rules change much cheaper to try.
 
-<!-- block: that-split-is-what-makes-the-tests-cheap -->
 The test script compiles those pieces directly with Clang and sanitizers. It also checks the asset scripts. Most of that work doesn't need the editor or GPU.
+
+There are some checks for absurd coordinates in the fog-of-war code too. The plain C++ version makes those cases easy to exercise.
 
 <!-- block: figure-fig-1-one-of-eight-sanitizer-runs -->
 FIG. 1 · one of eight sanitizer runs
@@ -77,50 +78,36 @@ clang++ -std=c++17 -Wall -Wextra -Werror \
 ASAN_OPTIONS=detect_leaks=0 Saved/Tests/rules
 ```
 
-<!-- block: the-tests-include-hostile-input -->
-There are some checks for absurd coordinates in the fog-of-war code too. The plain C++ version makes those cases easy to exercise.
-
 <!-- block: the-game -->
 The game
 
 <!-- block: what-is-playable -->
 What you can walk around in
 
-<!-- block: the-dungeon-geometry-and-encounters-are-constructed-by-the -->
+<!-- block: body-what-you-can-walk-around-in -->
+### Built at runtime
+
 The game constructs the dungeon and encounters when the level loads. The map asset itself mostly gives it a starting point.
 
-<!-- block: label-built-at-runtime -->
-Built at runtime
+### Fog of war
 
-<!-- block: in-the-dungeon-the-minimap-reveals-cells-by-integer-line-o -->
 In the dungeon the minimap reveals cells by integer line of sight (`mapLineOfSight` in `Exploration.h`). Rays reveal a closed door but cannot see through it, or diagonally between two wall corners. Rooms you have left stay dimly drawn.
 
-<!-- block: label-fog-of-war -->
-Fog of war
+### Grid inventory
 
-<!-- block: a-10-by-4-pack -->
 A 10 by 4 pack. Each item kind has its own footprint, and drag, swap and equip all check the footprint against the grid.
 
-<!-- block: label-grid-inventory -->
-Grid inventory
+### The Butcher
 
-<!-- block: below-half-health-he-attacks-faster -->
 The Butcher attacks faster once he drops below half health. His wind-up is the chance to guard or get out of the way.
 
-<!-- block: label-the-butcher -->
-The Butcher
+### Greyhollow
 
-<!-- block: a-small-village-with-a-healer-a-blacksmith-who-buys-and-se -->
 A small village with a healer, a blacksmith who buys and sells, and the church you descend through. A labelled town map tracks your facing.
 
-<!-- block: label-greyhollow -->
-Greyhollow
+### A short run
 
-<!-- block: the-readme-calls-it-a-short-horror-vertical-slice -->
 It's a short slice of a game, with no mid-run save.
-
-<!-- block: label-short-on-purpose -->
-A short run
 
 <!-- block: the-pipeline -->
 The art
@@ -131,10 +118,9 @@ Making things with Blender scripts
 <!-- block: scripts-has-12-generate -->
 A lot of the assets come from Blender Python scripts, followed by import steps in Unreal.
 
-<!-- block: props-the-reliquary-the-gate-the-town-and-several-characte -->
+<!-- block: body-making-things-with-blender-scripts -->
 The scripts make props, parts of the town and character candidates. If something looks wrong, the iteration is changing the script and rendering it again. The results vary quite a bit.
 
-<!-- block: the-butcher-shows-how-this-goes -->
 The first Butcher was built from primitives, and you can tell. The replacement starts with CC0 MakeHuman anatomy and goes through another set of scripts to add detail and bake the materials. Both versions are below.
 
 <!-- block: figure-fig-2-the-butcher-idle-wind-up-walk-death -->
@@ -164,16 +150,13 @@ Then the GPU fell off the bus
 <!-- block: sources-docs-gpu-incident -->
 Sources: `Docs/GPU_INCIDENT.md` and `Docs/RESOURCE_LIMITS.md`.
 
-<!-- block: on-7-september-2026-while-a-packaged-native-build-was-runn -->
+<!-- block: body-then-the-gpu-fell-off-the-bus -->
 During a packaged run on 7 September 2026, the kernel logged “GPU has fallen off the bus.” Unreal lost the device, the driver stopped answering queries, and the machine needed a restart.
 
-<!-- block: the-cause-is-still-open -->
 I still don't know what caused it. There wasn't a temperature history to check, and the logs didn't establish overheating or identify a particular Unreal feature as the culprit.
 
-<!-- block: what-i-could-do-was-reduce-the-load-and-record-better-evid -->
 After that I put heavy jobs behind a resource guard: one at a time, with CPU limits and temperature and memory readings. Blender uses CPU rendering for these previews, and native captures are short and guarded.
 
-<!-- block: it-was-tested-20-lightweight-guard-tests-passed-on-23-sept -->
 The guard has since stopped a job when the CPU reached 88.5 °C. That's useful, but it doesn't explain the original GPU fault.
 
 <!-- block: where-it-stands -->
@@ -182,10 +165,11 @@ For now
 <!-- block: paused-with-a-known-gap -->
 An experiment to come back to
 
-<!-- block: the-repository-has-4-commits-between-25-and-26-september-2 -->
+<!-- block: body-an-experiment-to-come-back-to -->
 The latest town, enemy and lighting revision still needs native validation. The launcher uses an older standalone package until that happens. Between that and the GPU trouble, this is parked for now.
 
-<!-- block: is-the-fault-the-gpu-the-pcie-link-the-driver-or-load-i-cr -->
+### Open question
+
 I'd like to get back to the question I started with: how close can an agent get to the game in my head? There's still quite a gap, especially in the art.
 
 <!-- block: materialsunreal-engine-5 -->

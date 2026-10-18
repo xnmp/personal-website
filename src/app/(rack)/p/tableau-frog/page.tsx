@@ -1,5 +1,5 @@
 import { bindBlock } from "@/lib/studio/bindings";
-import { Feature, Features, Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Folio, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
@@ -84,13 +84,7 @@ export default function TableauFrogPage() {
                 style={{ width: "100%", height: "auto", display: "block" }}
               />
             </Plate>
-            <Markdown {...bindBlock(content, "kbdctrl-i-on-a-selection-generates-hypotheses")} paragraphStyle={{ marginTop: 20 }} />
-            <Features>
-              <Feature label={contentBlock(content, "label-own-random-forest")} labelBinding={bindBlock(content, "label-own-random-forest").binding}><Markdown {...bindBlock(content, "deterministic-zero-dependency-pure-ts-with-permutation-imp")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-plugin-charts")} labelBinding={bindBlock(content, "label-plugin-charts").binding}><Markdown {...bindBlock(content, "a-documented-chartplugin-contract-on-window")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-eval-free-expressions")} labelBinding={bindBlock(content, "label-eval-free-expressions").binding}><Markdown {...bindBlock(content, "log-zscore-bucket-ternary-parsed-and-computed-in-one-colum")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-domain-first")} labelBinding={bindBlock(content, "label-domain-first").binding}><Markdown {...bindBlock(content, "27-pure-ts-modules-run-identically-in-a-plain-browser-the")} inline /></Feature>
-            </Features>
+            <Markdown {...bindBlock(content, "body-using-the-ai-suggestions-as-things-to-investigate")} />
           </div>
         </section>
 
@@ -100,8 +94,7 @@ export default function TableauFrogPage() {
             <h2><Markdown {...bindBlock(content, "open-questions")} inline /></h2>
           </div>
           <div>
-            <OpenQuestion><Markdown {...bindBlock(content, "when-non-significant-differences-are-greyed-out-do-people")} inline /></OpenQuestion>
-            <OpenQuestion label={contentBlock(content, "label-open-question-ii")} labelBinding={bindBlock(content, "label-open-question-ii").binding}><Markdown {...bindBlock(content, "inferred-chart-kinds-remove-the-gallery-of-charts-decision")} inline /></OpenQuestion>
+            <Markdown {...bindBlock(content, "body-does-this-make-exploration-easier")} />
           </div>
         </section>
 

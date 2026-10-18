@@ -18,7 +18,9 @@ experiments. Keep them short enough to leave room for the owner to fill them in.
   superiority claims and feature inventories dressed up as prose.
 - Keep each page distinct. A diary rewrite, an old game and a query compiler
   don't need the same narrative template or a compulsory moral at the end.
-- Keep the Markdown sections editable. Prefer a brief factual starting point
+- Keep each section's prose in one editable Markdown block, including its
+  paragraphs, lists and small subheadings. Do not split it into paragraph-sized
+  fields when revising copy. Prefer a brief factual starting point
   over filling a gap with imagined personal history or public placeholders.
 
 Tauri Explorer has its own product website. Its page here is for the personal
