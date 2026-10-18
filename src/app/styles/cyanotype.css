@@ -1872,7 +1872,7 @@
      home page's does (the edge's paper is ~20px deep here and the dry
      brushwork it dies into another ~14, flecking whatever is set in it: the
      links' glyphs ran through it when the row sat at 12) */
-  :root[data-style="cyanotype"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)) .running-head:nth-child(n) {
+  :root[data-style="cyanotype"] .rack:is(:has(.detail-hero .tags), :has(.detail-hero.solo), :has(.launch-hero)):not(:has(.about-page)) .running-head:nth-child(n) {
     position: absolute;
     z-index: 2;
     top: calc(31 * var(--u));

@@ -1,4 +1,5 @@
 import { bindBlock, bindField } from "@/lib/studio/bindings";
+import { EditableLink } from "@/components/studio/EditableLink";
 import { BoundText } from "@/components/studio/BoundText";
 import { EditableText } from "@/components/studio/EditableText";
 import type { Metadata } from "next";
@@ -37,13 +38,12 @@ export function AboutPage() {
     <>
       <RunningHead meta="about" nav={<Key href="/projects">← all projects</Key>} />
       <main id="content" className="rack-main about-page" tabIndex={-1}>
-        <div className="about-file-head">
+        <div className="about-file-head faceplate">
           <span><EditableText binding={bindField(content, ["kicker"])}>{about.kicker}</EditableText></span>
           <a href="https://github.com/xnmp/personal-website/blob/main/content/about.md">about.md <span aria-hidden="true">↗</span></a>
         </div>
         <section className={about.portrait ? "detail-hero" : "detail-hero solo"}>
           <div>
-            <div className="kicker"><EditableText binding={bindField(content, ["kicker"])}>{about.kicker}</EditableText></div>
             <h1><EditableText binding={bindField(content, ["headline"])}>{about.headline}</EditableText></h1>
             <Markdown text={about.intro.join("\n\n")} binding={bindBlock(content, contentField<string>(content, "intro")).binding} />
           </div>
@@ -55,7 +55,7 @@ export function AboutPage() {
           ) : null}
         </section>
 
-        {sections.length > 0 && <nav className="about-contents" aria-label="On this page">
+        {sections.length > 0 && <nav className="about-contents faceplate" aria-label="On this page">
           <span className="about-contents-label">In this file</span>
           {sections.map((s, index) => <a key={s.heading} href={`#about-section-${index}`}><BoundText text={s.heading} binding={bindField(content, ["sections", s.sourceIndex, "heading"])} /></a>)}
         </nav>}
@@ -63,11 +63,8 @@ export function AboutPage() {
         {sections.map((s, index) => (
           <section id={`about-section-${index}`} key={s.heading} className="section" data-draft={s.draft ? "" : undefined}>
             <div>
-              <div className="section-kicker">
-                <EditableText binding={bindField(content, ["sections", s.sourceIndex, "kicker"])}>{s.kicker}</EditableText>
-                {s.draft ? <span className="draft-tag"> · draft, hidden in production</span> : null}
-              </div>
-              <h2><EditableText binding={bindField(content, ["sections", s.sourceIndex, "heading"])}>{s.heading}</EditableText></h2>
+              {s.draft && <span className="draft-tag">draft, hidden in production</span>}
+              <h2><EditableLink href={`/projects#${sourceSections[s.sourceIndex].body}`}><EditableText binding={bindField(content, ["sections", s.sourceIndex, "heading"])}>{s.heading}</EditableText></EditableLink></h2>
               {s.aside ? (
                 <Markdown text={s.aside} binding={bindField(content, ["sections", s.sourceIndex, "aside"])} paragraphClassName="aside-note" />
               ) : null}

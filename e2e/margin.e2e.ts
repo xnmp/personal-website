@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { readAbout } from "../src/data/about";
 import { projects } from "../src/data/projects";
 
 test.use({ channel: "chrome", launchOptions: { args: ["--disable-dev-shm-usage", "--disable-gpu", "--renderer-process-limit=2"] } });
@@ -25,7 +26,7 @@ test("plain can be selected, survives navigation and reload, and can be switched
   await page.goto("/projects");
   await choose(page, "plain");
   await expect(page.locator(".margin-index")).toBeVisible();
-  await expect(page.locator(".landing")).toBeHidden();
+  await expect(page.locator(".landing")).toHaveCount(0);
   await page.getByRole("link", { name: "Scrivo", exact: true }).click();
   await expect(page).toHaveURL(/\/p\/scrivo$/);
   await page.reload();
@@ -33,8 +34,7 @@ test("plain can be selected, survives navigation and reload, and can be switched
   await page.getByRole("link", { name: "projects", exact: true }).click();
   await expect(page.locator(".margin-index")).toBeVisible();
   await choose(page, "Paper Diorama");
-  await expect(page.locator(".margin-index")).toBeHidden();
-  await expect(page.locator(".landing")).toBeVisible();
+  await expect(page.locator(".project-directory")).toBeVisible();
 });
 
 test("the complete Markdown catalogue is navigable without generated kit assets", async ({ page }) => {
@@ -54,7 +54,7 @@ test("the complete Markdown catalogue is navigable without generated kit assets"
   await expect(page.locator(".scene")).toBeHidden();
   await page.getByRole("link", { name: "About me" }).click();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Hi, I’m Chong");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(readAbout().headline);
   expect(kit).toEqual([]);
   expect(errors).toEqual([]);
 });
@@ -141,7 +141,7 @@ test("new visitors get plain while a saved style takes precedence", async ({ pag
   await choose(page, "Paper Diorama");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-style", "paper");
-  await expect(page.locator(".landing")).toBeVisible();
+  await expect(page.locator(".project-directory")).toBeVisible();
 });
 
 test("the About file index moves to the corresponding authored section", async ({ page }) => {
