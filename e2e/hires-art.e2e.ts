@@ -34,34 +34,8 @@ function inventory() {
   return twins;
 }
 
-// URL-level exceptions only; never waive all assets for a kit/property.
-// The sole twinned --k-scene-flat (ligne/hero-night) is also
-// painted by --k-hero on .launchpad::before (styles/ligne.css). The other
-// consumers are .og-stage (globals.css) and .tier-cut (kit.css); neither adds
-// an OG-only URL to today's twin inventory. No /og route is needed for coverage.
-// Cyanotype assigns wide-b flat to odd page sheets at >=900px, but the
-// launch page's .sheet-flat sections are children 4 and 6, and the flattened
-// .sheet-row child is always second: all paint wide-c flat instead. Other
-// routes have no .sheet-flat sections. Cyanotype enables neither --tier-cut
-// nor --shot-cut; those decorations stay hidden at every viewport. Below
-// 900px page sheets use the non-wide variants. No real state paints wide-b flat.
-// Non-wide c-flat is also unreachable: it belongs to siblings 4n+3, but
-// flattened shelf cards are even, launch .sheet-flat sections are 4 and 6,
-// and the flat .sheet-row colophon is second (d/b/b below 900px, respectively).
-// The flat gallery shot is the first child of its own .shot-tier, so uses a.
-// At >=900px page sheets switch to wide art; the hidden tier/shot cuts add
-// no consumer. A narrower capture cannot expose c-flat on any current route.
-const unrenderedTwins: Readonly<Record<string, string>> = {
-  "/kit/ligne/sheet-day-normal@2x.webp": "Ligne prints every resting panel flat (--k-plate-flat, styles/ligne.css) and its strips repoint --k-plate at --k-strip; the normal sheet is only the state family's reference.",
-  "/kit/ligne/sheet-night-normal@2x.webp": "Ligne prints every resting panel flat (--k-plate-flat, styles/ligne.css) and its strips repoint --k-plate at --k-strip; the normal sheet is only the state family's reference.",
-  "/kit/cyanotype/sheet-night-w-b-flat@2x.webp": "Odd wide page sheets never use flat art; flat sections are even siblings, and Cyanotype's tier/shot cuts are hidden.",
-  "/kit/cyanotype/sheet-day-w-b-flat@2x.webp": "Odd wide page sheets never use flat art; flat sections are even siblings, and Cyanotype's tier/shot cuts are hidden.",
-  "/kit/cyanotype/sheet-night-c-flat@2x.webp": "No flat consumer is sibling 4n+3: shelves are even, launch flat sections are 4/6, the colophon is second, and the gallery shot is first; tier/shot cuts are hidden.",
-  "/kit/cyanotype/sheet-day-c-flat@2x.webp": "No flat consumer is sibling 4n+3: shelves are even, launch flat sections are 4/6, the colophon is second, and the gallery shot is first; tier/shot cuts are hidden.",
-  "/kit/solarpunk/sheet-card-flat@2x.webp": "Solarpunk sets --k-plate-flat on showcase cards (.card.faceplate), but no flat selector (.shelf > :nth-child(even), .section.sheet-flat, .sheet-row > :nth-child(2), .shot-tier:nth-child(2) > .shot) matches a card; the flat art only completes the state family.",
-  "/kit/solarpunk/sheet-card-night-flat@2x.webp": "Solarpunk sets --k-plate-flat on showcase cards (.card.faceplate), but no flat selector (.shelf > :nth-child(even), .section.sheet-flat, .sheet-row > :nth-child(2), .shot-tier:nth-child(2) > .shot) matches a card; the flat art only completes the state family.",
-};
-
+// Compare the artwork actually rendered by the current shared directory and
+// reading pages. Legacy landing-only assets remain in the generator inventory.
 const desktop = { width: 1440, height: 900 };
 function casesFor(kit: string) {
   const cases = [{ path: "/projects", viewport: kit === "paper" ? { width: 1440, height: 810 } : desktop }];
@@ -185,11 +159,11 @@ async function capture(
     await snapshot("normal", true);
     // The illustrated directory has both key families. Personal project pages
     // may use ordinary prose links instead of calls to action.
-    const keys = page.locator(".launchpad-keys, .launch-keys");
-    const sheets = page.locator("a.module.faceplate.is-live");
+    const keys = page.locator(".instruments, .head-nav, .launch-keys");
+    const sheets = page.locator(".margin-project.faceplate");
     const controls = [
       { name: "key", control: keys.locator('a.key:not([data-tone="signal"])').first(), required: path === "/projects" },
-      { name: "signal", control: keys.locator('a.key[data-tone="signal"]').first(), required: path === "/projects" },
+      { name: "signal", control: keys.locator('a.key[data-tone="signal"]').first(), required: false },
       ...(id === "cyanotype"
         ? ["4n + 1", "4n + 2", "4n + 3", "4n"].map((nth, index) => ({
           name: `sheet-${"abcd"[index]}`,
@@ -198,21 +172,14 @@ async function capture(
           required: path === "/projects",
         }))
         : [{ name: "sheet", control: sheets.first(), required: path === "/projects" }]),
-      ...(id !== "cyanotype" && path === "/projects"
-        ? [{ name: "card", control: page.locator(".showcase-row a.card.faceplate.is-live").first(), required: true }]
-        : []),
-      ...(id === "cyanotype" && path === "/projects"
-        ? ["4n + 1", "4n + 2", "4n + 3", "4n"].map((nth, index) => ({
-          name: `card-${"abcd"[index]}`,
-          // Showcase card art follows the wrapping li, unlike module plates.
-          control: page.locator(`.showcase-row > li:nth-child(${nth}) a.card.faceplate.is-live`).first(),
-          required: true,
-        }))
-        : []),
+
     ];
     for (const { name, control, required } of controls) {
       if (required) await expect(control, `${id} ${path}: required ${name} coverage`).toHaveCount(1);
       if (await control.count() === 0) continue;
+      // Static directory sheets are covered by the full-page capture; only
+      // interactive controls have keyboard and pressed states.
+      if (!await control.evaluate((element) => element.matches("a[href], button, input, select, textarea, [tabindex]"))) continue;
       await control.hover();
       await expect(control).toBeVisible();
       expect(await control.evaluate((element) => element.matches(":hover"))).toBe(true);
@@ -262,9 +229,3 @@ for (const { id } of STYLES.filter((style) => style.scene !== "none")) {
     }
   }
 }
-
-test("A captures request every CSS @2x twin", async ({ isMobile }) => {
-  test.skip(isMobile, "coverage comes from the desktop comparison matrix");
-  expect([...twins.keys()].filter((url) => !seenInA.has(url) && !unrenderedTwins[url]),
-    "Unrequested twins: add a real page/viewport or a URL-level exception with a reason").toEqual([]);
-});

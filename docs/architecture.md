@@ -1,9 +1,29 @@
 # Architecture
 
-A single-author site. Each project is one **module**: a sheet of torn paper
-pinned into a layered paper-landscape diorama, with one detail page. There is
-no CMS, no database and no auth. The art direction ("Paper Diorama") lives in
-[`art/BRIEF.md`](../art/BRIEF.md). Read it before changing anything visual.
+## Content and style contract
+
+Plain is the canonical reading structure. Every art direction uses the same
+About page, `ProjectDirectory`, project pages, navigation and editor bindings.
+The directory intro comes from `content/home.md` (`margin-intro` and
+`margin-description`, historical IDs retained for saved content). All projects
+appear once under the complete About-derived groups. Descriptions use the
+authored `summary`, falling back to `heading`. Style changes dress this content
+with different type, surfaces and artwork; they do not choose different copy,
+remove group members or paint over editable labels. `styles/content.css` owns
+the shared layout, with `styles/margin.css` applying the plain treatment.
+
+Owner-edited Markdown remains authoritative. Never reconcile styles by
+rewriting it or reintroducing a second introductory/promotion layout. The
+older landing-stage components and art rules are historical, not an alternate
+content model.
+
+## Illustrated art system
+
+A single-author technical garden, with one Markdown document and one detail
+page per project. Plain is the default. Illustrated styles reuse the same
+content with the raster art system described below. There is no CMS or
+database. [`art/BRIEF.md`](../art/BRIEF.md) records the Paper Diorama direction;
+preserve each style’s identity when changing its presentation.
 
 The site was previously an instrument rack (metal faceplates, rails, back
 panel, bench mat, LED glows). It was re-skinned to the diorama; the old look
@@ -37,7 +57,9 @@ group and `components/rack/`. Those names are historical. Mapping:
 src/app/
   layout.tsx            root: fonts, rice init script, CommandIndex
   (rack)/layout.tsx     wraps every page in <Rack> (the scene + a column of sheets)
-  (rack)/page.tsx       home: masthead, hero (intro + flagship sheet, the product first), two shelves of modules (sheets), keys in the foot
+  (rack)/page.tsx       home: shared AboutPage, current authored introduction and sections
+  (rack)/about/         alias of the same About page
+  (rack)/projects/      shared ProjectDirectory: current intro and complete About-derived groups
   (rack)/p/<slug>/      detail layouts (one per project in content/projects/)
   tableau-frog/         standalone product showcase, deliberately outside the diorama
   og/[card]/            social cards drawn with the kit, captured by scripts/render-og.mjs
@@ -112,7 +134,7 @@ keyboard handling and reading-page components remain shared.
   (its framing covers the frame, which would undo the registration below).
 - **Margin Index** uses `scene: "none"`, hides the scene, and clears all raster
   surface tokens. `styles/margin.css` is imported after the shared CSS. Its
-  directory displays every project, grouped by shelf; optional summaries and
+  directory displays every project in its About-derived group; optional summaries and
   a real flagship preview come from Markdown. Hidden presentation stops are
   excluded from `j`/`k` navigation. `e2e/margin.e2e.ts` checks content, navigation,
   viewport bounds, theme persistence and the absence of kit requests.
@@ -216,8 +238,8 @@ enforce it.
   - The page's meta, kicker and folio (`ProjectMeta`, `ProjectKicker`,
     `Folio`) read the number from the data, so nothing is renumbered by
     hand.
-  - It lands on its shelf, in the index and in the Explorer window's
-    `~/Repos` by itself.
+  - Assign it in `content/project-groups.md`; it appears in that group and
+    in search. It receives the same summary and binding in every style.
   - `tests/projects.test.ts` fails by name if any part is missing.
 - **A style dresses an item by what it is, never by which project it is.**
   No selector names a project by its link, slug or title. Per-item
@@ -236,27 +258,15 @@ enforce it.
     fifth card is dressed like the first.
   - `:first-child` is a role (the lead card) and is fine.
   - A fixed `:nth-child(3)` on a card, module or fact is not.
-- **Layouts take any count.**
-  - The home row is one row of as many cards as `FEATURED` holds (globals:
-    `grid-auto-flow: column`, equal shares).
-  - A style may set the mock's own column proportions for four, under the
-    quantity query `.showcase-row:has(> li:nth-child(4):last-child)`, and
-    leaves any other count to the equal shares.
-  - Card heights must not grow with a wider card: three cards stay on the
-    first screen.
-  - Shelves wrap.
-- **The flagship is the one bespoke slot.** Its window is the app's own
-  UI (`ExplorerWindow`), so changing `FLAGSHIP` means designing that
-  window. Its name, links and labels come from the data. Lettering art that
-  paints a word (Sumi's brushed title) is keyed to the word it paints, and
-  live type stands in for any other.
-- **The tests.**
-  - `tests/style-contract.test.ts` reads every stylesheet's selectors for
-    the first two rules.
-  - `e2e/content.e2e.ts` gives every style's home row three and five
-    cards and its shelf one module more and one fewer, and checks the
-    layout holds: one row of whole cards on the first screen, no overlap,
-    no sideways scroll.
+- **Layouts take any count.** The canonical grouped directory wraps illustrated
+  entries with the existing shelf grid and uses a single column in plain.
+- **The flagship preview is optional.** It is a real screenshot from the
+  project’s authored `preview`; it no longer substitutes a bespoke synthetic
+  app window or removes projects from their groups.
+- **The tests.** `e2e/style-content.e2e.ts` verifies that changing art direction
+  preserves current edits, complete group membership and navigation. Plain’s
+  existing no-kit/navigation contracts remain. Legacy promotion-stage geometry
+  assertions are retired; artwork comparison checks remain for rendered surfaces.
 
 ## Components
 
@@ -368,18 +378,11 @@ enforce it.
   glued to the end of an inline element in the served HTML.
 - `VideoScreen` (Eskiv) shows 1-bit art of the video with a tile that opens it
   on YouTube in a new tab; nothing loads from YouTube on the page.
-- The home page's first screen is composed as every style's mock is
-  (components/landing, page.tsx): `Masthead` (the brand, the tagline, and
-  the keys printed as words), the flagship's name, pitch and keys beside
-  its window, and the row of four `ShowcaseCard`s (`FEATURED`,
-  `data/projects.ts`) under them; the rest of the projects are on the
-  shelves below. It is laid out on a stage of the mocks' proportions
-  (globals.css "home landing"): `--u` is one mock pixel, so a style places
-  each piece at its mock's coordinates with the `--l-*` tokens and hangs its
-  ornaments on the free hooks there; below 900px it stacks. The window is
-  `ExplorerWindow`: the app's two panes as live text in the rice, not a
-  bitmap, sized to its container (cqw) and holding as many whole rows as
-  fit.
+- `ProjectDirectory` is shared by all styles; its content and group order are
+  authored once. The previous `Masthead`/`ExplorerWindow`/`ShowcaseCard` landing
+  composition and its `--l-*` stage CSS remain historical art recipes, not
+  an alternate content path. The active directory uses `RunningHead` and
+  shared reading surfaces.
 - Screenshots swap to tighter phone crops below 600px (`<picture>`), so the
   text in them stays near its real size. Scripted scrolls go through
   `lib/motion.ts`, which honours `prefers-reduced-motion`.

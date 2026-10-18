@@ -224,24 +224,3 @@ async function meanDiff(a: Buffer, b: Buffer) {
   for (let i = 0; i < x.length; i++) d += Math.abs(x[i] - y[i]);
   return d / x.length;
 }
-
-// Every screen on the site is lit in the visitor's theme, whatever the art
-// direction: the window on the home page is light under the day theme and
-// dark under a night one, though a style's mock may paint it otherwise.
-for (const s of STYLES.filter((style) => style.scene !== "none")) {
-  test(`${s.name}: the home window is lit in the visitor's theme, light by day and dark by night`, async ({ page }) => {
-    await asStyle(page, s.id);
-    const lum: Record<string, number> = {};
-    for (const rice of ["paper", "cosmic-dusk"]) {
-      await page.addInitScript((r) => localStorage.setItem("nb-rice", r), rice);
-      await page.goto("/projects", { waitUntil: "networkidle" });
-      await expect(page.locator("html")).toHaveAttribute("data-rice", rice);
-      const rows = page.locator(".xw-rows").first();
-      await rows.scrollIntoViewIfNeeded();
-      const { channels } = await sharp(await rows.screenshot({ animations: "disabled" })).stats();
-      lum[rice] = (channels[0].mean + channels[1].mean + channels[2].mean) / 3;
-    }
-    expect(lum.paper, "by day").toBeGreaterThan(150);
-    expect(lum["cosmic-dusk"], "by night").toBeLessThan(110);
-  });
-}

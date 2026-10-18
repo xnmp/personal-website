@@ -5,21 +5,24 @@ import { bindBlock, bindField } from "@/lib/studio/bindings";
 import Link from "next/link";
 import { EditableLink } from "@/components/studio/EditableLink";
 import { APP_THEME } from "@/components/launch/appTheme";
+import { Screen } from "@/components/rack/Screen";
 import { Markdown } from "@/components/notebook/Markdown";
 import { readProjectCatalog } from "@/data/projects";
+import { contentBlock } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 
-export function MarginIndex() {
+export function ProjectDirectory() {
   const { FLAGSHIP, groups } = readProjectCatalog();
   const home = readContent("home");
   const about = readContent("about");
   const grouping = readContent("project-groups");
 
-  /** A second presentation of the shared project catalogue, without card art. */
+  /** One content tree: styles change its surfaces, never its copy or membership. */
 
   return (
-    <div className="margin-index">
-      <div className="margin-intro">
+    <div className="margin-index project-directory">
+      <h1 className="sr-only"><BoundText text={contentBlock(home, "projects")} binding={bindBlock(home, "projects").binding} /></h1>
+      <div className="margin-intro faceplate">
         <Markdown
           {...bindBlock(home, "margin-intro")}
           paragraphClassName="margin-statement"
@@ -33,21 +36,22 @@ export function MarginIndex() {
           id={group.id}
           aria-labelledby={`margin-${group.id}`}
         >
-          <h2 id={`margin-${group.id}`}>
+          <h2 className="divider faceplate" id={`margin-${group.id}`}>
             <BoundText text={group.heading} binding={bindField(about, ["sections", group.sourceIndex, "heading"])} />
           </h2>
-          <ol className="margin-list">
+          <ol className="margin-list shelf">
             {group.projects
               .map((p) => {
                 const source = readContent(`projects/${p.slug}`);
                 return (
                   <li
-                    className="margin-project"
+                    className="margin-project faceplate"
                     key={p.slug}
                     data-featured={
                       p.slug === FLAGSHIP && p.preview ? true : undefined
                     }
                   >
+                    {!(p.slug === FLAGSHIP && p.preview) && <div className="directory-art"><Screen art={p.art} tone={p.tone} /></div>}
                     <span className="margin-number" aria-hidden="true">
                       {p.number}
                     </span>

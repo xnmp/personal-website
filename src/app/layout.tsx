@@ -11,6 +11,7 @@ import { notFound } from "next/navigation";
 import { studioEnabled } from "@/lib/studio/security.server";
 import { StudioProvider } from "@/components/studio/StudioProvider";
 import "./globals.css";
+import "./styles/content.css";
 import "./styles/margin.css";
 import "./markdown.css";
 

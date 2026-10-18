@@ -1,0 +1,52 @@
+/* Shared reading structure. Art directions dress these same authored nodes. */
+.instruments { min-width: 0; max-width: 100%; flex-wrap: wrap; }
+.instruments .margin-projects { display: inline-flex; }
+.project-directory .margin-intro {
+  padding: calc(var(--plate-w) + 24px) calc(var(--plate-w) + 26px);
+  margin-bottom: 36px;
+}
+.project-directory .margin-statement {
+  margin: 0; font: 500 clamp(28px, 3.2vw, 42px)/1.2 var(--font-display), Georgia, serif;
+  color: var(--print); text-wrap: balance;
+}
+.project-directory .margin-intro p + p { margin-top: 16px; }
+.project-directory .margin-intro p:not(.margin-statement) { color: var(--print-soft); font-size: 19px; line-height: 1.5; }
+.margin-group { display: grid; gap: var(--rack-gap); scroll-margin-top: 28px; }
+.margin-group + .margin-group { margin-top: 40px; }
+.margin-group > h2 { margin: 0; }
+.margin-list { list-style: none; padding: 0; margin: 0; }
+.margin-project {
+  min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px;
+  padding: calc(var(--plate-w) + 16px) calc(var(--plate-w) + 18px);
+}
+.margin-number { font: 12px/1.5 var(--font-mono), monospace; color: var(--print-soft); }
+.margin-entry h3 { margin: 0; font: 500 26px/1.2 var(--font-display), Georgia, serif; }
+.margin-entry h3 :is(a, :where([data-studio-link])) { color: var(--print); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.margin-entry p { margin: 8px 0 0; font-size: 17px; line-height: 1.5; color: var(--print-soft); }
+.margin-entry .margin-stack { font: 11px/1.6 var(--font-mono), monospace; }
+.directory-art .screen { --mat-k: 0.18; }
+.margin-feature { order: -1; }
+.margin-capture { display: block; overflow: hidden; border-radius: 8px; }
+.margin-capture img { width: 100%; height: auto; }
+
+.about-file-head,
+.about-contents {
+  --plate-k: 0.24;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px 24px;
+  padding: 18px 26px; color: var(--print); min-width: 0;
+}
+.about-file-head { justify-content: space-between; }
+.about-file-head a,
+.about-contents a { overflow-wrap: anywhere; text-underline-offset: 3px; }
+.about-contents-label { margin-right: auto; font: 12px/1.5 var(--font-mono), monospace; }
+.about-contents a { font-size: 14px; }
+.about-page .draft-tag { display: block; margin-bottom: 10px; }
+.about-page h2 :is(a, :where([data-studio-link])) { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+
+/* Editable words stay live; fixed wordmark masks cannot reflect authored text. */
+:root:is([data-style="sumi"], [data-style="ligne"]) :is(.masthead, .running-head) .brand :is(a, :where([data-studio-link])) {
+  color: var(--print); width: auto; height: auto; max-width: 100%; aspect-ratio: auto;
+  line-height: inherit; overflow: visible; white-space: normal; overflow-wrap: anywhere;
+}
+:root:is([data-style="sumi"], [data-style="ligne"]) :is(.masthead, .running-head) .brand :is(a, :where([data-studio-link]))::before { content: none; }
+:root:is([data-style="sumi"], [data-style="ligne"]) :is(.masthead, .running-head) .brand :is(a, :where([data-studio-link]))[href]:focus-visible { color: var(--print); }
