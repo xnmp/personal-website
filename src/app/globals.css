@@ -257,7 +257,7 @@ pre code {
   text-transform: lowercase;
 }
 
-.brand a {
+.brand :is(a, :where([data-studio-link])) {
   color: var(--print);
   text-decoration: none;
 }
@@ -493,7 +493,7 @@ pre code {
   font-weight: var(--l-brand-weight, 600);
 }
 
-.masthead .brand a {
+.masthead .brand :is(a, :where([data-studio-link])) {
   color: var(--l-ink);
 }
 
@@ -1524,7 +1524,7 @@ pre code {
   max-width: 48ch;
 }
 
-.detail-hero p + p {
+.detail-hero :is(p + p, :where(.content-block + .content-block > p:first-of-type)) {
   margin-top: 14px;
 }
 
@@ -1599,11 +1599,11 @@ pre code {
     align-items: start;
   }
 
-  .section.stack .prose-cols > p:last-child:nth-child(odd) {
+  .section.stack .prose-cols > :is(p, :where(.content-block)):last-child:nth-child(odd) {
     grid-column: 1 / -1;
   }
 
-  .section.stack .prose-cols > p:first-child {
+  .section.stack .prose-cols > :is(p, :where(.content-block)):first-child {
     margin-top: 0;
   }
 }
@@ -2439,7 +2439,7 @@ pre code {
 /* on a short screen (a 1024x768 tablet) the explanation gives way, so the
    product's window and its palette show on the first screen */
 @media (min-width: 900px) and (max-width: 1099px) and (max-height: 820px) {
-  .launch-copy > .launch-lede {
+  .launch-copy > :is(.launch-lede, .content-block:has(> .launch-lede)) {
     display: none;
   }
   .launch-hero h1 {
@@ -2451,7 +2451,7 @@ pre code {
    the note under them on the first screen: the explanation gives way (the
    reflexes section says it next) and the head is sized to the height. */
 @media (min-width: 1100px) and (max-height: 860px) {
-  .launch-copy > .launch-lede {
+  .launch-copy > :is(.launch-lede, .content-block:has(> .launch-lede)) {
     display: none;
   }
   .launch-hero h1 {

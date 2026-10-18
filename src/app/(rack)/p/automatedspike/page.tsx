@@ -18,7 +18,7 @@ export default function AutomatedSpikePage() {
         meta={<ProjectMeta slug="automatedspike" />}
         nav={
           <>
-            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key editableLabel href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
           </>
         }
       />

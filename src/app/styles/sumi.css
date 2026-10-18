@@ -490,7 +490,7 @@
    Explorer" (the h2's data-text), so it is keyed to that word, and any
    other title is live text in the brush face (below, under the lettered
    box). */
-:root[data-style="sumi"] :is(.masthead .brand a, .running-head .brand a, .launchpad-title[data-text="Tauri Explorer"], .showcase-title) {
+:root[data-style="sumi"] :is(.masthead .brand :is(a, :where([data-studio-link])), .running-head .brand :is(a, :where([data-studio-link])), .launchpad-title[data-text="Tauri Explorer"], .showcase-title) {
   position: relative;
   display: block;
   flex: none;
@@ -502,11 +502,11 @@
 
 /* the unseen word kept to the lettering's box (the heading's rule hangs out
    of its own) */
-:root[data-style="sumi"] :is(.masthead .brand a, .running-head .brand a, .launchpad-title[data-text="Tauri Explorer"]) {
+:root[data-style="sumi"] :is(.masthead .brand :is(a, :where([data-studio-link])), .running-head .brand :is(a, :where([data-studio-link])), .launchpad-title[data-text="Tauri Explorer"]) {
   overflow: clip;
 }
 
-:root[data-style="sumi"] :is(.masthead .brand a, .running-head .brand a, .launchpad-title[data-text="Tauri Explorer"], .showcase-title)::before {
+:root[data-style="sumi"] :is(.masthead .brand :is(a, :where([data-studio-link])), .running-head .brand :is(a, :where([data-studio-link])), .launchpad-title[data-text="Tauri Explorer"], .showcase-title)::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -525,7 +525,7 @@
   line-height: 1;
 }
 
-:root[data-style="sumi"] .masthead .brand a {
+:root[data-style="sumi"] .masthead .brand :is(a, :where([data-studio-link])) {
   --letters: url(/kit/sumi/letter-brand.webp);
   width: calc(262 * var(--u));
   aspect-ratio: 262 / 102;
@@ -721,7 +721,7 @@
    column, the brand small enough that its seal keeps clear of the keys, and
    the copy's indent shrinks to a step. */
 @media (max-width: 899px) {
-  :root[data-style="sumi"] .masthead .brand a {
+  :root[data-style="sumi"] .masthead .brand :is(a, :where([data-studio-link])) {
     width: 146px;
     margin-left: 0;
   }
@@ -895,7 +895,7 @@
 /* the wordmark is the home page's lettering (above), at the band's size
    (its box the name's, ascender to the g's tail), a little smaller on a
    narrow phone, where the band's keys share its row */
-:root[data-style="sumi"] .running-head .brand a {
+:root[data-style="sumi"] .running-head .brand :is(a, :where([data-studio-link])) {
   --letters: url(/kit/sumi/letter-brand.webp);
   height: 1.15em;
   aspect-ratio: 262 / 102;
@@ -903,7 +903,7 @@
 }
 
 @media (max-width: 400px) {
-  :root[data-style="sumi"] .running-head .brand a {
+  :root[data-style="sumi"] .running-head .brand :is(a, :where([data-studio-link])) {
     height: 1em;
   }
 }
@@ -911,7 +911,7 @@
 /* focused, the lettered name is ringed, as a key is: a text link's focus
    (globals.css) prints the word and underlines it, and here the word is the
    lettering (the link's [href] outranks that rule) */
-:root[data-style="sumi"] :is(.masthead, .running-head) .brand a[href]:focus-visible {
+:root[data-style="sumi"] :is(.masthead, .running-head) .brand :is(a, :where([data-studio-link]))[href]:focus-visible {
   outline: 2px solid var(--signal);
   outline-offset: 2px;
   border-radius: 2px;

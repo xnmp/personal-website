@@ -1,7 +1,7 @@
 import { EditableText } from "@/components/studio/EditableText";
 import { bindField } from "@/lib/studio/bindings";
 import { readContent } from "@/lib/content.server";
-import Link from "next/link";
+import { EditableLink } from "@/components/studio/EditableLink";
 import { statusLabel, type Project } from "@/data/projects";
 import { Led } from "./Led";
 import { Screen } from "./Screen";
@@ -15,7 +15,7 @@ import { Screen } from "./Screen";
 export function ModuleCard({ p }: { p: Project }) {
   const content = readContent(`projects/${p.slug}`);
   return (
-    <Link
+    <EditableLink block
       href={p.href}
       className="module faceplate is-live"
       data-rack-stop
@@ -46,6 +46,6 @@ export function ModuleCard({ p }: { p: Project }) {
           ))}
         </span>
       </div>
-    </Link>
+    </EditableLink>
   );
 }

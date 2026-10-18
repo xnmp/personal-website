@@ -19,8 +19,8 @@ export default function ZsyPlayPage() {
         meta={<ProjectMeta slug="zheng-shang-you" />}
         nav={
           <>
-            <Key href="/p/zheng-shang-you"><Markdown {...bindBlock(content, "the-project")} inline allowLinks={false} /></Key>
-            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key editableLabel href="/p/zheng-shang-you"><Markdown {...bindBlock(content, "the-project")} inline allowLinks={false} /></Key>
+            <Key editableLabel href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
           </>
         }
       />

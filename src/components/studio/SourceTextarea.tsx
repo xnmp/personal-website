@@ -16,7 +16,7 @@ export function SourceTextarea({ value, label, readOnly, inline, onChange, onAct
     control.style.height = "auto";
     control.style.height = `${control.scrollHeight}px`;
   }, [value]);
-  return <textarea ref={input} className="studio-input" aria-label={label}
+  return <textarea ref={input} className="studio-input" aria-label={label} autoFocus
     value={value} readOnly={readOnly} rows={1} spellCheck
     onChange={event => onChange(event.currentTarget.value)}
     onFocus={() => { snapshot.current = value; onActiveChange(true); }}

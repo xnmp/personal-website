@@ -2,7 +2,7 @@ import { EditableText } from "@/components/studio/EditableText";
 import { bindField } from "@/lib/studio/bindings";
 import { readContent } from "@/lib/content.server";
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { EditableLink } from "@/components/studio/EditableLink";
 import { Instruments } from "@/components/instrument/Instruments";
 import { Led } from "@/components/rack/Led";
 import { readSiteBrand } from "@/data/site";
@@ -27,9 +27,9 @@ export function RunningHead({ brand, meta, nav }: Props) {
       </a>
       <div className="brand">
         <Led color="green" />
-        <Link href="/">
+        <EditableLink href="/">
           <EditableText binding={binding}>{title}</EditableText>
-        </Link>
+        </EditableLink>
       </div>
       <div className="meta silk">{meta}</div>
       <Instruments />

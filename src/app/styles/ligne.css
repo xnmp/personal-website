@@ -428,7 +428,7 @@
    clear in the lettering's box: it is read, selected and found as text.
    The box is the lettering's (182 x 73 mock px at the brand's 63), its
    baseline the lettering's (61 px down). */
-:root[data-style="ligne"] :is(.masthead, .running-head) .brand a {
+:root[data-style="ligne"] :is(.masthead, .running-head) .brand :is(a, :where([data-studio-link])) {
   position: relative;
   display: inline-block;
   width: 2.889em;
@@ -439,7 +439,7 @@
   letter-spacing: 0;
 }
 
-:root[data-style="ligne"] :is(.masthead, .running-head) .brand a::before {
+:root[data-style="ligne"] :is(.masthead, .running-head) .brand :is(a, :where([data-studio-link]))::before {
   content: "";
   position: absolute;
   left: 0;

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { EditableLink } from "@/components/studio/EditableLink";
 import type { ReactNode } from "react";
 
 type Common = {
@@ -9,6 +9,7 @@ type Common = {
   legend?: string;
   children: ReactNode;
   className?: string;
+  editableLabel?: boolean;
 };
 
 type Props = Common &
@@ -21,7 +22,7 @@ type Props = Common &
  * A keycap. Semantics stay native (<a> or <button>); the cap art is three
  * authored states swapped in kit.css.
  */
-export function Key({ tone = "neutral", size = "md", legend, children, className, ariaLabel, ...rest }: Props) {
+export function Key({ tone = "neutral", size = "md", legend, children, className, ariaLabel, editableLabel = false, ...rest }: Props) {
   const cls = ["key", className].filter(Boolean).join(" ");
   const data = { "data-tone": tone === "signal" ? "signal" : undefined, "data-size": size === "lg" ? "lg" : undefined };
   const inner = (
@@ -35,7 +36,7 @@ export function Key({ tone = "neutral", size = "md", legend, children, className
   if ("href" in rest && rest.href) {
     if (rest.external || /^(https?:|mailto:)/.test(rest.href)) {
       return (
-        <a
+        <EditableLink editable={editableLabel}
           className={cls}
           href={rest.href}
           aria-label={ariaLabel}
@@ -43,13 +44,13 @@ export function Key({ tone = "neutral", size = "md", legend, children, className
           {...data}
         >
           {inner}
-        </a>
+        </EditableLink>
       );
     }
     return (
-      <Link className={cls} href={rest.href} aria-label={ariaLabel} aria-current={rest.current ? "page" : undefined} {...data}>
+      <EditableLink editable={editableLabel} className={cls} href={rest.href} aria-label={ariaLabel} aria-current={rest.current ? "page" : undefined} {...data}>
         {inner}
-      </Link>
+      </EditableLink>
     );
   }
   return (

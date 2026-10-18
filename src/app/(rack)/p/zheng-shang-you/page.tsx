@@ -20,8 +20,8 @@ export default function ZsyPage() {
         meta={<ProjectMeta slug="zheng-shang-you" />}
         nav={
           <>
-            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
-            <Key href="/p/zheng-shang-you/play"><Markdown {...bindBlock(content, "play-it")} inline allowLinks={false} /></Key>
+            <Key editableLabel href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key editableLabel href="/p/zheng-shang-you/play"><Markdown {...bindBlock(content, "play-it")} inline allowLinks={false} /></Key>
           </>
         }
       />
@@ -33,7 +33,7 @@ export default function ZsyPage() {
             <h1><Markdown {...bindBlock(content, "headline")} inline /></h1>
             <Markdown {...bindBlock(content, "zheng-shang-you-is-a-4-player-climbing-game-shed-your-hand")} />
             <div className="launch-keys">
-              <Key href="/p/zheng-shang-you/play" tone="signal" size="lg"><Markdown {...bindBlock(content, "play-the-strategist")} inline allowLinks={false} /></Key>
+              <Key editableLabel href="/p/zheng-shang-you/play" tone="signal" size="lg"><Markdown {...bindBlock(content, "play-the-strategist")} inline allowLinks={false} /></Key>
             </div>
           </div>
           <div>

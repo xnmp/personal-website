@@ -19,7 +19,7 @@ export default function BwaiPage() {
         meta={<ProjectMeta slug="bwai" />}
         nav={
           <>
-            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key editableLabel href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
           </>
         }
       />

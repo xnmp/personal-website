@@ -18,7 +18,7 @@ export default function AshenCathedralPage() {
         meta={<ProjectMeta slug="ashen-cathedral" />}
         nav={
           <>
-            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key editableLabel href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
           </>
         }
       />
