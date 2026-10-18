@@ -59,15 +59,12 @@ export function MarginIndex() {
                           </EditableText>
                         </Link>
                       </h3>
-                      <p>
-                        <EditableText
-                          binding={bindField(source, [
-                            p.summary === undefined ? "heading" : "summary",
-                          ])}
-                        >
-                          {p.summary ?? p.heading}
-                        </EditableText>
-                      </p>
+                      <Markdown
+                        binding={bindField(source, [
+                          p.summary === undefined ? "heading" : "summary",
+                        ])}
+                        text={p.summary ?? p.heading}
+                      />
                       <p className="margin-stack">
                         {p.tags.map((tag, index) => (
                           <Fragment key={index}>

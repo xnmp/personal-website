@@ -94,7 +94,7 @@ export function ShotGallery({ shots, phoneMedia }: { shots: Shot[]; phoneMedia: 
               <span className="plate-figure-label">
                 Fig. {i + 1} · <EditableText binding={s.labelBinding}>{s.label}</EditableText>
               </span>
-              <EditableText binding={s.noteBinding} shortcuts>{note(s)}</EditableText>{" "}
+              <EditableText binding={s.noteBinding} shortcuts>{s.note}</EditableText>{" "}
               {/* a second pointer target for the shot's own link; one tab stop is enough */}
               <a href={files(s).full} onClick={open(s)} tabIndex={-1} className="shot-full text-action">
                 Full window
@@ -128,7 +128,7 @@ export function ShotGallery({ shots, phoneMedia }: { shots: Shot[]; phoneMedia: 
             </Screen>
             <div className="lightbox-foot note">
               <span>
-                <b className="silk"><EditableText binding={shown.labelBinding}>{shown.label}</EditableText></b> &nbsp;·&nbsp; <EditableText binding={shown.noteBinding} shortcuts>{note(shown)}</EditableText>
+                <b className="silk"><EditableText binding={shown.labelBinding}>{shown.label}</EditableText></b> &nbsp;·&nbsp; <EditableText binding={shown.noteBinding} shortcuts>{shown.note}</EditableText>
                 <span className="lightbox-pan">Drag to pan.</span>
               </span>
               <Key onClick={close} legend="esc" className="lightbox-close">

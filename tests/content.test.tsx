@@ -7,6 +7,9 @@ import { Markdown } from "../src/components/notebook/Markdown";
 import { Feature } from "../src/components/notebook/Features";
 import { OpenQuestion } from "../src/components/notebook/OpenQuestion";
 import { Plate } from "../src/components/notebook/Plate";
+import { EditableText } from "../src/components/studio/EditableText";
+import { Key } from "../src/components/rack/Key";
+import { MarkdownRenderer } from "../src/components/notebook/MarkdownRenderer";
 
 describe("authored content", () => {
   test("reads YAML metadata and preserves multiline Markdown blocks", () => {
@@ -73,9 +76,10 @@ describe("Markdown output", () => {
 
   test("supports paragraphs, headings, lists, links and fenced code", () => {
     const output = html("## Notes\n\nFirst **paragraph**.\n\nSecond paragraph.\n\n- One\n- Two\n\n[Project](/p/scrivo)\n\n```rust\nlet x = 1;\n```");
-    expect(output).toContain("<h2>Notes</h2>");
+    expect(output).toContain('<h2 class="md-heading">Notes</h2>');
     expect(output).toContain("<p>Second paragraph.</p>");
     expect(output).toContain("<li>Two</li>");
+    expect(output).toContain('<ul class="md-list">');
     expect(output).toContain('href="/p/scrivo"');
     expect(output).toContain("let x = 1;");
   });
@@ -87,6 +91,37 @@ describe("Markdown output", () => {
     expect(output).toContain("<code>foo/<wbr/>bar</code>");
     expect(output).toContain('class="text-action"');
     expect(output).not.toMatch(/:kbd|:os|:break|:span|:link/);
+  });
+
+  test("public text fields render Markdown without bindings and keep code literal", () => {
+    const output = renderToStaticMarkup(<><h1><EditableText>A **bold** title</EditableText></h1><code><EditableText format="plain">{"**/*.tsx _literal_"}</EditableText></code></>);
+    expect(output).toContain("<h1>A <strong>bold</strong> title</h1>");
+    expect(output).toContain("<code>**/*.tsx _literal_</code>");
+    expect(renderToStaticMarkup(<EditableText shortcuts>{"Press **Ctrl+P**"}</EditableText>)).toContain("<strong>Ctrl+P</strong>");
+  });
+
+  test("inline labels cannot introduce block markup or nested links", () => {
+    const source = "## **Heading**\n\n- [About](/about)\n- https://example.com\n\n:link[More]{href=/about}";
+    const output = renderToStaticMarkup(<a href="/original"><EditableText>{source}</EditableText></a>);
+    expect(output).toContain("<strong>Heading</strong>");
+    expect(output).toContain("About");
+    expect(output.match(/<a\b/g)).toHaveLength(1);
+    expect(output).not.toMatch(/<(?:h[1-6]|p|ul|ol|li)\b/);
+    const key = renderToStaticMarkup(<Key href="/"><Markdown text={source} inline allowLinks={false} /></Key>);
+    expect(key.match(/<a\b/g)).toHaveLength(1);
+    expect(key).toContain("<strong>Heading</strong>");
+  });
+
+  test("Mac shortcuts adapt formatted prose, preserving source code and URLs", () => {
+    const text = "_Ctrl+P_ __Ctrl+Shift+F5__ **Alt+I** `Ctrl+P` [Ctrl+P](/Ctrl+P) :code[Ctrl+P]";
+    const output = renderToStaticMarkup(<MarkdownRenderer text={text} inline shortcutOS="mac" />);
+    expect(output).toContain("<em>⌘P</em>");
+    expect(output).toContain("<strong>⇧⌘F5</strong>");
+    expect(output).toContain("<strong>⌥I</strong>");
+    expect(output).toContain("<code>Ctrl+P</code>");
+    expect(output.match(/<code>Ctrl\+P<\/code>/g)).toHaveLength(2);
+    expect(output).toContain('href="/Ctrl+P">⌘P</a>');
+    expect(renderToStaticMarkup(<MarkdownRenderer text={text} inline shortcutOS="linux" />)).toContain("<em>Ctrl+P</em>");
   });
 
   test("ordinary colon syntax remains text and raw HTML or unsafe URLs cannot execute", () => {

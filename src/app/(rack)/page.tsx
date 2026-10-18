@@ -45,8 +45,8 @@ export default function Home() {
               <p className="launchpad-pitch"><CopySky /><Markdown {...bindBlock(content, "a-keyboard-first-file-manager")} inline /></p>
               <p className="launchpad-call"><CopySky /><Markdown {...bindBlock(content, "alpha-testers-wanted")} inline /></p>
               <div className="keys launchpad-keys">
-                <Key href={`${flagship.href}#alpha`} tone="signal" size="lg" ariaLabel={`Join the ${flagship.title} alpha`}><Markdown {...bindBlock(content, "join-the-alpha-span-class-key-arrow")} inline /></Key>
-                <Key href={`${flagship.href}#live`} size="lg"><Markdown {...bindBlock(content, "try-it-live")} inline /></Key>
+                <Key href={`${flagship.href}#alpha`} tone="signal" size="lg" ariaLabel={`Join the ${flagship.title} alpha`}><Markdown {...bindBlock(content, "join-the-alpha-span-class-key-arrow")} inline allowLinks={false} /></Key>
+                <Key href={`${flagship.href}#live`} size="lg"><Markdown {...bindBlock(content, "try-it-live")} inline allowLinks={false} /></Key>
               </div>
             </div>
             <a href={flagship.href} className="launchpad-window" data-rack-stop aria-label={`${flagship.title} details`}>
