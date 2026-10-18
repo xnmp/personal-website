@@ -11,7 +11,7 @@ export function Instruments() {
   const path = usePathname();
   return (
     <span className="instruments">
-      <Key href="/projects" className="margin-projects" current={path === "/projects"}>projects</Key>
+      <Key href="/projects" className="margin-projects" ariaLabel="projects" current={path === "/projects"}>projects</Key>
       <Key href="/" className="about-key" current={path === "/" || path === "/about"} ariaLabel="About me">
         <span className="about-word">about</span>
         {/* on the narrowest phones, a head and shoulders: the row has no room for the word */}

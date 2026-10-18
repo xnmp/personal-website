@@ -1,3 +1,4 @@
+import { readAbout } from "../src/data/about";
 import { expect, test } from "@playwright/test";
 
 test.use({ channel: "chrome", launchOptions: { args: ["--disable-dev-shm-usage", "--disable-gpu", "--renderer-process-limit=2"] } });
@@ -5,7 +6,7 @@ test.use({ channel: "chrome", launchOptions: { args: ["--disable-dev-shm-usage",
 test("About is the landing page, with a navigable project directory and working return links", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator(".about-page")).toBeVisible();
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Hi, I’m Chong");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(readAbout().headline);
   await expect(page.locator(".margin-index")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "About me", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /^https:\/\/chong\.md\/?$/);
@@ -18,7 +19,7 @@ test("About is the landing page, with a navigable project directory and working 
   await expect(page).toHaveURL(/\/p\/scrivo$/);
   await page.getByRole("link", { name: "← all projects", exact: true }).click();
   await expect(page).toHaveURL(/\/projects$/);
-  await page.locator('.masthead-brand .brand a[href="/"]').click();
+  await page.locator('.running-head .brand a[href="/"]').click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.locator(".about-page")).toBeVisible();
   await page.goto("/about");
