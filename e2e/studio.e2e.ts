@@ -22,10 +22,10 @@ test("renders authored Markdown after preview, save and reload on the actual sit
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
     const intro = page.getByRole("textbox", { name: "intro", exact: true });
     const originalFirst = await intro.inputValue();
-    const sibling = await page.getByRole("textbox", { name: "intro · part 2", exact: true }).inputValue();
+    const sibling = await page.getByRole("textbox", { name: "section 1", exact: true }).inputValue();
     await intro.fill(markdown);
     await expect(intro).toHaveValue(markdown);
-    await expect(page.getByRole("textbox", { name: "intro · part 2", exact: true })).toHaveValue(sibling);
+    await expect(page.getByRole("textbox", { name: "section 1", exact: true })).toHaveValue(sibling);
     await expect(page.locator("[contenteditable]")).toHaveCount(0);
     await page.getByRole("textbox", { name: "headline", exact: true }).fill(headline);
     await page.getByRole("button", { name: "Editing on", exact: true }).click();
@@ -43,8 +43,8 @@ test("renders authored Markdown after preview, save and reload on the actual sit
     await expect(page.locator("h1 strong")).toHaveText("working");
     await expect(page.getByRole("heading", { name: "Field notes", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue("## Field notes");
-    await expect(page.getByRole("textbox", { name: "intro · part 3", exact: true })).toHaveValue("- Keep the source\n- Publish the result");
+    await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue(markdown);
+    await expect(page.locator('[data-studio-slot="block:intro"] textarea')).toHaveCount(1);
 
     await page.goto("/projects");
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
@@ -216,7 +216,7 @@ test("native textarea pastes, deletes blank lines, undoes and saves exact source
     await page.keyboard.press("Control+e");
     const intro = page.getByRole("textbox", { name: "intro", exact: true });
     const first = await intro.inputValue();
-    const sibling = await page.getByRole("textbox", { name: "intro · part 2", exact: true }).inputValue();
+    const sibling = await page.getByRole("textbox", { name: "section 1", exact: true }).inputValue();
     await expect(intro).toHaveJSProperty("tagName", "TEXTAREA");
     await expect(page.locator("[contenteditable]")).toHaveCount(0);
     const pasted = "First line\n\n\nLast line 🌱";
@@ -239,7 +239,7 @@ test("native textarea pastes, deletes blank lines, undoes and saves exact source
     await page.getByRole("button", { name: "Save locally", exact: true }).click();
     await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
     expect(await readFile("content/about.md", "utf8")).toBe(original.replace(first, final));
-    await expect(page.getByRole("textbox", { name: "intro · part 2", exact: true })).toHaveValue(sibling);
+    await expect(page.getByRole("textbox", { name: "section 1", exact: true })).toHaveValue(sibling);
     await page.reload();
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
     await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue(final);
@@ -258,7 +258,7 @@ test("clearing a field keeps the next field stable and saves only those changes"
     await page.goto("/about");
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
     const first = page.getByRole("textbox", { name: "intro", exact: true });
-    const second = page.getByRole("textbox", { name: "intro · part 2", exact: true });
+    const second = page.getByRole("textbox", { name: "section 1", exact: true });
     const originalFirst = await first.inputValue();
     const originalSecond = await second.inputValue();
     await first.focus();
@@ -276,7 +276,7 @@ test("clearing a field keeps the next field stable and saves only those changes"
     await expect(page.getByRole("textbox", { name: "sections · 0 · kicker", exact: true })).toHaveValue("How I work");
     await page.getByRole("button", { name: "Save locally", exact: true }).click();
     await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    const clearedSource = original.replace(originalFirst + "\n\n", "").replace(originalSecond, originalSecond + " Edited here.");
+    const clearedSource = original.replace(originalFirst, "").replace(originalSecond, originalSecond + " Edited here.");
     expect(await readFile("content/about.md", "utf8")).toBe(clearedSource);
     await second.focus();
     await page.keyboard.press("Control+End");
