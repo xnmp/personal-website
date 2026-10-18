@@ -20,7 +20,7 @@ export default function ZsyPage() {
         meta={<ProjectMeta slug="zheng-shang-you" />}
         nav={
           <>
-            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
             <Key href="/p/zheng-shang-you/play"><Markdown {...bindBlock(content, "play-it")} inline allowLinks={false} /></Key>
           </>
         }

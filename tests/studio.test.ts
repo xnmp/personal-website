@@ -9,7 +9,7 @@ import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { contentBlock, parseContent } from "../src/lib/content";
-import { editDocument, validateDocument } from "../src/lib/studio/document";
+import { editDocument, previewRoute, validateDocument } from "../src/lib/studio/document";
 import {
   authorizeStudio,
   studioEnabled,
@@ -27,6 +27,14 @@ import {
 } from "../src/lib/studio/publish.server";
 
 const roots: string[] = [];
+
+test("editor document routes follow the landing page and project directory", () => {
+  expect(previewRoute("about")).toBe("/");
+  expect(previewRoute("home")).toBe("/projects");
+  expect(previewRoute("projects/tauri-explorer")).toBe("/p/tauri-explorer");
+  expect(previewRoute("zheng-shang-you-play")).toBe("/p/zheng-shang-you/play");
+  expect(previewRoute("tableau-frog")).toBe("/tableau-frog");
+});
 const fixture = async () => {
   const root = await mkdtemp(join(tmpdir(), "studio-test-"));
   roots.push(root);

@@ -10,7 +10,7 @@ const LAST = project(FEATURED_SLUGS[FEATURED_SLUGS.length - 1]);
 async function open(page: Page, style: string) {
   await page.emulateMedia({ reducedMotion: "reduce" }); // the sheets' drop would move the boxes
   await page.addInitScript((s) => localStorage.setItem("nb-style", s), style);
-  await page.goto("/");
+  await page.goto("/projects");
   await page.evaluate(() => document.fonts.ready);
 }
 

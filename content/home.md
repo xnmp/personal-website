@@ -53,7 +53,7 @@ Tools I use every day, :span[and agents for the games I grew up on.]{class="soft
 A file manager, a markdown editor, a mood diary and the bar at the top of my screen. Next to them are agents learning Brood War, Magic and our family card game. Each sheet is one project, with the numbers I’ve measured and **the parts that didn’t work**.
 
 <!-- block: linkmore-about-me-href-about-class-text-action -->
-:link[More about me]{href="/about" class="text-action"}
+:link[More about me]{href="/" class="text-action"}
 
 <!-- block: spankbdj-kbdk-projects-spankbd-open-spankbd-search-spankbd -->
 :span[:kbd[j] :kbd[k] projects  · ] :span[:kbd[↵] open  · ] :span[:kbd[/] search  · ] :span[:kbd[t] theme ]

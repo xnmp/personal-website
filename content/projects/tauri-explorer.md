@@ -11,6 +11,7 @@ preview:
 heading: A file manager with the soul of an IDE.
 href: /p/tauri-explorer
 repo: 'https://github.com/xnmp/tauri-explorer'
+website: 'https://tauri-explorer.vercel.app'
 tags:
   - rust
   - tauri v2
@@ -138,6 +139,9 @@ proof:
 
 <!-- block: github -->
 GitHub ↗
+
+<!-- block: website -->
+Website ↗
 
 <!-- block: spantauri-explorer-version-spanalpha-testers-wanted -->
 :span[Tauri Explorer {{version}}]:span[alpha testers wanted]

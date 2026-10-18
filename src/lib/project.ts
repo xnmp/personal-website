@@ -22,6 +22,8 @@ export interface ProjectEntry {
   href: string; // detail page
   /** public source only; private repos are deliberately left unlinked */
   repo?: string;
+  /** The project's public website, when it has one. */
+  website?: string;
   tags: string[];
   /** one-line description used by the command index */
   index: string;

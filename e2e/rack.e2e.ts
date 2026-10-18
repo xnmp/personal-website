@@ -9,7 +9,7 @@ async function hydrated(page: Page) {
 }
 
 test("every project is mounted on the home rack and opens its page", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/projects");
   for (const p of projects) {
     await expect(page.locator(`a[href="${p.href}"]:visible`).first()).toBeVisible();
   }
@@ -27,7 +27,7 @@ test("every detail page renders without a server error", async ({ request }) => 
 
 test("j moves focus into the rack and Enter opens the focused module", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard navigation is a desktop affordance");
-  await page.goto("/");
+  await page.goto("/projects");
   await hydrated(page);
   await page.keyboard.press("j");
   await page.keyboard.press("j");
@@ -39,7 +39,7 @@ test("j moves focus into the rack and Enter opens the focused module", async ({ 
 
 test("/ opens the index, filtering narrows it, Enter navigates", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard shortcut");
-  await page.goto("/");
+  await page.goto("/projects");
   await hydrated(page);
   await page.keyboard.press("/");
   const input = page.getByRole("combobox", { name: "Search projects" });
@@ -52,7 +52,7 @@ test("/ opens the index, filtering narrows it, Enter navigates", async ({ page, 
 
 test("the index ranks names first and tells assistive tech which result is selected", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard shortcut");
-  await page.goto("/");
+  await page.goto("/projects");
   await hydrated(page);
   await page.keyboard.press("/");
   const input = page.getByRole("combobox", { name: "Search projects" });
@@ -94,7 +94,7 @@ test("the theme menu applies a chosen palette and remembers it", async ({ page }
 
 test("closing the index hands focus back to where it was", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard only");
-  await page.goto("/");
+  await page.goto("/projects");
   await expect(page.locator(".rice-name")).not.toHaveText(/^(rice)?$/);
   await page.keyboard.press("j");
   const focused = await page.evaluate(() => document.activeElement?.getAttribute("href"));
@@ -107,7 +107,7 @@ test("closing the index hands focus back to where it was", async ({ page, isMobi
 
 test("Tab and Shift+Tab never reach the page behind the open index", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard only");
-  await page.goto("/");
+  await page.goto("/projects");
   await hydrated(page);
   await page.keyboard.press("/");
   const index = page.getByRole("dialog", { name: "Index of projects" });
@@ -130,7 +130,7 @@ test("Tab and Shift+Tab never reach the page behind the open index", async ({ pa
 // follows spans lines and contains an HTML entity (`</em> gave …&rsquo;…` comes
 // out as `</em>gave`). Fixed upstream in 16.4; until then, catch it in the HTML.
 test("no word is glued to the end of an inline element", async ({ request }) => {
-  const routes = ["/", "/about", ...projects.map((p) => p.href), "/p/zheng-shang-you/play", "/tableau-frog"];
+  const routes = ["/", "/projects", "/about", ...projects.map((p) => p.href), "/p/zheng-shang-you/play", "/tableau-frog"];
   for (const route of routes) {
     const html = await (await request.get(route)).text();
     const body = html.slice(html.indexOf("<body"));
@@ -144,7 +144,7 @@ test("no word is glued to the end of an inline element", async ({ request }) => 
 // `,so a file`; `crates` then `<span>(` renders `crates(`). Checked in the
 // rendered prose, with code standing in as a word.
 test("prose keeps its spaces around inline elements", async ({ page }) => {
-  const routes = ["/", "/about", ...projects.map((p) => p.href)];
+  const routes = ["/", "/projects", "/about", ...projects.map((p) => p.href)];
   for (const route of routes) {
     await page.goto(route);
     const glued = await page.evaluate(() => {
@@ -217,27 +217,27 @@ test.describe("the Eskiv heatmap's timeline", () => {
 });
 
 test("the about page is linked from home and prints its facts", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/projects");
   await page.getByRole("link", { name: "About me" }).click();
-  await expect(page).toHaveURL(/\/about$/);
+  await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Chong");
   const facts = page.getByRole("region", { name: "Facts" });
   await expect(facts).toContainText("Sydney");
   await expect(facts.getByRole("link", { name: "github/xnmp" })).toHaveAttribute("href", "https://github.com/xnmp");
   // the way back is a tile on the masthead
   await page.getByRole("link", { name: "← all projects" }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/projects$/);
 });
 
 test("every page's masthead has an about key beside index, marked current on the about page", async ({ page }) => {
-  for (const route of ["/", "/p/tauri-explorer", "/p/ashen-cathedral"]) {
+  for (const route of ["/projects", "/p/tauri-explorer", "/p/ashen-cathedral"]) {
     await page.goto(route);
     const keys = page.locator(":is(.running-head, .masthead) .instruments");
     await expect(keys.getByRole("link", { name: "About me" })).not.toHaveAttribute("aria-current", "page");
     await expect(keys.getByRole("button", { name: "Open the index of projects" })).toBeVisible();
   }
   await page.locator(".instruments").getByRole("link", { name: "About me" }).click();
-  await expect(page).toHaveURL(/\/about$/);
+  await expect(page).toHaveURL(/\/$/);
   await expect(page.locator(".instruments").getByRole("link", { name: "About me" })).toHaveAttribute("aria-current", "page");
 });
 
@@ -245,7 +245,7 @@ test("every page's masthead has an about key beside index, marked current on the
 // opaque fill on every element, over the scene's art, so each page asks it
 // to leave the page alone
 test("every page opts out of Dark Reader", async ({ page }) => {
-  for (const route of ["/", "/about", ...projects.map((p) => p.href)]) {
+  for (const route of ["/", "/projects", "/about", ...projects.map((p) => p.href)]) {
     await page.goto(route);
     await expect(page.locator('meta[name="darkreader-lock"]'), route).toHaveCount(1);
   }

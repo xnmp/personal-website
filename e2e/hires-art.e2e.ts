@@ -64,7 +64,7 @@ const unrenderedTwins: Readonly<Record<string, string>> = {
 
 const desktop = { width: 1440, height: 900 };
 function casesFor(kit: string) {
-  const cases = [{ path: "/", viewport: kit === "paper" ? { width: 1440, height: 810 } : desktop }];
+  const cases = [{ path: "/projects", viewport: kit === "paper" ? { width: 1440, height: 810 } : desktop }];
   // Separate project/launch scene overrides; no unique twins on /about.
   if (["paper", "solarpunk", "cyanotype"].includes(kit)) {
     cases.push(...["/p/ashen-cathedral", "/p/tauri-explorer"].map((path) => ({ path, viewport: desktop })));
@@ -74,7 +74,7 @@ function casesFor(kit: string) {
   // chip and Sumi's chip, which the home page never renders.
   if (["garden", "atlas", "sumi"].includes(kit)) cases.push({ path: "/p/tauri-explorer", viewport: desktop });
   if (["paper", "solarpunk", "ligne"].includes(kit)) {
-    cases.push({ path: "/", viewport: { width: 390, height: 900 } });
+    cases.push({ path: "/projects", viewport: { width: 390, height: 900 } });
   }
   // Paper's 16:9 home viewport also renders the aspect-gated pine/peak tips.
   return cases;
@@ -190,20 +190,20 @@ async function capture(
     const keys = page.locator(".launchpad-keys, .launch-keys");
     const sheets = page.locator("a.module.faceplate.is-live");
     const controls = [
-      { name: "key", control: keys.locator('a.key:not([data-tone="signal"])').first(), required: path === "/" || path === "/p/tauri-explorer" },
-      { name: "signal", control: keys.locator('a.key[data-tone="signal"]').first(), required: path === "/" || path === "/p/tauri-explorer" },
+      { name: "key", control: keys.locator('a.key:not([data-tone="signal"])').first(), required: path === "/projects" || path === "/p/tauri-explorer" },
+      { name: "signal", control: keys.locator('a.key[data-tone="signal"]').first(), required: path === "/projects" || path === "/p/tauri-explorer" },
       ...(id === "cyanotype"
         ? ["4n + 1", "4n + 2", "4n + 3", "4n"].map((nth, index) => ({
           name: `sheet-${"abcd"[index]}`,
           // Match actual sibling positions, not the index among live cards.
           control: sheets.and(page.locator(`:nth-child(${nth})`)).first(),
-          required: path === "/",
+          required: path === "/projects",
         }))
-        : [{ name: "sheet", control: sheets.first(), required: path === "/" }]),
-      ...(id !== "cyanotype" && path === "/"
+        : [{ name: "sheet", control: sheets.first(), required: path === "/projects" }]),
+      ...(id !== "cyanotype" && path === "/projects"
         ? [{ name: "card", control: page.locator(".showcase-row a.card.faceplate.is-live").first(), required: true }]
         : []),
-      ...(id === "cyanotype" && path === "/"
+      ...(id === "cyanotype" && path === "/projects"
         ? ["4n + 1", "4n + 2", "4n + 3", "4n"].map((nth, index) => ({
           name: `card-${"abcd"[index]}`,
           // Showcase card art follows the wrapping li, unlike module plates.

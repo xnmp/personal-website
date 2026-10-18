@@ -20,7 +20,7 @@ export default function ZsyPlayPage() {
         nav={
           <>
             <Key href="/p/zheng-shang-you"><Markdown {...bindBlock(content, "the-project")} inline allowLinks={false} /></Key>
-            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
           </>
         }
       />

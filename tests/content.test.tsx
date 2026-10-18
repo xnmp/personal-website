@@ -71,6 +71,15 @@ describe("authored content", () => {
   });
 });
 
+test("project website URLs are optional and must be valid HTTPS links", () => {
+  const document = parseContent(readFileSync("content/projects/tauri-explorer.md", "utf8"));
+  expect(projectEntry(document).website).toBe("https://tauri-explorer.vercel.app");
+  expect(projectEntry({ ...document, data: { ...document.data, website: undefined } }).website).toBeUndefined();
+  for (const website of [null, 42, "", " ", "/about", "https://", "https:example.com", "https:/example.com", "not a URL", "javascript:alert(1)", "http://example.com", "https://user:password@example.com"]) {
+    expect(() => projectEntry({ ...document, data: { ...document.data, website } })).toThrow("website");
+  }
+});
+
 describe("Markdown output", () => {
   const html = (text: string, inline = false) => renderToStaticMarkup(<Markdown text={text} inline={inline} />);
 
