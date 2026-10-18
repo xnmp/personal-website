@@ -23,7 +23,7 @@ export default function Page() {
         meta={<ProjectMeta slug={SLUG} />}
         nav={
           <>
-            <Key href="/"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
+            <Key href="/projects"><Markdown {...bindBlock(content, "all-projects")} inline allowLinks={false} /></Key>
             <Key href={contentField<string>(content, "repo")}><Markdown {...bindBlock(content, "github")} inline allowLinks={false} /></Key>
           </>
         }
