@@ -51,5 +51,22 @@
   --overlay: color-mix(in srgb, var(--paper) 65%, transparent);
 }
 
+:root[data-rice="solarized-light"] {
+  --paper: #fdf6e3;
+  --paper-warm: #eee8d5;
+  --ink: #073642;
+  --ink-soft: #576c73;
+  --rule: #93a1a1;
+  --rust: #c52d2a;
+  --amber: #846400;
+  --cyan: #1e746d;
+  --olive: #606f00;
+  --rice-accent: #1e6da5;
+  --code-bg: rgba(7, 54, 66, 0.05);
+  --code-border: color-mix(in srgb, var(--ink) 14%, transparent);
+  --shadow: rgba(0, 43, 54, 0.18);
+  --overlay: color-mix(in srgb, var(--paper) 65%, transparent);
+}
+
 :root[data-rice-mode="light"] { color-scheme: light; }
 :root[data-rice-mode="dark"] { color-scheme: dark; }

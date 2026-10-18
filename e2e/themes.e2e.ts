@@ -42,7 +42,7 @@ test("the theme menu supports keyboard selection and cancellation", async ({ pag
   await expect(trigger(page)).toBeFocused();
 });
 
-for (const rice of ["ayu-mirage", "catppuccin-latte", "gruvbox"] as const) {
+for (const rice of ["ayu-mirage", "catppuccin-latte", "gruvbox", "solarized-light"] as const) {
   test(`${rice} is selectable, persists and displays the matching real product images`, async ({ page }) => {
     await page.goto("/p/tauri-explorer");
     await trigger(page).click();

@@ -36,9 +36,33 @@
 }
 /* Keep the badge inside scrollable code blocks, where overflow is clipped. */
 pre[data-studio-editable] { --studio-edit-top: 4px; --studio-edit-right: 4px; }
-.studio-text { display: inline; }
+.studio-text { display: inline; user-select: text; -webkit-user-select: text; }
+.studio-text::selection, .studio-text *::selection { background: var(--signal); color: var(--paper); }
 .studio-text[contenteditable], .studio-region[contenteditable] { outline: none; }
-[data-studio-active] { cursor: text; outline: 1px solid var(--signal); outline-offset: 4px; border-radius: 3px; }
+[data-studio-active] {
+  position: relative;
+  cursor: text;
+  outline: 3px solid var(--signal);
+  outline-offset: 4px;
+  border-radius: 3px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  caret-color: var(--signal);
+}
+[data-studio-active]::after {
+  content: "editing";
+  position: absolute;
+  right: -7px;
+  top: -24px;
+  padding: 1px 5px;
+  border: 1px solid var(--signal);
+  border-radius: 3px;
+  background: var(--paper);
+  color: var(--signal);
+  font: 10px/1.4 var(--font-mono);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
 .studio-empty-root:not([data-studio-editable]):not([data-studio-active]) { display: none; }
 .studio-empty-root .studio-text:empty::before { content: "Empty text"; color: var(--print-soft); font: 12px var(--font-mono); }
 .studio-edit-status { display: inline-flex; align-items: center; gap: 7px; }

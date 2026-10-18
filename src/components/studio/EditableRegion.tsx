@@ -33,6 +33,11 @@ function EditableScalar({ binding, children, shortcuts }: { binding: ContentBind
     data-studio-editable={canEdit && !snapshot || undefined} data-studio-active={canEdit && snapshot ? true : undefined}
     role={canEdit && !snapshot ? "button" : undefined}
     aria-label={canEdit && !snapshot ? `Edit ${binding.label}` : undefined} tabIndex={canEdit && !snapshot ? 0 : undefined}
+    onPointerDownCapture={(event) => {
+      if (!canEdit || snapshot || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (!(event.target instanceof Node) || !element.current?.contains(event.target)) event.preventDefault();
+      setSnapshot({ value, content });
+    }}
     onClickCapture={(event) => {
       if (!canEdit || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();

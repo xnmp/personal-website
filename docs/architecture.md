@@ -69,13 +69,13 @@ linked.
   between light and dark modes. Screens take rice colours in both finishes.
   `lib/rice.ts` owns palette IDs and their light/dark mode. The head script sets
   both `data-rice` and `data-rice-mode` before paint; menu selection and `t` use
-  the same registry. Paper and Catppuccin Latte are light; the other palettes
-  are dark. Ayu Mirage, Catppuccin Latte and Gruvbox come from upstream colour
+  the same registry. Paper, Catppuccin Latte and Solarized Light are light; the other palettes
+  are dark. Ayu Mirage, Catppuccin Latte, Gruvbox and Solarized Light come from upstream colour
   definitions in `scripts/theme-palettes.mjs`; regenerate `palettes.css` with
   `bun scripts/build-palettes.mjs`, independently of local dotfiles. Secondary
   text colours are adjusted to meet 4.5:1 contrast on their page surfaces.
   Product captures and the live demo use the nearest theme actually supported
-  by the app (`launch/appTheme.ts`); Latte uses its light Solarized theme.
+  by the app (`launch/appTheme.ts`); Latte and Solarized Light use its light Solarized theme.
 
 ## Art directions (styles)
 
