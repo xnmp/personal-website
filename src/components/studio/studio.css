@@ -36,18 +36,23 @@
 }
 /* Keep the badge inside scrollable code blocks, where overflow is clipped. */
 pre[data-studio-editable] { --studio-edit-top: 4px; --studio-edit-right: 4px; }
-.studio-text { display: inline; user-select: text; -webkit-user-select: text; }
-.studio-text::selection, .studio-text *::selection { background: var(--signal); color: var(--paper); }
-.studio-text[contenteditable], .studio-region[contenteditable] { outline: none; }
+.studio-input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%; min-width: 0; max-width: 100%; min-height: 1lh;
+  margin: 0; padding: 0; border: 0; border-radius: 3px;
+  background: transparent; color: inherit;
+  font: inherit; line-height: inherit; letter-spacing: inherit; text-align: inherit;
+  text-wrap: wrap; white-space: pre-wrap; overflow-wrap: break-word;
+  field-sizing: content; resize: none;
+  outline: none; caret-color: var(--signal);
+}
+.studio-input::selection { background: var(--signal); color: var(--paper); }
+.studio-region:has(> .studio-input) { display: inline-block; max-width: 100%; vertical-align: middle; }
+.studio-region > .studio-input { width: auto; }
+.studio-list-source { list-style: none; }
 [data-studio-active] {
-  position: relative;
-  cursor: text;
-  outline: 3px solid var(--signal);
-  outline-offset: 4px;
-  border-radius: 3px;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  caret-color: var(--signal);
+  position: relative; outline: 3px solid var(--signal); outline-offset: 4px; border-radius: 3px;
 }
 [data-studio-active]::after {
   content: "editing";
@@ -63,8 +68,6 @@ pre[data-studio-editable] { --studio-edit-top: 4px; --studio-edit-right: 4px; }
   letter-spacing: 0.04em;
   pointer-events: none;
 }
-.studio-empty-root:not([data-studio-editable]):not([data-studio-active]) { display: none; }
-.studio-empty-root .studio-text:empty::before { content: "Empty text"; color: var(--print-soft); font: 12px var(--font-mono); }
 .studio-edit-status { display: inline-flex; align-items: center; gap: 7px; }
 .studio-edit-status-dot { width: 6px; height: 6px; border: 1px solid currentColor; border-radius: 50%; }
 .studio-edit-status[aria-pressed="true"] .studio-edit-status-dot { background: var(--signal); border-color: var(--signal); }

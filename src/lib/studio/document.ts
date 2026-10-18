@@ -102,7 +102,9 @@ export function editDocument(
         throw new Error("Content cannot contain NUL characters");
       if (slot.kind === "markdown" && /^<!-- block:/m.test(value))
         throw new Error("Block markers cannot be inserted inside a block");
-      let replacement = value;
+      // Slots expose trimmed Markdown; boundary whitespace belongs to the file.
+      // Re-inserting it into an already padded slot would accumulate on saves.
+      let replacement = slot.kind === "markdown" ? value.trim() : value;
       if (slot.kind === "text") replacement = JSON.stringify(value);
       if (slot.kind === "number") {
         const number = Number(value);

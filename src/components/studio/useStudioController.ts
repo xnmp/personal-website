@@ -206,6 +206,7 @@ export function useStudioController(token: string) {
       }
     }
     replaceDrafts({});
+    setEditing(false);
     setError("");
     setNotice("");
     router.refresh();
