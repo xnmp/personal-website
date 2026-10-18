@@ -4,6 +4,9 @@ All authored page copy is in `content/`. The Markdown files are the source of
 truth. They are read during the Next.js build, so a deployment includes your
 edits without a CMS, database or browser fetch.
 
+For project-page copy, follow [the voice notes](content-voice.md). Keep it a
+light starting draft for the owner to edit, grounded in their own experiences.
+
 ## Find the file
 
 | File | Controls |

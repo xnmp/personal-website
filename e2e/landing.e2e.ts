@@ -31,8 +31,8 @@ for (const style of STYLES.filter((style) => style.scene !== "none")) {
       const at = `${width}x${height}`;
       await expect(page.getByRole("heading", { level: 1 }), at).toHaveText("chong");
       const title = await box(page.getByRole("heading", { name: FLAG.title }));
-      const join = await box(page.getByRole("link", { name: `Join the ${FLAG.title} alpha` }));
-      const live = await box(page.getByRole("link", { name: "Try it live" }));
+      const join = await box(page.getByRole("link", { name: `${FLAG.title} website ↗` }));
+      const live = await box(page.getByRole("link", { name: "How I built it →" }));
       const win = await box(page.getByRole("link", { name: `${FLAG.title} details` }));
       // the copy stands beside the window, not over it
       for (const b of [title, join, live]) expect(b.x + b.width, at).toBeLessThanOrEqual(win.x + 1);
@@ -53,10 +53,10 @@ for (const style of STYLES.filter((style) => style.scene !== "none")) {
   });
 }
 
-test("the flagship's keys and window lead to its page, and each card to its project", async ({ page }) => {
+test("the flagship links to its website and personal notes, and each card to its project", async ({ page }) => {
   await open(page, "paper");
-  await expect(page.getByRole("link", { name: `Join the ${FLAG.title} alpha` })).toHaveAttribute("href", `${FLAG.href}#alpha`);
-  await expect(page.getByRole("link", { name: "Try it live" })).toHaveAttribute("href", `${FLAG.href}#live`);
+  await expect(page.getByRole("link", { name: `${FLAG.title} website ↗` })).toHaveAttribute("href", FLAG.website!);
+  await expect(page.getByRole("link", { name: "How I built it →" })).toHaveAttribute("href", FLAG.href);
   await page.getByRole("link", { name: `${FLAG.title} details` }).click();
   await expect(page).toHaveURL(new RegExp(`${FLAG.href}$`));
   await page.goBack();
@@ -68,7 +68,7 @@ test("on a phone the first screen stacks: the flagship, its keys, its window, th
   await page.setViewportSize({ width: 390, height: 844 });
   await open(page, "paper");
   const title = await box(page.getByRole("heading", { name: FLAG.title }));
-  const join = await box(page.getByRole("link", { name: `Join the ${FLAG.title} alpha` }));
+  const join = await box(page.getByRole("link", { name: `${FLAG.title} website ↗` }));
   const win = await box(page.getByRole("link", { name: `${FLAG.title} details` }));
   const cards = [];
   for (const name of FEATURED) cards.push(await box(page.getByRole("link", { name, exact: true })));

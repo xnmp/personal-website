@@ -32,7 +32,7 @@ export interface ProjectEntry {
   /** 1-bit screen art (alpha mask in public/screens) */
   art: string;
   tone: Tone;
-  /** short real numbers for the module's readout */
+  /** short notes or measurements for the module's readout */
   stats: string[];
 }
 

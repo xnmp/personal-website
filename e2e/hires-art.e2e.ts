@@ -183,15 +183,13 @@ async function capture(
       captures.push({ state, png: await page.screenshot({ type: "png", fullPage, scale: "css", animations: "disabled", caret: "hide" }) });
     };
     await snapshot("normal", true);
-    // One representative per key family on both home and launch pages. Scope
-    // to their key groups: the launch signal is named "Join the alpha", unlike
-    // the home link's longer accessible name. Absent controls are optional on
-    // detail pages, but known home/launch coverage must not silently disappear.
+    // The illustrated directory has both key families. Personal project pages
+    // may use ordinary prose links instead of calls to action.
     const keys = page.locator(".launchpad-keys, .launch-keys");
     const sheets = page.locator("a.module.faceplate.is-live");
     const controls = [
-      { name: "key", control: keys.locator('a.key:not([data-tone="signal"])').first(), required: path === "/projects" || path === "/p/tauri-explorer" },
-      { name: "signal", control: keys.locator('a.key[data-tone="signal"]').first(), required: path === "/projects" || path === "/p/tauri-explorer" },
+      { name: "key", control: keys.locator('a.key:not([data-tone="signal"])').first(), required: path === "/projects" },
+      { name: "signal", control: keys.locator('a.key[data-tone="signal"]').first(), required: path === "/projects" },
       ...(id === "cyanotype"
         ? ["4n + 1", "4n + 2", "4n + 3", "4n"].map((nth, index) => ({
           name: `sheet-${"abcd"[index]}`,

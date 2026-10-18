@@ -73,7 +73,7 @@ test("the theme menu applies a chosen palette and remembers it", async ({ page }
   await hydrated(page);
   const before = await page.evaluate(() => document.documentElement.dataset.rice);
   const chosen = before === "paper" ? "horizon" : "paper";
-  const shot = page.locator(".launch-shot img:visible");
+  const shot = page.locator(".detail-hero img:visible");
   const shotBefore = await shot.getAttribute("src");
   const button = page.getByRole("button", { name: /^Theme:/ });
   await button.click();

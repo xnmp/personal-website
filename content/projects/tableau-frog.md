@@ -2,43 +2,42 @@
 slug: tableau-frog
 glyph: 蛙
 title: Tableau Frog
-summary: A data explorer that checks whether a difference is real.
-heading: Point at a difference; it tells you if it’s real.
+summary: "An experiment in exploring data by choosing variables and comparing subsets."
+heading: "Trying a different way to look at data"
 href: /p/tableau-frog
 repo: 'https://github.com/xnmp/tableau-frog'
 tags:
   - svelte 5
   - statistics
   - echarts
-  - ai-native
-index: Variables-first data explorer · contrast lens with FDR correction
+  - "data exploration"
+index: "Data exploration · linked charts · AI experiments"
 stats:
-  - 1M rows <100ms
-  - z-test + FDR
-  - 59 suites
+  - "Linked charts"
+  - "Local data"
+  - "AI experiments"
 art: /screens/tableau-frog.png
 status: producing
 shelf: tools
 tone: olive
 metadata:
-  title: 'Tableau Frog: point at a difference, learn if it''s real'
-  description: >-
-    A keyboard-first, variables-first data explorer: a statistically rigorous
-    contrast lens (z-test + FDR), a from-scratch random forest, and an AI
-    Investigate mode that emits falsifiable hypotheses.
+  title: "Tableau Frog · chong"
+  description: "An experiment with variable-driven charts, linked selections and AI-assisted questions about a dataset."
 order: 5
 ---
 <!-- block: all-projects -->
 ← all projects
 
 <!-- block: the-showcase -->
-the showcase →
+Screenshots and examples →
 
 <!-- block: headline -->
-Point at a difference; it tells you if it’s real.
+Trying a different way to look at data
 
 <!-- block: a-data-explorer-that-inverts-the-usual-workflow-you-never -->
-A data explorer that inverts the usual workflow: you never pick a chart type. You assign variables to axis slots and the chart kind is inferred. Then the contrast lens does the part dashboards skip, deciding statistically which differences deserve color.
+The idea I'm playing with is choosing the variables first and letting the app work out a chart. Then, when I select an interesting group in one panel, I can see how that group differs across the others.
+
+Tableau Frog is where I've been trying out that interaction, along with some ways of getting an AI to help explore the data.
 
 <!-- block: svelte-5 -->
 svelte 5
@@ -47,82 +46,82 @@ svelte 5
 tauri v2
 
 <!-- block: 154k-loc -->
-~154k LoC
+data exploration
 
 <!-- block: 2026-active -->
 2026, active
 
 <!-- block: the-lens -->
-The lens
+Comparing subsets
 
 <!-- block: enrichment-with-error-control -->
-Enrichment, with error control
+What stands out about this group?
 
 <!-- block: figure-fig-1-select-anywhere-see-everywhere -->
 FIG. 1 · Select anywhere, see everywhere
 
 <!-- block: caption-fig-1-a-brushed-selection-recolors-every-panel-by -->
-Fig. 1: a brushed selection recolors every panel by enrichment against the population; a two-proportion z-test with Benjamini–Hochberg correction greys out what isn't significant.
+Selecting a subset updates the other panels. A significance mode uses a two-proportion z-test and false-discovery-rate correction to mute some of the noisier differences.
 
 <!-- block: alt-tableau-frog-contrast-lens-showing-enrichment-across-l -->
 Tableau Frog contrast lens showing enrichment across linked panels
 
 <!-- block: select-a-subset-on-any-panel-a-bar-a-brushed-range-a-cell -->
-Select a subset on any panel (a bar, a brushed range, a cell) and every other panel becomes a comparison against the population. Lenses compose with Shift (gestures AND together), persist per dataset, and stay under 100ms end-to-end at a million rows: the mask intersection runs in-place on typed arrays, 18ms for an AND of two selections.
+I can click a bar, brush a range or select a cell, then compare that subset with the rest of the data. Shift adds another condition. The selections are saved per dataset. A lot of the implementation work is keeping those updates responsive as the dataset grows.
 
 <!-- block: the-assistant -->
-The assistant
+Asking questions
 
 <!-- block: ai-that-has-to-show-its-work -->
-AI that has to show its work
+Using the AI suggestions as things to investigate
 
 <!-- block: figure-fig-2-hypothesis-cards -->
 FIG. 2 · Hypothesis cards
 
 <!-- block: caption-fig-2-investigate-mode-turns-a-selection-into-fals -->
-Fig. 2: Investigate mode turns a selection into falsifiable hypothesis cards, each with a one-click test projection and a persisted verdict trail.
+Investigate suggests hypotheses and a view that could test each one. The verdicts are recorded with the dataset.
 
 <!-- block: alt-ai-investigate-mode-generating-hypothesis-cards-from-a -->
 AI Investigate mode generating hypothesis cards from a data selection
 
 <!-- block: kbdctrl-i-on-a-selection-generates-hypotheses -->
-:kbd[Ctrl+I] on a selection generates hypotheses. Each one is phrased so the data can prove it wrong, has a one-click projection that tests it, and gets its verdict recorded per dataset. The privacy line is enforced by the architecture rather than by policy: only shape metadata (column names, types, cardinalities) ever reaches the model; raw rows cannot leave the machine, and the API key is stored outside the exportable config.
+Ctrl+I asks for hypotheses about a selection. Each suggestion comes with a projection to try, and I can record whether it held up. The model receives dataset metadata such as column names, types and summary counts, rather than raw rows. That still means the metadata is sent to an external model.
 
 <!-- block: deterministic-zero-dependency-pure-ts-with-permutation-imp -->
-Deterministic, zero-dependency, pure TS, with permutation importance, partial dependence, and OOB accuracy.
+There's a random forest written in TypeScript, with feature importance and partial-dependence views. It's another way to look for relationships in the same dataset.
 
 <!-- block: label-own-random-forest -->
-Own random forest
+A local model
 
 <!-- block: a-documented-chartplugin-contract-on-window -->
-A documented `ChartPlugin` contract on `window.tableauFrog`; custom chart kinds register at runtime.
+Extra chart types can register through `window.tableauFrog`. That gives the experiment somewhere to grow without putting every chart into the core.
 
 <!-- block: label-plugin-charts -->
-Plugin charts
+Other chart types
 
 <!-- block: log-zscore-bucket-ternary-parsed-and-computed-in-one-colum -->
-log, zscore, bucket, ternary, parsed and computed in one columnar pass.
+Derived columns support things like log, z-score and bucketing. The expressions are parsed, rather than passed to JavaScript's eval.
 
 <!-- block: label-eval-free-expressions -->
-Eval-free expressions
+Derived columns
 
 <!-- block: 27-pure-ts-modules-run-identically-in-a-plain-browser-the -->
-27 pure-TS modules run identically in a plain browser; the Rust shell only opens files.
+Most of the app runs in a browser. The Tauri shell adds desktop file access.
 
 <!-- block: label-domain-first -->
-Domain-first
+Browser and desktop
 
 <!-- block: the-rough-edges -->
-The rough edges
+Still figuring it out
 
 <!-- block: open-questions -->
-Open questions
+Does this make exploration easier?
 
 <!-- block: when-non-significant-differences-are-greyed-out-do-people -->
-When non-significant differences are greyed out, do people stop exploring, or start trusting what stays lit? The honest version of this tool needs a study, not a hunch.
+I'm not sure whether muting differences helps someone read a chart, or makes the remaining colours look more conclusive than they are. Statistical significance doesn't establish why a difference exists.
 
 <!-- block: inferred-chart-kinds-remove-the-gallery-of-charts-decision -->
-Inferred chart kinds remove the gallery-of-charts decision. But power users eventually want to override the inference. Where does the variables-first grammar put that escape hatch without becoming the menu it replaced?
+Inferring a chart saves a choice until it infers the wrong one. I still need to work out how much manual control belongs alongside that.
 
 <!-- block: label-open-question-ii -->
 Open question II
@@ -134,7 +133,7 @@ Materials**Svelte 5, TypeScript, Tauri v2**
 Vintage**2026, active**
 
 <!-- block: scale1m-rows-100ms-29-unit-30-e2e-suites -->
-Scale**1M rows < 100ms · 29 unit + 30 e2e suites**
+Notes**Linked selections, local models and AI-assisted exploration**
 
 <!-- block: source-github-xnmp-tableau-frog-https-github -->
 Source **[github/xnmp/tableau-frog ](https://github.com/xnmp/tableau-frog)**
