@@ -106,8 +106,12 @@
 :root[data-style="margin"] .brand :is(a, :where([data-studio-link])) { color: var(--print); }
 :root[data-style="margin"] .brand :is(a, :where([data-studio-link]))::after { content: ".md"; }
 :root[data-style="margin"] :is(.brand .led, .tagline, .running-head .meta) { display: none; }
-:root[data-style="margin"] .head-nav { order: 3; display: flex; flex-direction: column; margin-top: 24px; gap: 4px; }
-:root[data-style="margin"] .head-nav .key { border: 0; padding: 4px 0; min-height: 32px; font: 15px/1.5 var(--font-display), Georgia, serif; }
+:root[data-style="margin"] .head-nav { order: 3; display: flex; flex-direction: column; width: 100%; min-width: 0; margin-top: 24px; gap: 4px; }
+:root[data-style="margin"] .head-nav .key {
+  border: 0; padding: 4px 0; min-height: 32px; min-width: 0; max-width: 100%;
+  font: 15px/1.5 var(--font-display), Georgia, serif;
+  white-space: normal; overflow-wrap: anywhere; text-align: left; justify-content: flex-start;
+}
 :root[data-style="margin"] .margin-location {
   display: block; order: 1; margin: 9px 0 35px;
   color: var(--print-soft); font: 19px/1.4 var(--font-display), Georgia, serif;
