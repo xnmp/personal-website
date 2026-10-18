@@ -21,7 +21,6 @@ export function SourceTextarea({ value, label, readOnly, inline, onChange, onAct
     onChange={event => onChange(event.currentTarget.value)}
     onFocus={() => { snapshot.current = value; onActiveChange(true); }}
     onBlur={() => onActiveChange(false)}
-    onClick={event => { if (event.currentTarget.closest("a")) event.preventDefault(); }}
     onKeyDown={event => {
       if (event.defaultPrevented || event.nativeEvent.isComposing) return;
       if (event.key === "Escape") {
