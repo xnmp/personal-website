@@ -121,12 +121,12 @@ test("whole sections render Markdown except while being edited, including after 
   const saved = await interceptSaves(page);
   await page.goto("/");
   await page.getByRole("button", { name: "Editing off", exact: true }).click();
-  const trigger = page.getByRole("button", { name: "Edit intro", exact: true });
-  await trigger.focus(); await trigger.press("Enter");
+  await page.locator('[data-studio-slot="block:intro"]').click({ position: { x: 12, y: 12 } });
   const intro = page.getByRole("textbox", { name: "intro", exact: true });
   const source = "## Notes\n\nA **bold** result.\n\n" + Array.from({ length: 10 }, (_, i) => `Paragraph ${i + 1}.`).join("\n\n") + "\n\n- One\n- Two";
   await intro.fill(source);
-  const neighbour = await openField(page, "section 1");
+  await page.locator('[data-studio-slot="block:section-1"]').click({ position: { x: 12, y: 12 } });
+  const neighbour = page.getByRole("textbox", { name: "section 1", exact: true });
   await expect(neighbour).toBeFocused();
   await expect(page.getByRole("heading", { name: "Notes", exact: true })).toBeVisible();
   await expect(page.locator(".detail-hero strong")).toHaveText("bold");
@@ -143,7 +143,9 @@ test("whole sections render Markdown except while being edited, including after 
   await expect(page.getByRole("button", { name: "Editing on", exact: true })).toBeVisible();
   await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
   expect(saved.sources.get("about")).toContain(source);
-  const reopened = await openField(page, "intro");
+  const editButton = page.getByRole("button", { name: "Edit intro", exact: true });
+  await editButton.focus(); await editButton.press("Enter");
+  const reopened = page.getByRole("textbox", { name: "intro", exact: true });
   await expect(reopened).toHaveValue(source);
   await reopened.fill(""); await reopened.press("Tab");
   await expect(await openField(page, "intro")).toHaveValue("");

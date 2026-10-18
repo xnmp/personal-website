@@ -22,8 +22,15 @@ export function EditableField({ binding, source, inline, paragraphClassName, par
     </Tag>;
   }
   const Tag = inline ? "span" : "div";
+  const canActivate = (target: EventTarget) => !studio.locked &&
+    target instanceof Element && !target.closest("a, button, input, textarea, select");
   return <Tag className={inline ? "studio-region" : "content-block studio-preview"}
-    data-studio-slot={binding.slotId} data-studio-document={binding.documentId} data-studio-editable>
+    data-studio-slot={binding.slotId} data-studio-document={binding.documentId} data-studio-editable
+    onPointerDown={event => {
+      // Retain the old field until a click is completed, including during touch scrolling.
+      if (event.button === 0 && canActivate(event.target)) event.preventDefault();
+    }}
+    onClick={event => { if (canActivate(event.target)) setActive(true); }}>
     <button type="button" className="studio-edit-trigger" aria-label={`Edit ${binding.label}`}
       disabled={studio.locked}
       // Keep focus on the old field until click; its blur could otherwise move this button.
