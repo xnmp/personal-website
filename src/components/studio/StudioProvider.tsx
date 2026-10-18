@@ -69,6 +69,8 @@ export function StudioProvider({
             disabled={!studio.ready || studio.locked || !studio.unsaved}
             onClick={() => void studio.save()}
             aria-label="Save locally"
+            aria-keyshortcuts="Control+Enter Meta+Enter"
+            title="Save locally (Ctrl+Enter / Cmd+Enter)"
           >
             Save{studio.unsaved ? ` · ${studio.unsaved}` : ""}
           </button>

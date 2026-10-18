@@ -24,7 +24,7 @@ export function SourceTextarea({ value, label, readOnly, inline, onChange, onAct
     onKeyDown={event => {
       if (event.key === "Escape") {
         event.preventDefault(); onChange(snapshot.current); event.currentTarget.blur();
-      } else if (event.key === "Enter" && (inline || event.ctrlKey || event.metaKey)) {
+      } else if (event.key === "Enter" && inline && !event.ctrlKey && !event.metaKey) {
         event.preventDefault(); event.currentTarget.blur();
       }
     }} />;
