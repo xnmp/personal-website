@@ -18,6 +18,11 @@ bun run og       # re-capture social cards (dev:site must be running)
 bun run kit:check  # every kit state registers with its normal state
 ```
 
+Local development uses Webpack and an explicit 4 GiB V8 old-space limit. This
+avoids the Turbopack path that showed severe memory growth during editing. The
+heap limit is a safeguard, not a limit on total process RAM. Production builds
+use the existing build command.
+
 ## Structure
 
 See [`docs/architecture.md`](docs/architecture.md) for routes, the two colour-token families, the raster kit and the image pipeline.

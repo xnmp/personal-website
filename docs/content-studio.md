@@ -19,6 +19,17 @@ Write `**bold**`, `*italic*`, or inline code with backticks in text fields. Body
 
 Development pages include labelled About drafts; production omits `draft: true` sections and facts. Normal development and the deployed site have no editing interface.
 
+## Development memory
+
+The editor uses the shared `dev:site` command: Webpack with an explicit 4 GiB
+V8 old-space limit. Earlier Turbopack sessions retained over 23 GiB RSS and
+17 GiB of JavaScript heap in the saved Next development trace. Switching
+bundlers isolates that development path; the exact retained objects have not
+been identified. The heap limit does not cap native allocations or total RSS.
+If memory starts climbing again, stop the server; do not increase the heap
+limit to keep it running. Avoid broad automated route sweeps on the editor
+process used for hand editing.
+
 ## Deploy
 
 The **Deploy** button remains at the bottom-left. It saves pending edits, validates every content document, fetches main, and creates a temporary checkout under ignored `.content-studio/builds/` containing the latest main plus only changed Markdown. It installs frozen dependencies inside that checkout and runs a production build (`NODE_ENV=production`, editor disabled), then commits just those content paths and pushes normally to main. An unrelated local branch, staged files, code changes and untracked assets are never included. A failed build or non-fast-forward push leaves local content intact.
