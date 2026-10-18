@@ -3,58 +3,53 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MarkdownRenderer, type MarkdownRootProps } from "../src/components/notebook/MarkdownRenderer";
 import { interpolateContent } from "../src/lib/content-template";
-import { applyTextPatches, type TextPatch } from "../src/lib/studio/patches";
+import { editSource } from "../src/lib/studio/source-edits";
+import type { SourceRange } from "../src/lib/studio/segments";
 
-type Leaf = NonNullable<NonNullable<MarkdownRootProps["node"]>["data"]>["studioText"];
-const editable = (source: string, fields?: Record<string, string | number>) => {
-  const leaves: NonNullable<Leaf>[] = [];
-  const text = fields ? interpolateContent(source, fields) : source;
-  const Root = ({ node, children }: MarkdownRootProps) => createElement(node?.data?.studioRootTag ?? "p", null, children);
-  const Text = ({ node, children }: MarkdownRootProps) => { leaves.push(node!.data!.studioText!); return <span>{children}</span>; };
-  const html = renderToStaticMarkup(<MarkdownRenderer text={text} sourceValue={source} sourceFields={fields} rootComponent={Root} textComponent={Text} />);
-  const replace = (values: string[]) => applyTextPatches(source, leaves.map((leaf, index): TextPatch => ({ start: leaf.start, end: leaf.end, value: values[index], containers: leaf.containers })));
-  return { leaves, html, replace };
+const blocks = (source: string, fields?: Record<string, string | number>) => {
+  const ranges: SourceRange[] = [];
+  const Root = ({ node, children }: MarkdownRootProps) => {
+    if (node?.data?.studioRange) ranges.push(node.data.studioRange);
+    return createElement(node?.data?.studioRootTag ?? "p", null, children);
+  };
+  const html = renderToStaticMarkup(<MarkdownRenderer text={fields ? interpolateContent(source, fields) : source}
+    sourceValue={source} sourceFields={fields} rootComponent={Root} />);
+  return { ranges, html, values: ranges.map(range => source.slice(range.start, range.end)) };
 };
 
-describe("rendered Markdown editing", () => {
-  test("keeps paragraphs separate and preserves formatted descendants", () => {
+describe("native source fields", () => {
+  test("keeps each paragraph independent while retaining all source syntax", () => {
     const source = "First [project](/about).\n\nSecond **paragraph** with `code`.";
-    const { leaves, html } = editable(source);
-    expect(html).toContain('<a href="/about"><span>project</span></a>');
-    expect(html).toContain('<strong><span>paragraph</span></strong>');
-    expect(html).toContain('<code><span>code</span></code>');
-    expect(leaves.map(leaf => source.slice(leaf.start, leaf.end))).toEqual(["First ", "project", ".", "Second ", "paragraph", " with ", "`code`", "."]);
-    expect(leaves.map(leaf => leaf.root)).toEqual([0, 0, 0, 1, 1, 1, 1, 1]);
+    expect(blocks(source).values).toEqual(["First [project](/about).", "Second **paragraph** with `code`."]);
+    expect(blocks(source).html).toContain('<a href="/about">project</a>');
   });
-  test("keeps prose around interpolations editable and preserves the field source", () => {
-    const source = "Before &amp; {{version}} after {{count}} runs.";
-    const { leaves, html, replace } = editable(source, { version: "v0.18", count: 12 });
-    expect(html).toBe('<p><span>Before &amp; </span>v0.18<span> after </span>12<span> runs.</span></p>');
-    expect(leaves.map(leaf => source.slice(leaf.start, leaf.end))).toEqual(["Before &amp; ", " after ", " runs."]);
-    expect(replace(["Try ", " for ", " days."])).toBe("Try {{version}} for {{count}} days.");
+  test("maps whole interpolated blocks back to their authored placeholders", () => {
+    const source = "Before {{version}}.\n\nAfter {{count}} runs.";
+    expect(blocks(source, { version: "a much longer v1.2.3", count: 12 }).values)
+      .toEqual(["Before {{version}}.", "After {{count}} runs."]);
   });
-  test("preserves repeated and empty field atoms while editing surrounding text", () => {
-    const source = "{{empty}}Before {{same}} between {{same}} after.{{empty}}";
-    const { leaves, replace } = editable(source, { empty: "", same: "🌱" });
-    expect(leaves.map(leaf => source.slice(leaf.start, leaf.end))).toEqual(["Before ", " between ", " after."]);
-    expect(replace(["Start ", " and ", " end."])).toBe("{{empty}}Start {{same}} and {{same}} end.{{empty}}");
+  test("exposes source for headings, lists, directives and code without normalizing it", () => {
+    const values = ['## Heading', '- one\n- **two**', ':os[Ctrl+P] and :span[soft]{class=soft}', '```js\nconst x = 1;\n```'];
+    expect(blocks(values.join("\n\n")).values).toEqual(values);
   });
-  test("edits authored directive labels while retaining their attributes", () => {
-    const source = ':span[Soft text]{class=soft} and :link[project]{href=/about}.';
-    const { leaves, replace } = editable(source);
-    expect(leaves.map(leaf => source.slice(leaf.start, leaf.end))).toEqual(["Soft text", " and ", "project", "."]);
-    expect(replace(["Quiet text", " and ", "page", "."])).toBe(':span[Quiet text]{class=soft} and :link[page]{href=/about}.');
+  test("retains exact CRLF offsets and offers an empty field for blank content", () => {
+    expect(blocks("First.\r\n\r\nSecond.").values).toEqual(["First.", "Second."]);
+    expect(blocks("").values).toEqual([""]);
+    expect(blocks("  \n").values).toEqual(["  \n"]);
   });
-  test("deleting all leaves removes empty nested formatting and directives", () => {
-    for (const source of ['**hello [world](/about)**', ':span[text]{class=soft}', '*emphasis*']) {
-      const { leaves, replace } = editable(source);
-      expect(replace(leaves.map(() => ""))).toBe("");
-    }
+  test("clearing and retyping a field never changes the neighbouring source", () => {
+    const source = "First.\n\nSecond **paragraph**.";
+    const { ranges } = blocks(source);
+    const edits = [{ ...ranges[0], value: "" }, { ...ranges[1], value: "Second **paragraph**, edited." }];
+    expect(editSource(source, edits)).toBe("\n\nSecond **paragraph**, edited.");
+    expect(editSource(source, [{ ...ranges[0], value: "One\n\n\nLast" }])).toBe("One\n\n\nLast\n\nSecond **paragraph**.");
   });
-  test("code-owned atoms stay intact without introducing a destructive blank editor", () => {
-    const { leaves, html } = editable(':os[Ctrl+P]');
-    expect(leaves).toHaveLength(0);
-    expect(html).toContain('Ctrl');
-    expect(html).not.toContain('Empty text');
+  test("applies edits in source order and rejects overlapping ranges", () => {
+    const source = "First.\n\nSecond.";
+    const edits = [{ start: 8, end: 15, value: "Next." }, { start: 0, end: 6, value: "A longer first." }];
+    expect(editSource(source, edits)).toBe("A longer first.\n\nNext.");
+    expect(source).toBe("First.\n\nSecond.");
+    expect(() => editSource(source, [{ start: 0, end: 9, value: "" }, { start: 8, end: 15, value: "" }])).toThrow(RangeError);
+    expect(() => editSource(source, [{ start: 0, end: 99, value: "" }])).toThrow(RangeError);
   });
 });

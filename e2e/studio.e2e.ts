@@ -1,7 +1,7 @@
-import { test, expect, type Locator } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { readFile, writeFile } from "node:fs/promises";
 
-test.use({ channel: "chrome", launchOptions: { args: ["--disable-dev-shm-usage"] } });
+test.use({ channel: "chrome", launchOptions: { args: ["--disable-dev-shm-usage", "--disable-gpu", "--renderer-process-limit=2"] } });
 test.skip(!process.env.STUDIO_E2E, "Run only against the opted-in local studio with one worker");
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => { localStorage.setItem("nb-style", "margin"); localStorage.setItem("nb-rice", "ayu-mirage"); });
@@ -24,7 +24,7 @@ test("edits the actual pages, saves exact Markdown and deploys from the bottom-l
     ]) {
       await page.goto(scenario.route);
       await page.getByRole("button", { name: "Editing off", exact: true }).click();
-      await page.getByRole("button", { name: `Edit ${scenario.field}`, exact: true }).click();
+      await page.getByRole("textbox", { name: scenario.field, exact: true }).click();
       const input = page.getByRole("textbox", { name: scenario.field, exact: true });
       await expect(input).toBeFocused();
       await input.fill(scenario.value);
@@ -39,11 +39,11 @@ test("edits the actual pages, saves exact Markdown and deploys from the bottom-l
     await page.goto("/");
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
     // A linked title edits in place; Browsing restores the actual site's navigation.
-    const title = page.locator('.margin-entry h3 [data-studio-document="projects/scrivo"]');
-    await expect(title).toHaveAttribute("role", "button");
+    const title = page.locator('.margin-entry h3 [data-studio-document="projects/scrivo"] textarea');
+    await expect(title).toHaveJSProperty("tagName", "TEXTAREA");
     await title.click();
-    await page.getByRole("textbox", { name: "title", exact: true }).fill("Scrivo, edited locally");
-    await page.getByRole("textbox", { name: "title", exact: true }).press("Enter");
+    await title.fill("Scrivo, edited locally");
+    await title.press("Enter");
     let deployRequests = 0;
     await page.route("**/api/studio", async (route) => {
       if (route.request().method() === "POST" && route.request().postDataJSON().action === "deploy") {
@@ -75,13 +75,12 @@ test("recovers other pages' drafts and refuses to overwrite an external edit", a
   try {
     await page.goto("/about");
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    const headline = page.getByRole("button", { name: "Edit headline", exact: true });
+    const headline = page.getByRole("textbox", { name: "headline", exact: true });
     await headline.focus();
     await expect(headline).toBeFocused();
-    await headline.press("Enter");
     await expect(page.getByRole("textbox", { name: "headline", exact: true })).toBeFocused();
     await page.getByRole("textbox", { name: "headline", exact: true }).press("Escape");
-    await page.getByRole("button", { name: "Edit intro", exact: true }).click();
+    await page.getByRole("textbox", { name: "intro", exact: true }).click();
     await page.getByRole("textbox", { name: "intro", exact: true }).fill("Recovered from another page, with my edits.");
     await page.getByRole("textbox", { name: "intro", exact: true }).press("Control+Enter");
     await page.getByRole("button", { name: "Editing on", exact: true }).click();
@@ -94,11 +93,11 @@ test("recovers other pages' drafts and refuses to overwrite an external edit", a
     expect(await readFile("content/about.md", "utf8")).toContain("Recovered from another page, with my edits.");
     await page.goto("/about");
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    await page.getByRole("button", { name: "Edit intro", exact: true }).click();
+    await page.getByRole("textbox", { name: "intro", exact: true }).click();
     await page.getByRole("textbox", { name: "intro", exact: true }).fill("An unsaved draft to preserve.");
     await page.getByRole("textbox", { name: "intro", exact: true }).press("Escape");
     await expect(page.getByText("Recovered from another page, with my edits.", { exact: true })).toBeVisible();
-    await page.getByRole("button", { name: "Edit intro", exact: true }).click();
+    await page.getByRole("textbox", { name: "intro", exact: true }).click();
     await page.getByRole("textbox", { name: "intro", exact: true }).fill("An unsaved draft to preserve.");
     await page.getByRole("textbox", { name: "intro", exact: true }).press("Control+Enter");
     const external = (await readFile("content/about.md", "utf8")) + "\n";
@@ -130,175 +129,163 @@ test("matches normal site geometry on the same pages and viewport", async ({ pag
   } finally { await reference.close(); }
 });
 
-// Compare actual glyph positions as well as block geometry. Keeping just the
-// paragraph's height stable would miss a font or inline-markup substitution.
-const renderedGeometry = (element: Element) => {
-  const round = (value: number) => Math.round(value * 100) / 100;
-  const box = (rect: DOMRect) => [rect.x, rect.y, rect.width, rect.height].map(round);
-  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-  const glyphs = [];
-  while (walker.nextNode()) {
-    const node = walker.currentNode;
-    const style = getComputedStyle(node.parentElement!);
-    for (let index = 0; index < node.textContent!.length; index++) {
-      // Chrome gives collapsed line-end spaces a caret box in editable text.
-      if (/\s/.test(node.textContent![index])) continue;
-      const range = document.createRange();
-      range.setStart(node, index);
-      range.setEnd(node, index + 1);
-      glyphs.push({ text: node.textContent![index], rect: box(range.getBoundingClientRect()), font: [style.fontFamily, style.fontSize, style.fontWeight, style.fontStyle, style.lineHeight], color: style.color });
-    }
-  }
-  return { text: element.textContent, rect: getComputedStyle(element).display === "inline" ? undefined : box(element.getBoundingClientRect()), glyphs,
-    markup: Array.from(element.querySelectorAll('a, strong, em, code')).map(e => ({ tag: e.tagName, text: e.textContent, href: e.getAttribute('href') })) };
-};
 
-test("starts in view mode, toggles editing and keeps each paragraph's glyphs in place", async ({ page }) => {
-  const errors: string[] = [];
-  page.on("pageerror", error => errors.push(error.message));
-  await page.goto("/about");
-  const status = page.getByRole("button", { name: "Editing off", exact: true });
-  await expect(status).toHaveAttribute("aria-pressed", "false");
-  await expect(status).toBeEnabled();
-  await expect(page.locator("[data-studio-editable], [contenteditable]")).toHaveCount(0);
-  await page.keyboard.press("Control+e");
-  await expect(page.getByRole("button", { name: "Editing on", exact: true })).toHaveAttribute("aria-pressed", "true");
-  for (const label of ["intro", "intro · part 2", "headline"]) {
-    const root = page.getByRole("button", { name: `Edit ${label}`, exact: true });
-    await root.scrollIntoViewIfNeeded();
-    await page.evaluate(() => document.fonts.ready);
-    const handle = (await root.elementHandle())!;
-    const before = await handle.evaluate(renderedGeometry);
-    await root.hover();
-    expect(await handle.evaluate(renderedGeometry)).toEqual(before);
-    await root.click();
-    await expect(page.getByRole("textbox", { name: label, exact: true })).toBeFocused();
-    expect(await handle.evaluate(renderedGeometry)).toEqual(before);
-    await page.keyboard.press("Escape");
-  }
-  const intro = page.getByRole("button", { name: "Edit intro", exact: true });
-  await intro.click();
-  await page.getByRole("textbox", { name: "intro", exact: true }).fill("A draft kept when editing switches off.");
-  await page.keyboard.press("Control+e");
-  await expect(status).toBeVisible();
-  await expect(page.locator("[data-studio-editable], [contenteditable]")).toHaveCount(0);
-  await expect(page.getByText("A draft kept when editing switches off.", { exact: true })).toBeVisible();
-  await status.click();
-  await expect(page.getByRole("button", { name: "Editing on", exact: true })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  expect(errors).toEqual([]);
-});
-
-test("edits formatted text without replacing its markup or neighbouring paragraphs", async ({ page }) => {
-  const original = await readFile("content/about.md", "utf8");
-  try {
-    await page.goto("/about");
-    await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    const link = page.locator('main a[href="/p/scrivo"]');
-    await link.scrollIntoViewIfNeeded();
-    await page.evaluate(() => document.fonts.ready);
-    const root = link.locator("xpath=..");
-    const handle = (await root.elementHandle())!;
-    const before = await handle.evaluate(renderedGeometry);
-    const href = await link.getAttribute("href");
-    await link.click();
-    expect(await handle.evaluate(renderedGeometry)).toEqual(before);
-    await expect(link).toHaveAttribute("href", href!);
-    const input = page.locator('[contenteditable="plaintext-only"]');
-    await input.fill("Scrivo revised");
-    await input.press("Control+Enter");
-    await page.getByRole("button", { name: "Save locally", exact: true }).click();
-    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    expect(await readFile("content/about.md", "utf8")).toBe(original.replace("[Scrivo](/p/scrivo)", "[Scrivo revised](/p/scrivo)"));
-    await expect(page.locator('main a[href="/p/scrivo"]')).toHaveText("Scrivo revised");
-    await expect(page.getByRole("button", { name: "Edit intro · part 2", exact: true })).toContainText("The other half is the games I grew up on");
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  } finally {
-    await page.waitForLoadState("networkidle").catch(() => {});
-    await writeFile("content/about.md", original, "utf8");
-  }
-});
-
-test("retains canonical shortcut source when editing Mac-rendered prose", async ({ page }) => {
-  const original = await readFile("content/projects/tauri-explorer.md", "utf8");
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "userAgent", { get: () => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)" });
-    Object.defineProperty(navigator, "maxTouchPoints", { get: () => 0 });
-  });
-  try {
-    await page.goto("/p/tauri-explorer");
-    await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    const root = page.getByRole("button", { name: "Edit reflexes · 3 · what", exact: true });
-    await expect(root).toContainText("⇧⌘F5");
-    await root.click();
-    const input = page.getByRole("textbox", { name: "reflexes · 3 · what", exact: true });
-    await input.fill("Two panes. F6 jumps sides, ⇧⌘F5 copies across.");
-    await input.press("Enter");
-    await expect(root).toContainText("Two panes. F6 jumps sides, ⇧⌘F5 copies across.");
-    await page.getByRole("button", { name: "Save locally", exact: true }).click();
-    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    expect(await readFile("content/projects/tauri-explorer.md", "utf8")).toBe(original.replace("what: 'Dual pane. F6 jumps sides, Ctrl+Shift+F5 copies across.'", 'what: "Two panes. F6 jumps sides, Ctrl+Shift+F5 copies across."'));
-  } finally {
-    await page.waitForLoadState("networkidle").catch(() => {});
-    await writeFile("content/projects/tauri-explorer.md", original, "utf8");
-  }
-});
-
-test("drag-selects text on first activation and saves only the selected replacement", async ({ page }) => {
+test("native textarea pastes, deletes blank lines, undoes and saves exact source", async ({ page, context }) => {
   const original = await readFile("content/about.md", "utf8");
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
-  const drag = async (root: Locator, start: number, end: number) => {
-    await root.scrollIntoViewIfNeeded();
-    const points = await root.evaluate((element, { start, end }) => {
-      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-      walker.nextNode();
-      const text = walker.currentNode;
-      const point = (offset: number) => {
-        const range = document.createRange();
-        range.setStart(text, offset);
-        range.setEnd(text, offset + 1);
-        const rect = range.getBoundingClientRect();
-        return { x: rect.x + 0.3, y: rect.y + rect.height / 2 };
-      };
-      return { from: point(start), to: point(end) };
-    }, { start, end });
-    await page.mouse.move(points.from.x, points.from.y);
-    await page.mouse.down();
-    await page.mouse.move(points.to.x, points.to.y, { steps: 12 });
-    await page.mouse.up();
-  };
   try {
     await page.goto("/about");
-    await page.evaluate(() => document.fonts.ready);
-    await page.getByRole("button", { name: "Editing off", exact: true }).click();
-    const headline = page.getByRole("button", { name: "Edit headline", exact: true });
-    const headlineText = (await headline.innerText());
-    await drag(headline, 3, 13);
-    expect(await page.evaluate(() => getSelection()!.toString())).toBe(headlineText.slice(3, 13));
-    await page.keyboard.press("Escape");
-    const intro = page.getByRole("button", { name: "Edit intro", exact: true });
-    const text = await intro.innerText();
-    const background = await intro.evaluate(element => getComputedStyle(element).backgroundColor);
-    await drag(intro, 3, 13);
-    expect(await page.evaluate(() => getSelection()!.toString())).toBe(text.slice(3, 13));
-    await expect(page.getByRole("textbox", { name: "intro", exact: true })).toBeFocused();
-    const active = page.locator('[data-studio-active]');
-    expect(await active.evaluate(element => {
-      const style = getComputedStyle(element);
-      return { outline: style.outlineStyle, width: style.outlineWidth, background: style.backgroundColor, label: getComputedStyle(element, "::after").content };
-    })).toEqual({ outline: "solid", width: "3px", background, label: '"editing"' });
-    await page.keyboard.insertText("selected words");
-    await page.keyboard.press("Control+Enter");
-    const replacement = text.slice(0, 3) + "selected words" + text.slice(13);
-    await expect(page.getByRole("button", { name: "Edit intro", exact: true })).toHaveText(replacement);
-    await expect(page.getByRole("button", { name: "Edit intro · part 2", exact: true })).toContainText("The other half is the games I grew up on");
+    await expect(page.locator("textarea, [contenteditable]")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Editing off", exact: true })).toBeEnabled();
+    await page.keyboard.press("Control+e");
+    const intro = page.getByRole("textbox", { name: "intro", exact: true });
+    const first = await intro.inputValue();
+    const sibling = await page.getByRole("textbox", { name: "intro · part 2", exact: true }).inputValue();
+    await expect(intro).toHaveJSProperty("tagName", "TEXTAREA");
+    await expect(page.locator("[contenteditable]")).toHaveCount(0);
+    const pasted = "First line\n\n\nLast line 🌱";
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.evaluate(text => navigator.clipboard.writeText(text), pasted);
+    await intro.focus();
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Control+v");
+    await expect(intro).toHaveValue(pasted);
+    await page.keyboard.press("Control+Home");
+    await page.keyboard.press("End");
+    await page.keyboard.press("Delete");
+    await page.keyboard.press("Delete");
+    await expect(intro).toHaveValue("First line\nLast line 🌱");
+    await page.keyboard.press("Control+z");
+    expect(await intro.inputValue()).toContain("\n\n");
+    await page.keyboard.press("Control+Shift+z");
+    const final = "First line\nLast line 🌱";
+    await expect(intro).toHaveValue(final);
     await page.getByRole("button", { name: "Save locally", exact: true }).click();
     await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
-    expect(await readFile("content/about.md", "utf8")).toBe(original.replace(text, replacement));
+    expect(await readFile("content/about.md", "utf8")).toBe(original.replace(first, final));
+    await expect(page.getByRole("textbox", { name: "intro · part 2", exact: true })).toHaveValue(sibling);
+    await page.reload();
+    await page.getByRole("button", { name: "Editing off", exact: true }).click();
+    await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue(final);
     expect(errors).toEqual([]);
   } finally {
     await page.waitForLoadState("networkidle").catch(() => {});
     await writeFile("content/about.md", original, "utf8");
   }
+});
+
+test("clearing a field keeps the next field stable and saves only those changes", async ({ page }) => {
+  const original = await readFile("content/about.md", "utf8");
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  try {
+    await page.goto("/about");
+    await page.getByRole("button", { name: "Editing off", exact: true }).click();
+    const first = page.getByRole("textbox", { name: "intro", exact: true });
+    const second = page.getByRole("textbox", { name: "intro · part 2", exact: true });
+    const originalFirst = await first.inputValue();
+    const originalSecond = await second.inputValue();
+    await first.focus();
+    await page.keyboard.press("Control+a");
+    await page.keyboard.press("Backspace");
+    await expect(first).toHaveValue("");
+    await expect(first).toBeVisible();
+    const secondBox = await second.boundingBox();
+    await second.click();
+    await expect(second).toBeFocused();
+    expect(await second.boundingBox()).toEqual(secondBox);
+    await page.keyboard.press("Control+End");
+    await page.keyboard.type(" Edited here.");
+    await expect(second).toHaveValue(originalSecond + " Edited here.");
+    await expect(page.getByRole("textbox", { name: "sections · 0 · kicker", exact: true })).toHaveValue("How I work");
+    await page.getByRole("button", { name: "Save locally", exact: true }).click();
+    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+    const clearedSource = original.replace(originalFirst + "\n\n", "").replace(originalSecond, originalSecond + " Edited here.");
+    expect(await readFile("content/about.md", "utf8")).toBe(clearedSource);
+    await second.focus();
+    await page.keyboard.press("Control+End");
+    await page.keyboard.type(" Again.");
+    await page.getByRole("button", { name: "Save locally", exact: true }).click();
+    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+    expect(await readFile("content/about.md", "utf8")).toBe(clearedSource.replace(" Edited here.", " Edited here. Again."));
+    await first.click();
+    await page.keyboard.type("Retyped first paragraph.");
+    await expect(first).toHaveValue("Retyped first paragraph.");
+    await page.getByRole("button", { name: "Save locally", exact: true }).click();
+    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+    expect(await readFile("content/about.md", "utf8")).toBe(original.replace(originalFirst, "Retyped first paragraph.").replace(originalSecond, originalSecond + " Edited here. Again."));
+    expect(errors).toEqual([]);
+  } finally {
+    await page.waitForLoadState("networkidle").catch(() => {});
+    await writeFile("content/about.md", original, "utf8");
+  }
+});
+
+test("native drag selection works in both directions and clicking collapses it", async ({ page }) => {
+  await page.goto("/about");
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  const input = page.getByRole("textbox", { name: "intro", exact: true });
+  await input.fill("First line\n\nLast line.");
+  await input.scrollIntoViewIfNeeded();
+  const { a, b } = await input.evaluate((element: HTMLTextAreaElement) => {
+    const box = element.getBoundingClientRect();
+    const line = parseFloat(getComputedStyle(element).lineHeight);
+    return { a: { x: box.x + 1, y: box.y + line / 2 }, b: { x: box.x + box.width / 2, y: box.y + line * 2.5 } };
+  });
+  const selected = () => input.evaluate((element: HTMLTextAreaElement) => element.value.slice(element.selectionStart, element.selectionEnd));
+  for (const [start, end] of [[a, b], [b, a]]) {
+    await page.mouse.move(start.x, start.y); await page.mouse.down();
+    await page.mouse.move(end.x, end.y, { steps: 15 }); await page.mouse.up();
+    expect(await selected()).toBe("First line\n\nLast line.");
+    await page.mouse.click(b.x, b.y);
+    expect(await selected()).toBe("");
+    await expect(input).toBeFocused();
+  }
+  await page.keyboard.press("Escape");
+});
+
+test("native controls keep typography, backgrounds and toggle behavior", async ({ page }) => {
+  await page.goto("/about");
+  await expect(page.getByRole("button", { name: "Editing off", exact: true })).toBeEnabled();
+  await page.keyboard.press("Control+e");
+  const input = page.getByRole("textbox", { name: "intro", exact: true });
+  await input.scrollIntoViewIfNeeded();
+  const styles = await input.evaluate(element => {
+    const style = getComputedStyle(element), parent = getComputedStyle(element.parentElement!);
+    return { font: style.font, parentFont: parent.font, color: style.color, parentColor: parent.color, background: style.backgroundColor };
+  });
+  expect(styles.font).toBe(styles.parentFont);
+  expect(styles.color).toBe(styles.parentColor);
+  expect(styles.background).toBe("rgba(0, 0, 0, 0)");
+  await input.fill("A retained draft.");
+  await page.keyboard.press("Control+e");
+  await expect(page.locator("textarea, [contenteditable]")).toHaveCount(0);
+  await expect(page.getByText("A retained draft.", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue("A retained draft.");
+});
+
+test("discard ends editing and cannot resurrect rejected drafts", async ({ page }) => {
+  await page.goto("/about");
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  const input = page.getByRole("textbox", { name: "intro", exact: true });
+  const original = await input.inputValue();
+  await input.fill("Unwanted draft");
+  await page.route("**/api/studio", async route => {
+    if (route.request().method() === "POST") await route.fulfill({ status: 409, json: { error: "Test conflict" } });
+    else await route.continue();
+  });
+  await page.getByRole("button", { name: "Save locally", exact: true }).click();
+  await expect(page.locator(".studio-dock").getByRole("alert")).toContainText("Test conflict");
+  await page.getByRole("button", { name: "Discard unsaved edits", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Editing off", exact: true })).toBeVisible();
+  await expect(page.locator("textarea")).toHaveCount(0);
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue(original);
+  await page.getByRole("textbox", { name: "intro", exact: true }).focus();
+  await page.keyboard.press("Control+End");
+  await page.keyboard.type(" X");
+  await expect(page.getByRole("textbox", { name: "intro", exact: true })).toHaveValue(original + " X");
+  expect(await page.evaluate(() => localStorage.getItem("content-studio:v1:draft:about"))).not.toContain("Unwanted draft");
 });
