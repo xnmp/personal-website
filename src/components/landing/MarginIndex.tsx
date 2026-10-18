@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { EditableText } from "@/components/studio/EditableText";
 import { bindBlock, bindField } from "@/lib/studio/bindings";
 import Link from "next/link";
+import { EditableLink } from "@/components/studio/EditableLink";
 import { APP_THEME } from "@/components/launch/appTheme";
 import { Markdown } from "@/components/notebook/Markdown";
 import { readProjectCatalog } from "@/data/projects";
@@ -53,11 +54,11 @@ export function MarginIndex() {
                     </span>
                     <div className="margin-entry">
                       <h3>
-                        <Link href={p.href} data-rack-stop>
+                        <EditableLink href={p.href} data-rack-stop>
                           <EditableText binding={bindField(source, ["title"])}>
                             {p.title}
                           </EditableText>
-                        </Link>
+                        </EditableLink>
                       </h3>
                       <Markdown
                         binding={bindField(source, [

@@ -30,6 +30,7 @@ export function VideoScreen({
         style={{ "--art": `url(${art})` } as CSSProperties}
       />
       <Key
+        editableLabel={!!labelBinding}
         tone="signal"
         size="lg"
         href={`https://www.youtube.com/watch?v=${id}`}

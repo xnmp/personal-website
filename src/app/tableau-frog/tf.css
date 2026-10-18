@@ -125,10 +125,10 @@
   align-items: center;
   color: var(--ink-3);
 }
-.tf-nav-right a {
+.tf-nav-right :is(a, :where([data-studio-link])) {
   color: var(--ink-3);
 }
-.tf-nav-right a:hover {
+.tf-nav-right :is(a, :where([data-studio-link])):hover {
   color: var(--ink);
 }
 
