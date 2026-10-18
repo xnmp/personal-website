@@ -247,6 +247,21 @@ describe("local persistence and authorization", () => {
 });
 
 describe("content-only publishing", () => {
+  test("compares missing documents without confusing absence with empty content", () => {
+    const changes = (base: string | undefined, remote: string | undefined, local: string) =>
+      publicationChanges(
+        new Map(base === undefined ? [] : [["notes", base]]),
+        new Map(remote === undefined ? [] : [["notes", remote]]),
+        new Map([["notes", local]]),
+      );
+    expect([...changes("local feature", undefined, "local feature")]).toEqual([]);
+    expect([...changes(undefined, undefined, "new document")]).toEqual([["notes", "new document"]]);
+    expect([...changes(undefined, undefined, "")]).toEqual([["notes", ""]]);
+    expect([...changes(undefined, "already published", "already published")]).toEqual([]);
+    expect(() => changes("previous", undefined, "edited after deletion")).toThrow("changed on main");
+    expect(() => changes(undefined, "remote addition", "local addition")).toThrow("changed on main");
+  });
+
   test("detects remote conflicts while allowing unchanged files and already-published content", () => {
     expect([
       ...publicationChanges(
@@ -297,6 +312,12 @@ describe("content-only publishing", () => {
     await command(root, ["git", "commit", "-m", "Initial"]);
     await command(root, ["git", "remote", "add", "origin", bare]);
     await command(root, ["git", "push", "-u", "origin", "main"]);
+    // An unpublished local feature may add a document that main does not have.
+    // Deploying unrelated edits must neither fail nor publish that feature.
+    const localNotes = "<!-- block: notes -->\nUnpublished local notes.\n";
+    await writeFile(join(root, "content/local-notes.md"), localNotes);
+    await command(root, ["git", "add", "content/local-notes.md"]);
+    await command(root, ["git", "commit", "-m", "Unpublished local feature"]);
     let head = await command(root, ["git", "rev-parse", "HEAD"]);
     const remoteEdit = async (copy: string) => {
       const worktree = join(root, `remote-edit-${copy.length}`);
@@ -374,6 +395,7 @@ describe("content-only publishing", () => {
         published: (commit, ids) => recordPublication(root, commit, ids),
         progress: (job) => phases.push(job.phase),
         build: async (checkout) => {
+          expect(await contentIds(checkout)).not.toContain("local-notes");
           expect(await readFile(join(checkout, "code.txt"), "utf8")).toBe(
             "published code\n",
           );
@@ -450,6 +472,7 @@ describe("content-only publishing", () => {
     expect(await readFile(join(root, "code.txt"), "utf8")).toBe(
       "unrelated WIP\n",
     );
+    expect(await readFile(join(root, "content/local-notes.md"), "utf8")).toBe(localNotes);
     expect(phases).toContain("building");
     expect(phases).toContain("live");
     expect(

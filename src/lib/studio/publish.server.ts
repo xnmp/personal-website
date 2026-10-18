@@ -112,10 +112,25 @@ const sourcesAt = async (
   ref: string,
   ids: readonly string[],
   baselines: Readonly<Record<string, string>> = {},
-) =>
-  new Map(
+) => {
+  // Absence is part of the three-way comparison, distinct from an empty file.
+  // Enumerate each revision first so missing documents are skipped without
+  // masking invalid revisions or other Git failures.
+  const trees = new Map(
     await Promise.all(
-      ids.map(
+      [...new Set(ids.map((id) => baselines[id] ?? ref))].map(async (revision) =>
+        [revision, new Set((await command(root, [
+          "git", "ls-tree", "-r", "--name-only", "-z", revision, "--", "content/",
+        ], false)).split("\0"))] as const,
+      ),
+    ),
+  );
+  const present = ids.filter((id) =>
+    trees.get(baselines[id] ?? ref)!.has(`content/${id}.md`),
+  );
+  return new Map(
+    await Promise.all(
+      present.map(
         async (id) =>
           [
             id,
@@ -128,6 +143,7 @@ const sourcesAt = async (
       ),
     ),
   );
+};
 
 /** The isolated worktree contains main + content only, irrespective of local code/index/WIP. */
 export async function publishContent(options: {
