@@ -25,6 +25,7 @@ metadata:
   description: "Trying to hand small fixes to coding agents without supervising every command, with a separate reviewer and a local dashboard."
 order: 12
 ---
+
 <!-- block: all-projects -->
 ← all projects
 
@@ -34,10 +35,9 @@ Source on GitHub
 <!-- block: headline -->
 Letting the agents work through my issue queue
 
-<!-- block: intro -->
+<!-- block: introduction -->
 I wanted to hand off small fixes without supervising every command. The idea here is that I label an issue `ai-ready`, an agent works on it, and a separate agent reviews the change. Failed checks or review comments send it back for another attempt.
 
-<!-- block: ownership -->
 It runs on my Linux machine against my repositories. Approved changes go to a development branch. I still decide what reaches production.
 
 <!-- block: workflow-kicker -->
@@ -97,22 +97,17 @@ Underneath
 <!-- block: architecture-title -->
 What I want the harness to keep track of
 
-<!-- block: decisions-label -->
-Restarts
+<!-- block: body-what-i-want-the-harness-to-keep-track-of -->
+### Restarts
 
-<!-- block: decisions-body -->
 The next action is derived from GitHub and local state. Remote writes go through an idempotent layer, so restarting the harness doesn't blindly repeat them.
 
-<!-- block: money-label -->
-Spending
+### Spending
 
-<!-- block: money-body -->
 A run reserves its maximum charge in SQLite before starting. Limits include runs still in flight, which matters when several agents are working at once.
 
-<!-- block: sandbox-label -->
-What an agent can see
+### What an agent can see
 
-<!-- block: sandbox-body -->
 Each agent gets a checkout and private home inside a bubblewrap sandbox. The fixer has a scoped GitHub token. The reviewer doesn't hold one; the harness submits its review.
 
 <!-- block: results-kicker -->

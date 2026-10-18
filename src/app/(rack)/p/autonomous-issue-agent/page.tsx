@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Feature, Features, Folio, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Folio, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
 import { EditableText } from "@/components/studio/EditableText";
@@ -33,8 +33,7 @@ export default function Page() {
           <div>
             <ProjectKicker slug={SLUG} />
             <h1><Markdown {...bindBlock(content, "headline")} inline /></h1>
-            <Markdown {...bindBlock(content, "intro")} />
-            <Markdown {...bindBlock(content, "ownership")} />
+            <Markdown {...bindBlock(content, "introduction")} />
           </div>
           <div>
             <Screen art="/screens/autonomous-issue-agent.png" tone="amber" />
@@ -88,13 +87,7 @@ export default function Page() {
             <h2><Markdown {...bindBlock(content, "architecture-title")} inline /></h2>
           </div>
           <div>
-            <Features>
-              {["decisions", "money", "sandbox"].map((name) => (
-                <Feature key={name} label={contentBlock(content, `${name}-label`)} labelBinding={bindBlock(content, `${name}-label`).binding}>
-                  <Markdown {...bindBlock(content, `${name}-body`)} inline />
-                </Feature>
-              ))}
-            </Features>
+            <Markdown {...bindBlock(content, "body-what-i-want-the-harness-to-keep-track-of")} />
           </div>
         </section>
 
