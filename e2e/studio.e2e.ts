@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Locator } from "@playwright/test";
 import { readFile, writeFile } from "node:fs/promises";
 
 test.use({ channel: "chrome", launchOptions: { args: ["--disable-dev-shm-usage"] } });
@@ -241,5 +241,64 @@ test("retains canonical shortcut source when editing Mac-rendered prose", async 
   } finally {
     await page.waitForLoadState("networkidle").catch(() => {});
     await writeFile("content/projects/tauri-explorer.md", original, "utf8");
+  }
+});
+
+test("drag-selects text on first activation and saves only the selected replacement", async ({ page }) => {
+  const original = await readFile("content/about.md", "utf8");
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  const drag = async (root: Locator, start: number, end: number) => {
+    await root.scrollIntoViewIfNeeded();
+    const points = await root.evaluate((element, { start, end }) => {
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+      walker.nextNode();
+      const text = walker.currentNode;
+      const point = (offset: number) => {
+        const range = document.createRange();
+        range.setStart(text, offset);
+        range.setEnd(text, offset + 1);
+        const rect = range.getBoundingClientRect();
+        return { x: rect.x + 0.3, y: rect.y + rect.height / 2 };
+      };
+      return { from: point(start), to: point(end) };
+    }, { start, end });
+    await page.mouse.move(points.from.x, points.from.y);
+    await page.mouse.down();
+    await page.mouse.move(points.to.x, points.to.y, { steps: 12 });
+    await page.mouse.up();
+  };
+  try {
+    await page.goto("/about");
+    await page.evaluate(() => document.fonts.ready);
+    await page.getByRole("button", { name: "Editing off", exact: true }).click();
+    const headline = page.getByRole("button", { name: "Edit headline", exact: true });
+    const headlineText = (await headline.innerText());
+    await drag(headline, 3, 13);
+    expect(await page.evaluate(() => getSelection()!.toString())).toBe(headlineText.slice(3, 13));
+    await page.keyboard.press("Escape");
+    const intro = page.getByRole("button", { name: "Edit intro", exact: true });
+    const text = await intro.innerText();
+    const background = await intro.evaluate(element => getComputedStyle(element).backgroundColor);
+    await drag(intro, 3, 13);
+    expect(await page.evaluate(() => getSelection()!.toString())).toBe(text.slice(3, 13));
+    await expect(page.getByRole("textbox", { name: "intro", exact: true })).toBeFocused();
+    const active = page.locator('[data-studio-active]');
+    expect(await active.evaluate(element => {
+      const style = getComputedStyle(element);
+      return { outline: style.outlineStyle, width: style.outlineWidth, background: style.backgroundColor, label: getComputedStyle(element, "::after").content };
+    })).toEqual({ outline: "solid", width: "3px", background, label: '"editing"' });
+    await page.keyboard.insertText("selected words");
+    await page.keyboard.press("Control+Enter");
+    const replacement = text.slice(0, 3) + "selected words" + text.slice(13);
+    await expect(page.getByRole("button", { name: "Edit intro", exact: true })).toHaveText(replacement);
+    await expect(page.getByRole("button", { name: "Edit intro · part 2", exact: true })).toContainText("The other half is the games I grew up on");
+    await page.getByRole("button", { name: "Save locally", exact: true }).click();
+    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+    expect(await readFile("content/about.md", "utf8")).toBe(original.replace(text, replacement));
+    expect(errors).toEqual([]);
+  } finally {
+    await page.waitForLoadState("networkidle").catch(() => {});
+    await writeFile("content/about.md", original, "utf8");
   }
 });

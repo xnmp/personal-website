@@ -17,6 +17,7 @@ export const APP_THEME = {
   // The deployed app has Mocha, so Latte uses the nearest available light theme.
   "catppuccin-latte": "solarized",
   gruvbox: "gruvbox",
+  "solarized-light": "solarized",
 } as const satisfies Record<Rice, string>;
 
 export type AppTheme = (typeof APP_THEME)[Rice];
