@@ -3,5 +3,6 @@ import { EditableRegion } from "@/components/studio/EditableRegion";
 import type { ContentBinding } from "@/lib/studio/bindings";
 
 export function Markdown({ binding, ...props }: MarkdownProps & { binding?: ContentBinding }) {
-  return binding ? <EditableRegion binding={binding} markdown={props}><MarkdownRenderer {...props} /></EditableRegion> : <MarkdownRenderer {...props} />;
+  if (binding) return <EditableRegion binding={binding} markdown={props}><MarkdownRenderer {...props} /></EditableRegion>;
+  return props.inline ? <MarkdownRenderer {...props} /> : <div className="content-block"><MarkdownRenderer {...props} /></div>;
 }
