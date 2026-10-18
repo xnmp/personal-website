@@ -1,7 +1,7 @@
 ---
 slug: clt-interactive
 glyph: Φ
-title: Chaos, Added Up
+title: "Intuition on the Central Limit Theorem"
 summary: "An interactive essay about why sums of random things tend towards a bell curve."
 heading: "Chaos, Added Up"
 href: /p/clt-interactive

@@ -36,9 +36,7 @@ GitHub ↗
 A Markdown editor for my notes
 
 <!-- block: introduction -->
-I liked Typora's way of writing Markdown, where the formatting appears as you type. I wanted something along those lines that opened faster. That became Scrivo: open a note to read it, then press Ctrl+E when I want to edit.
-
-The other thing I care about is the file itself. If I change a sentence, I want that sentence changed, without the editor also tidying up my list markers or reformatting a table.
+With Markdown becoming the default document format for LLMs, a markdown document editor replaces an IDE as my most often used work app. I already used Obsidian, but rather annoyingly it couldn't open markdown files that were outside of a Vault. I tried [Typora](https://typora.io/), but again it didn't have the features I wanted - tabs for one, and the startup time was a little long. So I set out to make a Typora clone exactly the way I wanted.
 
 <!-- block: rust -->
 rust
