@@ -25,6 +25,7 @@ metadata:
   description: "Building a Markdown editor around fast opening, live preview and keeping the source text intact."
 order: 2
 ---
+
 <!-- block: all-projects -->
 ← all projects
 
@@ -34,10 +35,9 @@ GitHub ↗
 <!-- block: headline -->
 A Markdown editor for my notes
 
-<!-- block: i-wanted-typora-s-way-of-writing-without-waiting-for-it-to -->
+<!-- block: introduction -->
 I liked Typora's way of writing Markdown, where the formatting appears as you type. I wanted something along those lines that opened faster. That became Scrivo: open a note to read it, then press Ctrl+E when I want to edit.
 
-<!-- block: the-editor-is-built-so-it-cannot-rewrite-your-file -->
 The other thing I care about is the file itself. If I change a sentence, I want that sentence changed, without the editor also tidying up my list markers or reformatting a table.
 
 <!-- block: rust -->
@@ -58,13 +58,11 @@ Reading first, editing when I need to
 <!-- block: from-docs-architecture -->
 A few notes on how the two views fit together.
 
-<!-- block: run-scrivo-notes -->
+<!-- block: body-reading-first-editing-when-i-need-to -->
 With `scrivo notes.md`, Rust renders the reading view while the window opens. Code highlighting can arrive afterwards; the first job is getting the note on screen.
 
-<!-- block: press-ctrl-e-and-the-editor-takes-over -->
 Ctrl+E switches to a CodeMirror editor with live preview. Tables, maths and images render in place. The reading and editing views carry the source position across, so switching doesn't send me back to the top.
 
-<!-- block: it-also-has-tabs-a-command-palette-a-contents-sidebar-find -->
 There are tabs, find, a contents sidebar and a command palette. Named files autosave after I stop typing for a couple of seconds.
 
 <!-- block: technical-choices -->
@@ -73,44 +71,32 @@ The source file
 <!-- block: why-the-editor-cannot-reformat-your-file -->
 Keeping the Markdown I wrote
 
-<!-- block: editors-built-on-prosemirror-milkdown-tiptap-parse-markdow -->
+<!-- block: body-keeping-the-markdown-i-wrote -->
 Some rich-text editors parse Markdown into a document tree, then generate Markdown again when saving. That can change perfectly valid formatting. Scrivo uses CodeMirror decorations over the source text instead, in the same general family of approaches as Obsidian.
 
-<!-- block: the-editor-draws-decorations-over-the-buffer -->
+### Editing the source
+
 The preview sits over the text buffer. Editing a table cell still changes ordinary Markdown and participates in undo.
 
-<!-- block: label-text-is-the-source-of-truth -->
-Editing the source
+### File details
 
-<!-- block: src-domain-text-format -->
 The editor keeps the UTF-8 BOM and dominant line ending style. It refuses invalid UTF-8 rather than silently replacing bytes.
 
-<!-- block: label-bom-and-line-endings-kept -->
-File details
+### Rendering
 
-<!-- block: the-renderer-builds-html-from-parse-events -->
 The reading view builds its HTML from Markdown parse events, rather than passing through the document's own HTML.
 
-<!-- block: label-safe-by-construction -->
-Rendering
+### Recovery
 
-<!-- block: dirty-text-goes-to-a-private-recovery-file-in-app-data-wri -->
 Unsaved text gets a separate recovery copy. After a crash I can restore or discard it, without automatically replacing a newer file on disk.
 
-<!-- block: label-crash-recovery-copy -->
-Recovery
+### Keeping it testable
 
-<!-- block: src-domain-is-pure-typescript-with-no-dom-no-codemirror-vi -->
 The text and file rules live outside the UI. That lets me check them without opening the desktop app.
 
-<!-- block: label-ports-and-adapters -->
-Keeping it testable
+### Long documents
 
-<!-- block: the-renderer-reports-safe-block-boundaries -->
 The reader inserts the first chunk before paint, then adds the rest in idle slices. A long note shouldn't have to finish rendering before I can see its beginning.
-
-<!-- block: label-chunked-first-paint -->
-Long documents
 
 <!-- block: verified-numbers -->
 The original annoyance
@@ -121,11 +107,14 @@ Did it actually open faster?
 <!-- block: source-readme -->
 A Linux comparison from September 2026. The scripts and results are in the repository.
 
-<!-- block: bench-ab -->
+<!-- block: body-did-it-actually-open-faster -->
 I compared the two apps by launching them in turns and checking screenshots for actual document content. Timing when a window appears would count a blank window as success, which isn't the delay I was trying to fix.
 
-<!-- block: measured-on-2026-09-27-with-release-commit-129cd13-typora -->
 These are medians from 12 paired runs per file, using Scrivo commit `129cd13` and Typora 1.14.9-1 on 27 September 2026. Times are milliseconds.
+
+Scrivo's first-viewport time changes very little between these files because the rest of the document arrives later. This measures the beginning being readable, not the whole file being rendered.
+
+This was useful for checking the specific problem I started with. It isn't a comparison of everything the two editors can do.
 
 <!-- block: figure-fig-1-time-to-verified-first-viewport -->
 FIG. 1 · time to verified first viewport
@@ -141,12 +130,6 @@ medium  8.8 KB    Typora      411       965
 large   443 KB    Typora      433     2,016
                   Scrivo      211       356
 ```
-
-<!-- block: scrivo-s-time-barely-moves-with-file-size-because-the-firs -->
-Scrivo's first-viewport time changes very little between these files because the rest of the document arrives later. This measures the beginning being readable, not the whole file being rendered.
-
-<!-- block: the-repo-has-58-commits-between-2026-09-26-and-2026-10-05 -->
-This was useful for checking the specific problem I started with. It isn't a comparison of everything the two editors can do.
 
 <!-- block: frames -->
 The comparison
@@ -181,22 +164,16 @@ Still working on it
 <!-- block: what-did-not-pan-out-and-what-i-have-not-checked -->
 The less tidy bits
 
-<!-- block: several-startup-experiments-came-back-as-noise-and-the-rea -->
+<!-- block: body-the-less-tidy-bits -->
 Quite a few startup tweaks made no meaningful difference. Inserting more chunks per idle slice helped the full document finish sooner, but barely changed when the first viewport appeared. It was a useful distinction to measure.
 
-<!-- block: mixed-line-endings-get-normalised-to-the-dominant-one-on-s -->
-Mixed line endings get normalised to the dominant one on save. The UI says so, but it is a rewrite, and the editor is only lossless for files with one style.
+- Mixed line endings get normalised to the dominant one on save. The UI says so, but it is a rewrite, and the editor is only lossless for files with one style.
+- Recovery writes are asynchronous. A process killed before the write finishes can lose the last few keystrokes.
+- Obsidian theme import covers CSS variables only. Layouts, plugins and companion assets are not supported.
+- I have only benchmarked on Linux, with Typora 1.14.9-1 running headless in the same compositor. Numbers on macOS and Windows are unmeasured.
 
-<!-- block: recovery-writes-are-asynchronous -->
-Recovery writes are asynchronous. A process killed before the write finishes can lose the last few keystrokes.
+### Open question
 
-<!-- block: obsidian-theme-import-covers-css-variables-only -->
-Obsidian theme import covers CSS variables only. Layouts, plugins and companion assets are not supported.
-
-<!-- block: i-have-only-benchmarked-on-linux-with-typora-1 -->
-I have only benchmarked on Linux, with Typora 1.14.9-1 running headless in the same compositor. Numbers on macOS and Windows are unmeasured.
-
-<!-- block: typora-does-more-than-scrivo-does-so-part-of-that-gap-may -->
 Typora does more than Scrivo, and I only measured this on Linux. I'm happy that my notes open faster in that setup; I wouldn't turn those runs into a general claim about the better editor.
 
 <!-- block: materialsrust-tauri-2-typescript-codemirror-6 -->

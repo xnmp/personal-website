@@ -2,7 +2,7 @@ import { bindBlock } from "@/lib/studio/bindings";
 import { EskivQ1 } from "@/components/charts/EskivQ1";
 import { EskivQ2 } from "@/components/charts/EskivQ2";
 import { EskivQ3 } from "@/components/charts/EskivQ3";
-import { Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Folio, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
 import { VideoScreen } from "@/components/rack/VideoScreen";
@@ -73,12 +73,7 @@ export default function EskivPage() {
             <h2><Markdown {...bindBlock(content, "10-000-games-three-questions")} inline /></h2>
           </div>
           <div>
-            <Markdown {...bindBlock(content, "the-engine-was-rewritten-headless-vectorised-enemies-no-py")} />
-            <ol>
-              <li><Markdown {...bindBlock(content, "does-the-agent-move-in-straight-lines")} inline /></li>
-              <li><Markdown {...bindBlock(content, "where-does-it-spend-its-time")} inline /></li>
-              <li><Markdown {...bindBlock(content, "how-does-it-die")} inline /></li>
-            </ol>
+            <Markdown {...bindBlock(content, "body-what-is-it-actually-doing")} />
           </div>
         </section>
 
@@ -139,9 +134,7 @@ export default function EskivPage() {
             <h2><Markdown {...bindBlock(content, "open-questions")} inline /></h2>
           </div>
           <div>
-            <OpenQuestion><Markdown {...bindBlock(content, "if-the-agent-never-gets-hit-it-s-over-spending-its-lookahe")} inline /></OpenQuestion>
-            <OpenQuestion label={contentBlock(content, "label-open-question-ii")} labelBinding={bindBlock(content, "label-open-question-ii").binding}><Markdown {...bindBlock(content, "the-corner-stickiness-in-late-game-emerges-without-being-d")} inline /></OpenQuestion>
-            <OpenQuestion label={contentBlock(content, "label-open-question-iii")} labelBinding={bindBlock(content, "label-open-question-iii").binding}><Markdown {...bindBlock(content, "the-path-ratio-curve-bends-smoothly-through-20-balls")} inline /></OpenQuestion>
+            <Markdown {...bindBlock(content, "body-how-cautious-does-it-need-to-be")} />
           </div>
         </section>
 

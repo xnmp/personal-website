@@ -1,6 +1,6 @@
 import { bindBlock } from "@/lib/studio/bindings";
 import { BwaiBench } from "@/components/charts/BwaiBench";
-import { Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Folio, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
@@ -48,8 +48,7 @@ export default function BwaiPage() {
             <h2><Markdown {...bindBlock(content, "the-feasibility-audit")} inline /></h2>
           </div>
           <div>
-            <Markdown {...bindBlock(content, "the-first-artifact-in-the-repo-is-a-research-report-not-a")} />
-            <Markdown {...bindBlock(content, "so-the-project-follows-the-report-s-own-first-recommendati")} />
+            <Markdown {...bindBlock(content, "body-what-can-i-try-on-one-desktop")} />
           </div>
         </section>
 
@@ -77,8 +76,7 @@ export default function BwaiPage() {
             <h2><Markdown {...bindBlock(content, "recovering-intent-from-replays")} inline /></h2>
           </div>
           <div>
-            <Markdown {...bindBlock(content, "replays-record-commands-not-decisions")} />
-            <Markdown {...bindBlock(content, "stage-3-s-smoke-test-was-a-deliberately-tiny-1")} />
+            <Markdown {...bindBlock(content, "body-turning-replay-commands-into-decisions")} />
           </div>
         </section>
 
@@ -89,18 +87,13 @@ export default function BwaiPage() {
             <Markdown {...bindBlock(content, "sources-current-state")} paragraphClassName="aside-note" />
           </div>
           <div>
-            <Markdown {...bindBlock(content, "the-current-champion-is-champion-bc-v4")} />
-            <Markdown {...bindBlock(content, "the-opponent-was-an-openbw-port-of-blizzard-s-protoss-ai-s")} />
-            <Markdown {...bindBlock(content, "against-the-fixed-opponent-the-champion-won-0-of-50-games")} />
+            <Markdown {...bindBlock(content, "body-the-opponent-was-broken")} />
             <Plate
               figure={contentBlock(content, "figure-fig-2-nine-paired-arms-against-the-fixed-opponent")} figureBinding={bindBlock(content, "figure-fig-2-nine-paired-arms-against-the-fixed-opponent").binding}
               caption={contentBlock(content, "caption-from-history-md-27-jul-2026-five-arms-shown-same-s")} captionBinding={bindBlock(content, "caption-from-history-md-27-jul-2026-five-arms-shown-same-s").binding}
             >
               <Markdown {...bindBlock(content, "code-re-baseline-vs-the-fixed-opponent-n-50-per-arm-seeds")} />
             </Plate>
-            <Markdown {...bindBlock(content, "none-of-the-levers-i-had-been-counting-on-moved-it")} />
-            <Markdown {...bindBlock(content, "the-0-at-t-0")} />
-            <Markdown {...bindBlock(content, "corrections-are-made-in-place")} />
           </div>
         </section>
 
@@ -110,8 +103,7 @@ export default function BwaiPage() {
             <h2><Markdown {...bindBlock(content, "open-questions")} inline /></h2>
           </div>
           <div>
-            <OpenQuestion><Markdown {...bindBlock(content, "6-770-pvp-replays-is-20-less-than-alphastar-had")} inline /></OpenQuestion>
-            <OpenQuestion label={contentBlock(content, "label-open-question-ii")} labelBinding={bindBlock(content, "label-open-question-ii").binding}><Markdown {...bindBlock(content, "macro-actions-cap-the-agent-at-human-plausible-mechanics-w")} inline /></OpenQuestion>
+            <Markdown {...bindBlock(content, "body-getting-the-opening-to-work")} />
           </div>
         </section>
 

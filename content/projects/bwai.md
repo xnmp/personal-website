@@ -24,6 +24,7 @@ metadata:
   description: "Brood War was the game I grew up with. These are notes on trying to train an agent for it, including a broken opponent and a reset of the results."
 order: 8
 ---
+
 <!-- block: all-projects -->
 ← all projects
 
@@ -53,10 +54,9 @@ Getting started
 <!-- block: the-feasibility-audit -->
 What can I try on one desktop?
 
-<!-- block: the-first-artifact-in-the-repo-is-a-research-report-not-a -->
+<!-- block: body-what-can-i-try-on-one-desktop -->
 The first thing in the repo is a feasibility study. AlphaStar-scale training is a long way from what I can run at home. The report helped narrow the starting point to imitation learning from replays, on a small slice of the game.
 
-<!-- block: so-the-project-follows-the-report-s-own-first-recommendati -->
 Before trying a self-play league, I needed to know whether I could run enough games, read the replays and learn anything useful from them. Those became the first stages.
 
 <!-- block: stage-0 -->
@@ -83,10 +83,9 @@ The vocabulary
 <!-- block: recovering-intent-from-replays -->
 Turning replay commands into decisions
 
-<!-- block: replays-record-commands-not-decisions -->
+<!-- block: body-turning-replay-commands-into-decisions -->
 A replay records commands, including a lot of selection and bookkeeping. The early setup used a smaller vocabulary: build, train, expand, attack, retreat and so on. A labeler tries to recover those actions from the replay. On an early 200-replay sample, it accounted for 92.7% of commands.
 
-<!-- block: stage-3-s-smoke-test-was-a-deliberately-tiny-1 -->
 A small model could overfit a cached sample. That was enough to check that the observation and label pipeline carried a learnable signal before spending time on larger training runs.
 
 <!-- block: the-re-baseline -->
@@ -98,14 +97,18 @@ The opponent was broken
 <!-- block: sources-current-state -->
 Sources: `CURRENT_STATE.md`, `HISTORY.md` (26 and 27 Jul 2026), `DECISION_RECORD.md`.
 
-<!-- block: the-current-champion-is-champion-bc-v4 -->
+<!-- block: body-the-opponent-was-broken -->
 An earlier model seemed to win about 76% of games against a scripted opponent. Unfortunately, the interpreter running that opponent was wrong, so that result didn't mean what I thought it did.
 
-<!-- block: the-opponent-was-an-openbw-port-of-blizzard-s-protoss-ai-s -->
 A filter in the interpreter dropped the script's build-wait instructions. The opponent could put down its first pylon before it had built its fifth probe. Every result against that version needed to be redone.
 
-<!-- block: against-the-fixed-opponent-the-champion-won-0-of-50-games -->
 Against the repaired opponent, the model won 3 of 50 games at temperature 0.8, with 13 draws: about 6%. At the old temperature of 0.5 it won none. These are the July re-baseline runs, with a 43,200-frame cap.
+
+Several improvements that had looked promising stopped looking promising after the fix. A larger model didn't help. A build-queue fix made the executor less likely to get stuck, but didn't win more games. Getting the plumbing right and making a stronger player turned out to be separate jobs.
+
+At temperature 0.5, the policy could also fall into a loop of doing nothing: a static base produced a static observation, then another NoOp. I had chosen that temperature against the broken opponent too.
+
+The July runs are kept in the history with their corrections. The October work moved to the real UAlbertaBot executable in retail StarCraft, with the opponent and observation path checked separately. Later imitation-learning and PPO runs learned to make Gateways and Zealots, but the recorded runs still had no wins. These are different runs from the July re-baseline above.
 
 <!-- block: figure-fig-2-nine-paired-arms-against-the-fixed-opponent -->
 FIG. 2 · nine paired arms against the fixed opponent
@@ -128,29 +131,20 @@ re-baseline vs the fixed opponent, n=50 per arm, seeds 7450-7499
   champion_bc_v4 at T=0.5: 0-47-3 (0%) in the 26 Jul run
 ```
 
-<!-- block: none-of-the-levers-i-had-been-counting-on-moved-it -->
-Several improvements that had looked promising stopped looking promising after the fix. A larger model didn't help. A build-queue fix made the executor less likely to get stuck, but didn't win more games. Getting the plumbing right and making a stronger player turned out to be separate jobs.
-
-<!-- block: the-0-at-t-0 -->
-At temperature 0.5, the policy could also fall into a loop of doing nothing: a static base produced a static observation, then another NoOp. I had chosen that temperature against the broken opponent too.
-
-<!-- block: corrections-are-made-in-place -->
-The July runs are kept in the history with their corrections. The October work moved to the real UAlbertaBot executable in retail StarCraft, with the opponent and observation path checked separately. Later imitation-learning and PPO runs learned to make Gateways and Zealots, but the recorded runs still had no wins. These are different runs from the July re-baseline above.
-
 <!-- block: the-rough-edges -->
 Next steps
 
 <!-- block: open-questions -->
 Getting the opening to work
 
-<!-- block: 6-770-pvp-replays-is-20-less-than-alphastar-had -->
+<!-- block: body-getting-the-opening-to-work -->
+### Open question
+
 The October notes trace one opening problem to a delay in the replay labels: the agent kept redirecting a Probe before it finished a building. There is still a lot to get right before a win rate is the interesting part.
 
-<!-- block: macro-actions-cap-the-agent-at-human-plausible-mechanics-w -->
-The later retail runs use a raw command policy rather than the original macro-action vocabulary. That leaves more for the model to learn, including the opening mechanics. I'd like to understand how much of the remaining problem is the data, the policy or the reward.
+### Open question II
 
-<!-- block: label-open-question-ii -->
-Open question II
+The later retail runs use a raw command policy rather than the original macro-action vocabulary. That leaves more for the model to learn, including the opening mechanics. I'd like to understand how much of the remaining problem is the data, the policy or the reward.
 
 <!-- block: materialsc-pybind11-pytorch-openbw -->
 Materials**C++, pybind11, PyTorch, OpenBW**

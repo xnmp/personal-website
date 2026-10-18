@@ -25,6 +25,7 @@ metadata:
   description: "An experiment with variable-driven charts, linked selections and AI-assisted questions about a dataset."
 order: 5
 ---
+
 <!-- block: all-projects -->
 ← all projects
 
@@ -84,32 +85,24 @@ Investigate suggests hypotheses and a view that could test each one. The verdict
 <!-- block: alt-ai-investigate-mode-generating-hypothesis-cards-from-a -->
 AI Investigate mode generating hypothesis cards from a data selection
 
-<!-- block: kbdctrl-i-on-a-selection-generates-hypotheses -->
+<!-- block: body-using-the-ai-suggestions-as-things-to-investigate -->
 Ctrl+I asks for hypotheses about a selection. Each suggestion comes with a projection to try, and I can record whether it held up. The model receives dataset metadata such as column names, types and summary counts, rather than raw rows. That still means the metadata is sent to an external model.
 
-<!-- block: deterministic-zero-dependency-pure-ts-with-permutation-imp -->
+### A local model
+
 There's a random forest written in TypeScript, with feature importance and partial-dependence views. It's another way to look for relationships in the same dataset.
 
-<!-- block: label-own-random-forest -->
-A local model
+### Other chart types
 
-<!-- block: a-documented-chartplugin-contract-on-window -->
 Extra chart types can register through `window.tableauFrog`. That gives the experiment somewhere to grow without putting every chart into the core.
 
-<!-- block: label-plugin-charts -->
-Other chart types
+### Derived columns
 
-<!-- block: log-zscore-bucket-ternary-parsed-and-computed-in-one-colum -->
 Derived columns support things like log, z-score and bucketing. The expressions are parsed, rather than passed to JavaScript's eval.
 
-<!-- block: label-eval-free-expressions -->
-Derived columns
+### Browser and desktop
 
-<!-- block: 27-pure-ts-modules-run-identically-in-a-plain-browser-the -->
 Most of the app runs in a browser. The Tauri shell adds desktop file access.
-
-<!-- block: label-domain-first -->
-Browser and desktop
 
 <!-- block: the-rough-edges -->
 Still figuring it out
@@ -117,14 +110,14 @@ Still figuring it out
 <!-- block: open-questions -->
 Does this make exploration easier?
 
-<!-- block: when-non-significant-differences-are-greyed-out-do-people -->
+<!-- block: body-does-this-make-exploration-easier -->
+### Open question
+
 I'm not sure whether muting differences helps someone read a chart, or makes the remaining colours look more conclusive than they are. Statistical significance doesn't establish why a difference exists.
 
-<!-- block: inferred-chart-kinds-remove-the-gallery-of-charts-decision -->
-Inferring a chart saves a choice until it infers the wrong one. I still need to work out how much manual control belongs alongside that.
+### Open question II
 
-<!-- block: label-open-question-ii -->
-Open question II
+Inferring a chart saves a choice until it infers the wrong one. I still need to work out how much manual control belongs alongside that.
 
 <!-- block: materialssvelte-5-typescript-tauri-v2 -->
 Materials**Svelte 5, TypeScript, Tauri v2**

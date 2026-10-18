@@ -117,6 +117,39 @@ test("native editing preserves paste, blank lines, undo and bidirectional drag s
 });
 
 
+test("project sections edit as a whole through paragraphs, lists, toggles, recovery and save", async ({ page }) => {
+  const saved = await interceptSaves(page);
+  for (const scenario of [
+    { slug: "tauri-explorer", slot: "body-the-little-things-that-bothered-me", parts: ["Marta", "Fileside", "An extra keypress sounds trivial"] },
+    { slug: "scrivo", slot: "body-keeping-the-markdown-i-wrote", parts: ["Some rich-text editors", "### File details", "### Long documents"] },
+  ]) {
+    await page.goto(`/p/${scenario.slug}`);
+    const toggle = page.getByRole("button", { name: "Editing off", exact: true });
+    await expect(toggle).toBeEnabled(); await toggle.click();
+    const label = scenario.slot.replace(/-/g, " ");
+    let input = await openField(page, label);
+    const original = await input.inputValue();
+    for (const part of scenario.parts) expect(original).toContain(part);
+    const source = original + "\n\nA paragraph added to the whole section.\n\n- First note\n- Second note";
+    await input.fill(source); await input.press("Tab");
+    await page.getByRole("button", { name: "Editing on", exact: true }).click();
+    await expect(page.getByText("A paragraph added to the whole section.", { exact: true })).toBeVisible();
+    await expect(page.getByRole("listitem").filter({ hasText: /^Second note$/ })).toBeVisible();
+    await page.getByRole("button", { name: "Editing off", exact: true }).click();
+    input = await openField(page, label); await expect(input).toHaveValue(source);
+    await page.reload();
+    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Recovered unsaved edits");
+    await page.getByRole("button", { name: "Editing off", exact: true }).click();
+    input = await openField(page, label); await expect(input).toHaveValue(source);
+    await input.press("Control+Enter"); await expect(input).toHaveCount(0);
+    await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+    const document = saved.sources.get(`projects/${scenario.slug}`)!;
+    expect(document).toContain(source);
+    input = await openField(page, label); await expect(input).toHaveValue(source);
+    await input.press("Control+Enter");
+  }
+});
+
 test("whole sections render Markdown except while being edited, including after draft recovery and save", async ({ page }) => {
   const saved = await interceptSaves(page);
   await page.goto("/");

@@ -35,8 +35,7 @@ export default function TauriExplorerPage() {
           <ProjectKicker slug={SLUG} />
           <h1><Markdown {...bindBlock(content, "headline")} inline /></h1>
           <Markdown {...bindBlock(content, "subtitle")} />
-          <Markdown {...bindBlock(content, "intro")} />
-          <Markdown {...bindBlock(content, "website-note")} />
+          <Markdown {...bindBlock(content, "introduction")} />
         </div>
         <Screen>
           {Object.entries(APP_THEME).map(([rice, theme]) => (
@@ -54,8 +53,7 @@ export default function TauriExplorerPage() {
           <h2><Markdown {...bindBlock(content, "origin-heading")} inline /></h2>
         </div>
         <div>
-          <Markdown {...bindBlock(content, "origin-story")} />
-          <Markdown {...bindBlock(content, "origin-aside")} />
+          <Markdown {...bindBlock(content, "body-the-little-things-that-bothered-me")} />
         </div>
       </section>
       <section className="section">
@@ -64,8 +62,7 @@ export default function TauriExplorerPage() {
           <h2><Markdown {...bindBlock(content, "building-heading")} inline /></h2>
         </div>
         <div>
-          <Markdown {...bindBlock(content, "building-body")} />
-          <Markdown {...bindBlock(content, "quick-open-note")} />
+          <Markdown {...bindBlock(content, "body-what-grew-out-of-that")} />
         </div>
       </section>
       <section className="shots" aria-label="Screenshots">

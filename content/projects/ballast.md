@@ -24,16 +24,16 @@ metadata:
   description: "My Daylio-like mood diary, the rewrite that made it smaller, and why its entries live in a folder of Markdown files."
 order: 3
 ---
+
 <!-- block: all-projects -->
 ← all projects
 
 <!-- block: headline -->
 A diary I can keep as files
 
-<!-- block: the-tagline-in-the-readme-is-the-weight-that-keeps-a-ship -->
+<!-- block: introduction -->
 I used Daylio, and I like that basic routine: pick a mood, tick a few activities, write something if I feel like it. Ballast keeps that shape, with the entries stored as Markdown files I can read outside the app.
 
-<!-- block: the-data-is-a-folder-of-files-i-can-grep-and-sync-with-syn -->
 The folder can be searched with grep and synced with Syncthing. There's a desktop app and an Android build. The source is private.
 
 <!-- block: svelte-5 -->
@@ -54,13 +54,11 @@ What it is
 <!-- block: daylio-s-loop-minus-the-account -->
 The bit I wanted to keep from Daylio
 
-<!-- block: each-entry-has-a-timestamp-one-of-five-moods-rad-good-meh -->
+<!-- block: body-the-bit-i-wanted-to-keep-from-daylio -->
 I kept Daylio's five mood levels: rad, good, meh, bad and awful. The activities are mine to define. Beyond that, an entry is a time and whatever I want to write.
 
-<!-- block: the-bottom-nav-is-entries-a-plus-button-calendar-and-more -->
 I tend to log a morning and an evening, so several entries on the same day are normal. The diary and calendar are just two ways into those entries.
 
-<!-- block: the-app-does-no-stats-goals-streaks-or-reminders -->
 An earlier version tried to do much more. The rewrite cut it back to the diary. I'm trying to let actual use decide what gets added.
 
 <!-- block: the-data -->
@@ -107,43 +105,31 @@ Living with plain files
 <!-- block: treating-the-files-as-something-other-tools-will-edit -->
 The app isn't the only thing touching them
 
-<!-- block: parseentry-in-src-lib-persistence-entryfile -->
+<!-- block: body-the-app-isnt-the-only-thing-touching-them -->
+### A broken entry
+
 If an entry's frontmatter won't parse, it stays readable as text and is kept unchanged. Hand-editing a file shouldn't make the app destroy it.
 
-<!-- block: label-parsers-never-throw -->
-A broken entry
+### The old diary
 
-<!-- block: scripts-import-real -->
 The Daylio importer writes into a new folder and verifies the result before making it visible. It refuses to import over an existing diary.
 
-<!-- block: label-staged-daylio-import -->
-The old diary
+### Desktop and Android
 
-<!-- block: a-pure-domain-a-framework-free-application-layer-and-one-s -->
 The diary rules are shared. Desktop files, Android's storage picker and in-memory test storage sit behind the same interface.
 
-<!-- block: label-ports-and-adapters -->
-Desktop and Android
+### The native bits
 
-<!-- block: three-in-repo-plugins-each-rust-plus-kotlin-data-folder-th -->
 A few Rust and Kotlin plugins handle the Android data folder, notifications and app updates.
 
-<!-- block: label-custom-tauri-plugins -->
-The native bits
+### Briefs from elsewhere
 
-<!-- block: something-else-can-drop-a-markdown-brief-and-a-latest -->
 An external process can leave a Markdown brief in the synced folder. The Android app checks for it and can post a notification.
 
-<!-- block: label-daily-brief-via-workmanager -->
-Briefs from elsewhere
+### Notes for future fixes
 
-<!-- block: the-more-screen-files-bugs-and-feature-requests-as-github -->
 The More screen can turn a bug or feature idea into a GitHub issue, so I can record it from the app.
 
-<!-- block: label-feedback-to-github-issues -->
-Notes for future fixes
-
-<!-- block: writes-go-through-a-temporary-file-and-a-rename-on-desktop -->
 Syncthing means a file can arrive while the app is open. New entries use exclusive create, and edits check the revision before saving. That helps, though it doesn't make concurrent edits impossible to lose.
 
 <!-- block: verified-numbers -->
@@ -155,19 +141,12 @@ Making it smaller
 <!-- block: from-docs-handover-2026-10-02-release -->
 Notes from the rewrite and the October 2026 release.
 
-<!-- block: 133-commits-between-2026-07-05-and-2026-10-02 -->
-The first version was a much larger personal research instrument.
+<!-- block: body-making-it-smaller -->
+- The first version was a much larger personal research instrument.
+- The rewrite kept the entry, calendar and activity management, and removed the old experiments, protocols and job board.
+- Version 0.3.5 reached Google Play's internal testing track.
+- There is also a background-idle check. A diary sitting in the background has very little reason to keep the phone busy.
 
-<!-- block: 599-unit-tests-and-102-browser-e2e-tests-passed-for-0 -->
-The rewrite kept the entry, calendar and activity management, and removed the old experiments, protocols and job board.
-
-<!-- block: the-signed-android-bundle-for-0 -->
-Version 0.3.5 reached Google Play's internal testing track.
-
-<!-- block: a-ci-gate-measures-idle-background-behaviour-on-an-api-35 -->
-There is also a background-idle check. A diary sitting in the background has very little reason to keep the phone busy.
-
-<!-- block: version-1-was-a-much-larger-personal-research-instrument-a -->
 The old version is still on the `pre-rewrite` tag. The current repository calls the app Afterglow; the Ballast data-folder name is kept for compatibility.
 
 <!-- block: rough-edges -->
@@ -176,19 +155,15 @@ Unfinished bits
 <!-- block: the-rewrite-that-cut-scope-and-what-is-unsettled -->
 What I might come back to
 
-<!-- block: docs-rewrite-v1 -->
+<!-- block: body-what-i-might-come-back-to -->
 For now, sync belongs to Syncthing. Stats, goals and streaks were left out of the rewrite. The plan is to add things when I actually miss them.
 
-<!-- block: edits-are-checked-against-a-revision-just-before-they-are -->
-Edits are checked against a revision just before they are written, but the storage providers have no atomic compare-and-swap. A writer that lands in the gap after that check can still win.
+- Edits are checked against a revision just before they are written, but the storage providers have no atomic compare-and-swap. A writer that lands in the gap after that check can still win.
+- The last release reached Play’s internal testing track. The handover says installation on a physical phone was not observed during that session.
+- The source is private, so this page is a description of my setup rather than something someone else can reproduce from a public checkout.
 
-<!-- block: the-last-release-reached-play-s-internal-testing-track -->
-The last release reached Play’s internal testing track. The handover says installation on a physical phone was not observed during that session.
+### Open question
 
-<!-- block: the-source-is-private-so-the-numbers-above-are-mine-and-no -->
-The source is private, so this page is a description of my setup rather than something someone else can reproduce from a public checkout.
-
-<!-- block: stats-are-deferred-not-ruled-out-and-the-bottom-nav-has-ro -->
 I haven't decided when I'd bring statistics back. I'd rather use the diary for a while and see which questions I keep wanting to ask it.
 
 <!-- block: materialssvelte-5-tauri-2-rust-kotlin -->
