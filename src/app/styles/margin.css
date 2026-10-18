@@ -224,7 +224,7 @@
   margin-bottom: 28px; text-wrap: balance;
 }
 :root[data-style="margin"] .about-page .detail-hero .kicker { display: none; }
-:root[data-style="margin"] .about-page .detail-hero p { max-width: 68ch; font-size: 16px; line-height: 1.75; text-wrap: pretty; }
+:root[data-style="margin"] .about-page .detail-hero p { max-width: 68ch; font-size: inherit; line-height: inherit; text-wrap: pretty; }
 :root[data-style="margin"] .about-contents {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 24px;
   padding: 18px 0; border-block: 1px solid var(--rule); margin-bottom: 32px;
@@ -240,7 +240,7 @@
 :root[data-style="margin"] .about-page .section > :first-child { padding-left: 18px; border-left: 1px solid var(--signal); }
 :root[data-style="margin"] .about-page .section-kicker { display: none; }
 :root[data-style="margin"] .about-page .section h2 { font-weight: 400; font-size: 28px; line-height: 1.15; }
-:root[data-style="margin"] .about-page .section p { font-size: 15px; line-height: 1.8; text-wrap: pretty; }
+:root[data-style="margin"] .about-page .section p { font-size: inherit; line-height: 1.55; color: var(--print-soft); text-wrap: pretty; }
 :root[data-style="margin"] .about-page .section .aside-note { font: 16px/1.5 var(--font-display), Georgia, serif; }
 :root[data-style="margin"] .about-page .section p:last-child { margin-bottom: 0; }
 :root[data-style="margin"] .about-page > .colophon {
