@@ -1,5 +1,5 @@
 import { bindBlock } from "@/lib/studio/bindings";
-import { Feature, Features, Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Folio, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
@@ -28,8 +28,7 @@ export default function Page() {
           <div>
             <ProjectKicker slug="ballast" />
             <h1><Markdown {...bindBlock(content, "headline")} inline /></h1>
-            <Markdown {...bindBlock(content, "the-tagline-in-the-readme-is-the-weight-that-keeps-a-ship")} />
-            <Markdown {...bindBlock(content, "the-data-is-a-folder-of-files-i-can-grep-and-sync-with-syn")} />
+            <Markdown {...bindBlock(content, "introduction")} />
           </div>
           <div>
             <Screen art="/screens/ballast.png" tone="olive" />
@@ -48,9 +47,7 @@ export default function Page() {
             <h2><Markdown {...bindBlock(content, "daylio-s-loop-minus-the-account")} inline /></h2>
           </div>
           <div>
-            <Markdown {...bindBlock(content, "each-entry-has-a-timestamp-one-of-five-moods-rad-good-meh")} />
-            <Markdown {...bindBlock(content, "the-bottom-nav-is-entries-a-plus-button-calendar-and-more")} />
-            <Markdown {...bindBlock(content, "the-app-does-no-stats-goals-streaks-or-reminders")} />
+            <Markdown {...bindBlock(content, "body-the-bit-i-wanted-to-keep-from-daylio")} />
           </div>
         </section>
 
@@ -77,15 +74,7 @@ export default function Page() {
             <h2><Markdown {...bindBlock(content, "treating-the-files-as-something-other-tools-will-edit")} inline /></h2>
           </div>
           <div>
-            <Features>
-              <Feature label={contentBlock(content, "label-parsers-never-throw")} labelBinding={bindBlock(content, "label-parsers-never-throw").binding}><Markdown {...bindBlock(content, "parseentry-in-src-lib-persistence-entryfile")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-staged-daylio-import")} labelBinding={bindBlock(content, "label-staged-daylio-import").binding}><Markdown {...bindBlock(content, "scripts-import-real")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-ports-and-adapters")} labelBinding={bindBlock(content, "label-ports-and-adapters").binding}><Markdown {...bindBlock(content, "a-pure-domain-a-framework-free-application-layer-and-one-s")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-custom-tauri-plugins")} labelBinding={bindBlock(content, "label-custom-tauri-plugins").binding}><Markdown {...bindBlock(content, "three-in-repo-plugins-each-rust-plus-kotlin-data-folder-th")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-daily-brief-via-workmanager")} labelBinding={bindBlock(content, "label-daily-brief-via-workmanager").binding}><Markdown {...bindBlock(content, "something-else-can-drop-a-markdown-brief-and-a-latest")} inline /></Feature>
-              <Feature label={contentBlock(content, "label-feedback-to-github-issues")} labelBinding={bindBlock(content, "label-feedback-to-github-issues").binding}><Markdown {...bindBlock(content, "the-more-screen-files-bugs-and-feature-requests-as-github")} inline /></Feature>
-            </Features>
-            <Markdown {...bindBlock(content, "writes-go-through-a-temporary-file-and-a-rename-on-desktop")} />
+            <Markdown {...bindBlock(content, "body-the-app-isnt-the-only-thing-touching-them")} />
           </div>
         </section>
 
@@ -96,13 +85,7 @@ export default function Page() {
             <Markdown {...bindBlock(content, "from-docs-handover-2026-10-02-release")} paragraphClassName="aside-note" />
           </div>
           <div>
-            <ul>
-              <li><Markdown {...bindBlock(content, "133-commits-between-2026-07-05-and-2026-10-02")} inline /></li>
-              <li><Markdown {...bindBlock(content, "599-unit-tests-and-102-browser-e2e-tests-passed-for-0")} inline /></li>
-              <li><Markdown {...bindBlock(content, "the-signed-android-bundle-for-0")} inline /></li>
-              <li><Markdown {...bindBlock(content, "a-ci-gate-measures-idle-background-behaviour-on-an-api-35")} inline /></li>
-            </ul>
-            <Markdown {...bindBlock(content, "version-1-was-a-much-larger-personal-research-instrument-a")} />
+            <Markdown {...bindBlock(content, "body-making-it-smaller")} />
           </div>
         </section>
 
@@ -112,13 +95,7 @@ export default function Page() {
             <h2><Markdown {...bindBlock(content, "the-rewrite-that-cut-scope-and-what-is-unsettled")} inline /></h2>
           </div>
           <div>
-            <Markdown {...bindBlock(content, "docs-rewrite-v1")} />
-            <ul>
-              <li><Markdown {...bindBlock(content, "edits-are-checked-against-a-revision-just-before-they-are")} inline /></li>
-              <li><Markdown {...bindBlock(content, "the-last-release-reached-play-s-internal-testing-track")} inline /></li>
-              <li><Markdown {...bindBlock(content, "the-source-is-private-so-the-numbers-above-are-mine-and-no")} inline /></li>
-            </ul>
-            <OpenQuestion><Markdown {...bindBlock(content, "stats-are-deferred-not-ruled-out-and-the-bottom-nav-has-ro")} inline /></OpenQuestion>
+            <Markdown {...bindBlock(content, "body-what-i-might-come-back-to")} />
           </div>
         </section>
 

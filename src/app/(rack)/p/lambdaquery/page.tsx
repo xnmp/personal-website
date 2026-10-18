@@ -1,5 +1,5 @@
 import { bindBlock } from "@/lib/studio/bindings";
-import { Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Folio, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
@@ -74,12 +74,7 @@ export default function LambdaQueryPage() {
             <h2><Markdown {...bindBlock(content, "passes-to-a-fixpoint")} inline /></h2>
           </div>
           <div>
-            <ol>
-              <li><Markdown {...bindBlock(content, "decorrelate")} inline /></li>
-              <li><Markdown {...bindBlock(content, "flatten")} inline /></li>
-              <li><Markdown {...bindBlock(content, "optimize-cost-only")} inline /></li>
-            </ol>
-            <Markdown {...bindBlock(content, "one-hard-won-invariant-straight-from-a-comment-in-compile")} />
+            <Markdown {...bindBlock(content, "body-untangling-the-nested-queries")} />
           </div>
         </section>
 
@@ -90,12 +85,7 @@ export default function LambdaQueryPage() {
             <Markdown {...bindBlock(content, "a-quarter-of-the-codebase-is-the-adversarial-suite")} paragraphClassName="aside-note" />
           </div>
           <div>
-            <Markdown {...bindBlock(content, "the-fixture-data-is-built-to-hurt-a-school-with-zero-depar")} />
-            <Markdown {...bindBlock(content, "the-harness-caught-two-genuine-compiler-bugs-both-document")} />
-            <ol>
-              <li><Markdown {...bindBlock(content, "unparenthesized-or")} inline /></li>
-              <li><Markdown {...bindBlock(content, "unscoped-cross-scope-joins")} inline /></li>
-            </ol>
+            <Markdown {...bindBlock(content, "body-running-the-same-question-in-python-and-sql")} />
           </div>
         </section>
 
@@ -105,8 +95,7 @@ export default function LambdaQueryPage() {
             <h2><Markdown {...bindBlock(content, "open-questions")} inline /></h2>
           </div>
           <div>
-            <OpenQuestion><Markdown {...bindBlock(content, "the-or-precedence-bug-survived-148-structural-tests-and-fe")} inline /></OpenQuestion>
-            <OpenQuestion label={contentBlock(content, "label-open-question-ii")} labelBinding={bindBlock(content, "label-open-question-ii").binding}><Markdown {...bindBlock(content, "child-to-parent-traversal-many-to-one-get-foreign-and-quer")} inline /></OpenQuestion>
+            <Markdown {...bindBlock(content, "body-what-id-work-on-next")} />
           </div>
         </section>
 

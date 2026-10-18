@@ -1,7 +1,7 @@
 import { bindBlock } from "@/lib/studio/bindings";
 import { ZsyLadder } from "@/components/charts/ZsyLadder";
 import { ZsyRuns } from "@/components/charts/ZsyRuns";
-import { Folio, OpenQuestion, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
+import { Folio, Plate, ProjectKicker, ProjectMeta, RunningHead, Tag, Tags } from "@/components/notebook";
 import { Markdown } from "@/components/notebook/Markdown";
 import { Key, Screen } from "@/components/rack";
 import { contentBlock, contentField } from "@/lib/content";
@@ -53,8 +53,7 @@ export default function ZsyPage() {
             <h2><Markdown {...bindBlock(content, "self-play-with-zero-signal")} inline /></h2>
           </div>
           <div>
-            <Markdown {...bindBlock(content, "the-obvious-approach-douzero-style-deep-monte-carlo-self-p")} />
-            <Markdown {...bindBlock(content, "what-replaced-it-is-a-recipe-and-each-step-is-measurable-c")} />
+            <Markdown {...bindBlock(content, "body-self-play-wasnt-getting-me-very-far")} />
           </div>
         </section>
 
@@ -89,8 +88,7 @@ export default function ZsyPage() {
             >
               <ZsyRuns />
             </Plate>
-            <Markdown {...bindBlock(content, "each-generation-trains-against-a-mixture-of-the-frozen-pre")} paragraphStyle={{ marginTop: 20 }} />
-            <Markdown {...bindBlock(content, "supporting-cast-a-pyo3-rust-engine-that-simulates-a-game-i")} />
+            <Markdown {...bindBlock(content, "body-training-against-earlier-versions")} />
           </div>
         </section>
 
@@ -100,8 +98,7 @@ export default function ZsyPage() {
             <h2><Markdown {...bindBlock(content, "open-questions")} inline /></h2>
           </div>
           <div>
-            <OpenQuestion><Markdown {...bindBlock(content, "gen-3-s-proxy-matchups-are-flat-against-a-same-class-ancho")} inline /></OpenQuestion>
-            <OpenQuestion label={contentBlock(content, "label-open-question-ii")} labelBinding={bindBlock(content, "label-open-question-ii").binding}><Markdown {...bindBlock(content, "winning-games-average-1")} inline /></OpenQuestion>
+            <Markdown {...bindBlock(content, "body-where-the-next-improvement-might-come-from")} />
           </div>
         </section>
 

@@ -6,6 +6,10 @@ edits without a CMS, database or browser fetch.
 
 For project-page copy, follow [the voice notes](content-voice.md). Keep it a
 light starting draft for the owner to edit, grounded in their own experiences.
+Each section's prose, lists and small subheadings belong in one Markdown block
+and one `Markdown` binding. Paragraph breaks must stay inside that block. Keep
+section titles, subtitles and figure captions separate; do not create a new
+authored slot for each paragraph or list item.
 
 ## Find the file
 

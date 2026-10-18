@@ -79,10 +79,9 @@ A Fully Featured File Explorer
 <!-- block: subtitle -->
 By fully featured I really do mean fully featured
 
-<!-- block: intro -->
+<!-- block: introduction -->
 When I was tuning my setup earlier this year and really going hard on the productivity, I realized that there was no file explorer app on any platform that had everything I wanted. So I built it.
 
-<!-- block: website-note -->
 Downloads, installation instructions and the feature list are on the [Tauri Explorer website ↗]({{website}}). This page is where I keep the story of building it.
 
 <!-- block: screenshot-alt -->
@@ -94,12 +93,11 @@ Where it started
 <!-- block: origin-heading -->
 The little things that bothered me
 
-<!-- block: origin-story -->
+<!-- block: body-the-little-things-that-bothered-me -->
 I used Marta for a while, but I really wanted to customise it. For example, after selecting a folder with Ctrl+P, I'd have to hit Enter twice. And I wanted to hide the status bar. Small things, but they're the sort of things I notice every time I use an app.
 
 I used Fileside on Windows for a while because it had multiple panes and was minimal, but there wasn't even a thumbnail view. I kept finding bits I liked in different file explorers, without finding one that had everything I wanted.
 
-<!-- block: origin-aside -->
 This is the sort of thing I mean in the About section about tuning a workflow. An extra keypress sounds trivial, but getting all those little choices how I want them is quite satisfying.
 
 <!-- block: building-kicker -->
@@ -108,12 +106,11 @@ Building it
 <!-- block: building-heading -->
 What grew out of that
 
-<!-- block: building-body -->
+<!-- block: body-what-grew-out-of-that -->
 It's written in Rust and Svelte, using Tauri. A lot of the interaction comes from my editor: quick open, content search, a command palette. Then there are the things I want from a file explorer, like thumbnails, different pane layouts and previews.
 
 The point is being able to choose how all of that fits together. Sidebars, columns, the status bar and the terminal can be shown or hidden, and the shortcuts can be changed.
 
-<!-- block: quick-open-note -->
 One detail I like is that quick open takes recent use into account. It uses `nucleo` for fuzzy matching and a zoxide-style frecency score, so a path I've just been working in can come before an old frequent match. Content search uses ripgrep's crates directly.
 
 <!-- block: materials -->
