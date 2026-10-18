@@ -2242,7 +2242,8 @@ pre code {
 :root[data-rice="rapture"] [data-rice-shot="rapture"] img,
 :root[data-rice="ayu-mirage"] [data-rice-shot="ayu-mirage"] img,
 :root[data-rice="catppuccin-latte"] [data-rice-shot="catppuccin-latte"] img,
-:root[data-rice="gruvbox"] [data-rice-shot="gruvbox"] img {
+:root[data-rice="gruvbox"] [data-rice-shot="gruvbox"] img,
+:root[data-rice="solarized-light"] [data-rice-shot="solarized-light"] img {
   display: block;
 }
 

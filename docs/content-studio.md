@@ -9,7 +9,7 @@ Open **http://127.0.0.1:3210**. `STUDIO_PORT=3211 bun run dev` chooses another p
 
 The editor opens the **actual website**. Navigate its usual pages and links; there is no separate preview or editing layout. The only added interface is the small editing/deployment dock at the bottom-left.
 
-The editor starts with **Editing off**. Press **Ctrl+E** (Cmd+E on Mac), or click the status indicator in the bottom-left dock, to toggle editing. Pencil badges appear on editable text only while editing is on.
+The editor starts with **Editing off**. Press **Ctrl+E** (Cmd+E on Mac), or click the status indicator in the bottom-left dock, to toggle editing. Pencil badges appear on hover or keyboard focus while editing is on. The active block has an accent outline and an “editing” label, with its background unchanged. Drag through text to select and replace it directly.
 
 Click authored text, or focus its pencil target and press Enter, to edit it in place. Each paragraph edits separately. Text keeps its rendered font, position, links and formatting while focused; edits are written back to the corresponding Markdown text. Shared `{{field}}` values and platform-specific helpers stay intact. Click outside or press Ctrl/Cmd+Enter to finish. Enter also finishes single-line fields; Escape cancels the current edit. Turn editing off to follow text links normally (Ctrl/Cmd-click also follows links while editing). Formatting syntax, link destinations and structural changes can be edited in the Markdown files.
 

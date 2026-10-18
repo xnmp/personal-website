@@ -2,6 +2,7 @@
  * Ayu: https://github.com/ayu-theme/ayu-colors/blob/master/themes/mirage.yaml
  * Latte: https://github.com/catppuccin/palette/blob/main/palette.json (v1.8.0)
  * Gruvbox: https://github.com/morhetz/gruvbox/blob/master/colors/gruvbox.vim
+ * Solarized: https://ethanschoonover.com/solarized/
  * Text roles are adjusted where necessary for 4.5:1 surface contrast.
  */
 const palette = ({ bg, panel, ink, muted, rule, red, yellow, cyan, green, accent, light = false }) => ({
@@ -20,4 +21,10 @@ export const EXTRA_PALETTES = {
     red: "#cf0c36", yellow: "#8f5b0d", cyan: "#0f7278", green: "#2d751f", accent: "#8737ed", light: true }),
   gruvbox: palette({ bg: "#282828", panel: "#32302f", ink: "#ebdbb2", muted: "#a89984", rule: "#504945",
     red: "#ff6b59", yellow: "#fabd2f", cyan: "#8ec07c", green: "#b8bb26", accent: "#fe8019" }),
+  "solarized-light": {
+    ...palette({ bg: "#fdf6e3", panel: "#eee8d5", ink: "#073642", muted: "#576c73", rule: "#93a1a1",
+      red: "#c52d2a", yellow: "#846400", cyan: "#1e746d", green: "#606f00", accent: "#1e6da5", light: true }),
+    "--code-bg": "rgba(7, 54, 66, 0.05)",
+    "--shadow": "rgba(0, 43, 54, 0.18)",
+  },
 };

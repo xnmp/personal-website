@@ -1921,7 +1921,8 @@
     --k-app: url(/tauri/hero-quick-open-wide-ayu-mirage.webp);
   }
 
-  :root[data-style="paper"][data-rice="catppuccin-latte"] {
+  :root[data-style="paper"][data-rice="catppuccin-latte"],
+  :root[data-style="paper"][data-rice="solarized-light"] {
     --k-app: url(/tauri/hero-quick-open-wide-solarized.webp);
   }
 

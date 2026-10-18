@@ -49,7 +49,9 @@ function EditableMarkdownRoot({ node, children, className, style, ...props }: Ma
       if (!canEdit || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const leaf = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-studio-text]") : null;
       if (leaf && Number(leaf.dataset.studioText) === editing.session?.active) return;
-      event.preventDefault();
+      // Native pointer handling starts drag selection when the text is hit.
+      // Only the pencil/empty-space button needs to take over focus itself.
+      if (!leaf) event.preventDefault();
       activate(event.currentTarget, event.target, { x: event.clientX, y: event.clientY });
     },
     onClickCapture: (event: React.MouseEvent<HTMLElement>) => {
