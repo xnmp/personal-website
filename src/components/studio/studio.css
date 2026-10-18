@@ -50,7 +50,6 @@ pre[data-studio-editable] { --studio-edit-top: 4px; --studio-edit-right: 4px; }
 .studio-input::selection { background: var(--signal); color: var(--paper); }
 .studio-region:has(> .studio-input) { display: inline-block; max-width: 100%; vertical-align: middle; }
 .studio-region > .studio-input { width: auto; }
-.studio-list-source { list-style: none; }
 [data-studio-active] {
   position: relative; outline: 3px solid var(--signal); outline-offset: 4px; border-radius: 3px;
 }

@@ -1,5 +1,5 @@
-import { Children, Fragment, isValidElement, type ComponentType, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
-import ReactMarkdown, { type Components } from "react-markdown";
+import { Children, Fragment, isValidElement, type CSSProperties, type ReactNode } from "react";
+import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkDirective from "remark-directive";
 import rehypeHighlight from "rehype-highlight";
@@ -14,18 +14,6 @@ import { MARKDOWN_VARIANTS } from "./markdown-variants";
 import type { Root } from "mdast";
 import type { Node } from "unist";
 import type { Root as HtmlRoot, Element } from "hast";
-import type { PluggableList } from "unified";
-import { sourceRange, type SourceRange } from "@/lib/studio/segments";
-
-declare module "hast" {
-  interface ElementData {
-    studioRoot?: number;
-    studioRootTag?: string;
-    studioParagraphClassName?: string;
-    studioParagraphStyle?: CSSProperties;
-    studioRange?: SourceRange;
-  }
-}
 
 function textContent(children: ReactNode): string {
   return Children.toArray(children).map(child =>
@@ -62,8 +50,7 @@ function inlineDirectives() {
 
 /** No raw HTML or executable MDX. Inline mode fits headings, captions and keys. */
 export type MarkdownProps = { text: string; inline?: boolean; allowLinks?: boolean; shortcutOS?: OS | null; paragraphClassName?: string; paragraphStyle?: CSSProperties };
-export type MarkdownRootProps = HTMLAttributes<HTMLElement> & { node?: Element };
-const INLINE_ELEMENTS = new Set(["a", "br", "code", "del", "em", "strong", "span", "wbr", "studio-root"]);
+const INLINE_ELEMENTS = new Set(["a", "br", "code", "del", "em", "strong", "span", "wbr"]);
 
 /** Adapt prose nodes, after parsing emphasis; code and link destinations stay literal. */
 function markdownShortcuts({ os }: { os?: OS | null }) {
@@ -95,43 +82,14 @@ function markdownTypography({ inline }: { inline: boolean }) {
     visit(tree);
   };
 }
-type EditingOptions = { inline?: boolean; paragraphClassName?: string; paragraphStyle?: CSSProperties; source?: string; fields?: Record<string, string | number> };
-/** Identify whole authored blocks. Native textareas edit these source slices directly. */
-function markRoots(options: EditingOptions) {
-  return (tree: HtmlRoot) => {
-    let index = 0;
-    tree.children.forEach(node => {
-      if (node.type !== "element") return;
-      const tag = node.tagName;
-      let range: SourceRange | undefined;
-      const start = node.position?.start.offset;
-      const end = node.position?.end.offset;
-      if (options.source !== undefined && start !== undefined && end !== undefined) {
-        try { range = sourceRange(options.source, { start, end }, options.fields); } catch { /* Generated markup has no authored range. */ }
-      }
-      node.data = { ...node.data, studioRoot: index++, studioRootTag: options.inline ? "span" : tag, studioRange: range };
-      if (tag === "p") {
-        node.data.studioParagraphClassName = options.inline ? "studio-region" : options.paragraphClassName;
-        node.data.studioParagraphStyle = options.inline ? undefined : options.paragraphStyle;
-      }
-      node.tagName = "studio-root";
-    });
-    if (!index && !options.source?.trim()) tree.children.push({
-      type: "element", tagName: "studio-root", properties: {}, children: [],
-      data: { studioRoot: 0, studioRootTag: options.inline ? "span" : "p", studioRange: { start: 0, end: options.source?.length ?? 0 } },
-    });
-  };
-}
-export function MarkdownRenderer({ text, inline = false, allowLinks = true, shortcutOS, paragraphClassName, paragraphStyle, rootComponent, sourceValue, sourceFields }: MarkdownProps & { rootComponent?: ComponentType<MarkdownRootProps>; sourceValue?: string; sourceFields?: Record<string, string | number> }) {
-  const rootPlugins: PluggableList = rootComponent ? [[markRoots, { inline, paragraphClassName, paragraphStyle, source: sourceValue, fields: sourceFields }]] : [];
+export function MarkdownRenderer({ text, inline = false, allowLinks = true, shortcutOS, paragraphClassName, paragraphStyle }: MarkdownProps) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkDirective, inlineDirectives, [markdownShortcuts, { os: shortcutOS }]]}
-      rehypePlugins={[[rehypeHighlight, { languages: { javascript, bash }, ignoreMissing: true }], [markdownTypography, { inline }], ...rootPlugins]}
+      rehypePlugins={[[rehypeHighlight, { languages: { javascript, bash }, ignoreMissing: true }], [markdownTypography, { inline }]]}
       allowElement={element => (!inline || INLINE_ELEMENTS.has(element.tagName)) && (allowLinks || element.tagName !== "a")}
       unwrapDisallowed
       components={{
-        ...(rootComponent ? { "studio-root": rootComponent } as Components : {}),
         p: ({ children }) => inline ? <Fragment>{children}</Fragment> : <p className={paragraphClassName} style={paragraphStyle}>{children}</p>,
         span: ({ node, children, className }) => {
           switch (node?.properties["data-inline"]) {
