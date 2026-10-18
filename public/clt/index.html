@@ -1,0 +1,1832 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>Chaos, Added Up — an interactive tour of the Central Limit Theorem</title>
+
+<style>
+/* ============ tokens ============ */
+:root{
+  --bg:#FAF9F5; --panel:#FFFFFF; --panel2:#F4F2EB;
+  --ink:#23262E; --ink2:#5B5F6B; --ink3:#9094A0;
+  --line:#E4E1D6; --line2:#EFEDE4;
+  --blue:#3B66D6; --gold:#A87700; --rose:#C13A6B;
+  --gold-soft:rgba(168,119,0,.10); --blue-soft:rgba(59,102,214,.08);
+  --glow:rgba(0,0,0,0);
+  --shadow:0 1px 2px rgba(35,38,46,.05),0 8px 24px -12px rgba(35,38,46,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0F1522; --panel:#141B2B; --panel2:#1A2234;
+    --ink:#E8EAF2; --ink2:#A8AEC0; --ink3:#6E7488;
+    --line:#26304A; --line2:#1C2438;
+    --blue:#5B84E8; --gold:#BC8710; --rose:#D45C8C;
+    --gold-soft:rgba(245,192,68,.09); --blue-soft:rgba(91,132,232,.10);
+    --glow:rgba(255,200,80,.55);
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -12px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="light"]{
+  --bg:#FAF9F5; --panel:#FFFFFF; --panel2:#F4F2EB;
+  --ink:#23262E; --ink2:#5B5F6B; --ink3:#9094A0;
+  --line:#E4E1D6; --line2:#EFEDE4;
+  --blue:#3B66D6; --gold:#A87700; --rose:#C13A6B;
+  --gold-soft:rgba(168,119,0,.10); --blue-soft:rgba(59,102,214,.08);
+  --glow:rgba(0,0,0,0);
+  --shadow:0 1px 2px rgba(35,38,46,.05),0 8px 24px -12px rgba(35,38,46,.10);
+}
+:root[data-theme="dark"]{
+  --bg:#0F1522; --panel:#141B2B; --panel2:#1A2234;
+  --ink:#E8EAF2; --ink2:#A8AEC0; --ink3:#6E7488;
+  --line:#26304A; --line2:#1C2438;
+  --blue:#5B84E8; --gold:#BC8710; --rose:#D45C8C;
+  --gold-soft:rgba(245,192,68,.09); --blue-soft:rgba(91,132,232,.10);
+  --glow:rgba(255,200,80,.55);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -12px rgba(0,0,0,.5);
+}
+
+/* ============ base ============ */
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:Charter,"Bitstream Charter","Sitka Text",Cambria,Georgia,serif;
+  font-size:17px; line-height:1.68;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important; animation:none !important}
+}
+p{margin:0 0 1.15em}
+em{font-style:italic}
+strong{font-weight:700}
+a{color:var(--blue);text-decoration-color:color-mix(in srgb,var(--blue) 40%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--blue)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+
+.col{max-width:42rem;margin:0 auto;padding:0 1.25rem}
+.colwide{max-width:58rem;margin:0 auto;padding:0 1.25rem}
+
+#progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--gold);z-index:50}
+
+/* ============ tab bar ============ */
+nav.tabs{
+  position:sticky;top:0;z-index:40;
+  display:flex;gap:.15rem;overflow-x:auto;scrollbar-width:none;
+  background:color-mix(in srgb,var(--bg) 90%,transparent);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+  padding:.4rem .9rem 0;
+}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{
+  background:none;border:none;border-bottom:2px solid transparent;border-radius:0;
+  padding:.45rem .75rem .55rem;cursor:pointer;color:var(--ink3);
+  display:flex;flex-direction:column;align-items:flex-start;gap:1px;white-space:nowrap;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+nav.tabs button b{font-size:.62rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase}
+nav.tabs button span{font-size:.86rem;font-weight:500}
+nav.tabs button:hover{color:var(--ink2)}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--gold)}
+nav.tabs button[aria-selected="true"] b{color:var(--gold)}
+
+.tabpanel{padding-bottom:1rem}
+.nextrow{display:flex;justify-content:center;padding:1.8rem 0 3.2rem}
+button.next{
+  background:var(--gold-soft);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);
+  color:var(--gold);border-radius:999px;padding:.62rem 1.4rem;font-size:.9rem;font-weight:600;
+  font-family:system-ui,sans-serif;cursor:pointer;
+}
+button.next:hover{border-color:var(--gold)}
+
+/* ============ type ============ */
+.eyebrow{
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:.7rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;
+  color:var(--gold);margin:0 0 .9rem;
+}
+.eyebrow .n{color:var(--ink3);margin-right:.7em}
+h1{
+  font-size:clamp(2.15rem,5.6vw,3.35rem);line-height:1.12;font-weight:700;
+  letter-spacing:-.015em;margin:0 0 1.1rem;text-wrap:balance;
+}
+h1 .gold{color:var(--gold);font-style:italic}
+h2{
+  font-size:clamp(1.45rem,3vw,1.8rem);line-height:1.22;font-weight:700;
+  letter-spacing:-.01em;margin:0 0 1rem;text-wrap:balance;
+}
+.lede{font-size:1.12rem;line-height:1.66;color:var(--ink2)}
+.bellline{display:block;width:118px;height:20px;margin-top:.4rem}
+.bellline path{fill:none;stroke:var(--gold);stroke-width:2.5;stroke-linecap:round}
+
+section.act{padding:3.4rem 0 1rem}
+.hero{padding:3.6rem 0 2.2rem}
+.scrollhint{font-family:system-ui,sans-serif;font-size:.78rem;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;margin-top:1.6rem}
+
+/* ============ figure panels ============ */
+figure.fig{margin:2rem auto;max-width:58rem;padding:0 1.25rem}
+.panel{
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  box-shadow:var(--shadow);padding:14px 14px 10px;overflow:hidden;
+}
+canvas{display:block;width:100%;touch-action:none;border-radius:8px}
+canvas.grabbable{cursor:grab}
+canvas.grabbing{cursor:grabbing}
+figcaption{
+  font-size:.92rem;color:var(--ink2);font-style:italic;
+  margin:.85rem .35rem 0;line-height:1.55;
+}
+figcaption .try{
+  font-family:system-ui,sans-serif;font-style:normal;font-size:.72rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-right:.5em;
+}
+
+/* controls */
+.controls{
+  display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;
+  font-family:system-ui,sans-serif;font-size:.82rem;color:var(--ink2);
+  padding:.65rem .25rem .35rem;
+}
+.controls .grow{flex:1}
+button{
+  font-family:system-ui,sans-serif;font-size:.82rem;font-weight:600;color:var(--ink);
+  background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+  padding:.42rem .8rem;cursor:pointer;transition:border-color .15s,background .15s;
+}
+button:hover{border-color:var(--ink3)}
+button.primary{background:var(--gold-soft);border-color:color-mix(in srgb,var(--gold) 45%,transparent);color:var(--gold)}
+button[aria-pressed="true"]{background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
+button.chip{border-radius:999px;padding:.32rem .75rem;font-weight:500}
+button.chip[aria-pressed="true"]{font-weight:600}
+label.ctl{display:inline-flex;align-items:center;gap:.5rem;white-space:nowrap}
+input[type=range]{accent-color:var(--gold);width:120px}
+input[type=range].wide{width:min(320px,48vw)}
+.readout{font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;color:var(--ink);font-size:.82rem}
+.statline{
+  font-family:system-ui,sans-serif;font-size:.84rem;color:var(--ink2);
+  padding:.5rem .35rem 0;min-height:1.5em;
+}
+.statline b{color:var(--ink);font-weight:600}
+
+/* legend */
+.legend{display:flex;gap:1.1rem;flex-wrap:wrap;font-family:system-ui,sans-serif;font-size:.76rem;color:var(--ink2);padding:.55rem .3rem 0}
+.legend span{display:inline-flex;align-items:center;gap:.4rem}
+.key{width:14px;height:4px;border-radius:2px;display:inline-block}
+.key.dot{width:9px;height:9px;border-radius:50%}
+
+/* tooltip */
+.tip{
+  position:absolute;pointer-events:none;z-index:10;
+  font-family:system-ui,sans-serif;font-size:.76rem;line-height:1.45;color:var(--ink);
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  box-shadow:var(--shadow);padding:.45rem .6rem;max-width:220px;
+  opacity:0;transition:opacity .12s;
+}
+.tip b{font-variant-numeric:tabular-nums}
+.figwrap{position:relative}
+
+/* meters */
+.meter{position:relative;flex:1;min-width:130px;max-width:260px;height:8px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.meter i{position:absolute;inset:0;width:0;background:var(--blue);border-radius:99px;transition:width .35s}
+.score{position:relative;flex:1;min-width:150px;max-width:300px;height:10px;background:var(--panel2);border:1px solid var(--line);border-radius:99px}
+.score i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--blue);border-radius:99px;transition:width .2s}
+.score .tick{position:absolute;left:89%;top:-4px;bottom:-4px;width:2px;background:var(--gold);border-radius:1px}
+
+/* details / math asides */
+details.aside{
+  margin:1.4rem 0;border-left:3px solid var(--gold);
+  background:var(--gold-soft);border-radius:0 10px 10px 0;
+  padding:.8rem 1.1rem;
+}
+details.aside summary{
+  font-family:system-ui,sans-serif;font-size:.82rem;font-weight:600;color:var(--gold);
+  cursor:pointer;
+}
+details.aside[open] summary{margin-bottom:.6rem}
+details.aside p{font-size:.95rem}
+.math{
+  text-align:center;font-style:italic;font-size:1.05rem;margin:.9rem 0;color:var(--ink);
+  overflow-x:auto;
+}
+.math sup{font-size:.72em}
+
+/* table view */
+details.tbl{margin:.6rem .25rem 0;font-family:system-ui,sans-serif;font-size:.8rem;color:var(--ink2)}
+details.tbl summary{cursor:pointer;font-weight:600}
+.tblscroll{max-height:230px;overflow:auto;margin-top:.5rem;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:.3rem .7rem;border-bottom:1px solid var(--line2)}
+th{position:sticky;top:0;background:var(--panel);color:var(--ink3);font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase}
+
+/* finale cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.9rem;margin:1.8rem 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem}
+.card h3{font-size:.98rem;margin:0 0 .35rem;font-weight:700}
+.card h3 .n{color:var(--gold);font-family:system-ui,sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.12em;display:block;margin-bottom:.3rem}
+.card p{font-size:.88rem;color:var(--ink2);margin:0;line-height:1.55}
+
+.crack{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:1.2rem 1.4rem;margin:1.6rem 0}
+.crack h3{margin:0 0 .6rem;font-size:1.05rem}
+.crack ul{margin:.4rem 0 0;padding-left:1.2rem}
+.crack li{margin-bottom:.55rem;font-size:.95rem;color:var(--ink2)}
+.crack li b{color:var(--ink)}
+
+footer{padding:2.6rem 0 3.4rem;color:var(--ink3);font-size:.86rem;font-style:italic}
+.reading{font-size:.92rem;color:var(--ink2)}
+.reading li{margin-bottom:.4rem}
+</style>
+
+<div id="progress"></div>
+
+<nav class="tabs" role="tablist" aria-label="Acts of the essay">
+  <button role="tab" data-tab="intro" aria-selected="true"><b>Intro</b><span>The falling pile</span></button>
+  <button role="tab" data-tab="act1" aria-selected="false"><b>Act I</b><span>Counting</span></button>
+  <button role="tab" data-tab="act2" aria-selected="false"><b>Act II</b><span>Blending</span></button>
+  <button role="tab" data-tab="act3" aria-selected="false"><b>Act III</b><span>The truce</span></button>
+  <button role="tab" data-tab="act4" aria-selected="false"><b>Act IV</b><span>The budget</span></button>
+  <button role="tab" data-tab="act5" aria-selected="false"><b>Act V</b><span>Geometry</span></button>
+  <button role="tab" data-tab="finale" aria-selected="false"><b>Finale</b><span>The summit</span></button>
+</nav>
+
+<main>
+
+<!-- ================= INTRO ================= -->
+<section class="tabpanel" id="tab-intro" role="tabpanel">
+  <header class="hero">
+    <div class="col">
+      <p class="eyebrow">An interactive essay · Probability</p>
+      <h1>Chaos, added up, always draws <span class="gold">the&nbsp;same&nbsp;curve</span>.
+        <svg class="bellline" viewBox="0 0 120 22" aria-hidden="true"><path d="M3 19 C 32 19, 42 3, 60 3 S 88 19, 117 19"/></svg>
+      </h1>
+      <p class="lede">Coin flips, dice rolls, measurement errors, the heights of strangers — pile up enough
+      independent randomness and one shape shows up, every single time: the bell curve.
+      Mathematicians call this the <strong>Central Limit Theorem</strong>. This page is a hands-on tour of
+      <em>why</em> it happens — built for intuition, not prerequisites.</p>
+      <p class="scrollhint">▾ balls are already falling</p>
+    </div>
+  </header>
+
+  <figure class="fig" id="fig-galton">
+    <div class="panel figwrap">
+      <canvas id="cv-galton" style="height:440px" role="img" aria-label="Animated Galton board: balls bounce randomly off pegs and pile into a bell-shaped histogram"></canvas>
+      <div class="controls">
+        <button id="g-drop" class="primary">Drop 200 balls</button>
+        <button id="g-drip" aria-pressed="true">Slow drip: on</button>
+        <button id="g-reset">Reset</button>
+        <span class="grow"></span>
+        <span class="readout" id="g-count">0 balls</span>
+      </div>
+    </div>
+    <figcaption><span class="try">The Galton board</span> Every peg is a coin flip: bounce left or right, 50/50.
+    No ball knows where it will land — yet the pile always knows how it will grow. The gold curve was computed
+    from pure arithmetic <em>before a single ball fell</em>.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>No ball is predictable. Twelve bounces of pure luck. And still, the pile refuses to surprise us.</p>
+    <p>That tension — individual chaos, collective certainty — is the whole story. The five acts above are
+    five different answers to the same question: <em>why this shape?</em> Take them in order; each one hands
+    off to the next.</p>
+  </div>
+  <div class="nextrow"><button class="next" data-next="act1">Begin — Act I · Counting →</button></div>
+</section>
+
+<!-- ================= ACT I ================= -->
+<section class="tabpanel" id="tab-act1" role="tabpanel" hidden>
+  <section class="act">
+    <div class="col">
+      <p class="eyebrow"><span class="n">Act I</span>Counting</p>
+      <h2>More ways to be in the middle</h2>
+      <p>Start with one die: six outcomes, all equally likely. The distribution is a flat slab —
+      nothing bell-shaped about it.</p>
+      <p>Now roll <em>two</em> dice and add them. A total of 7 can happen six ways
+      (1+6, 2+5, 3+4, 4+3, 5+2, 6+1). A total of 12 happens exactly one way. The middle isn't luckier —
+      it's <strong>roomier</strong>. Extremes are fussy: to roll 12, both dice must cooperate.
+      To land in the middle, they're free to disagree.</p>
+      <p>Add more dice, and the imbalance compounds — fast:</p>
+    </div>
+  </section>
+
+  <figure class="fig" id="fig-dice">
+    <div class="panel figwrap">
+      <div class="controls">
+        <label class="ctl">Dice: <input type="range" id="d-n" min="1" max="20" value="1" step="1">
+          <span class="readout" id="d-nval">1</span></label>
+        <button id="d-ride" aria-pressed="false">Ride along with √n</button>
+        <span class="grow"></span>
+        <span class="legend" style="padding:0">
+          <span><i class="key" style="background:var(--blue)"></i>exact probabilities</span>
+          <span><i class="key" style="background:var(--gold)"></i>the bell's prediction</span>
+        </span>
+      </div>
+      <canvas id="cv-dice" style="height:300px" role="img" aria-label="Histogram of the sum of n dice, morphing toward a bell curve as n grows"></canvas>
+      <div class="statline" id="d-fact"></div>
+      <details class="tbl" id="d-tbl"><summary>See the numbers behind this chart</summary>
+        <div class="tblscroll"><table><thead><tr><th>Sum</th><th>Ways to roll it</th><th>Probability</th></tr></thead><tbody id="d-tbody"></tbody></table></div>
+      </details>
+    </div>
+    <figcaption><span class="try">Try</span> Slide to 5 dice, then 20. Hover the bars to see how many ways
+    each total can occur. Then hit <em>Ride along with √n</em> — the camera pans and zooms with the
+    distribution, and the shape freezes.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Two things happen as <em>n</em> grows. The distribution drifts right (the mean grows like <em>n</em>) and
+    spreads out — but only like <em>√n</em>, much slower. If you ride a camera that pans and zooms at exactly
+    that rate, the shape stops moving entirely. That frozen silhouette <em>is</em> the theorem: it's what's left
+    when you subtract the boring growth and look at the pure shape of the accumulated luck.</p>
+    <p>But wait — maybe dice are special. Six neat symmetric faces. Would something messier still funnel into
+    the bell?</p>
+  </div>
+  <div class="nextrow"><button class="next" data-next="act2">Act II · Blending →</button></div>
+</section>
+
+<!-- ================= ACT II ================= -->
+<section class="tabpanel" id="tab-act2" role="tabpanel" hidden>
+  <section class="act">
+    <div class="col">
+      <p class="eyebrow"><span class="n">Act II</span>The fixed point</p>
+      <h2>Draw anything. It becomes the bell.</h2>
+      <p>The bell isn't a shape some distributions <em>have</em> — it's a place all distributions <em>go</em>.</p>
+      <p>Below is a blank distribution. Draw on it — spikes, cliffs, two islands, something lopsided and spiteful.
+      Then press <strong>Blend</strong>: your distribution gets replaced by the distribution of the
+      <em>average of two independent draws</em> from it. Blend again and you're averaging 4 copies, then 8,
+      then 16… Watch what survives.</p>
+    </div>
+  </section>
+
+  <figure class="fig" id="fig-paint">
+    <div class="panel figwrap">
+      <div class="controls">
+        <button class="chip" data-preset="islands">two islands</button>
+        <button class="chip" data-preset="cliff">cliff</button>
+        <button class="chip" data-preset="stairs">staircase</button>
+        <button class="chip" data-preset="spikes">pure spite</button>
+        <button class="chip" data-preset="clear">clear &amp; draw your own</button>
+      </div>
+      <canvas id="cv-paint" style="height:290px" aria-label="Drawable distribution that can be repeatedly blended with itself, converging to a bell curve"></canvas>
+      <div class="controls">
+        <button id="p-blend" class="primary">Blend once</button>
+        <button id="p-blend5">Blend ×5</button>
+        <button id="p-reset">Start over</button>
+        <span class="grow"></span>
+        <label class="ctl">off-target: <span class="meter" aria-hidden="true"><i id="p-meter"></i></span>
+        <span class="readout" id="p-dist">—</span></label>
+      </div>
+      <div class="statline" id="p-stat">You are looking at <b>your drawing</b> — 1 copy, nothing averaged yet.</div>
+    </div>
+    <figcaption><span class="try">Try</span> Draw something hideous, then blend five times. The gold curve never
+    moves — it's the destination. The <em>off-target</em> meter is the share of probability still sitting in
+    the wrong place.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Averaging is a smoother. It erases your drawing's sharpest details first — the spikes — then its
+    lopsidedness, and in the end remembers exactly two numbers: the <strong>mean</strong> (where your drawing
+    sat) and the <strong>spread</strong> (how wide it was). Every other feature of your art gets washed away.</p>
+    <p>The bell is simply what <em>"nothing left but a mean and a spread"</em> looks like. In mathematical terms
+    it's a <strong>fixed point</strong>: the one shape that blending maps onto itself. Every other shape is on a
+    conveyor belt heading toward it.</p>
+    <details class="aside"><summary>For the curious: why exactly two numbers survive</summary>
+      <p>Blending preserves the mean, and (after the rescaling that keeps the picture in frame) it preserves the
+      spread — but it strictly smooths everything else. Information theorists make this precise: each blend
+      increases <em>entropy</em>, a measure of how spread-out and featureless a distribution is. So the process
+      must end at the <em>maximum-entropy</em> distribution with your mean and spread — and that distribution is
+      the Gaussian. Your drawing's fine structure is literally information, and averaging destroys information.
+      Act IV makes this budget idea something you can hold.</p>
+    </details>
+    <p>Fine — everything flows to one destination. But that only sharpens the mystery.
+    Why is the destination <em>this exact curve</em> — why e<sup>−x²</sup> and not some other pleasant hump?</p>
+  </div>
+  <div class="nextrow"><button class="next" data-next="act3">Act III · The truce →</button></div>
+</section>
+
+<!-- ================= ACT III ================= -->
+<section class="tabpanel" id="tab-act3" role="tabpanel" hidden>
+  <section class="act">
+    <div class="col">
+      <p class="eyebrow"><span class="n">Act III</span>The truce</p>
+      <h2>A truce between two pressures</h2>
+      <p>Here is a swarm of particles obeying two rules.</p>
+      <p><strong>Jitter.</strong> Every instant, each particle takes a tiny random step — left or right, no
+      preference. This spreads the swarm out, for a bluntly democratic reason: there are vastly more ways to be
+      spread out than to be bunched up.</p>
+      <p><strong>Tether.</strong> Each particle is pulled gently back toward the center, with a force that grows
+      the farther it strays. Being far away is expensive.</p>
+      <p>Alone, each rule is a disaster. Together, they negotiate:</p>
+    </div>
+  </section>
+
+  <figure class="fig" id="fig-truce">
+    <div class="panel figwrap">
+      <div class="controls">
+        <button class="chip" data-mode="jitter">only jitter</button>
+        <button class="chip" data-mode="tether">only tether</button>
+        <button class="chip" data-mode="both" aria-pressed="true">both</button>
+        <span class="grow"></span>
+        <label class="ctl">jitter <input type="range" id="t-s" min="0" max="2.4" step="0.05" value="1.2"></label>
+        <label class="ctl">tether <input type="range" id="t-k" min="0" max="3" step="0.05" value="1.0"></label>
+        <button id="t-pause" aria-pressed="false">Pause</button>
+      </div>
+      <canvas id="cv-truce" style="height:360px" role="img" aria-label="Particle swarm spreading under random jitter while pulled to the center, settling into a bell-shaped histogram"></canvas>
+      <div class="statline" id="t-stat"></div>
+    </div>
+    <figcaption><span class="try">Try</span> Kill the tether — the swarm becomes an ever-thinning fog.
+    Kill the jitter — it collapses to a single spike. Restore both and the swarm settles into a bell whose
+    width is set by the jitter-to-tether budget.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>The swarm settles into the shape where, at every single point, the outward push of spreading and the
+    inward pull of the tether cancel <em>exactly</em>. That treaty line is the bell curve.</p>
+    <p>And this is why the bell is universal: it doesn't care about dice or coins or your drawing. <em>Any</em>
+    process that mixes "spread out randomly" with "but wandering far is costly" strikes the same truce.
+    Adding up random variables is exactly such a process — each new term jitters the sum, while the
+    √n rescaling acts as the tether.</p>
+    <details class="aside"><summary>For the curious: the two-line force balance</summary>
+      <p>Write p(x) for the swarm's density. Spreading pushes mass from crowded spots toward empty ones, with
+      strength proportional to the relative slope p′(x)/p(x). The tether pushes mass inward with strength
+      proportional to the distance x. At equilibrium they cancel at every point:</p>
+      <p class="math">p′(x) / p(x) = −2ax &nbsp;&nbsp;⟹&nbsp;&nbsp; p(x) ∝ e<sup>−ax²</sup></p>
+      <p>The square in the exponent is no accident — it's the fingerprint of a restoring force that grows
+      linearly with distance. (Physicists will recognize the swarm as diffusion in a spring potential; the
+      spreading rule alone is the heat equation. The bell is warmth held by a spring.)</p>
+    </details>
+    <p>That's the physics telling. Information theory tells the same story with a ledger instead of forces —
+    and it explains something the swarm can't: what, exactly, is being <em>optimized</em>.</p>
+  </div>
+  <div class="nextrow"><button class="next" data-next="act4">Act IV · The budget →</button></div>
+</section>
+
+<!-- ================= ACT IV ================= -->
+<section class="tabpanel" id="tab-act4" role="tabpanel" hidden>
+  <section class="act">
+    <div class="col">
+      <p class="eyebrow"><span class="n">Act IV</span>Information</p>
+      <h2>The entropy budget</h2>
+      <p><strong>Entropy</strong> is the accountant's measure of spread: how unpredictable a draw is — how many
+      yes/no questions you'd need, on average, to pin one down. A spike has almost none (you already know the
+      answer). A wide, even wash of probability has a lot.</p>
+      <p>If entropy were all that mattered, the champion would be the flat slab — the <em>uniform</em>
+      distribution. Perfectly even, no favoritism, maximum surprise for its width. Cap the <em>width</em>, and
+      flat is genuinely unbeatable.</p>
+      <p>But sums of randomness don't come with a width cap. They come with a <strong>variance budget</strong>:
+      probability placed at distance x from the center costs x² — being far out is <em>quadratically</em>
+      expensive. (That's Act III's tether, wearing a green eyeshade.) So the real question is: with variance
+      pinned at 1, which allocation of probability buys the most entropy?</p>
+    </div>
+  </section>
+
+  <figure class="fig" id="fig-dial">
+    <div class="panel figwrap">
+      <div class="controls">
+        <label class="ctl">shape dial <input type="range" id="dial-b" class="wide" min="0" max="1" step="0.002" value="1"></label>
+        <span class="grow"></span>
+        <span class="legend" style="padding:0">
+          <span><i class="key" style="background:var(--blue)"></i>this allocation</span>
+          <span><i class="key" style="background:var(--gold)"></i>the bell</span>
+        </span>
+      </div>
+      <canvas id="cv-dial" style="height:360px" role="img" aria-label="A family of distributions with fixed variance, from heavy-tailed to flat slab, with an entropy score that peaks at the bell curve"></canvas>
+      <div class="statline" id="dial-stat"></div>
+    </div>
+    <figcaption><span class="try">Try</span> Every position of this dial spends the same budget — variance is
+    locked at 1.00 throughout. Far left: heavy tails. Far right: a hard-edged slab. Drag it and watch the
+    entropy score below. There is exactly one summit.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>The slab loses for a reason you can feel: its <strong>cliff edges</strong>. A hard edge is an absurd
+    promise — <em>"nothing, ever, beyond this line"</em> — and softening it into a gentle tail buys a big chunk
+    of entropy for a tiny sliver of variance. Heavy tails lose the other way: rare far-out draws are so
+    expensive that the middle must bunch into a near-spike to stay on budget, and spikes are an entropy
+    catastrophe. The bell is the allocation with <em>no waste left</em>: every cliff already softened, every
+    extravagance already trimmed.</p>
+    <p>Don't take the dial's word for it, though — it only searched one family of shapes. Sculpt your own and
+    try to beat the gold line:</p>
+  </div>
+
+  <figure class="fig" id="fig-spill">
+    <div class="panel figwrap">
+      <div class="controls">
+        <button class="chip" data-sp="slab">slab</button>
+        <button class="chip" data-sp="islands">two islands</button>
+        <button class="chip" data-sp="spikes">spikes</button>
+        <button class="chip" data-sp="clear">clear &amp; draw your own</button>
+        <span class="grow"></span>
+        <label class="ctl">entropy: <span class="score" aria-hidden="true"><i id="sp-fill"></i><span class="tick"></span></span>
+        <span class="readout" id="sp-score">—</span></label>
+      </div>
+      <canvas id="cv-spill" style="height:290px" aria-label="Drawable probability allocation with a live entropy score; a spill animation diffuses it into the bell curve"></canvas>
+      <div class="controls">
+        <button id="sp-run" class="primary">Let it spill</button>
+        <button id="sp-reset">Back to sculpting</button>
+        <span class="grow"></span>
+        <span class="readout">the bell scores 2.047 bits</span>
+      </div>
+      <div class="statline" id="sp-stat">Sculpt an allocation — it is instantly rescaled to spend exactly variance 1, then scored.</div>
+    </div>
+    <figcaption><span class="try">Try</span> Draw any allocation. The gold tick on the meter is the bell's
+    2.047 bits — nobody has ever sculpted past it. Then press <em>let it spill</em>: probability diffuses
+    (cliffs soften, spikes melt), the budget is re-pinned after every step, and the score climbs until nothing
+    can improve it. Watch where it stops.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Nobody beats the gold line, and Shannon proved nobody can: <strong>among all distributions with variance
+    1, the bell has the maximum entropy.</strong> The spill you just watched is the proof made visible — as long
+    as any cliff or spike remains, some local rearrangement still gains entropy at no budget cost, so the process
+    can only come to rest at the bell.</p>
+    <p>And notice: Act II was this act in disguise. Every "blend" increases entropy, while the rescaling
+    preserves the budget — so blending has no choice but to march uphill to the entropy summit. That is the
+    information-theory proof of the Central Limit Theorem, in one breath.</p>
+    <details class="aside"><summary>For the curious: the audit in three lines</summary>
+      <p>Maximize H = −∫ p ln p subject to ∫ p = 1 and ∫ x²p = σ². Lagrange multipliers turn the constrained
+      problem into an unconstrained one, and setting the derivative to zero gives:</p>
+      <p class="math">ln p(x) = −1 − λ₁ − λ₂x² &nbsp;&nbsp;⟹&nbsp;&nbsp; p(x) = A·e<sup>−λ₂x²</sup></p>
+      <p>The x² in the exponent is the variance constraint's signature — the price tag, imported directly into
+      the shape. (Fine print: the meter measures <em>differential</em> entropy, which can go negative for very
+      spiky shapes. Think of a negative score as information-debt.)</p>
+    </details>
+    <p>One picture remains — the strangest, and once you see it, the most convincing. It's the reason the
+    formula has a <em>square</em> in it, told with pure geometry.</p>
+  </div>
+  <div class="nextrow"><button class="next" data-next="act5">Act V · Geometry →</button></div>
+</section>
+
+<!-- ================= ACT V ================= -->
+<section class="tabpanel" id="tab-act5" role="tabpanel" hidden>
+  <section class="act">
+    <div class="col">
+      <p class="eyebrow"><span class="n">Act V</span>Geometry</p>
+      <h2>The cloud that looks the same from every angle</h2>
+      <p>Take two independent copies of a random quantity — call them X and Y — and plot each pair as a point
+      (X,&nbsp;Y). Thousands of samples form a <strong>cloud</strong>.</p>
+      <p>Here's the trick that makes this picture powerful: the sum X+Y lives along the 45° diagonal.
+      <em>Adding random variables is casting the cloud's shadow onto a tilted line.</em>
+      Rotating the cloud sweeps through every possible weighted sum of X and Y.</p>
+      <p>So: drag the cloud, and watch its shadow.</p>
+    </div>
+  </section>
+
+  <figure class="fig" id="fig-cloud">
+    <div class="panel figwrap">
+      <div class="controls">
+        <button class="chip" data-dist="coins" aria-pressed="true">coin flips</button>
+        <button class="chip" data-dist="dice">dice</button>
+        <button class="chip" data-dist="uniform">uniform</button>
+        <button class="chip" data-dist="bell">the bell</button>
+        <span class="grow"></span>
+        <button id="c-spin" aria-pressed="true">Auto-spin: on</button>
+        <label class="ctl">angle <input type="range" id="c-angle" min="0" max="360" value="0" step="1">
+          <span class="readout" id="c-deg">0°</span></label>
+      </div>
+      <canvas id="cv-cloud" class="grabbable" style="height:470px" aria-label="A 2D cloud of sample points that can be rotated; below it, the histogram of its shadow on the horizontal axis"></canvas>
+      <div class="legend">
+        <span><i class="key" style="background:var(--blue)"></i>shadow right now</span>
+        <span><i class="key" style="background:var(--rose)"></i>shadow at 0° (X alone)</span>
+        <span><i class="key" style="background:var(--gold)"></i>the bell, for reference</span>
+      </div>
+      <div class="statline" id="c-stat"></div>
+    </div>
+    <figcaption><span class="try">Try</span> Coin flips give a four-corner cloud — rotate it and its shadow
+    lurches between two spikes and three. Uniform gives a square: already at 45° the shadow is a triangle
+    (rounder!). Then switch to the bell: a perfectly round cloud whose shadow <em>refuses to change</em>.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>The bell's cloud is round. Rotate it however you like — its shadow is identical. It is the <em>only</em>
+    distribution whose cloud manages that while X and Y stay independent. And that double demand —
+    independence <em>and</em> rotation-proofness — is so restrictive it forces the exact formula.</p>
+    <details class="aside"><summary>For the curious: how roundness forces e<sup>−x²</sup></summary>
+      <p>Independence means the cloud's density factors: f(x)·f(y). Roundness means it can only depend on the
+      distance from center: g(x²&nbsp;+&nbsp;y²). Set them equal, take logs, and let h = log f:</p>
+      <p class="math">h(x) + h(y) = G(x² + y²) &nbsp;&nbsp;⟹&nbsp;&nbsp; h′(x)/x = h′(y)/y &nbsp;for all x, y</p>
+      <p>A function of x alone equalling a function of y alone must be a constant, say −2a. Then
+      h′(x) = −2ax, so h(x) = −ax² + c, and</p>
+      <p class="math">f(x) ∝ e<sup>−ax²</sup></p>
+      <p>Two innocent-looking symmetry demands, one inevitable curve.</p>
+    </details>
+    <p>And now the theorem in one sentence: <strong>adding many independent copies makes the cloud round.</strong>
+    With n copies the cloud lives in n dimensions, and the same lurching-shadow effect you saw with coins gets
+    averaged over so many directions that every shadow smooths toward the same silhouette — the bell.
+    You already watched this happen in Act II: each blend was one more dimension of rounding.</p>
+  </div>
+  <div class="nextrow"><button class="next" data-next="finale">Finale · The summit →</button></div>
+</section>
+
+<!-- ================= FINALE ================= -->
+<section class="tabpanel" id="tab-finale" role="tabpanel" hidden>
+  <section class="act">
+    <div class="col">
+      <p class="eyebrow"><span class="n">Finale</span>The summit</p>
+      <h2>Many paths, one mountain</h2>
+      <p>Five arguments, from five different corners of mathematics, and they all land on the same curve:</p>
+    </div>
+    <div class="colwide">
+      <div class="cards">
+        <div class="card"><h3><span class="n">Act I · Counting</span>The middle is roomier</h3>
+          <p>Extreme totals require every die to cooperate; middling totals can happen countless ways. Sheer headcount builds the hump.</p></div>
+        <div class="card"><h3><span class="n">Act II · Fixed point</span>All roads lead to it</h3>
+          <p>Averaging smooths every distribution toward the one shape that averaging leaves unchanged. The bell is the destination, not a coincidence.</p></div>
+        <div class="card"><h3><span class="n">Act III · Balance</span>Spreading vs. the tether</h3>
+          <p>Entropy pushes mass outward, cost pulls it home. The bell is the shape where the two pressures cancel at every point.</p></div>
+        <div class="card"><h3><span class="n">Act IV · Budgeting</span>The perfect spend</h3>
+          <p>Entropy wants width; variance taxes distance squared. The bell is the only allocation with no waste left in the ledger — the maximum-entropy shape for its budget.</p></div>
+        <div class="card"><h3><span class="n">Act V · Geometry</span>The only round cloud</h3>
+          <p>Independence plus same-from-every-angle is a demand only e<sup>−x²</sup> can meet — and adding copies makes every cloud round.</p></div>
+      </div>
+    </div>
+    <div class="col">
+      <p>When five unrelated roads all reach the same summit, you're not looking at a trick.
+      You're looking at real terrain. That's what makes the Central Limit Theorem a <em>theorem about the
+      world</em>, not just about dice: measurement errors, molecular collisions, genetics, polling — anywhere
+      many small independent influences add up, the bell is already waiting.</p>
+
+      <div class="crack">
+        <h3>Where the bell cracks — the fine print</h3>
+        <ul>
+          <li><b>Independence.</b> The pieces must not conspire. Stock-market losses look bell-ish on calm days —
+          then a panic correlates everyone, and the "impossible" tail arrives. This footnote has bankrupted
+          several hedge funds.</li>
+          <li><b>Finite spread.</b> If single draws can be so wild that the variance is infinite (heavy tails),
+          averaging never tames them. Average a million draws from the Cauchy distribution and you've learned
+          nothing — the average is exactly as wild as one draw. Such sums funnel to other shapes
+          (the <em>stable distributions</em> — the bell's feral cousins).</li>
+          <li><b>Enough addends.</b> The bell is a limit. With three dice it's an approximation;
+          with thirty it's excellent; the far tails take longest to fall in line.</li>
+        </ul>
+      </div>
+
+      <p style="margin-top:1.6rem"><strong>Going further:</strong></p>
+      <ul class="reading">
+        <li>3Blue1Brown, <a href="https://www.youtube.com/watch?v=zeJD6dqJ5lo" rel="noopener">But what is the Central Limit Theorem?</a> — beautiful animated companion.</li>
+        <li><a href="https://seeing-theory.brown.edu/" rel="noopener">Seeing Theory</a> (Brown University) — a visual course on all of basic probability.</li>
+        <li>Francis Galton's original 1889 <a href="https://en.wikipedia.org/wiki/Galton_board" rel="noopener">bean machine</a> — the hero of our opening scene, built in brass.</li>
+        <li>For the entropy road: E.&nbsp;T.&nbsp;Jaynes, <em>Probability Theory: The Logic of Science</em>, ch. 7 — and the
+        entropy-power inequality, if you want the full rigor of Act IV.</li>
+      </ul>
+    </div>
+  </section>
+  <footer>
+    <div class="col">The best way to trust a theorem is to poke it. Everything on this page runs live in your
+    browser — reload for fresh randomness.</div>
+  </footer>
+</section>
+
+</main>
+
+<script>
+(()=>{
+"use strict";
+/* ---------- shared helpers ---------- */
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TAU=Math.PI*2;
+const LN2=Math.LN2;
+const PHI=z=>Math.exp(-z*z/2)/Math.sqrt(TAU);
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+
+let spare=null;
+function randn(){
+  if(spare!==null){const v=spare;spare=null;return v}
+  let u=0,v=0,s=0;
+  do{u=Math.random()*2-1;v=Math.random()*2-1;s=u*u+v*v}while(s>=1||s===0);
+  const m=Math.sqrt(-2*Math.log(s)/s);spare=v*m;return u*m;
+}
+
+/* Lanczos gamma (g=7) — needed for the generalized-normal family in Act IV */
+const GL=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,
+  -176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+function gamma(x){
+  if(x<0.5)return Math.PI/(Math.sin(Math.PI*x)*gamma(1-x));
+  x-=1;let a=GL[0];const t=x+7.5;
+  for(let i=1;i<9;i++)a+=GL[i]/(x+i);
+  return Math.sqrt(TAU)*Math.pow(t,x+0.5)*Math.exp(-t)*a;
+}
+
+/* theme tokens, re-read on theme change */
+const TK={};
+function readTokens(){
+  const cs=getComputedStyle(document.documentElement);
+  for(const k of['bg','panel','panel2','ink','ink2','ink3','line','line2','blue','gold','rose','glow'])
+    TK[k]=cs.getPropertyValue('--'+k).trim();
+}
+readTokens();
+function alpha(hex,a){
+  const h=hex.replace('#','');
+  const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+const themeSubs=[];
+function onThemeChange(){readTokens();themeSubs.forEach(f=>f())}
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',onThemeChange);
+new MutationObserver(onThemeChange).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+const isDark=()=>TK.glow!=='rgba(0,0,0,0)'&&TK.glow!=='';
+
+/* canvas fitting */
+function fit(cv){
+  const dpr=Math.min(devicePixelRatio||1,2);
+  const w=cv.clientWidth,h=cv.clientHeight;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){
+    cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
+  }
+  const ctx=cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx,w,h};
+}
+function watchResize(cv,fn){
+  let raf=0;
+  new ResizeObserver(()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(fn)}).observe(cv);
+}
+
+/* global animation loop with visibility gating (hidden tabs report not-intersecting) */
+const figs=[];
+const io=new IntersectionObserver(es=>{
+  for(const e of es){const f=figs.find(f=>f.el===e.target);if(f)f.visible=e.isIntersecting;}
+},{threshold:.06});
+function register(el,tick){const f={el,tick,visible:false};figs.push(f);io.observe(el);return f}
+let lastT=performance.now();
+function loop(t){
+  const dt=Math.min(.05,(t-lastT)/1000);lastT=t;
+  for(const f of figs)if(f.visible)f.tick(dt,t/1000);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* scroll progress */
+const prog=$('#progress');
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const denom=h.scrollHeight-h.clientHeight;
+  prog.style.width=(denom>0?h.scrollTop/denom*100:0).toFixed(2)+'%';
+},{passive:true});
+
+/* ---------- tabs ---------- */
+const tabBtns=$$('nav.tabs button');
+const ORDER=['intro','act1','act2','act3','act4','act5','finale'];
+function activate(id){
+  if(!ORDER.includes(id))id='intro';
+  tabBtns.forEach(b=>{
+    const on=b.dataset.tab===id;
+    b.setAttribute('aria-selected',String(on));
+    b.tabIndex=on?0:-1;
+  });
+  ORDER.forEach(t=>{const p=$('#tab-'+t);if(p)p.hidden=t!==id});
+  try{history.replaceState(null,'','#'+id)}catch(e){}
+  scrollTo({top:0,behavior:'instant'});
+}
+tabBtns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+document.querySelector('nav.tabs').addEventListener('keydown',e=>{
+  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
+  const cur=ORDER.indexOf(tabBtns.find(b=>b.getAttribute('aria-selected')==='true').dataset.tab);
+  const nxt=clamp(cur+(e.key==='ArrowRight'?1:-1),0,ORDER.length-1);
+  activate(ORDER[nxt]);
+  tabBtns[nxt].focus();
+  e.preventDefault();
+});
+$$('button.next').forEach(b=>b.addEventListener('click',()=>activate(b.dataset.next)));
+activate((location.hash||'#intro').slice(1));
+
+/* smooth curve through points */
+function curve(ctx,pts){
+  if(pts.length<2)return;
+  ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+  for(let i=1;i<pts.length-1;i++){
+    const xc=(pts[i][0]+pts[i+1][0])/2,yc=(pts[i][1]+pts[i+1][1])/2;
+    ctx.quadraticCurveTo(pts[i][0],pts[i][1],xc,yc);
+  }
+  const l=pts[pts.length-1];ctx.lineTo(l[0],l[1]);
+}
+
+/* ============================================================
+   INTRO · GALTON BOARD
+============================================================ */
+(function galton(){
+  const cv=$('#cv-galton');
+  const ROWS=12, BINS=ROWS+1, CAP=900;
+  let bins=new Array(BINS).fill(0), balls=[], pending=0, total=0;
+  let drip=!REDUCED, geo=null, pegGlow={};
+
+  const C=[1];for(let k=1;k<=ROWS;k++)C[k]=C[k-1]*(ROWS-k+1)/k;
+  const binom=C.map(c=>c/Math.pow(2,ROWS));
+
+  function layout(){
+    const {ctx,w,h}=fit(cv);
+    const pegTop=34, pegH=h*.55, pileBase=h-26;
+    const sx=Math.min(w*.85/ROWS, 46);
+    const sy=pegH/ROWS;
+    geo={ctx,w,h,pegTop,sy,sx,pileBase,cx:w/2,pileH:h-26-(pegTop+pegH)-18};
+    return geo;
+  }
+  function pegPos(r,k){return [geo.cx+(k-r/2)*geo.sx, geo.pegTop+r*geo.sy]}
+
+  function spawn(instant){
+    if(total>=CAP)return;
+    total++;updateCount();
+    if(instant||REDUCED){
+      let k=0;for(let r=0;r<ROWS;r++)k+=Math.random()<.5?1:0;
+      bins[k]++;return;
+    }
+    balls.push({r:0,k:0,pk:0,t:0,speed:9+Math.random()*3,drop:0});
+  }
+  function updateCount(){$('#g-count').textContent=fmt(total)+(total===1?' ball':' balls')}
+
+  function step(dt){
+    if(pending>0){const burst=Math.min(pending,4);for(let i=0;i<burst;i++)spawn(false);pending-=burst;}
+    if(drip&&Math.random()<dt*6)spawn(false);
+    for(const b of balls){
+      if(b.r<ROWS||b.t<1){
+        b.t+=dt*b.speed;
+        while(b.t>=1&&b.r<ROWS){
+          b.t-=1;
+          pegGlow[b.r+'_'+b.k]=1;
+          b.pk=b.k;
+          if(Math.random()<.5)b.k+=1;
+          b.r++;
+        }
+        if(b.r>=ROWS&&b.t>1)b.t=1;
+      }else{
+        b.drop+=dt*b.speed*.9;
+      }
+    }
+    balls=balls.filter(b=>{
+      if(b.r>=ROWS&&b.drop>=1){bins[b.k]++;return false}
+      return true;
+    });
+    for(const k in pegGlow){pegGlow[k]-=dt*2.2;if(pegGlow[k]<=0)delete pegGlow[k]}
+  }
+
+  function binomInterp(k){
+    const k0=Math.floor(k),k1=Math.min(ROWS,k0+1),t=k-k0;
+    return lerp(binom[Math.max(0,k0)],binom[k1],t);
+  }
+
+  function draw(){
+    const {ctx,w,h,pegTop,sy,sx,pileBase,cx,pileH}=geo;
+    if(w<40)return;
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle=TK.panel;ctx.fillRect(0,0,w,h);
+    const dark=isDark();
+    ctx.strokeStyle=TK.line;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx-14,6);ctx.lineTo(cx-4,pegTop-14);ctx.moveTo(cx+14,6);ctx.lineTo(cx+4,pegTop-14);ctx.stroke();
+    for(let r=0;r<ROWS;r++)for(let k=0;k<=r;k++){
+      const [x,y]=pegPos(r,k);
+      const g=pegGlow[r+'_'+k]||0;
+      ctx.fillStyle=g>0?alpha(TK.blue,.35+.65*g):TK.line;
+      ctx.beginPath();ctx.arc(x,y,g>0?3.1:2.4,0,TAU);ctx.fill();
+    }
+    const maxCount=Math.max(8,...bins);
+    const unit=Math.min(6,pileH/maxCount);
+    const rad=Math.max(1.3,Math.min(2.7,unit*.62));
+    if(dark){ctx.shadowColor=TK.glow;ctx.shadowBlur=5}
+    ctx.fillStyle=TK.gold;
+    for(let k=0;k<BINS;k++){
+      const x=cx+(k-ROWS/2)*geo.sx;
+      for(let i=0;i<bins[k];i++){
+        ctx.beginPath();ctx.arc(x,pileBase-(i+.5)*unit,rad,0,TAU);ctx.fill();
+      }
+    }
+    ctx.shadowBlur=0;
+    ctx.fillStyle=TK.blue;
+    for(const b of balls){
+      let x,y;
+      if(b.r===0){
+        const [x1,y1]=pegPos(0,0);x=x1;y=lerp(8,y1,Math.min(1,b.t));
+      }
+      else if(b.drop===0){
+        const [x0,y0]=pegPos(b.r-1,b.pk);
+        const [x1,y1]=b.r<ROWS?pegPos(b.r,b.k):[cx+(b.k-ROWS/2)*geo.sx,pegTop+ROWS*sy];
+        const t=Math.min(1,b.t);
+        x=lerp(x0,x1,t);
+        y=lerp(y0,y1,t)-Math.sin(t*Math.PI)*sy*.35;
+      }
+      else{
+        x=cx+(b.k-ROWS/2)*geo.sx;
+        const yTop=pegTop+ROWS*sy;
+        const yLand=pileBase-(bins[b.k]+.5)*unit;
+        y=lerp(yTop,yLand,Math.min(1,b.drop));
+      }
+      if(x!==undefined){ctx.beginPath();ctx.arc(x,y,3,0,TAU);ctx.fill()}
+    }
+    ctx.strokeStyle=TK.line;ctx.beginPath();ctx.moveTo(cx-(ROWS/2+.8)*sx,pileBase+rad+3);ctx.lineTo(cx+(ROWS/2+.8)*sx,pileBase+rad+3);ctx.stroke();
+    if(total>=100){
+      const pts=[];
+      for(let k=0;k<=ROWS;k+=.25){
+        const p=binomInterp(k);
+        pts.push([cx+(k-ROWS/2)*sx, pileBase-(total*p)*unit-6]);
+      }
+      ctx.strokeStyle=TK.gold;ctx.lineWidth=2.2;
+      if(dark){ctx.shadowColor=TK.glow;ctx.shadowBlur=12}
+      curve(ctx,pts);ctx.stroke();ctx.shadowBlur=0;ctx.lineWidth=1;
+      ctx.fillStyle=TK.ink3;ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';
+      ctx.fillText('predicted before any ball fell', cx+(ROWS/2-3.4)*sx, pileBase-total*binomInterp(ROWS*0.78)*unit-16);
+    }
+  }
+
+  layout();
+  if(REDUCED){for(let i=0;i<420;i++)spawn(true);drip=false;$('#g-drip').setAttribute('aria-pressed','false');$('#g-drip').textContent='Slow drip: off';}
+  watchResize(cv,()=>{layout();draw()});
+  themeSubs.push(draw);
+  register(cv,dt=>{step(dt);draw()});
+
+  $('#g-drop').addEventListener('click',()=>{
+    if(REDUCED){for(let i=0;i<200;i++)spawn(true);draw();}
+    else pending+=200;
+  });
+  $('#g-drip').addEventListener('click',e=>{
+    drip=!drip;e.currentTarget.setAttribute('aria-pressed',String(drip));
+    e.currentTarget.textContent='Slow drip: '+(drip?'on':'off');
+  });
+  $('#g-reset').addEventListener('click',()=>{bins.fill(0);balls=[];total=0;pending=0;updateCount();draw()});
+  updateCount();
+})();
+
+/* ============================================================
+   ACT I · DICE SUMS
+============================================================ */
+(function dice(){
+  const cv=$('#cv-dice');
+  const cache={};
+  function dist(n){
+    if(cache[n])return cache[n];
+    let p=new Float64Array(6).fill(1/6);
+    for(let m=2;m<=n;m++){
+      const q=new Float64Array(p.length+5);
+      for(let i=0;i<p.length;i++)for(let d=0;d<6;d++)q[i+d]+=p[i]/6;
+      p=q;
+    }
+    return cache[n]=p; /* index i => sum = n + i */
+  }
+  let n=1, ride=false;
+  let anim={t:1,from:null,to:null,fromRange:null,toRange:null};
+
+  function range(n,ride){
+    if(ride)return [-4.3,4.3];
+    return [n-0.9, 6*n+0.9];
+  }
+  function view(n){
+    const p=dist(n);
+    return {n,p,mu:3.5*n,sd:Math.sqrt(n*35/12)};
+  }
+  function setN(nn){
+    const oldV=view(n), oldR=range(n,ride);
+    n=nn;
+    $('#d-nval').textContent=n;
+    startAnim(oldV,oldR);
+    updateFact();
+    if($('#d-tbl').open)fillTable();
+  }
+  function startAnim(fromV,fromR){
+    anim={t:REDUCED?1:0,from:fromV,fromRange:fromR,to:view(n),toRange:range(n,ride)};
+    if(!REDUCED)tick();else draw();
+  }
+  let rafId=0;
+  function tick(){
+    cancelAnimationFrame(rafId);
+    const step=()=>{
+      anim.t=Math.min(1,anim.t+0.07);
+      draw();
+      if(anim.t<1)rafId=requestAnimationFrame(step);
+    };
+    rafId=requestAnimationFrame(step);
+  }
+
+  function roundTop(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x,y+h);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);
+    ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h);ctx.closePath();ctx.fill();
+  }
+  function drawDist(ctx,w,h,v,R,al,withCurve){
+    const [lo,hi]=R;
+    const X=x=>((x-lo)/(hi-lo))*(w-30)+15;
+    const padB=26, plotH=h-padB-16;
+    const dens=i=>ride?v.p[i]*v.sd:v.p[i];
+    let maxD=0;for(let i=0;i<v.p.length;i++)maxD=Math.max(maxD,dens(i));
+    maxD=Math.max(maxD,ride?PHI(0):0);
+    const Y=d=>h-padB-(d/maxD)*plotH;
+    const bw=Math.max(1.5,(ride?1/v.sd:1)/(hi-lo)*(w-30)-2);
+    ctx.fillStyle=alpha(TK.blue,al*.85);
+    for(let i=0;i<v.p.length;i++){
+      const s=v.n+i;
+      const x=ride?(s-v.mu)/v.sd:s;
+      if(x<lo||x>hi)continue;
+      const px=X(x), py=Y(dens(i));
+      const bh=h-padB-py;
+      if(bh<0.5)continue;
+      roundTop(ctx,px-bw/2,py,bw,bh,Math.min(3,bw/2));
+    }
+    if(withCurve&&(v.n>=2||ride)){
+      ctx.strokeStyle=alpha(TK.gold,al);ctx.lineWidth=2.2;
+      const pts=[];
+      for(let px=15;px<=w-15;px+=3){
+        const x=lo+(px-15)/(w-30)*(hi-lo);
+        const d=ride?PHI(x):PHI((x-v.mu)/v.sd)/v.sd;
+        pts.push([px,Y(d)]);
+      }
+      curve(ctx,pts);ctx.stroke();ctx.lineWidth=1;
+    }
+  }
+
+  function draw(){
+    const {ctx,w,h}=fit(cv);
+    if(w<40)return;
+    ctx.clearRect(0,0,w,h);
+    const t=anim.t, R=[lerp(anim.fromRange?anim.fromRange[0]:anim.toRange[0],anim.toRange[0],t),
+                      lerp(anim.fromRange?anim.fromRange[1]:anim.toRange[1],anim.toRange[1],t)];
+    ctx.strokeStyle=TK.line;ctx.beginPath();ctx.moveTo(10,h-26);ctx.lineTo(w-10,h-26);ctx.stroke();
+    ctx.fillStyle=TK.ink3;ctx.font='11px system-ui,sans-serif';ctx.textAlign='center';
+    if(ride){
+      for(let z=-4;z<=4;z++){
+        const px=((z-R[0])/(R[1]-R[0]))*(w-30)+15;
+        ctx.strokeStyle=TK.line2;ctx.beginPath();ctx.moveTo(px,18);ctx.lineTo(px,h-26);ctx.stroke();
+        ctx.fillText(z===0?'mean':(z>0?'+':'')+z+'σ',px,h-10);
+      }
+    }else{
+      const span=R[1]-R[0];
+      const stp=span<=14?1:span<=40?5:span<=80?10:20;
+      for(let s=Math.ceil(R[0]/stp)*stp;s<=R[1];s+=stp){
+        if(s<1)continue;
+        const px=((s-R[0])/(R[1]-R[0]))*(w-30)+15;
+        ctx.fillText(String(s),px,h-10);
+      }
+    }
+    if(anim.from&&t<1)drawDist(ctx,w,h,anim.from,R,1-t,true);
+    drawDist(ctx,w,h,anim.to,R,anim.from?t:1,true);
+  }
+
+  function updateFact(){
+    const v=view(n);
+    const total=Math.pow(6,n);
+    const mid=Math.round(3.5*n-0.001);
+    const midWays=v.p[mid-n]*total;
+    const el=$('#d-fact');
+    if(n===1){el.innerHTML='One die: <b>6</b> outcomes, each equally likely. A perfectly flat slab — no bell in sight.';return}
+    el.innerHTML=`With <b>${n}</b> dice there are 6<sup>${n}</sup> = <b>${fmt(total)}</b> equally likely rolls. <b>${fmt(midWays)}</b> of them sum to ${mid} — and exactly <b>1</b> rolls all sixes. The middle wins by sheer headcount.`;
+  }
+  function fillTable(){
+    const tb=$('#d-tbody'),v=view(n),total=Math.pow(6,n);
+    let html='';
+    for(let i=0;i<v.p.length;i++){
+      html+=`<tr><td>${v.n+i}</td><td>${fmt(v.p[i]*total)}</td><td>${(v.p[i]*100).toFixed(3)}%</td></tr>`;
+    }
+    tb.innerHTML=html;
+  }
+  $('#d-tbl').addEventListener('toggle',()=>{if($('#d-tbl').open)fillTable()});
+
+  const tipEl=document.createElement('div');tipEl.className='tip';
+  cv.parentElement.appendChild(tipEl);
+  cv.addEventListener('pointermove',e=>{
+    const r=cv.getBoundingClientRect();
+    const w=r.width, R=anim.toRange, v=anim.to;
+    const x=R[0]+((e.clientX-r.left)-15)/(w-30)*(R[1]-R[0]);
+    const s=Math.round(ride?v.mu+x*v.sd:x);
+    if(s<v.n||s>6*v.n){tipEl.style.opacity=0;return}
+    const p=v.p[s-v.n], total=Math.pow(6,n);
+    tipEl.innerHTML=`sum <b>${s}</b><br><b>${fmt(p*total)}</b> ways of ${fmt(total)}<br><b>${(p*100).toFixed(2)}%</b>`;
+    tipEl.style.opacity=1;
+    tipEl.style.left=Math.min(r.width-160,(e.clientX-r.left)+14)+cv.offsetLeft+'px';
+    tipEl.style.top=(e.clientY-r.top+cv.offsetTop-10)+'px';
+  });
+  cv.addEventListener('pointerleave',()=>tipEl.style.opacity=0);
+
+  $('#d-n').addEventListener('input',e=>setN(+e.target.value));
+  $('#d-ride').addEventListener('click',e=>{
+    const oldV=view(n),oldR=range(n,ride);
+    ride=!ride;
+    e.currentTarget.setAttribute('aria-pressed',String(ride));
+    startAnim(oldV,oldR);
+  });
+  anim={t:1,from:null,to:view(1),fromRange:null,toRange:range(1,false)};
+  watchResize(cv,draw);themeSubs.push(draw);
+  updateFact();draw();
+})();
+
+/* ============================================================
+   ACT II · PAINT YOUR OWN CHAOS
+============================================================ */
+(function painter(){
+  const cv=$('#cv-paint');
+  const M=220, Zmax=4.2;
+  let H=new Float64Array(M);
+  let rep=null;
+  let mode='draw';
+  let steps=0;
+  let disp=new Float64Array(M);
+  let dispFrom=null, animT=1;
+  let queue=0;
+
+  function presets(name){
+    H.fill(0);
+    const f=i=>i/(M-1);
+    if(name==='islands')for(let i=0;i<M;i++){const t=f(i);H[i]=Math.max(Math.exp(-Math.pow((t-.22)/.06,2))*.95,Math.exp(-Math.pow((t-.74)/.09,2))*.6)}
+    if(name==='cliff')for(let i=0;i<M;i++){const t=f(i);H[i]=(t>.25&&t<.75)?.8:0}
+    if(name==='stairs')for(let i=0;i<M;i++){const t=f(i);H[i]=t<.15||t>.9?0:(Math.floor((t-.15)/.15)+1)*.18}
+    if(name==='spikes'){for(const c of[.1,.32,.5,.87])for(let i=0;i<M;i++){const t=f(i);H[i]=Math.max(H[i],Math.exp(-Math.pow((t-c)/.012,2))*(c===.87?1:.55))}}
+    resetToDrawing();
+  }
+
+  function resetToDrawing(){
+    mode='draw';steps=0;rep=null;animT=1;dispFrom=null;queue=0;
+    $('#p-stat').innerHTML='You are looking at <b>your drawing</b> — 1 copy, nothing averaged yet.';
+    $('#p-dist').textContent='—';$('#p-meter').style.width='0%';
+    draw();
+  }
+
+  function buildRep(){
+    const w=Float64Array.from(H);
+    let sum=0;for(let i=0;i<M;i++)sum+=w[i];
+    if(sum<1e-9)return null;
+    for(let i=0;i<M;i++)w[i]/=sum;
+    return withStats({w,x0:0,dx:1});
+  }
+  function withStats(r){
+    let mu=0;for(let i=0;i<r.w.length;i++)mu+=r.w[i]*(r.x0+i*r.dx);
+    let v=0;for(let i=0;i<r.w.length;i++){const d=r.x0+i*r.dx-mu;v+=r.w[i]*d*d}
+    r.mu=mu;r.sd=Math.sqrt(v);return r;
+  }
+  function convStep(r){
+    const n=r.w.length;
+    const q=new Float64Array(2*n-1);
+    for(let i=0;i<n;i++){
+      const wi=r.w[i];if(wi<1e-12)continue;
+      for(let j=0;j<n;j++)q[i+j]+=wi*r.w[j];
+    }
+    let out=withStats({w:q,x0:2*r.x0,dx:r.dx});
+    if(out.sd<1e-9)return out;
+    const lo=out.mu-4.5*out.sd, step=9*out.sd/M;
+    const nw=new Float64Array(M);
+    for(let i=0;i<q.length;i++){
+      const m=q[i];if(m<1e-14)continue;
+      const x=out.x0+i*out.dx;
+      const fpos=(x-lo)/step-0.5;
+      const i0=Math.floor(fpos), fr=fpos-i0;
+      if(i0>=0&&i0<M)nw[i0]+=m*(1-fr);
+      if(i0+1>=0&&i0+1<M)nw[i0+1]+=m*fr;
+    }
+    let s=0;for(let i=0;i<M;i++)s+=nw[i];
+    for(let i=0;i<M;i++)nw[i]/=s;
+    return withStats({w:nw,x0:lo+step/2,dx:step});
+  }
+  function displayOf(r){
+    const out=new Float64Array(M);
+    if(!r||r.sd<1e-9)return out;
+    for(let j=0;j<M;j++){
+      const z=-Zmax+(j+.5)/M*2*Zmax;
+      const x=r.mu+z*r.sd;
+      const fpos=(x-r.x0)/r.dx;
+      const i0=Math.floor(fpos), fr=fpos-i0;
+      let d=0;
+      if(i0>=0&&i0<r.w.length)d+=r.w[i0]*(1-fr);
+      if(i0+1>=0&&i0+1<r.w.length)d+=r.w[i0+1]*fr;
+      out[j]=d/r.dx*r.sd;
+    }
+    const sm=new Float64Array(M);
+    for(let j=0;j<M;j++)sm[j]=(out[Math.max(0,j-1)]+2*out[j]+out[Math.min(M-1,j+1)])/4;
+    return sm;
+  }
+  function tv(d){
+    const dz=2*Zmax/M;let s=0;
+    for(let j=0;j<M;j++){const z=-Zmax+(j+.5)*dz;s+=Math.abs(d[j]-PHI(z))*dz}
+    return s/2;
+  }
+
+  function blend(){
+    if(mode==='draw'){
+      rep=buildRep();
+      if(!rep){hint('Draw something first — the canvas is empty.');return}
+      if(rep.sd<1e-9){hint('A single spike never spreads — zero variance is the one boring exception. Add a second bar!');return}
+      dispFrom=displayOf(rep);
+    }else{
+      dispFrom=disp.slice();
+    }
+    rep=convStep(rep);
+    steps++;mode='blended';
+    const target=displayOf(rep);
+    animateTo(target);
+    const copies=Math.pow(2,steps);
+    const d=tv(target);
+    $('#p-stat').innerHTML=`Blend <b>${steps}</b>: this is the distribution of the average of <b>${fmt(copies)}</b> independent draws from your drawing.`;
+    $('#p-dist').textContent=(d*100).toFixed(1)+'%';
+    $('#p-meter').style.width=clamp(d*100,0,100)+'%';
+  }
+  let hintMsg=null,hintUntil=0;
+  function hint(m){hintMsg=m;hintUntil=performance.now()+3200;draw();
+    setTimeout(()=>{if(performance.now()>hintUntil){hintMsg=null;draw()}},3400)}
+
+  let rafId=0;
+  function animateTo(target){
+    if(REDUCED){disp=target;animT=1;draw();next();return}
+    animT=0;
+    cancelAnimationFrame(rafId);
+    const from=dispFrom;
+    const step=()=>{
+      animT=Math.min(1,animT+0.075);
+      const e=1-Math.pow(1-animT,3);
+      for(let j=0;j<M;j++)disp[j]=lerp(from[j],target[j],e);
+      draw();
+      if(animT<1)rafId=requestAnimationFrame(step);
+      else next();
+    };
+    rafId=requestAnimationFrame(step);
+  }
+  function next(){if(queue>0){queue--;setTimeout(blend,90)}}
+
+  function draw(){
+    const {ctx,w,h}=fit(cv);
+    if(w<40)return;
+    ctx.clearRect(0,0,w,h);
+    const padB=24, plotH=h-padB-14;
+    ctx.strokeStyle=TK.line;ctx.beginPath();ctx.moveTo(8,h-padB);ctx.lineTo(w-8,h-padB);ctx.stroke();
+    if(mode==='draw'){
+      let any=false;
+      ctx.fillStyle=alpha(TK.blue,.5);ctx.strokeStyle=TK.blue;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(8,h-padB);
+      for(let i=0;i<M;i++){
+        const x=8+i/(M-1)*(w-16), y=h-padB-H[i]*plotH;
+        if(H[i]>0)any=true;
+        ctx.lineTo(x,y);
+      }
+      ctx.lineTo(w-8,h-padB);ctx.closePath();ctx.fill();ctx.stroke();ctx.lineWidth=1;
+      ctx.fillStyle=TK.ink3;ctx.font='12px system-ui,sans-serif';ctx.textAlign='center';
+      if(!any)ctx.fillText('✏️  draw here — click / touch and drag to sketch any distribution',w/2,h/2);
+      else ctx.fillText('your distribution (drag to keep editing, or press Blend)',w/2,h-8);
+    }else{
+      const X=z=>((z+Zmax)/(2*Zmax))*(w-16)+8;
+      const maxD=Math.max(.45,...disp)*1.12;
+      const Y=d=>h-padB-(d/maxD)*plotH;
+      ctx.font='11px system-ui,sans-serif';ctx.textAlign='center';
+      for(let z=-4;z<=4;z++){
+        ctx.strokeStyle=TK.line2;ctx.beginPath();ctx.moveTo(X(z),14);ctx.lineTo(X(z),h-padB);ctx.stroke();
+        ctx.fillStyle=TK.ink3;ctx.fillText(z===0?'mean':(z>0?'+':'')+z+'σ',X(z),h-8);
+      }
+      ctx.fillStyle=alpha(TK.blue,.5);ctx.strokeStyle=TK.blue;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(8,h-padB);
+      for(let j=0;j<M;j++)ctx.lineTo(X(-Zmax+(j+.5)/M*2*Zmax),Y(disp[j]));
+      ctx.lineTo(w-8,h-padB);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.strokeStyle=TK.gold;ctx.lineWidth=2.2;ctx.setLineDash([6,5]);
+      const pts=[];for(let px=8;px<=w-8;px+=3){const z=-Zmax+(px-8)/(w-16)*2*Zmax;pts.push([px,Y(PHI(z))])}
+      curve(ctx,pts);ctx.stroke();ctx.setLineDash([]);ctx.lineWidth=1;
+      ctx.fillStyle=TK.gold;ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';
+      ctx.fillText('the destination',X(1.6),Y(PHI(1.6))-8);
+    }
+    if(hintMsg){
+      ctx.fillStyle=TK.ink2;ctx.font='italic 13px Georgia,serif';ctx.textAlign='center';
+      ctx.fillText(hintMsg,w/2,26);
+    }
+  }
+
+  let drawing=false,lastI=null;
+  function toLocal(e){
+    const r=cv.getBoundingClientRect();
+    return [clamp((e.clientX-r.left-8)/(r.width-16),0,1),clamp(1-(e.clientY-r.top-14)/(r.height-38),0,1)];
+  }
+  cv.addEventListener('pointerdown',e=>{
+    if(mode!=='draw')return;
+    drawing=true;cv.setPointerCapture(e.pointerId);
+    const [tx,ty]=toLocal(e);lastI=[Math.round(tx*(M-1)),ty];
+    H[lastI[0]]=ty;draw();e.preventDefault();
+  });
+  cv.addEventListener('pointermove',e=>{
+    if(!drawing)return;
+    const [tx,ty]=toLocal(e);
+    const i=Math.round(tx*(M-1));
+    const [i0,y0]=lastI;
+    const lo=Math.min(i0,i),hi=Math.max(i0,i);
+    for(let j=lo;j<=hi;j++){const t=hi===lo?1:(j-lo)/(hi-lo);H[j]=lerp(i0<=i?y0:ty,i0<=i?ty:y0,t)}
+    lastI=[i,ty];draw();
+  });
+  addEventListener('pointerup',()=>{drawing=false;lastI=null});
+
+  $('#p-blend').addEventListener('click',()=>{queue=0;blend()});
+  $('#p-blend5').addEventListener('click',()=>{queue=4;blend()});
+  $('#p-reset').addEventListener('click',()=>{resetToDrawing()});
+  $$('#fig-paint .chip').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.preset==='clear'){H.fill(0);resetToDrawing()}
+    else presets(b.dataset.preset);
+  }));
+  watchResize(cv,draw);themeSubs.push(draw);
+  presets('islands');
+})();
+
+/* ============================================================
+   ACT III · THE TRUCE (Ornstein–Uhlenbeck swarm)
+============================================================ */
+(function truce(){
+  const cv=$('#cv-truce');
+  const P=460, XMAX=3.4, NB=56;
+  const xs=new Float64Array(P), yb=new Float64Array(P), ph=new Float64Array(P);
+  for(let i=0;i<P;i++){xs[i]=0;yb[i]=Math.random();ph[i]=Math.random()*TAU}
+  let s=1.2,k=1.0,paused=REDUCED;
+  const hist=new Float64Array(NB), disp=new Float64Array(NB);
+  let scaleEMA=1;
+
+  function step(dt){
+    const sd=Math.sqrt(dt);
+    for(let i=0;i<P;i++){
+      xs[i]+=-k*xs[i]*dt+s*sd*randn();
+      if(k<0.02)xs[i]=clamp(xs[i],-40,40);
+    }
+    hist.fill(0);
+    const bw=2*XMAX/NB;
+    for(let i=0;i<P;i++){
+      const b=Math.floor((xs[i]+XMAX)/bw);
+      if(b>=0&&b<NB)hist[b]++;
+    }
+    for(let b=0;b<NB;b++){
+      disp[b]=lerp(disp[b],hist[b]/(P*bw),0.12);
+    }
+  }
+
+  function draw(t){
+    const {ctx,w,h}=fit(cv);
+    if(w<40)return;
+    ctx.clearRect(0,0,w,h);
+    const bandH=110, bandTop=h-bandH-8, histB=bandTop-22, plotH=histB-16;
+    const X=x=>((x+XMAX)/(2*XMAX))*(w-20)+10;
+    const dark=isDark();
+    ctx.strokeStyle=TK.line2;ctx.beginPath();ctx.moveTo(X(0),12);ctx.lineTo(X(0),h-6);ctx.stroke();
+    ctx.strokeStyle=TK.line;ctx.beginPath();ctx.moveTo(10,histB);ctx.lineTo(w-10,histB);ctx.stroke();
+    let maxD=0.4;
+    for(let b=0;b<NB;b++)maxD=Math.max(maxD,disp[b]);
+    if(k>0.02&&s>0.02)maxD=Math.max(maxD,PHI(0)/(s/Math.sqrt(2*k)));
+    scaleEMA=lerp(scaleEMA,maxD*1.1,0.06);
+    const Y=d=>histB-(d/scaleEMA)*plotH;
+    const bw=2*XMAX/NB;
+    ctx.fillStyle=alpha(TK.blue,.5);ctx.strokeStyle=TK.blue;ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(10,histB);
+    for(let b=0;b<NB;b++)ctx.lineTo(X(-XMAX+(b+.5)*bw),Y(disp[b]));
+    ctx.lineTo(w-10,histB);ctx.closePath();ctx.fill();ctx.stroke();ctx.lineWidth=1;
+    if(k>0.02&&s>0.02){
+      const sig=s/Math.sqrt(2*k);
+      ctx.strokeStyle=TK.gold;ctx.lineWidth=2.2;
+      if(dark){ctx.shadowColor=TK.glow;ctx.shadowBlur=10}
+      const pts=[];for(let px=10;px<=w-10;px+=3){const x=-XMAX+(px-10)/(w-20)*2*XMAX;pts.push([px,Y(PHI(x/sig)/sig)])}
+      curve(ctx,pts);ctx.stroke();ctx.shadowBlur=0;ctx.lineWidth=1;
+      ctx.fillStyle=TK.gold;ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';
+      ctx.fillText('the treaty line',X(sig*1.3)+6,Y(PHI(1.3)/sig)-6);
+    }
+    ctx.strokeStyle=TK.line;ctx.strokeRect(10,bandTop,w-20,bandH);
+    ctx.save();ctx.beginPath();ctx.rect(10,bandTop,w-20,bandH);ctx.clip();
+    if(dark){ctx.shadowColor=alpha(TK.blue,.8);ctx.shadowBlur=4}
+    ctx.fillStyle=alpha(TK.blue,.75);
+    for(let i=0;i<P;i++){
+      const px=X(xs[i]);
+      const py=bandTop+8+yb[i]*(bandH-16)+Math.sin(t*1.3+ph[i])*2.5;
+      ctx.fillRect(px-1.7,py-1.7,3.4,3.4);
+    }
+    ctx.restore();ctx.shadowBlur=0;
+    ctx.fillStyle=TK.ink3;ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';
+    ctx.fillText('the swarm — each dot jitters randomly'+(k>0.02?' and feels the tether':''),14,bandTop+14);
+    ctx.fillText('where the swarm spends its time',14,26);
+  }
+
+  function narrate(){
+    const el=$('#t-stat');
+    if(s<=0.02&&k<=0.02)el.innerHTML='Nothing moves. Not so much a distribution as a memorial.';
+    else if(k<=0.02)el.innerHTML='<b>No tether:</b> pure spreading. The swarm becomes an ever-thinning fog — there is no equilibrium shape at all, it just keeps going.';
+    else if(s<=0.02)el.innerHTML='<b>No jitter:</b> pure pull. Everything collapses onto the center — a single dead spike.';
+    else{
+      const sig=s/Math.sqrt(2*k);
+      el.innerHTML=`<b>Truce.</b> Spreading and pull cancel point-by-point; the swarm settles into a bell of width σ ≈ <b>${sig.toFixed(2)}</b> (jitter ÷ √(2·tether)). Move either slider — the bell reshapes, but stays a bell.`;
+    }
+  }
+
+  $('#t-s').addEventListener('input',e=>{s=+e.target.value;narrate()});
+  $('#t-k').addEventListener('input',e=>{k=+e.target.value;narrate()});
+  $$('#fig-truce .chip').forEach(b=>b.addEventListener('click',()=>{
+    $$('#fig-truce .chip').forEach(c=>c.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+    const m=b.dataset.mode;
+    if(m==='jitter'){s=1.4;k=0;for(let i=0;i<P;i++)xs[i]=0}
+    if(m==='tether'){s=0;k=1.6}
+    if(m==='both'){s=1.2;k=1.0}
+    $('#t-s').value=s;$('#t-k').value=k;
+    narrate();
+    if(paused){paused=false;syncPause()}
+  }));
+  const pauseBtn=$('#t-pause');
+  function syncPause(){pauseBtn.setAttribute('aria-pressed',String(paused));pauseBtn.textContent=paused?'Play':'Pause'}
+  pauseBtn.addEventListener('click',()=>{paused=!paused;syncPause()});
+  syncPause();narrate();
+  watchResize(cv,()=>draw(0));themeSubs.push(()=>draw(0));
+  register(cv,(dt,t)=>{if(!paused)step(Math.min(dt,1/30));draw(t)});
+})();
+
+/* ============================================================
+   ACT IV · FIGURE A — THE SHAPE DIAL (generalized normal family)
+============================================================ */
+(function dial(){
+  const cv=$('#cv-dial');
+  const bMin=0.7,bMax=7,Z=4.2;
+  const alphaOf=b=>Math.sqrt(gamma(1/b)/gamma(3/b));
+  const Hbits=b=>{const a=alphaOf(b);return (1/b-Math.log(b/(2*a*gamma(1/b))))/LN2};
+  const pdf=(x,b)=>{const a=alphaOf(b);return b/(2*a*gamma(1/b))*Math.exp(-Math.pow(Math.abs(x)/a,b))};
+  const HBELL=Hbits(2);
+  const t2=Math.log(2/bMin)/Math.log(bMax/bMin); /* slider position of β=2 */
+  const TN=140, track=[];
+  for(let i=0;i<TN;i++){const tt=i/(TN-1);track.push([tt,Hbits(bMin*Math.pow(bMax/bMin,tt))])}
+  const Hlo=1.70,Hhi=2.09;
+  let t=1;
+  const beta=()=>bMin*Math.pow(bMax/bMin,t);
+
+  function draw(){
+    const {ctx,w,h}=fit(cv);
+    if(w<40)return;
+    ctx.clearRect(0,0,w,h);
+    const b=beta();
+    const shapeB=h*0.56, trackTop=shapeB+46, trackB=h-30;
+    const X=z=>((z+Z)/(2*Z))*(w-24)+12;
+    /* --- shape area --- */
+    ctx.strokeStyle=TK.line;ctx.beginPath();ctx.moveTo(10,shapeB);ctx.lineTo(w-10,shapeB);ctx.stroke();
+    const maxD=Math.max(pdf(0,b),PHI(0))*1.15;
+    const Y=d=>shapeB-(d/maxD)*(shapeB-22);
+    /* gold bell ghost */
+    ctx.strokeStyle=alpha(TK.gold,.9);ctx.lineWidth=2;ctx.setLineDash([6,5]);
+    let pts=[];for(let px=12;px<=w-12;px+=3){const z=-Z+(px-12)/(w-24)*2*Z;pts.push([px,Y(PHI(z))])}
+    curve(ctx,pts);ctx.stroke();ctx.setLineDash([]);
+    /* blue allocation */
+    ctx.fillStyle=alpha(TK.blue,.45);ctx.strokeStyle=TK.blue;ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(12,shapeB);
+    for(let px=12;px<=w-12;px+=2){const z=-Z+(px-12)/(w-24)*2*Z;ctx.lineTo(px,Y(pdf(z,b)))}
+    ctx.lineTo(w-12,shapeB);ctx.closePath();ctx.fill();ctx.stroke();ctx.lineWidth=1;
+    ctx.fillStyle=TK.ink3;ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';
+    ctx.fillText('variance: 1.00 — locked',14,20);
+    /* --- entropy track --- */
+    const TX=tt=>30+tt*(w-60);
+    const TY=H=>trackB-((H-Hlo)/(Hhi-Hlo))*(trackB-trackTop);
+    ctx.strokeStyle=TK.line;ctx.beginPath();ctx.moveTo(20,trackB);ctx.lineTo(w-20,trackB);ctx.stroke();
+    ctx.strokeStyle=TK.ink3;ctx.lineWidth=1.5;
+    pts=track.map(([tt,H])=>[TX(tt),TY(H)]);
+    curve(ctx,pts);ctx.stroke();ctx.lineWidth=1;
+    /* gold peak marker */
+    ctx.fillStyle=TK.gold;
+    ctx.beginPath();ctx.arc(TX(t2),TY(HBELL),4,0,TAU);ctx.fill();
+    ctx.font='11px system-ui,sans-serif';ctx.textAlign='center';
+    ctx.fillText('the bell · '+HBELL.toFixed(3)+' bits',TX(t2),TY(HBELL)-12);
+    /* current dot */
+    ctx.fillStyle=TK.blue;
+    ctx.beginPath();ctx.arc(TX(t),TY(Hbits(b)),5.5,0,TAU);ctx.fill();
+    /* labels */
+    ctx.fillStyle=TK.ink3;ctx.textAlign='left';
+    ctx.fillText('heavy tails',22,trackB+16);
+    ctx.textAlign='right';ctx.fillText('hard-edged slab',w-22,trackB+16);
+    ctx.textAlign='left';ctx.fillText('entropy, at a fixed budget of variance 1',22,trackTop-10);
+  }
+
+  function readout(){
+    const b=beta(),H=Hbits(b),d=HBELL-H;
+    const el=$('#dial-stat');
+    if(Math.abs(b-2)<0.05){
+      el.innerHTML=`β = <b>2.00 — the bell.</b> Entropy <b>${H.toFixed(3)} bits</b>: the maximum. No allocation of this budget scores higher.`;
+    }else{
+      const regime=b<1.5?'heavy tails — rare far-out draws eat the budget, so the middle must bunch up'
+        :b>3?'nearly a slab — hard edges refuse the cheap entropy of soft tails'
+        :'close… keep going';
+      el.innerHTML=`β = <b>${b.toFixed(2)}</b> · entropy <b>${H.toFixed(3)} bits</b> — ${d.toFixed(3)} below the bell. (${regime})`;
+    }
+  }
+  const sl=$('#dial-b');
+  sl.addEventListener('input',()=>{t=+sl.value;draw();readout()});
+  sl.addEventListener('change',()=>{ /* snap to the summit when close */
+    if(Math.abs(beta()-2)<0.12){t=t2;sl.value=t;draw();readout()}
+  });
+  watchResize(cv,draw);themeSubs.push(draw);
+  draw();readout();
+})();
+
+/* ============================================================
+   ACT IV · FIGURE B — SCULPT & SPILL (max entropy at fixed variance)
+============================================================ */
+(function spillFig(){
+  const cv=$('#cv-spill');
+  const M=180, Z=4.5, dz=2*Z/M;
+  const HBELL=0.5*Math.log(2*Math.PI*Math.E)/LN2; /* 2.0471 bits */
+  const SCALE_MAX=2.3; /* meter full-scale, bits */
+  let raw=new Float64Array(M);
+  let pB=null;
+  let mode='draw';   /* draw | spill | done */
+  let rafId=0;
+
+  function entropyBits(p){
+    let s=0;for(let i=0;i<M;i++){const v=p[i];if(v>1e-15)s-=v*Math.log(v)}
+    return (s+Math.log(dz))/LN2;
+  }
+  /* rescale any column-mass array to variance 1 on the fixed z grid */
+  function standardize(arr){
+    let sum=0;for(let i=0;i<M;i++)sum+=arr[i];
+    if(sum<1e-9)return null;
+    let mu=0;for(let i=0;i<M;i++)mu+=arr[i]/sum*i;
+    let v=0;for(let i=0;i<M;i++){const d=i-mu;v+=arr[i]/sum*d*d}
+    const sd=Math.sqrt(v);
+    if(sd<0.8)return 'spike';
+    const out=new Float64Array(M);
+    for(let j=0;j<M;j++){
+      const z=-Z+(j+.5)*dz;
+      const x=mu+sd*z;
+      const i0=Math.floor(x), fr=x-i0;
+      let d=0;
+      if(i0>=0&&i0<M)d+=arr[i0]/sum*(1-fr);
+      if(i0+1>=0&&i0+1<M)d+=arr[i0+1]/sum*fr;
+      out[j]=d*sd*dz;
+    }
+    let s2=0;for(let j=0;j<M;j++)s2+=out[j];
+    if(s2<1e-9)return null;
+    for(let j=0;j<M;j++)out[j]/=s2;
+    return out;
+  }
+  /* one animation frame of the spill: diffuse, then re-pin the budget */
+  function spillFrame(){
+    for(let pass=0;pass<3;pass++){
+      const q=new Float64Array(M);
+      for(let j=0;j<M;j++){
+        q[j]=(pB[Math.max(0,j-2)]+4*pB[Math.max(0,j-1)]+6*pB[j]+4*pB[Math.min(M-1,j+1)]+pB[Math.min(M-1,j+2)])/16;
+      }
+      pB=q;
+    }
+    let sum=0,mu=0;
+    for(let j=0;j<M;j++){sum+=pB[j];mu+=pB[j]*(-Z+(j+.5)*dz)}
+    mu/=sum;
+    let v=0;for(let j=0;j<M;j++){const d=-Z+(j+.5)*dz-mu;v+=pB[j]/sum*d*d}
+    const sd=Math.sqrt(v);
+    const out=new Float64Array(M);
+    for(let j=0;j<M;j++){
+      const z=-Z+(j+.5)*dz;
+      const x=mu+sd*z;
+      const f=(x+Z)/dz-0.5;
+      const i0=Math.floor(f), fr=f-i0;
+      let d=0;
+      if(i0>=0&&i0<M)d+=pB[i0]*(1-fr);
+      if(i0+1>=0&&i0+1<M)d+=pB[i0+1]*fr;
+      out[j]=d*sd;
+    }
+    let s2=0;for(let j=0;j<M;j++)s2+=out[j];
+    for(let j=0;j<M;j++)out[j]/=s2;
+    pB=out;
+  }
+
+  function score(){
+    const st=standardize(raw);
+    if(st===null)return {txt:'—',H:null,note:'the canvas is empty — sculpt something.'};
+    if(st==='spike')return {txt:'—',H:null,note:'a lone spike spends no budget at all — nothing to reallocate. Draw something wider.'};
+    const H=entropyBits(st);
+    return {txt:H.toFixed(3)+' bits',H,note:null,st};
+  }
+  function updateMeter(H){
+    $('#sp-fill').style.width=H===null?'0%':clamp(H/SCALE_MAX*100,0,100)+'%';
+  }
+  function refreshScore(){
+    const sc=score();
+    $('#sp-score').textContent=sc.txt;
+    updateMeter(sc.H);
+    if(sc.note)$('#sp-stat').innerHTML=sc.note;
+    else{
+      const gap=HBELL-sc.H;
+      $('#sp-stat').innerHTML=`Your allocation: <b>${sc.H.toFixed(3)} bits</b> at variance 1 — <b>${gap.toFixed(3)} bits</b> of waste left in the ledger.`
+        +(sc.H<0?' (Negative! A near-spike is so predictable it runs an information-debt.)':'');
+    }
+    return sc;
+  }
+
+  function draw(){
+    const {ctx,w,h}=fit(cv);
+    if(w<40)return;
+    ctx.clearRect(0,0,w,h);
+    const padB=24, plotH=h-padB-14;
+    ctx.strokeStyle=TK.line;ctx.beginPath();ctx.moveTo(8,h-padB);ctx.lineTo(w-8,h-padB);ctx.stroke();
+    if(mode==='draw'){
+      let any=false;
+      ctx.fillStyle=alpha(TK.blue,.5);ctx.strokeStyle=TK.blue;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(8,h-padB);
+      for(let i=0;i<M;i++){
+        const x=8+i/(M-1)*(w-16), y=h-padB-raw[i]*plotH;
+        if(raw[i]>0)any=true;
+        ctx.lineTo(x,y);
+      }
+      ctx.lineTo(w-8,h-padB);ctx.closePath();ctx.fill();ctx.stroke();ctx.lineWidth=1;
+      ctx.fillStyle=TK.ink3;ctx.font='12px system-ui,sans-serif';ctx.textAlign='center';
+      if(!any)ctx.fillText('✏️  sculpt here — click / touch and drag to allocate probability',w/2,h/2);
+      else ctx.fillText('your allocation (keep editing, or let it spill)',w/2,h-8);
+    }else{
+      const X=z=>((z+Z)/(2*Z))*(w-16)+8;
+      const dens=j=>pB[j]/dz;
+      let maxD=PHI(0)*1.25;
+      for(let j=0;j<M;j++)maxD=Math.max(maxD,dens(j));
+      const Y=d=>h-padB-(d/maxD)*plotH;
+      ctx.font='11px system-ui,sans-serif';ctx.textAlign='center';
+      for(let z=-4;z<=4;z++){
+        ctx.strokeStyle=TK.line2;ctx.beginPath();ctx.moveTo(X(z),14);ctx.lineTo(X(z),h-padB);ctx.stroke();
+        ctx.fillStyle=TK.ink3;ctx.fillText(z===0?'mean':(z>0?'+':'')+z+'σ',X(z),h-8);
+      }
+      ctx.fillStyle=alpha(TK.blue,.5);ctx.strokeStyle=TK.blue;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(8,h-padB);
+      for(let j=0;j<M;j++)ctx.lineTo(X(-Z+(j+.5)*dz),Y(dens(j)));
+      ctx.lineTo(w-8,h-padB);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.strokeStyle=TK.gold;ctx.lineWidth=2.2;ctx.setLineDash([6,5]);
+      const pts=[];for(let px=8;px<=w-8;px+=3){const z=-Z+(px-8)/(w-16)*2*Z;pts.push([px,Y(PHI(z))])}
+      curve(ctx,pts);ctx.stroke();ctx.setLineDash([]);ctx.lineWidth=1;
+    }
+  }
+
+  function runSpill(){
+    if(mode==='spill')return;
+    const sc=refreshScore();
+    if(!sc.st){draw();return}
+    pB=sc.st;mode='spill';
+    let frames=0;
+    cancelAnimationFrame(rafId);
+    const stepFrame=()=>{
+      spillFrame();frames++;
+      const H=entropyBits(pB);
+      $('#sp-score').textContent=H.toFixed(3)+' bits';
+      updateMeter(H);
+      draw();
+      if(HBELL-H>0.0008&&frames<600&&!REDUCED){
+        $('#sp-stat').innerHTML=`Spilling… cliffs soften, spikes melt, the budget is re-pinned each step. <b>${H.toFixed(3)} bits</b> and climbing.`;
+        rafId=requestAnimationFrame(stepFrame);
+      }else{
+        if(REDUCED&&HBELL-H>0.0008){ /* finish instantly for reduced motion */
+          while(HBELL-entropyBits(pB)>0.0008&&frames<2000){spillFrame();frames++}
+          const Hf=entropyBits(pB);
+          $('#sp-score').textContent=Hf.toFixed(3)+' bits';updateMeter(Hf);draw();
+        }
+        mode='done';
+        $('#sp-stat').innerHTML=`It stopped at <b>${entropyBits(pB).toFixed(3)} bits</b> — the bell, to three decimals. The spill never chooses anything else, no matter what you sculpt.`;
+      }
+    };
+    rafId=requestAnimationFrame(stepFrame);
+  }
+
+  function presets(name){
+    raw.fill(0);
+    const f=i=>i/(M-1);
+    if(name==='slab')for(let i=0;i<M;i++){const t=f(i);raw[i]=(t>.3&&t<.7)?.75:0}
+    if(name==='islands')for(let i=0;i<M;i++){const t=f(i);raw[i]=Math.max(Math.exp(-Math.pow((t-.28)/.05,2))*.9,Math.exp(-Math.pow((t-.72)/.05,2))*.9)}
+    if(name==='spikes'){for(const c of[.2,.5,.8])for(let i=0;i<M;i++){const t=f(i);raw[i]=Math.max(raw[i],Math.exp(-Math.pow((t-c)/.01,2)))}}
+    backToDraw(false);
+  }
+  function backToDraw(clear){
+    cancelAnimationFrame(rafId);
+    if(clear)raw.fill(0);
+    mode='draw';pB=null;
+    refreshScore();draw();
+  }
+
+  let drawing=false,lastI=null;
+  function toLocal(e){
+    const r=cv.getBoundingClientRect();
+    return [clamp((e.clientX-r.left-8)/(r.width-16),0,1),clamp(1-(e.clientY-r.top-14)/(r.height-38),0,1)];
+  }
+  cv.addEventListener('pointerdown',e=>{
+    if(mode!=='draw')return;
+    drawing=true;cv.setPointerCapture(e.pointerId);
+    const [tx,ty]=toLocal(e);lastI=[Math.round(tx*(M-1)),ty];
+    raw[lastI[0]]=ty;draw();e.preventDefault();
+  });
+  cv.addEventListener('pointermove',e=>{
+    if(!drawing)return;
+    const [tx,ty]=toLocal(e);
+    const i=Math.round(tx*(M-1));
+    const [i0,y0]=lastI;
+    const lo=Math.min(i0,i),hi=Math.max(i0,i);
+    for(let j=lo;j<=hi;j++){const t=hi===lo?1:(j-lo)/(hi-lo);raw[j]=lerp(i0<=i?y0:ty,i0<=i?ty:y0,t)}
+    lastI=[i,ty];draw();
+  });
+  addEventListener('pointerup',()=>{
+    if(drawing){drawing=false;lastI=null;if(mode==='draw')refreshScore()}
+  });
+
+  $('#sp-run').addEventListener('click',runSpill);
+  $('#sp-reset').addEventListener('click',()=>backToDraw(false));
+  $$('#fig-spill .chip').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.sp==='clear')backToDraw(true);
+    else presets(b.dataset.sp);
+  }));
+  watchResize(cv,draw);themeSubs.push(draw);
+  presets('slab');
+})();
+
+/* ============================================================
+   ACT V · THE ROTATING CLOUD
+============================================================ */
+(function cloud(){
+  const cv=$('#cv-cloud');
+  const N=2200, XMAX=3.4, NB=44;
+  let px=new Float64Array(N),py=new Float64Array(N);
+  let theta=0, spin=!REDUCED, dragging=false, needs=true;
+  let ref=new Float64Array(NB);
+  let distName='coins';
+
+  function sample(name){
+    const one=()=>{
+      if(name==='coins')return Math.random()<.5?-1:1;
+      if(name==='dice')return ((1+Math.floor(Math.random()*6))-3.5)/Math.sqrt(35/12);
+      if(name==='uniform')return (Math.random()*2-1)*Math.sqrt(3);
+      return randn();
+    };
+    for(let i=0;i<N;i++){px[i]=one();py[i]=one()}
+    if(name==='coins'||name==='dice')for(let i=0;i<N;i++){px[i]+=randn()*.045;py[i]+=randn()*.045}
+    ref=project(0);
+    needs=true;
+  }
+  function project(th){
+    const c=Math.cos(th),s=Math.sin(th);
+    const hbins=new Float64Array(NB), bw=2*XMAX/NB;
+    for(let i=0;i<N;i++){
+      const u=px[i]*c+py[i]*s;
+      const b=Math.floor((u+XMAX)/bw);
+      if(b>=0&&b<NB)hbins[b]+=1/(N*bw);
+    }
+    const sm=new Float64Array(NB);
+    for(let b=0;b<NB;b++)sm[b]=(hbins[Math.max(0,b-1)]+2*hbins[b]+hbins[Math.min(NB-1,b+1)])/4;
+    return sm;
+  }
+
+  function draw(){
+    const {ctx,w,h}=fit(cv);
+    if(w<40)return;
+    ctx.clearRect(0,0,w,h);
+    const S=Math.min(w-30,290);
+    const cx=w/2, cyC=14+S/2;
+    const histTop=14+S+34, histB=h-24, plotH=histB-histTop;
+    const scale=S/(2*XMAX);
+    const c=Math.cos(theta),s=Math.sin(theta);
+    const dark=isDark();
+    ctx.strokeStyle=TK.line2;
+    ctx.beginPath();ctx.moveTo(cx-S/2,cyC);ctx.lineTo(cx+S/2,cyC);ctx.moveTo(cx,cyC-S/2);ctx.lineTo(cx,cyC+S/2);ctx.stroke();
+    ctx.strokeStyle=TK.line;ctx.strokeRect(cx-S/2,cyC-S/2,S,S);
+    ctx.save();ctx.beginPath();ctx.rect(cx-S/2,cyC-S/2,S,S);ctx.clip();
+    ctx.fillStyle=alpha(TK.blue,dark?.55:.4);
+    for(let i=0;i<N;i++){
+      const u=px[i]*c+py[i]*s, v=-px[i]*s+py[i]*c;
+      ctx.fillRect(cx+u*scale-1.2,cyC-v*scale-1.2,2.4,2.4);
+    }
+    ctx.restore();
+    ctx.fillStyle=TK.ink3;ctx.font='11px system-ui,sans-serif';ctx.textAlign='center';
+    ctx.fillText('▼ light falls straight down — the shadow lands below',cx,14+S+18);
+    const live=project(theta);
+    const X=u=>cx-S/2+((u+XMAX)/(2*XMAX))*S;
+    let maxD=PHI(0)*1.35;
+    for(let b=0;b<NB;b++)maxD=Math.max(maxD,live[b],ref[b]);
+    const Y=d=>histB-(d/maxD)*plotH;
+    ctx.strokeStyle=TK.line;ctx.beginPath();ctx.moveTo(cx-S/2-6,histB);ctx.lineTo(cx+S/2+6,histB);ctx.stroke();
+    const bw=2*XMAX/NB;
+    ctx.fillStyle=alpha(TK.blue,.5);ctx.strokeStyle=TK.blue;ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(X(-XMAX),histB);
+    for(let b=0;b<NB;b++)ctx.lineTo(X(-XMAX+(b+.5)*bw),Y(live[b]));
+    ctx.lineTo(X(XMAX),histB);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.strokeStyle=TK.rose;ctx.lineWidth=1.8;ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.moveTo(X(-XMAX),histB);
+    for(let b=0;b<NB;b++)ctx.lineTo(X(-XMAX+(b+.5)*bw),Y(ref[b]));
+    ctx.lineTo(X(XMAX),histB);ctx.stroke();ctx.setLineDash([]);
+    ctx.strokeStyle=alpha(TK.gold,.95);ctx.lineWidth=2;
+    const pts=[];for(let q=-XMAX;q<=XMAX;q+=.1)pts.push([X(q),Y(PHI(q))]);
+    curve(ctx,pts);ctx.stroke();ctx.lineWidth=1;
+    const deg=((theta*180/Math.PI)%360+360)%360;
+    $('#c-deg').textContent=Math.round(deg)+'°';
+    const sl=$('#c-angle');if(!dragging&&document.activeElement!==sl)sl.value=Math.round(deg);
+    const near45=Math.min(Math.abs(deg-45),Math.abs(deg-225))<4;
+    const st=$('#c-stat');
+    if(near45)st.innerHTML='<b>θ = 45°</b> — this shadow is exactly the distribution of <b>(X + Y)/√2</b>: the average! Adding random variables really is rotating this picture.';
+    else if(distName==='bell')st.innerHTML='Round cloud. Rotate all you like — the shadow will not budge. This is the bell&rsquo;s superpower, and no other independent cloud has it.';
+    else st.innerHTML='Drag the cloud (or let it spin) and watch the blue shadow move against the rose snapshot of 0°.';
+  }
+
+  register(cv,dt=>{
+    if(spin&&!dragging){theta+=dt*.35;needs=true}
+    if(needs){draw();needs=false}
+  });
+
+  let lastX=0;
+  cv.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;cv.setPointerCapture(e.pointerId);cv.classList.add('grabbing');e.preventDefault()});
+  cv.addEventListener('pointermove',e=>{if(!dragging)return;theta+=(e.clientX-lastX)*.008;lastX=e.clientX;needs=true});
+  addEventListener('pointerup',()=>{dragging=false;cv.classList.remove('grabbing')});
+
+  $('#c-spin').addEventListener('click',e=>{
+    spin=!spin;e.currentTarget.setAttribute('aria-pressed',String(spin));
+    e.currentTarget.textContent='Auto-spin: '+(spin?'on':'off');
+  });
+  $('#c-angle').addEventListener('input',e=>{
+    theta=+e.target.value*Math.PI/180;needs=true;
+    if(spin){spin=false;$('#c-spin').setAttribute('aria-pressed','false');$('#c-spin').textContent='Auto-spin: off'}
+  });
+  $$('#fig-cloud .chip').forEach(b=>b.addEventListener('click',()=>{
+    $$('#fig-cloud .chip').forEach(c=>c.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+    distName=b.dataset.dist;sample(distName);
+  }));
+  watchResize(cv,()=>{needs=true;draw()});themeSubs.push(()=>{needs=true;draw()});
+  sample('coins');draw();
+})();
+
+})();
+</script>
+
+</body>
+</html>

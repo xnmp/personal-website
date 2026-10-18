@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { EditableText } from "@/components/studio/EditableText";
+import { BoundText } from "@/components/studio/BoundText";
 import { bindBlock, bindField } from "@/lib/studio/bindings";
 import Link from "next/link";
 import { EditableLink } from "@/components/studio/EditableLink";
@@ -9,8 +10,10 @@ import { readProjectCatalog } from "@/data/projects";
 import { readContent } from "@/lib/content.server";
 
 export function MarginIndex() {
-  const { FLAGSHIP, projects, shelves } = readProjectCatalog();
+  const { FLAGSHIP, groups } = readProjectCatalog();
   const home = readContent("home");
+  const about = readContent("about");
+  const grouping = readContent("project-groups");
 
   /** A second presentation of the shared project catalogue, without card art. */
 
@@ -23,22 +26,18 @@ export function MarginIndex() {
         />
         <Markdown {...bindBlock(home, "margin-description")} />
       </div>
-      {shelves.map((shelf, shelfIndex) => (
+      {groups.map((group) => (
         <section
           className="margin-group"
-          key={shelf.id}
-          aria-labelledby={`margin-${shelf.id}`}
+          key={group.id}
+          id={group.id}
+          aria-labelledby={`margin-${group.id}`}
         >
-          <h2 id={`margin-${shelf.id}`}>
-            <EditableText
-              binding={bindField(home, ["shelves", shelfIndex, "label"])}
-            >
-              {shelf.label}
-            </EditableText>
+          <h2 id={`margin-${group.id}`}>
+            <BoundText text={group.heading} binding={bindField(about, ["sections", group.sourceIndex, "heading"])} />
           </h2>
           <ol className="margin-list">
-            {projects
-              .filter((p) => p.shelf === shelf.id)
+            {group.projects
               .map((p) => {
                 const source = readContent(`projects/${p.slug}`);
                 return (
@@ -104,6 +103,7 @@ export function MarginIndex() {
                 );
               })}
           </ol>
+          {group.projects.length === 0 && <Markdown {...bindBlock(grouping, "empty-note")} />}
         </section>
       ))}
     </div>
