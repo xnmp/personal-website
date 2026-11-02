@@ -45,7 +45,7 @@ test("edits actual pages and deploys saved content from the bottom-left", async 
   for (const scenario of [
     { route: "/projects", document: "home", field: "margin intro", value: "A private garden, edited in place." },
     { route: "/about", document: "about", field: "intro", value: "A new introduction, edited in place." },
-    { route: "/p/ballast", document: "projects/ballast", field: "headline", value: "A locally edited Ballast headline." },
+    { route: "/p/ballast", document: "projects/ballast", field: "headline", value: "A locally edited Afterglow headline." },
   ]) {
     await page.goto(scenario.route);
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
@@ -60,12 +60,12 @@ test("edits actual pages and deploys saved content from the bottom-left", async 
   await page.getByRole("button", { name: "Editing off", exact: true }).click();
   const entry = page.locator('.margin-entry').filter({ has: page.locator('[data-studio-document="projects/ballast"]') });
   const title = await openField(entry, "title");
-  await title.fill("Ballast, edited locally"); await title.press("Enter");
+  await title.fill("Afterglow, edited locally"); await title.press("Enter");
   let deployRequests = 0;
   await page.route("**/api/studio", async route => {
     if (route.request().method() === "POST" && route.request().postDataJSON().action === "deploy") {
       deployRequests++;
-      expect(saved.sources.get("projects/ballast")).toContain("Ballast, edited locally");
+      expect(saved.sources.get("projects/ballast")).toContain("Afterglow, edited locally");
       await route.fulfill({ json: { job: { phase: "live", message: "Mock publication accepted", url: "https://example.invalid" } } });
     } else await route.fallback();
   });
@@ -78,7 +78,7 @@ test("edits actual pages and deploys saved content from the bottom-left", async 
   await page.getByRole("button", { name: "Editing on", exact: true }).click();
   await page.locator('.margin-entry h3 a[href="/p/ballast"]').click();
   await expect(page).toHaveURL(/\/p\/ballast$/);
-  await expect(page.locator(".kicker")).toContainText("Ballast, edited locally");
+  await expect(page.locator(".kicker")).toContainText("Afterglow, edited locally");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -149,7 +149,7 @@ test("project sections edit as a whole through paragraphs, lists, toggles, recov
   const saved = await interceptSaves(page);
   for (const scenario of [
     { slug: "tauri-explorer", slot: "body-the-little-things-that-bothered-me" },
-    { slug: "ballast", slot: "body-the-app-isnt-the-only-thing-touching-them" },
+    { slug: "ballast", slot: "introduction" },
   ]) {
     await page.goto(`/p/${scenario.slug}`);
     const toggle = page.getByRole("button", { name: "Editing off", exact: true });

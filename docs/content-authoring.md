@@ -43,7 +43,7 @@ include an optional `preview` with `src`, `alt`, `width` and `height`. A
 a preview the directory remains text-only.
 
 ```yaml
-title: Ballast
+title: Afterglow
 status: producing
 tags:
   - svelte
@@ -51,7 +51,7 @@ tags:
 stats:
   - Markdown entries
 metadata:
-  title: 'Ballast: a mood diary'
+  title: 'Afterglow: a mood diary'
   description: My mood diary, stored as Markdown files.
 ```
 

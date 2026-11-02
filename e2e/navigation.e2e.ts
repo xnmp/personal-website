@@ -15,7 +15,7 @@ test("About is the landing page, with a navigable project directory and working 
   await expect(page.locator(".margin-index")).toBeVisible();
   await expect(page.getByRole("link", { name: "projects", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(page.getByRole("link", { name: "About me", exact: true })).not.toHaveAttribute("aria-current", "page");
-  await page.getByRole("link", { name: "Ballast", exact: true }).click();
+  await page.getByRole("link", { name: "Afterglow", exact: true }).click();
   await expect(page).toHaveURL(/\/p\/ballast$/);
   await page.getByRole("link", { name: "← all projects", exact: true }).click();
   await expect(page).toHaveURL(/\/projects$/);

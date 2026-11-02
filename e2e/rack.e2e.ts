@@ -13,7 +13,7 @@ test("every project is mounted on the home rack and opens its page", async ({ pa
   for (const p of projects) {
     await expect(page.locator(`a[href="${p.href}"]:visible`).first()).toBeVisible();
   }
-  await page.getByRole("link", { name: "Ballast", exact: true }).click();
+  await page.getByRole("link", { name: "Afterglow", exact: true }).click();
   await expect(page).toHaveURL(/\/p\/ballast$/);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });

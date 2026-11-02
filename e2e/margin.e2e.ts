@@ -27,7 +27,7 @@ test("plain can be selected, survives navigation and reload, and can be switched
   await choose(page, "plain");
   await expect(page.locator(".margin-index")).toBeVisible();
   await expect(page.locator(".landing")).toHaveCount(0);
-  await page.getByRole("link", { name: "Ballast", exact: true }).click();
+  await page.getByRole("link", { name: "Afterglow", exact: true }).click();
   await expect(page).toHaveURL(/\/p\/ballast$/);
   await page.reload();
   await expect(styleKey(page)).toHaveAccessibleName("Art direction: plain");
@@ -87,7 +87,7 @@ test("keyboard navigation opens the visible directory entry and search still fin
   await page.keyboard.press("j");
   await expect(page.locator(".margin-list h3 a").first()).toBeFocused();
   await page.keyboard.press("j");
-  await expect(page.getByRole("link", { name: "Ballast", exact: true })).toBeFocused();
+  await expect(page.getByRole("link", { name: "Afterglow", exact: true })).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/p\/ballast$/);
   await page.keyboard.press("/");
