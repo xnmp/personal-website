@@ -50,8 +50,8 @@ describe("authored content", () => {
   });
 
   test("project edits change the card and search data; invalid metadata fails by field", () => {
-    const source = readFileSync("content/projects/scrivo.md", "utf8");
-    const document = parseContent(source, "scrivo.md");
+    const source = readFileSync("content/projects/ballast.md", "utf8");
+    const document = parseContent(source, "ballast.md");
     expect(projectEntry({ ...document, data: { ...document.data, title: "An edited title" } }).title).toBe("An edited title");
     for (const [field, value] of [["summary", null], ["summary", "  "], ["status", "unknown"], ["tags", null], ["tags", [null]], ["order", Infinity], ["slug", "../bad"], ["href", "/bad"], ["glyph", "two"], ["repo", "javascript:alert(1)"], ["art", "/screens/../private"]] as const) {
       expect(() => projectEntry({ ...document, data: { ...document.data, [field]: value } })).toThrow(String(field));
@@ -84,12 +84,12 @@ describe("Markdown output", () => {
   const html = (text: string, inline = false) => renderToStaticMarkup(<Markdown text={text} inline={inline} />);
 
   test("supports paragraphs, headings, lists, links and fenced code", () => {
-    const output = html("## Notes\n\nFirst **paragraph**.\n\nSecond paragraph.\n\n- One\n- Two\n\n[Project](/p/scrivo)\n\n```rust\nlet x = 1;\n```");
+    const output = html("## Notes\n\nFirst **paragraph**.\n\nSecond paragraph.\n\n- One\n- Two\n\n[Project](/p/ballast)\n\n```rust\nlet x = 1;\n```");
     expect(output).toContain('<h2 class="md-heading">Notes</h2>');
     expect(output).toContain("<p>Second paragraph.</p>");
     expect(output).toContain("<li>Two</li>");
     expect(output).toContain('<ul class="md-list">');
-    expect(output).toContain('href="/p/scrivo"');
+    expect(output).toContain('href="/p/ballast"');
     expect(output).toContain("let x = 1;");
   });
 

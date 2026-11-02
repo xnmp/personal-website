@@ -1,9 +1,7 @@
 ---
 flagship: tauri-explorer
 featured:
-  - scrivo
   - ashen-cathedral
-  - zheng-shang-you
   - bwai
 shelves:
   - id: tools
@@ -18,9 +16,8 @@ location: Sydney
 metadata:
   title: 'chong: tools, games, and the agents that play them'
   description: >-
-    Things I build: a keyboard-first file manager in alpha, a markdown editor, a
-    mood diary, a Hyprland status bar, and agents for Brood War, Magic and a
-    family card game.
+    Things I build: a keyboard-first file manager in alpha, a
+    mood diary, a Hyprland status bar, and agents for Brood War and Magic.
 ---
 <!-- block: margin-intro -->
 Building the apps that I want to use
@@ -50,7 +47,7 @@ Field notes, 2026
 Tools I use every day, :span[and agents for the games I grew up on.]{class="soft"}
 
 <!-- block: a-file-manager-a-markdown-editor-a-mood-diary-and-the-bar -->
-A file manager, a markdown editor, a mood diary and the bar at the top of my screen. Next to them are agents learning Brood War, Magic and our family card game. Each sheet is one project, with the numbers I’ve measured and **the parts that didn’t work**.
+A file manager, a mood diary and the bar at the top of my screen. Next to them are agents learning Brood War and Magic. Each sheet is one project, with the numbers I’ve measured and **the parts that didn’t work**.
 
 <!-- block: linkmore-about-me-href-about-class-text-action -->
 :link[More about me]{href="/" class="text-action"}

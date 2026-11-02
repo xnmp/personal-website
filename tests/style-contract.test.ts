@@ -110,9 +110,9 @@ export function fixesAPlace(sel: string): boolean {
 
 describe("the contract's checks", () => {
   test("find a project named by its link or slug, not a class that merely contains one", () => {
-    expect(namesAProject('.card[href="/p/scrivo"]')).toBe("a project's link");
+    expect(namesAProject('.card[href="/p/ballast"]')).toBe("a project's link");
     expect(namesAProject(".module#bwai .title")).toBe("bwai");
-    expect(namesAProject(".scrivo-like .card")).toBeNull();
+    expect(namesAProject(".ballast-like .card")).toBeNull();
     expect(namesAProject('.card[data-shelf="tools"]')).toBeNull();
   });
 

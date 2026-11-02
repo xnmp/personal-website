@@ -13,8 +13,8 @@ test("every project is mounted on the home rack and opens its page", async ({ pa
   for (const p of projects) {
     await expect(page.locator(`a[href="${p.href}"]:visible`).first()).toBeVisible();
   }
-  await page.getByRole("link", { name: "Scrivo", exact: true }).click();
-  await expect(page).toHaveURL(/\/p\/scrivo$/);
+  await page.getByRole("link", { name: "Ballast", exact: true }).click();
+  await expect(page).toHaveURL(/\/p\/ballast$/);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
@@ -130,7 +130,7 @@ test("Tab and Shift+Tab never reach the page behind the open index", async ({ pa
 // follows spans lines and contains an HTML entity (`</em> gave …&rsquo;…` comes
 // out as `</em>gave`). Fixed upstream in 16.4; until then, catch it in the HTML.
 test("no word is glued to the end of an inline element", async ({ request }) => {
-  const routes = ["/", "/projects", "/about", ...projects.map((p) => p.href), "/p/zheng-shang-you/play", "/tableau-frog"];
+  const routes = ["/", "/projects", "/about", ...projects.map((p) => p.href), "/tableau-frog"];
   for (const route of routes) {
     const html = await (await request.get(route)).text();
     const body = html.slice(html.indexOf("<body"));
@@ -182,7 +182,7 @@ for (const style of STYLES.filter((style) => style.scene !== "none")) {
 
 test("nothing scrolls sideways at 320px", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
-  for (const route of ["/", "/p/tauri-explorer", "/p/eskiv", "/p/zheng-shang-you"]) {
+  for (const route of ["/", "/p/tauri-explorer", "/p/eskiv", "/p/ballast"]) {
     await page.goto(route);
     const width = await page.evaluate(() => document.documentElement.scrollWidth);
     expect(width, route).toBeLessThanOrEqual(320);

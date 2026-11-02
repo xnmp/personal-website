@@ -353,10 +353,7 @@ enforce it.
   any modal `<dialog>` (the index, the screenshot viewer) is open.
 - `Key` takes `disabled` (buttons only): the tile goes plain (a signal tile
   falls back to the plain tile), its legend prints faint, and it neither
-  lifts nor sinks. The Zheng Shang You table uses tiles for Play, Pass and
-  Deal again, and draws its seats, trick and hand as tiling-session panes:
-  the title set into the border, the pane whose turn it is in the session's
-  active-border gradient (`--active-grad`).
+  lifts nor sinks.
 - Charts: each returns ECharts' `{ baseOption, media }`, with compact
   overrides below a 520px container. A chart with a timeline (the Eskiv
   heatmap) passes `playWhileVisible` to `Chart`, which plays it only while it

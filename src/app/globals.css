@@ -9,7 +9,6 @@
 @import "./styles/garden.css";
 @import "./styles/ligne.css";
 @import "./styles/atlas.css";
-@import "./zsy.css";
 
 @theme inline {
   --color-paper: var(--paper);

@@ -21,7 +21,7 @@ export function Folio({ slug }: { slug: string }) {
   );
 }
 
-/** A detail page's running-head meta, "02 · Scrivo · active", from the data. */
+/** A detail page's running-head meta, "02 · Ballast · active", from the data. */
 export function ProjectMeta({ slug }: { slug: string }) {
   const { project } = readProjectCatalog();
   const p = project(slug);
@@ -32,7 +32,7 @@ export function ProjectMeta({ slug }: { slug: string }) {
   );
 }
 
-/** A detail page's kicker, "02 · Scrivo", from the data. */
+/** A detail page's kicker, "02 · Ballast", from the data. */
 export function ProjectKicker({ slug }: { slug: string }) {
   const { project } = readProjectCatalog();
   const p = project(slug);

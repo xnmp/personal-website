@@ -47,8 +47,8 @@ describe("rank", () => {
   });
 
   test("case and surrounding space don't matter, and a huge query doesn't throw", () => {
-    const items = [item("Scrivo")];
-    expect(rank(items, "  SCRI ")).toEqual(items);
+    const items = [item("Ballast")];
+    expect(rank(items, "  BALL ")).toEqual(items);
     expect(rank(items, "x".repeat(100_000))).toEqual([]);
   });
 });

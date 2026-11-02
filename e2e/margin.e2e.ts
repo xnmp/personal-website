@@ -27,8 +27,8 @@ test("plain can be selected, survives navigation and reload, and can be switched
   await choose(page, "plain");
   await expect(page.locator(".margin-index")).toBeVisible();
   await expect(page.locator(".landing")).toHaveCount(0);
-  await page.getByRole("link", { name: "Scrivo", exact: true }).click();
-  await expect(page).toHaveURL(/\/p\/scrivo$/);
+  await page.getByRole("link", { name: "Ballast", exact: true }).click();
+  await expect(page).toHaveURL(/\/p\/ballast$/);
   await page.reload();
   await expect(styleKey(page)).toHaveAccessibleName("Art direction: plain");
   await page.getByRole("link", { name: "projects", exact: true }).click();
@@ -64,7 +64,7 @@ test("the directory and reading pages fit narrow phones, tablets and desktop", a
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const width of [320, 701, 900, 1448]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const route of ["/", "/projects", "/about", "/p/tauri-explorer", "/p/zheng-shang-you/play"]) {
+    for (const route of ["/", "/projects", "/about", "/p/tauri-explorer", "/p/ballast"]) {
       await page.goto(route);
       await page.evaluate(() => document.fonts.ready);
       expect(await page.evaluate(() => document.documentElement.scrollWidth), `${route} at ${width}`).toBeLessThanOrEqual(width);
@@ -87,13 +87,13 @@ test("keyboard navigation opens the visible directory entry and search still fin
   await page.keyboard.press("j");
   await expect(page.locator(".margin-list h3 a").first()).toBeFocused();
   await page.keyboard.press("j");
-  await expect(page.getByRole("link", { name: "Scrivo", exact: true })).toBeFocused();
-  await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/p\/scrivo$/);
-  await page.keyboard.press("/");
-  await page.getByRole("combobox").fill("Ballast");
+  await expect(page.getByRole("link", { name: "Ballast", exact: true })).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/p\/ballast$/);
+  await page.keyboard.press("/");
+  await page.getByRole("combobox").fill("LambdaQuery");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/p\/lambdaquery$/);
 });
 
 test("real screenshots follow the colour theme across project navigation", async ({ page }) => {
@@ -108,15 +108,6 @@ test("real screenshots follow the colour theme across project navigation", async
   const selectedShot = await shot.getAttribute("src");
   await page.getByRole("link", { name: "Tauri Explorer", exact: true }).click();
   await expect(page.locator(".detail-hero img:visible")).toHaveAttribute("src", selectedShot!);
-});
-
-test("child pages keep a visible path back to the project", async ({ page }) => {
-  await seed(page);
-  await page.goto("/p/zheng-shang-you/play");
-  const parent = page.locator('.head-nav a[href="/p/zheng-shang-you"]');
-  await expect(parent).toBeVisible();
-  await parent.click();
-  await expect(page).toHaveURL(/\/p\/zheng-shang-you$/);
 });
 
 test("the rail menu remains fully usable on short screens", async ({ page }) => {
