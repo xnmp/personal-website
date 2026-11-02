@@ -20,7 +20,6 @@ authored slot for each paragraph or list item.
 | `content/project-groups.md` | Project membership in each About section; group titles and order follow About |
 | `content/projects/<slug>.md` | Project card/search data, metadata, headings, paragraphs, captions, image descriptions, feature descriptions and measurements |
 | `content/tableau-frog.md` | Standalone Tableau Frog showcase, feature ledger, measurements and code examples |
-| `content/zheng-shang-you-play.md` | Game instructions and surrounding copy |
 
 Page structure, art, navigation mechanics, chart datasets and interactive demos
 remain in code. A new route or a new kind of interactive section still needs a
@@ -44,16 +43,16 @@ include an optional `preview` with `src`, `alt`, `width` and `height`. A
 a preview the directory remains text-only.
 
 ```yaml
-title: Scrivo
+title: Ballast
 status: producing
 tags:
-  - rust
-  - markdown
+  - svelte
+  - local-first
 stats:
-  - 340ms vs Typora 965ms
+  - Markdown entries
 metadata:
-  title: 'Scrivo: a markdown editor'
-  description: An editor that keeps your formatting intact.
+  title: 'Ballast: a mood diary'
+  description: My mood diary, stored as Markdown files.
 ```
 
 Quote a value containing `: `, `#`, or other YAML punctuation. Status values are
@@ -71,10 +70,12 @@ not yet listed go to the configured `unassigned` group; duplicates and unknown
 references stop the build. The older `home.md` shelf labels no longer control
 directory groups.
 
-The CLT essay is an unchanged standalone snapshot at `public/clt/index.html`,
-copied from `~/Repos/clt-interactive/index.html`. To update it, rebuild that
-repository and copy its generated `index.html` here; no second implementation
-or dependency installation is needed.
+The Abel–Ruffini overview is `content/projects/abel-ruffini.md`. Its seven
+worked chapters live in `content/abel-ruffini-notes.md`; each named block is
+one editable chapter at `/p/abel-ruffini/notes/<id>`. They are adapted from the
+polynomial-solvability notes and their Claude conversation. `$...$` and
+`$$...$$` typeset inline and display maths on these pages; the source textarea
+still edits ordinary Markdown and LaTeX.
 
 ## Markdown blocks
 

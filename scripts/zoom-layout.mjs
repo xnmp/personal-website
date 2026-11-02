@@ -18,7 +18,7 @@ export const CONFIGS = [
   ...configs("laptop", 1440, 900, 2, [100, 125]),
   ...configs("phone", 390, 844, 3, [100], true),
 ];
-export const INNER_PAGES = ["/about", "/p/scrivo", "/p/tauri-explorer"];
+export const INNER_PAGES = ["/about", "/p/ballast", "/p/tauri-explorer"];
 export const THEMES = ["day", "night"];
 export const TOUCH_CONFIGS = [
   ...configs("ipad-portrait", 1024, 1366, 2, [100], true),

@@ -11,6 +11,7 @@ import {
 import { join } from "node:path";
 import { parseContent, contentBlock } from "../content";
 import { groupProjects } from "../project-groups";
+import { abelChapters } from "../abel-notes";
 import {
   documentSlots,
   editDocument,
@@ -144,6 +145,8 @@ export async function validateCollection(
       "Home's flagship and featured projects must exist and be unique",
     );
   const about = documents.get("about")!;
+  const notes = documents.get("abel-ruffini-notes");
+  if (notes) abelChapters(notes);
   contentBlock(about, String(about.data.intro));
   for (const section of about.data.sections as { body: string }[])
     contentBlock(about, section.body);

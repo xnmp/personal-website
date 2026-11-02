@@ -9,7 +9,7 @@ import { Screen } from "./Screen";
 /**
  * One project, slotted into the rack: a live faceplate with a lit screen. The
  * whole plate is the link, named by the project's title (its heading) and
- * described by its one-line summary, so it reads as "Scrivo, link" rather
+ * described by its one-line summary, so it reads as "Ballast, link" rather
  * than every word on the plate.
  */
 export function ModuleCard({ p }: { p: Project }) {

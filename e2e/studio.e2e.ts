@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { contentBlock, parseContent } from "../src/lib/content";
 import { interceptSaves, openField } from "./studio-fixture";
 
 test.use({ channel: "chrome", launchOptions: { args: ["--disable-dev-shm-usage", "--disable-gpu", "--renderer-process-limit=2"] } });
@@ -6,6 +8,32 @@ test.skip(!process.env.STUDIO_E2E, "Run against the opted-in local studio with o
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => { localStorage.setItem("nb-style", "margin"); localStorage.setItem("nb-rice", "ayu-mirage"); });
   page.on("dialog", dialog => dialog.accept());
+});
+
+test("Abel–Ruffini chapters typeset equations and edit as ordinary whole Markdown blocks", async ({ page }) => {
+  const saved = await interceptSaves(page);
+  await page.goto("/projects");
+  await page.getByRole("link", { name: "Abel–Ruffini", exact: true }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Why do formulas run out at degree five?");
+  await expect(page.locator(".katex-display").first()).toBeVisible();
+  await page.getByRole("link", { name: "The cubic: a three-way split", exact: true }).click();
+  await expect(page).toHaveURL(/\/p\/abel-ruffini\/notes\/cubic$/);
+  await expect(page.locator("article .katex-display").first()).toBeVisible();
+  await page.getByRole("button", { name: "Editing off", exact: true }).click();
+  const input = await openField(page, "cubic");
+  const original = await input.inputValue();
+  expect(original).toBe(contentBlock(parseContent(readFileSync("content/abel-ruffini-notes.md", "utf8")), "cubic"));
+  await expect(page.locator("article textarea")).toHaveCount(1);
+  const edited = original + "\n\n$$\na^2+b^2=c^2\n$$";
+  await input.fill(edited); await input.press("Control+Enter");
+  await expect(input).toHaveCount(0);
+  await expect(page.locator(".studio-dock").getByRole("status")).toContainText("Saved to your Markdown files");
+  await expect(page.locator("article annotation").last()).toHaveText("a^2+b^2=c^2");
+  await expect(page.locator(".katex-error")).toHaveCount(0);
+  expect(saved.sources.get("abel-ruffini-notes")).toContain(edited);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
+  await page.getByRole("link", { name: "← Abel–Ruffini", exact: true }).click();
+  await expect(page).toHaveURL(/\/p\/abel-ruffini$/);
 });
 
 test("edits actual pages and deploys saved content from the bottom-left", async ({ page }) => {
@@ -17,7 +45,7 @@ test("edits actual pages and deploys saved content from the bottom-left", async 
   for (const scenario of [
     { route: "/projects", document: "home", field: "margin intro", value: "A private garden, edited in place." },
     { route: "/about", document: "about", field: "intro", value: "A new introduction, edited in place." },
-    { route: "/p/scrivo", document: "projects/scrivo", field: "headline", value: "A locally edited Scrivo headline." },
+    { route: "/p/ballast", document: "projects/ballast", field: "headline", value: "A locally edited Ballast headline." },
   ]) {
     await page.goto(scenario.route);
     await page.getByRole("button", { name: "Editing off", exact: true }).click();
@@ -30,14 +58,14 @@ test("edits actual pages and deploys saved content from the bottom-left", async 
   }
   await page.goto("/projects");
   await page.getByRole("button", { name: "Editing off", exact: true }).click();
-  const entry = page.locator('.margin-entry').filter({ has: page.locator('[data-studio-document="projects/scrivo"]') });
+  const entry = page.locator('.margin-entry').filter({ has: page.locator('[data-studio-document="projects/ballast"]') });
   const title = await openField(entry, "title");
-  await title.fill("Scrivo, edited locally"); await title.press("Enter");
+  await title.fill("Ballast, edited locally"); await title.press("Enter");
   let deployRequests = 0;
   await page.route("**/api/studio", async route => {
     if (route.request().method() === "POST" && route.request().postDataJSON().action === "deploy") {
       deployRequests++;
-      expect(saved.sources.get("projects/scrivo")).toContain("Scrivo, edited locally");
+      expect(saved.sources.get("projects/ballast")).toContain("Ballast, edited locally");
       await route.fulfill({ json: { job: { phase: "live", message: "Mock publication accepted", url: "https://example.invalid" } } });
     } else await route.fallback();
   });
@@ -48,9 +76,9 @@ test("edits actual pages and deploys saved content from the bottom-left", async 
   expect(bounds.x).toBeLessThan(30);
   expect(bounds.y + bounds.height).toBeGreaterThan(page.viewportSize()!.height - 30);
   await page.getByRole("button", { name: "Editing on", exact: true }).click();
-  await page.locator('.margin-entry h3 a[href="/p/scrivo"]').click();
-  await expect(page).toHaveURL(/\/p\/scrivo$/);
-  await expect(page.locator(".kicker")).toContainText("Scrivo, edited locally");
+  await page.locator('.margin-entry h3 a[href="/p/ballast"]').click();
+  await expect(page).toHaveURL(/\/p\/ballast$/);
+  await expect(page.locator(".kicker")).toContainText("Ballast, edited locally");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -120,8 +148,8 @@ test("native editing preserves paste, blank lines, undo and bidirectional drag s
 test("project sections edit as a whole through paragraphs, lists, toggles, recovery and save", async ({ page }) => {
   const saved = await interceptSaves(page);
   for (const scenario of [
-    { slug: "tauri-explorer", slot: "body-the-little-things-that-bothered-me", parts: ["Marta", "Fileside", "An extra keypress sounds trivial"] },
-    { slug: "scrivo", slot: "body-keeping-the-markdown-i-wrote", parts: ["Some rich-text editors", "### File details", "### Long documents"] },
+    { slug: "tauri-explorer", slot: "body-the-little-things-that-bothered-me" },
+    { slug: "ballast", slot: "body-the-app-isnt-the-only-thing-touching-them" },
   ]) {
     await page.goto(`/p/${scenario.slug}`);
     const toggle = page.getByRole("button", { name: "Editing off", exact: true });
@@ -129,7 +157,7 @@ test("project sections edit as a whole through paragraphs, lists, toggles, recov
     const label = scenario.slot.replace(/-/g, " ");
     let input = await openField(page, label);
     const original = await input.inputValue();
-    for (const part of scenario.parts) expect(original).toContain(part);
+    expect(original).toBe(contentBlock(parseContent(readFileSync(`content/projects/${scenario.slug}.md`, "utf8")), scenario.slot));
     const source = original + "\n\nA paragraph added to the whole section.\n\n- First note\n- Second note";
     await input.fill(source); await input.press("Tab");
     await page.getByRole("button", { name: "Editing on", exact: true }).click();

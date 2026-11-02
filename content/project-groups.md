@@ -5,7 +5,6 @@ sections:
   - section: section-1
     projects:
       - tauri-explorer
-      - scrivo
       - ballast
       - quickshell-statusbar
   - section: section-2
@@ -17,11 +16,10 @@ sections:
       - ashen-cathedral
       - bwai
       - automatedspike
-      - zheng-shang-you
       - eskiv
   - section: section-4
     projects:
-      - clt-interactive
+      - abel-ruffini
 ---
 <!-- block: featured-note -->
 Shown in the featured projects above.

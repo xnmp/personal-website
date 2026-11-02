@@ -17,7 +17,7 @@ export function generateStaticParams() {
 function HomeCard() {
   const { project, projects } = readProjectCatalog();
   // the four the alt text describes (opengraph-image.alt.txt)
-  const tiles = ["tauri-explorer", "bwai", "ashen-cathedral", "scrivo"].map(project);
+  const tiles = ["tauri-explorer", "bwai", "ashen-cathedral", "ballast"].map(project);
   return (
     <div className="og-plate faceplate og-home">
       <div className="og-copy">

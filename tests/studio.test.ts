@@ -33,7 +33,7 @@ test("editor document routes follow the landing page and project directory", () 
   expect(previewRoute("home")).toBe("/projects");
   expect(previewRoute("project-groups")).toBe("/projects");
   expect(previewRoute("projects/tauri-explorer")).toBe("/p/tauri-explorer");
-  expect(previewRoute("zheng-shang-you-play")).toBe("/p/zheng-shang-you/play");
+  expect(previewRoute("abel-ruffini-notes")).toBe("/p/abel-ruffini");
   expect(previewRoute("tableau-frog")).toBe("/tableau-frog");
 });
 const fixture = async () => {
@@ -98,7 +98,7 @@ describe("source editing", () => {
   });
 
   test("rejects unknown slots, malformed values, structural injection and invalid project metadata", async () => {
-    const source = await readFile("content/projects/scrivo.md", "utf8");
+    const source = await readFile("content/projects/ballast.md", "utf8");
     expect(() => editDocument(source, { unknown: "x" })).toThrow("Unknown");
     expect(() =>
       editDocument(source, { "block:headline": "<!-- block: stolen -->\nHi" }),
@@ -108,14 +108,14 @@ describe("source editing", () => {
     ).toThrow("finite");
     expect(() =>
       validateDocument(
-        "projects/scrivo",
+        "projects/ballast",
         editDocument(source, { 'field:["slug"]': "different" }),
         source,
       ),
     ).toThrow("href");
     expect(() =>
       validateDocument(
-        "projects/scrivo",
+        "projects/ballast",
         source.replace(/<!-- block: headline -->/, "<!-- block: replaced -->"),
         source,
       ),

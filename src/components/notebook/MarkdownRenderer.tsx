@@ -49,7 +49,7 @@ function inlineDirectives() {
 }
 
 /** No raw HTML or executable MDX. Inline mode fits headings, captions and keys. */
-export type MarkdownProps = { text: string; inline?: boolean; allowLinks?: boolean; shortcutOS?: OS | null; paragraphClassName?: string; paragraphStyle?: CSSProperties };
+export type MarkdownProps = { text: string; inline?: boolean; math?: boolean; allowLinks?: boolean; shortcutOS?: OS | null; paragraphClassName?: string; paragraphStyle?: CSSProperties };
 const INLINE_ELEMENTS = new Set(["a", "br", "code", "del", "em", "strong", "span", "wbr"]);
 
 /** Adapt prose nodes, after parsing emphasis; code and link destinations stay literal. */

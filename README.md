@@ -39,7 +39,6 @@ you do not need to edit React to change the existing pages.
 - [`content/about.md`](content/about.md): biography, sections, facts, optional portrait and drafts.
 - [`content/projects/`](content/projects/): one file per project; card/search metadata and the project's complete written page.
 - [`content/tableau-frog.md`](content/tableau-frog.md): standalone Tableau Frog showcase.
-- [`content/zheng-shang-you-play.md`](content/zheng-shang-you-play.md): playable card game's surrounding copy.
 
 The [authoring guide](docs/content-authoring.md) explains metadata, named blocks,
 formatting and deployment. The [minimal theme mockups](docs/design-options/README.md)

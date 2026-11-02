@@ -169,6 +169,6 @@ export function validateDocument(
 export function previewRoute(id: string): string {
   if (id === "about") return "/";
   if (id === "home" || id === "project-groups") return "/projects";
-  if (id === "zheng-shang-you-play") return "/p/zheng-shang-you/play";
+  if (id === "abel-ruffini-notes") return "/p/abel-ruffini";
   return id.startsWith("projects/") ? `/p/${id.slice(9)}` : `/${id}`;
 }

@@ -1,0 +1,19 @@
+.math-prose { min-width: 0; overflow-wrap: anywhere; }
+.math-prose .katex { font-size: 1.05em; }
+.math-prose .katex-display { overflow-x: auto; overflow-y: hidden; padding-block: 0.25em; margin-block: 1.5em; }
+.math-prose :not(.katex-display) > .katex { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: middle; padding-block: 0.1em; }
+.math-prose .math-table { overflow-x: auto; margin-block: 1.5em; }
+.math-prose table { border-collapse: collapse; font-size: 0.9em; }
+.math-prose :is(td, th) { padding: 0.6em 0.9em; border-bottom: 1px solid var(--rule); text-align: left; }
+.math-prose blockquote { margin: 1.5em 0; padding-inline-start: 1em; border-inline-start: 2px solid var(--rule); }
+.math-reading { max-width: 76ch; margin-inline: auto; }
+.math-reading > .faceplate { padding: calc(var(--plate-w) + 24px); }
+.math-reading > .faceplate > .content-block > :first-child { margin-top: 0; }
+.math-reading > .faceplate > .content-block > :last-child { margin-bottom: 0; }
+.math-reading .md-heading { margin-top: 1.75em; }
+.math-chapters { display: grid; gap: 12px; padding-inline-start: 1.5em; }
+.math-chapters a { text-underline-offset: 4px; }
+.math-chapters p { margin: 4px 0 0; color: var(--print-soft); font-size: 0.9em; }
+.math-note-nav { display: flex; flex-wrap: wrap; gap: 14px 28px; margin-block: 32px; }
+:root[data-style="margin"] .math-reading > .faceplate { padding: 0; }
+@media (max-width: 600px) { .math-reading > .faceplate { padding: calc(var(--plate-w) + 14px); } }
