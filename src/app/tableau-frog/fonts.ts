@@ -1,12 +1,4 @@
-import { JetBrains_Mono, Space_Grotesk, Instrument_Serif } from "next/font/google";
-
-/** UI, labels, code — the app is keyboard-first and mono-typed. */
-export const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--tf-mono",
-  display: "swap",
-});
+import { Space_Grotesk, Instrument_Serif } from "next/font/google";
 
 /** Display face with genuine personality — not a default sans. */
 export const display = Space_Grotesk({

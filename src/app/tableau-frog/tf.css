@@ -22,6 +22,8 @@
   --magenta: #d55181;
   --orange: #d95926;
 
+  /* Reuse the site's variable JetBrains Mono, including all UI weights. */
+  --tf-mono: var(--font-mono);
   --mono: var(--tf-mono), ui-monospace, "SF Mono", Menlo, monospace;
   --display: var(--tf-display), "Space Grotesk", system-ui, sans-serif;
   --serif: var(--tf-serif), Georgia, serif;
