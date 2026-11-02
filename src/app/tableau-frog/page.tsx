@@ -4,7 +4,7 @@ import { Markdown } from "@/components/notebook/Markdown";
 import { contentBlock, contentField } from "@/lib/content";
 import { readContent } from "@/lib/content.server";
 import { EditableLink } from "@/components/studio/EditableLink";
-import { display, mono, serif } from "./fonts";
+import { display, serif } from "./fonts";
 import KeyboardLayer from "./KeyboardLayer";
 import LensDemo from "./LensDemo";
 import { Reveal } from "./Reveal";
@@ -31,7 +31,7 @@ export default function TableauFrogPage() {
   /* syntax-highlighted code (hand-tagged spans matching the app's palette) */
 
   return (
-    <div className={`tf-root ${mono.variable} ${display.variable} ${serif.variable}`}>
+    <div className={`tf-root ${display.variable} ${serif.variable}`}>
       <KeyboardLayer />
 
       {/* ---------- nav ---------- */}
